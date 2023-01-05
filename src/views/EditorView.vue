@@ -1,6 +1,6 @@
 <template>
   <main>
-    About
+    EditorView
   </main>
 </template>
 
