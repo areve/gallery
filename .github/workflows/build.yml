@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build & Deploy
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install
+        run: yarn install --frozen-lockfile
+        shell: bash
+
+      - name: Test
+        run: yarn test
+        shell: bash
+
+      - name: Build
+        run: yarn build
+        shell: bash
+
+      - name: Deploy
+        run: |
+          cd dist
+          echo 'www.challen.info' > CNAME
+          git config --global user.email $GITHUB_ACTOR
+          git config --global user.name CI
+          git init
+          git add -A
+          git commit -m deploy
+          git push -f https://$GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY.git master:gh-pages
+        shell: bash
