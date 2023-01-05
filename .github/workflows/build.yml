@@ -30,7 +30,7 @@ jobs:
       - name: Deploy
         run: |
           cd dist
-          echo 'www.challen.info' > CNAME
+          echo 'gallery.challen.info' > CNAME
           git config --global user.email $GITHUB_ACTOR
           git config --global user.name CI
           git init
