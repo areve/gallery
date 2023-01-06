@@ -3,6 +3,6 @@
 
 <template>
   <main>
-    Home
+    <h1>Gallery</h1>
   </main>
 </template>
