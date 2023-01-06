@@ -27,7 +27,7 @@ export default defineComponent({
   },
   methods: {
     async create() {
-      const response = await axios.post('/api/hello', {
+      const response = await axios.post('/api/createImage', {
         prompt: this.prompt
       })
       this.result = JSON.stringify(response.data) + this.prompt
