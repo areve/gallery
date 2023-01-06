@@ -16,7 +16,7 @@ export default defineConfig({
       },
     }),
     mix({
-      handler: './api.js',
+      handler: './api.ts',
     }),
   ],
   resolve: {
