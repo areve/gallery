@@ -5,7 +5,7 @@ import fs from 'fs'
 import { setMetadata } from '../lib/png-metadata'
 
 const env = dotenv.config().parsed!
-const apiKey = env.OPEN_AI_KEY
+const apiKey = env.OPEN_AI_KEY + 'sss'
 
 const configuration = new Configuration({
   apiKey,
@@ -13,7 +13,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration)
 const debug = true
 const debugSaveResponses = false
-const mockRequests = false
+const mockRequests = true
 const cleanUpTemp = true
 const downloads = './public/downloads'
 const tempDir = './public/downloads/temp'

@@ -6,7 +6,8 @@
       <input type="text" id="prompt" v-model="prompt" />
       <button @click="create">Create</button>
       <button type="reset" @click="clear">Clear</button>
-      <button @click="createVariation">Variation</button>
+      <button type="button" @click="createVariation">Variation</button>
+      <button type="button" @click="scale">Scale</button>
     </form>
     <div class="canvas-wrap">
       <div class="spinner" v-if="loading"></div>
@@ -41,56 +42,56 @@ export default defineComponent({
     },
     context(): CanvasRenderingContext2D {
       return this.canvas.getContext('2d')!
-    } 
+    }
   },
   methods: {
     clear() {
       this.context.clearRect(0, 0, 1024, 1024)
     },
+    async scale() {
+      // using toDataURL is not really efficient here but I had the code already!
+      const original = this.canvas.toDataURL('image/png')
+      this.clear()
+      this.context.drawImage(await dataUrlToImage(original), 256, 256, 512, 512)
+    },
     async createVariation() {
-      return new Promise(async (resolve, reject) => {
-        this.loading = true
-        const image = this.canvas.toDataURL('image/png') 
-        console.log(image)
-        const response = await axios.post('/api/editor/createImageVariation', {
-          image
-        })
-
-        const tempImage = new Image()
-        tempImage.onload = () => {
-          this.context.drawImage(tempImage, 0, 0)
-          this.loading = false
-          resolve(true)
-        }
-        tempImage.src = response.data[0].dataUrl
+      this.loading = true
+      const image = this.canvas.toDataURL('image/png')
+      const response = await axios.post('/api/editor/createImageVariation', {
+        image
       })
 
+      this.context.drawImage(await dataUrlToImage(response.data[0].dataUrl), 0, 0)
+      this.loading = false
     },
     async create() {
-      return new Promise(async (resolve, reject) => {
-        this.loading = true
-        const response = await axios.post('/api/editor/createImage', {
-          prompt: this.prompt
-        })
-
-        const tempImage = new Image()
-        tempImage.onload = () => {
-          this.context.drawImage(tempImage, 0, 0)
-          this.loading = false
-          resolve(true)
-        }
-        tempImage.src = response.data[0].dataUrl
+      this.loading = true
+      const response = await axios.post('/api/editor/createImage', {
+        prompt: this.prompt
       })
+
+      this.context.drawImage(await dataUrlToImage(response.data[0].dataUrl), 0, 0)
+      this.loading = false
     },
   },
 })
 
+function dataUrlToImage(dataUrl: string): Promise<HTMLImageElement> {
+  return new Promise(async (resolve, reject) => {
+    const tempImage = new Image()
+    tempImage.onload = () => {
+      resolve(tempImage)
+    }
+    tempImage.src = dataUrl
+  })
+} 
 </script>
 
 <style>
-.canvas-wrap{
+.canvas-wrap {
   background-color: #ccc;
 }
+
 .spinner {
   position: absolute;
   left: 50%;
