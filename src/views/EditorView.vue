@@ -4,10 +4,12 @@
     <form>
       <label for="prompt">Prompt</label>
       <input type="text" id="prompt" v-model="prompt" />
-      <button type="button" @click="create();save()">Create</button>
-      <button type="reset" @click="clear();save()">Clear</button>
-      <button type="button" @click="createVariation();save()">Variation</button>
-      <button type="button" @click="scale();save()">Scale</button>
+      <button type="button" @click="create()">Create</button>
+      <button type="reset" @click="clear()">Clear</button>
+      <button type="button" @click="createVariation()">Variation</button>
+      <button type="button" @click="scale()">Scale</button>
+      <button type="button" @click="edit()">Edit</button>
+      <button type="button" @click="save()">Save</button>
       <label for="scaleBy">By</label>
       <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
     </form>
@@ -74,6 +76,20 @@ export default defineComponent({
       const image = this.canvas.toDataURL('image/png')
       const response = await axios.post('/api/editor/createImageVariation', {
         image
+      })
+
+      this.context.drawImage(await dataUrlToImage(response.data[0].dataUrl), 0, 0)
+      this.loading = false
+    },
+
+    async edit() {
+      this.loading = true
+      const image = this.canvas.toDataURL('image/png')
+      const mask = this.canvas.toDataURL('image/png')
+      const response = await axios.post('/api/editor/createImageEdit', {
+        image,
+        mask,
+        prompt: this.prompt
       })
 
       this.context.drawImage(await dataUrlToImage(response.data[0].dataUrl), 0, 0)
