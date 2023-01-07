@@ -33,13 +33,12 @@ editorRoutes.post("/createImage", async (req, res) => {
 
   if (!fs.existsSync(downloads)) fs.mkdirSync(downloads)
 
-  
-  const datestamp = getDatestamp()
-  
-  let data;
+  let data, datestamp;
   if (mockRequests) {
     data = JSON.parse(fs.readFileSync(`${mocks}/createImage-mock.json`, 'utf8'))
+    datestamp = '20000101T000000'
   } else {
+    datestamp = getDatestamp()
     const response = await openai.createImage(request)
     data = response.data
     if (debugSaveResponses) fs.writeFileSync(`${mocks}/createImage-${datestamp}.json`, JSON.stringify(data, null, '  '), 'utf8')
