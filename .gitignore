@@ -29,3 +29,4 @@ coverage
 
 # more
 .env
+public/downloads/**
