@@ -15,6 +15,7 @@ const debug = true
 const debugSaveResponses = false
 const mockRequests = true
 const downloads = './public/downloads'
+const mocks = './public/mocks'
 
 export const editorRoutes = express.Router();
 
@@ -32,16 +33,16 @@ editorRoutes.post("/createImage", async (req, res) => {
 
   if (!fs.existsSync(downloads)) fs.mkdirSync(downloads)
 
-  let datestamp, data;
-
+  
+  const datestamp = getDatestamp()
+  
+  let data;
   if (mockRequests) {
-    datestamp = 'mock'
-    data = JSON.parse(fs.readFileSync(`${downloads}/createImage-${datestamp}.json`, 'utf8'))
+    data = JSON.parse(fs.readFileSync(`${mocks}/createImage-mock.json`, 'utf8'))
   } else {
-    datestamp = getDatestamp()
     const response = await openai.createImage(request)
     data = response.data
-    if (debugSaveResponses) fs.writeFileSync(`${downloads}/createImage-${datestamp}.json`, JSON.stringify(data, null, '  '), 'utf8')
+    if (debugSaveResponses) fs.writeFileSync(`${mocks}/createImage-${datestamp}.json`, JSON.stringify(data, null, '  '), 'utf8')
   }
 
   const filename = `image-0-${datestamp}.png`

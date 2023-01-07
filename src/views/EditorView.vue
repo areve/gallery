@@ -5,9 +5,13 @@
       <label for="prompt">Prompt</label>
       <input type="text" id="prompt" v-model="prompt" />
       <button @click="create">Create</button>
+      <button type="reset" @click="clear">Clear</button>
     </form>
     <div class="canvas">
-      <img :src="imageSrc" />
+      <div class="placeholder" v-if="!imageSrc" >
+        <div class="spinner" v-if="loading"></div>
+      </div>
+      <img :src="imageSrc" v-if="imageSrc" />
     </div>
   </main>
 </template>
@@ -20,16 +24,21 @@ export default defineComponent({
   components: {},
   data() {
     return {
-      imageSrc: '/gallery-example/mud-cat.png',
-      prompt: 'cat made out of coloured mud',
-      result: "hello, press Create",
+      imageSrc: '',
+      prompt: '',
+      loading: false,
     };
   },
   methods: {
+    clear() {
+      this.imageSrc = ''
+    },
     async create() {
+      this.loading = true
       const response = await axios.post('/api/editor/createImage', {
         prompt: this.prompt
       })
+      this.loading = false
       this.imageSrc = response.data[0].dataUrl 
     },
   },
@@ -37,5 +46,41 @@ export default defineComponent({
 </script>
 
 <style>
+.placeholder{
+  background-color: #ccc;
+  width: 100%;
+  padding-bottom: 100%;
+  
+}
+
+.spinner {
+  position: absolute;
+  left: 50%;
+  padding-top: 50%;
+  width: 80px;
+  height: 80px;
+  margin-left: -40px;
+  margin-top: -40px;
+}
+
+.spinner:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: spinner 1.2s linear infinite;
+}
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 </style>
