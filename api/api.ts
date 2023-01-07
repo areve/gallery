@@ -3,7 +3,7 @@ import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 import { Configuration, CreateImageRequest, OpenAIApi } from 'openai'
 import fs from 'fs'
-import { readMetadata, setMetadata } from './api/lib/png-metadata'
+import { readMetadata, setMetadata } from './lib/png-metadata'
 
 const app = express()
 app.use(bodyParser.json())
@@ -49,16 +49,20 @@ app.post("/api/createImage", async (req, res) => {
   const filename = `image-0-${datestamp}.png`
   base64ToFile(`${downloads}/${filename}`, data.data[0].b64_json)
 
+  const createdDate = new Date(0); 
+  createdDate.setUTCSeconds(data.created);
+
   const metadata = {
     history: {
       method: 'createImage',
       filename,
       prompt,
-      created: new Date().toISOString(),
+      created: createdDate.toISOString(),
       version: 'OpenAI'
     }
   }
   if (debug) console.debug('metadata', metadata)
+  
 
   await setMetadata(`${downloads}/${filename}`, metadata)
 
