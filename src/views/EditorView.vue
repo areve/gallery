@@ -27,7 +27,7 @@ export default defineComponent({
   },
   methods: {
     async create() {
-      const response = await axios.post('/api/createImage', {
+      const response = await axios.post('/api/editor/createImage', {
         prompt: this.prompt
       })
       this.imageSrc = response.data[0].dataUrl 
