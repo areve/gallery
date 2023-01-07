@@ -4,7 +4,7 @@ import { RouterLink, RouterView } from "vue-router";
 
 <template>
   <header>
-    <div class="wrapper">
+    <div class="nav-wrapper">
       <nav>
         <RouterLink to="/">Gallery</RouterLink>
         <RouterLink to="/editor">Editor</RouterLink>
@@ -16,5 +16,10 @@ import { RouterLink, RouterView } from "vue-router";
 </template>
 
 <style scoped>
-
+.nav-wrapper{
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 50%;
+}
 </style>
