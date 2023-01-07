@@ -4,7 +4,7 @@ import { editorRoutes } from './routes/editor-routes'
 import { galleryRoutes } from './routes/gallery-routes'
 
 const app = express()
-app.use(bodyParser.json())
+app.use(bodyParser.json({limit: '200mb'}))
 
 app.use('/api/editor', editorRoutes);
 app.use('/api/gallery', galleryRoutes);

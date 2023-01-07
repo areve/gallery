@@ -6,12 +6,11 @@
       <input type="text" id="prompt" v-model="prompt" />
       <button @click="create">Create</button>
       <button type="reset" @click="clear">Clear</button>
+      <button @click="createVariation">Variation</button>
     </form>
-    <div class="canvas">
-      <div class="placeholder" v-if="!imageSrc" >
-        <div class="spinner" v-if="loading"></div>
-      </div>
-      <img :src="imageSrc" v-if="imageSrc" />
+    <div class="canvas-wrap">
+      <div class="spinner" v-if="loading"></div>
+      <canvas id="edit-canvas"></canvas>
     </div>
   </main>
 </template>
@@ -26,33 +25,72 @@ export default defineComponent({
     return {
       imageSrc: '',
       prompt: '',
-      loading: false,
+      loading: false
     };
+  },
+  mounted() {
+    this.canvas.width = 1024
+    this.canvas.height = 1024
+    this.clear()
+  },
+  computed: {
+    canvas() {
+      return document.getElementById(
+        "edit-canvas"
+      ) as HTMLCanvasElement
+    },
+    context(): CanvasRenderingContext2D {
+      return this.canvas.getContext('2d')!
+    } 
   },
   methods: {
     clear() {
-      this.imageSrc = ''
+      this.context.clearRect(0, 0, 1024, 1024)
+    },
+    async createVariation() {
+      return new Promise(async (resolve, reject) => {
+        this.loading = true
+        const image = this.canvas.toDataURL('image/png') 
+        console.log(image)
+        const response = await axios.post('/api/editor/createImageVariation', {
+          image
+        })
+
+        const tempImage = new Image()
+        tempImage.onload = () => {
+          this.context.drawImage(tempImage, 0, 0)
+          this.loading = false
+          resolve(true)
+        }
+        tempImage.src = response.data[0].dataUrl
+      })
+
     },
     async create() {
-      this.loading = true
-      const response = await axios.post('/api/editor/createImage', {
-        prompt: this.prompt
+      return new Promise(async (resolve, reject) => {
+        this.loading = true
+        const response = await axios.post('/api/editor/createImage', {
+          prompt: this.prompt
+        })
+
+        const tempImage = new Image()
+        tempImage.onload = () => {
+          this.context.drawImage(tempImage, 0, 0)
+          this.loading = false
+          resolve(true)
+        }
+        tempImage.src = response.data[0].dataUrl
       })
-      this.loading = false
-      this.imageSrc = response.data[0].dataUrl 
     },
   },
 })
+
 </script>
 
 <style>
-.placeholder{
+.canvas-wrap{
   background-color: #ccc;
-  width: 100%;
-  padding-bottom: 100%;
-  
 }
-
 .spinner {
   position: absolute;
   left: 50%;
@@ -74,13 +112,14 @@ export default defineComponent({
   border-color: #fff transparent #fff transparent;
   animation: spinner 1.2s linear infinite;
 }
+
 @keyframes spinner {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
-
 </style>
