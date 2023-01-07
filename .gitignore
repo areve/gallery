@@ -29,4 +29,5 @@ coverage
 
 # more
 .env
-public/downloads/**
+public/downloads/
+build/
