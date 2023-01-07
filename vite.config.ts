@@ -4,10 +4,9 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import mix from 'vite-plugin-mix'
 
-
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
+export default defineConfig(({ command }) => {
+  const plugins = [
     vue({
       template: {
         compilerOptions: {
@@ -15,13 +14,19 @@ export default defineConfig({
         },
       },
     }),
-    mix({
+    ,
+  ]
+  if (command !== 'build') {
+    plugins.push(mix({
       handler: './api/api.ts',
-    }),
-  ],
-  resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    }))
+  }
+  return {
+    plugins,
+    resolve: {
+      alias: {
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
+      },
     },
-  },
+  }
 });
