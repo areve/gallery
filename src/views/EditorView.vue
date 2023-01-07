@@ -5,10 +5,9 @@
       <label for="prompt">Prompt</label>
       <input type="text" id="prompt" v-model="prompt" />
       <button @click="create">Create</button>
-      <textarea v-model="result"></textarea>
     </form>
     <div class="canvas">
-      <img src="/gallery-example/mud-cat.png" />
+      <img :src="imageSrc" />
     </div>
   </main>
 </template>
@@ -21,7 +20,8 @@ export default defineComponent({
   components: {},
   data() {
     return {
-      prompt: 'example',
+      imageSrc: '/gallery-example/mud-cat.png',
+      prompt: 'cat made out of coloured mud',
       result: "hello, press Create",
     };
   },
@@ -30,7 +30,7 @@ export default defineComponent({
       const response = await axios.post('/api/createImage', {
         prompt: this.prompt
       })
-      this.result = JSON.stringify(response.data) + this.prompt
+      this.imageSrc = response.data[0].dataUrl 
     },
   },
 })
