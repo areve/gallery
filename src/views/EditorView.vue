@@ -4,12 +4,12 @@
     <form>
       <label for="prompt">Prompt</label>
       <input type="text" id="prompt" v-model="prompt" />
-      <button type="button" @click="create">Create</button>
-      <button type="reset" @click="clear">Clear</button>
-      <button type="button" @click="createVariation">Variation</button>
-      <button type="button" @click="scale">Scale</button>
+      <button type="button" @click="create();save()">Create</button>
+      <button type="reset" @click="clear();save()">Clear</button>
+      <button type="button" @click="createVariation();save()">Variation</button>
+      <button type="button" @click="scale();save()">Scale</button>
       <label for="scaleBy">By</label>
-      <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0"  />
+      <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
     </form>
     <div class="canvas-wrap">
       <div class="spinner" v-if="loading"></div>
@@ -35,7 +35,7 @@ export default defineComponent({
   mounted() {
     this.canvas.width = 1024
     this.canvas.height = 1024
-    this.clear()
+    this.load()
   },
   computed: {
     canvas() {
@@ -50,6 +50,14 @@ export default defineComponent({
   methods: {
     clear() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    },
+    save() {
+      window.localStorage.setItem('image', this.canvas.toDataURL())
+    },
+    async load() {
+      this.clear()
+      const dataUrl = window.localStorage.getItem('image')
+      if (dataUrl) this.context.drawImage(await dataUrlToImage(dataUrl), 0, 0)
     },
     async scale() {
       const clone = cloneCanvas(this.canvas)
@@ -106,7 +114,15 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 
 <style>
 .canvas-wrap {
-  background-color: #ccc;
+  background-color: #f7f7f7;
+  background-image:
+      linear-gradient(45deg, #ddd 25%, transparent 25%), 
+      linear-gradient(135deg, #ddd 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ddd 75%),
+      linear-gradient(135deg, transparent 75%, #ddd 75%);
+    background-size:20px 20px; 
+    background-position:0 0, 10px 0, 10px -10px, 0px 10px; 
+    background-repeat: repeat;
 }
 
 .spinner {
@@ -140,4 +156,5 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
     transform: rotate(360deg);
   }
 }
+
 </style>
