@@ -1,6 +1,6 @@
 import express from 'express'
 import bodyParser from 'body-parser'
-import { editorRoutes } from './routes/editor'
+import { editorRoutes } from './routes/editor-routes'
 
 const app = express()
 app.use(bodyParser.json())
