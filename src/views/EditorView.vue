@@ -3,7 +3,7 @@
     <h1>Editor</h1>
     <form>
       <label for="prompt">Prompt</label>
-      <input type="text" id="prompt" v-model="prompt" />
+      <textarea type="text" id="prompt" v-model="prompt"></textarea>
       <button type="button" @click="create()">Create</button>
       <button type="reset" @click="clear()">Clear</button>
       <button type="button" @click="createVariation()">Variation</button>
@@ -129,6 +129,9 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 </script>
 
 <style>
+#prompt {
+  width: 100%;
+}
 .canvas-wrap {
   background-color: #f7f7f7;
   background-image:

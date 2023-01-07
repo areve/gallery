@@ -30,4 +30,5 @@ coverage
 # more
 .env
 public/downloads/
+public/temp/
 build/

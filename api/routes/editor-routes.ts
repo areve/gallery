@@ -136,8 +136,8 @@ editorRoutes.post("/createImageEdit", async (req, res) => {
   const maskFilename = `mask-${uuid()}.png`
   fs.writeFileSync(`${tempDir}/${maskFilename}`, req.body.mask.replace('data:image/png;base64,',''), 'base64')
 
-  const prompt = req.body.prompt
-  if (debug) console.debug(`create image variation from: ${tempDir}/${imageFilename}, mask ${tempDir}/${maskFilename},  prompt: ${prompt}`)
+  const prompt = req.body.prompt || 'extend this image'
+  if (debug) console.debug(`create image edit from: ${tempDir}/${imageFilename}, mask ${tempDir}/${maskFilename},  prompt: ${prompt}`)
 
   const request: CreateImageRequest = {
     prompt,
