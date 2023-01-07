@@ -4,10 +4,12 @@
     <form>
       <label for="prompt">Prompt</label>
       <input type="text" id="prompt" v-model="prompt" />
-      <button @click="create">Create</button>
+      <button type="button" @click="create">Create</button>
       <button type="reset" @click="clear">Clear</button>
       <button type="button" @click="createVariation">Variation</button>
       <button type="button" @click="scale">Scale</button>
+      <label for="scaleBy">By</label>
+      <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0"  />
     </form>
     <div class="canvas-wrap">
       <div class="spinner" v-if="loading"></div>
@@ -26,6 +28,7 @@ export default defineComponent({
     return {
       imageSrc: '',
       prompt: '',
+      scaleBy: 0.5,
       loading: false
     };
   },
@@ -46,13 +49,17 @@ export default defineComponent({
   },
   methods: {
     clear() {
-      this.context.clearRect(0, 0, 1024, 1024)
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
     async scale() {
-      // using toDataURL is not really efficient here but I had the code already!
-      const original = this.canvas.toDataURL('image/png')
+      const clone = cloneCanvas(this.canvas)
       this.clear()
-      this.context.drawImage(await dataUrlToImage(original), 256, 256, 512, 512)
+      this.context.drawImage(
+        clone,
+        (this.canvas.width - clone.width * this.scaleBy) / 2,
+        (this.canvas.height - clone.height * this.scaleBy) / 2,
+        clone.width * this.scaleBy,
+        clone.height * this.scaleBy)
     },
     async createVariation() {
       this.loading = true
@@ -84,7 +91,17 @@ function dataUrlToImage(dataUrl: string): Promise<HTMLImageElement> {
     }
     tempImage.src = dataUrl
   })
-} 
+}
+
+function cloneCanvas(canvas: HTMLCanvasElement) {
+  const imageData = canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.width)
+  const result = document.createElement('canvas');
+  result.width = canvas.width
+  result.height = canvas.height
+  result.getContext('2d')!.putImageData(imageData, 0, 0)
+  return result;
+}
+
 </script>
 
 <style>
