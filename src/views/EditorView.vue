@@ -1,30 +1,32 @@
 <template>
   <div class="layout">
-    <nav class="menu">
-      <ul class="menu-list">
-        <li class="menu-item">File</li>
-        <li class="menu-item">Edit</li>
-        <li class="menu-item">About</li>
-      </ul>
-    </nav>
-    <form class="form-controls">
-      <label for="prompt">Prompt</label>
-      <textarea type="text" id="prompt" v-model="prompt"></textarea>
-      <button type="button" @click="create()">Create</button>
-      <button type="reset" @click="clear()">Clear</button>
-      <button type="button" @click="createVariation()">Variation</button>
-      <button type="button" @click="scale()">Scale</button>
-      <button type="button" @click="edit()">Edit</button>
-      <button type="button" @click="save()">Save</button>
-      <label for="scaleBy">By</label>
-      <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
-    </form>
-    <div class="document-panel">
-      <div class="document">
-        <div class="spinner" v-if="loading"></div>
-        <canvas id="edit-canvas"></canvas>
+    <main class="main">
+      <nav class="menu">
+        <ul class="menu-list">
+          <li class="menu-item">File</li>
+          <li class="menu-item">Edit</li>
+          <li class="menu-item">About</li>
+        </ul>
+      </nav>
+      <form class="form-controls">
+        <label for="prompt">Prompt</label>
+        <textarea type="text" id="prompt" v-model="prompt"></textarea>
+        <button type="button" @click="create()">Create</button>
+        <button type="reset" @click="clear()">Clear</button>
+        <button type="button" @click="createVariation()">Variation</button>
+        <button type="button" @click="scale()">Scale</button>
+        <button type="button" @click="edit()">Edit</button>
+        <button type="button" @click="save()">Save</button>
+        <label for="scaleBy">By</label>
+        <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
+      </form>
+      <div class="document-panel">
+        <div class="document">
+          <div class="spinner" v-if="loading"></div>
+          <canvas id="edit-canvas"></canvas>
+        </div>
       </div>
-    </div>
+    </main>
     <aside class="side-panel">
       <ul class="gallery">
         <li v-for="item in list" class="gallery-item">
@@ -163,15 +165,21 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 .layout {
   display: grid;
   grid-template-columns: 70% 30%;
-  grid-template-rows: fit-content fit-content auto;
-  grid-template-areas:
-    "header header"
-    "main xxx"
-    "footer sidebar"
-  ;
-  max-height: 100%;
+  grid-template-rows: 100%;
+  grid-template-areas: "main sidebar";
   height: 100%;
-  flex: 1 1 auto;
+}
+
+.main {
+  grid-area: main;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-areas:
+    "header"
+    "main"
+    "footer"
+  ;
+  height: 100%;
 }
 
 .menu {
@@ -209,33 +217,17 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 
 .side-panel {
   grid-area: sidebar;
-   /* grid-column: 4 / 3; */
-  /* grid-row: 1 / 3;  */
-  /* position: fixed; */
-  overflow: scroll;
-  /* height: 100%; */
-  /* top: 0; */
-  /* right: 0; */
-  /* width: 30%; */
+  overflow-y: scroll;
   padding: 0.4em;
   background-color: #ccc7;
 }
 
 .document {
   aspect-ratio: 1024 / 1024;
-  border: 3px solid #000;
+  /* border: 1px solid #000; */
   height: calc(min(100%, 70vw));
-  /* width: 70vmin; */
   margin: auto;
-}
-
-#edit-canvas {
-  width: 100%;
-  height: 100%; 
-}
-
-
-.document-panel {
+  /* box-shadow: 0 0 5px 2px #000; */
   background-color: #f7f7f7;
   background-image:
     linear-gradient(45deg, #ddd 25%, transparent 25%),
@@ -247,29 +239,20 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
   background-repeat: repeat;
 }
 
+#edit-canvas {
+  width: 100%;
+  height: 100%;
+}
+
 #prompt {
   width: 100%;
   height: auto;
 }
 
-
-/* 
-
-
-.editor {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column-reverse;
-}
-
-
-
-
-*/
 .spinner {
   position: absolute;
   left: 50%;
-  padding-top: 50%;
+  padding-top: calc(50% - 60px);
   width: 80px;
   height: 80px;
   margin-left: -40px;
@@ -309,5 +292,5 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
   width: 100px;
   height: 100px;
   display: inline-block;
-} 
+}
 </style>
