@@ -1,32 +1,39 @@
 <template>
-  <main class="main">
-    <div class="editor">
-      <h1>Editor</h1>
-      <form>
-        <label for="prompt">Prompt</label>
-        <textarea type="text" id="prompt" v-model="prompt"></textarea>
-        <button type="button" @click="create()">Create</button>
-        <button type="reset" @click="clear()">Clear</button>
-        <button type="button" @click="createVariation()">Variation</button>
-        <button type="button" @click="scale()">Scale</button>
-        <button type="button" @click="edit()">Edit</button>
-        <button type="button" @click="save()">Save</button>
-        <label for="scaleBy">By</label>
-        <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
-      </form>
-      <div class="canvas-wrap">
+  <div class="layout">
+    <nav class="menu">
+      <ul class="menu-list">
+        <li class="menu-item">File</li>
+        <li class="menu-item">Edit</li>
+        <li class="menu-item">About</li>
+      </ul>
+    </nav>
+    <form class="form-controls">
+      <label for="prompt">Prompt</label>
+      <textarea type="text" id="prompt" v-model="prompt"></textarea>
+      <button type="button" @click="create()">Create</button>
+      <button type="reset" @click="clear()">Clear</button>
+      <button type="button" @click="createVariation()">Variation</button>
+      <button type="button" @click="scale()">Scale</button>
+      <button type="button" @click="edit()">Edit</button>
+      <button type="button" @click="save()">Save</button>
+      <label for="scaleBy">By</label>
+      <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
+    </form>
+    <div class="document-panel">
+      <div class="document">
         <div class="spinner" v-if="loading"></div>
         <canvas id="edit-canvas"></canvas>
       </div>
     </div>
-    <ul class="gallery">
-      <li v-for="item in list" class="gallery-item">
-        <button type="button" @click="selectImage('/public/downloads/' + item.filename)"><img
-            :src="'/public/downloads/' + item.filename" /></button>
-      </li>
-    </ul>
-
-  </main>
+    <aside class="side-panel">
+      <ul class="gallery">
+        <li v-for="item in list" class="gallery-item">
+          <button type="button" @click="selectImage('/downloads/' + item.filename)"><img
+              :src="'/downloads/' + item.filename" /></button>
+        </li>
+      </ul>
+    </aside>
+  </div>
 </template>
 
 <script lang="ts">
@@ -153,32 +160,82 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 </script>
 
 <style scoped>
+.layout {
+  display: grid;
+  grid-template-columns: 70% 30%;
+  grid-template-rows: fit-content fit-content auto;
+  grid-template-areas:
+    "header header"
+    "main xxx"
+    "footer sidebar"
+  ;
+  max-height: 100%;
+  height: 100%;
+  flex: 1 1 auto;
+}
 
-.main {
+.menu {
+  background-color: #000;
+  color: #fff;
+  padding: 0.2em;
+  grid-area: header;
+}
+
+.menu-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
   display: flex;
+  flex-direction: row;
 }
-.gallery {
-  position: fixed;
-  width: 30%;
+
+.menu-item {
+  padding: 0.1em 0.4em;
+}
+
+.form-controls {
+  padding: 0.4em;
+  background-color: #ccc7;
+  grid-area: main;
+  overflow: hidden;
+  position: relative;
+}
+
+.document-panel {
+  grid-area: footer;
+  overflow: hidden;
+  position: relative;
+}
+
+.side-panel {
+  grid-area: sidebar;
+   /* grid-column: 4 / 3; */
+  /* grid-row: 1 / 3;  */
+  /* position: fixed; */
   overflow: scroll;
-  height: 100vh ;
-  right: 0;
-  top: 0;
+  /* height: 100%; */
+  /* top: 0; */
+  /* right: 0; */
+  /* width: 30%; */
+  padding: 0.4em;
+  background-color: #ccc7;
 }
 
-.editor {
-  position: fixed;
-  width: 70%;
-  left: 0;
-  top: 0;
+.document {
+  aspect-ratio: 1024 / 1024;
+  border: 3px solid #000;
+  height: calc(min(100%, 70vw));
+  /* width: 70vmin; */
+  margin: auto;
 }
 
-#prompt {
+#edit-canvas {
   width: 100%;
-  height: 2em;
+  height: 100%; 
 }
 
-.canvas-wrap {
+
+.document-panel {
   background-color: #f7f7f7;
   background-image:
     linear-gradient(45deg, #ddd 25%, transparent 25%),
@@ -190,6 +247,25 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
   background-repeat: repeat;
 }
 
+#prompt {
+  width: 100%;
+  height: auto;
+}
+
+
+/* 
+
+
+.editor {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+
+
+
+*/
 .spinner {
   position: absolute;
   left: 50%;
@@ -233,5 +309,5 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
   width: 100px;
   height: 100px;
   display: inline-block;
-}
+} 
 </style>

@@ -3,7 +3,7 @@
     <h1>Gallery</h1>
     <ul class="gallery">
       <li v-for="item in list" class="gallery-item">
-        <img :src="'/public/downloads/' + item.filename" />
+        <img :src="'/downloads/' + item.filename" />
       </li>
     </ul>
   </main>

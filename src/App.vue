@@ -3,23 +3,22 @@ import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-  <header>
-    <div class="nav-wrapper">
+  <!-- <header class="header">
       <nav>
         <RouterLink to="/">Gallery</RouterLink>
         <RouterLink to="/editor">Editor</RouterLink>
       </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  </header> -->
+  <div class="router-wrapper">
+    <RouterView />
+  </div>
 </template>
 
 <style scoped>
-.nav-wrapper{
-  position: fixed;
-  z-index: 2;
-  top: 0;
-  left: 50%;
+
+.router-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 </style>
