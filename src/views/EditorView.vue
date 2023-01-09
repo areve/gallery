@@ -30,7 +30,7 @@
     <aside class="side-panel">
       <ul class="gallery">
         <li v-for="item in list" class="gallery-item">
-          <button type="button" @click="selectImage('/downloads/' + item.filename)"><img
+          <button type="button" @click="selectImage('/downloads/' + item.filename, item)"><img
               :src="'/downloads/' + item.filename" /></button>
         </li>
       </ul>
@@ -76,8 +76,9 @@ export default defineComponent({
     save() {
       window.localStorage.setItem('image', this.canvas.toDataURL())
     },
-    async selectImage(url: string) {
+    async selectImage(url: string, item: any) {
       this.context.drawImage(await loadImage(url), 0, 0)
+      this.prompt = Array.isArray(item.metadata.history) ? item.metadata.history[0].prompt : item.metadata.history.prompt
 
     },
     async load() {
@@ -180,6 +181,8 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
     "footer"
   ;
   height: 100%;
+  background-color: #ccc7;
+
 }
 
 .menu {
@@ -203,7 +206,6 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 
 .form-controls {
   padding: 0.4em;
-  background-color: #ccc7;
   grid-area: main;
   overflow: hidden;
   position: relative;
