@@ -31,4 +31,5 @@ coverage
 .env
 public/downloads/
 public/temp/
+public/deleted/
 build/

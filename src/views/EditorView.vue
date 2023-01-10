@@ -19,6 +19,8 @@
         <button type="button" @click="save()">Save</button>
         <label for="scaleBy">By</label>
         <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
+        <input type="text" v-model="filename" />
+        <button type="button" @click="remove()">Delete</button>
       </form>
       <div class="document-panel">
         <div class="document">
@@ -47,6 +49,7 @@ export default defineComponent({
   data() {
     return {
       imageSrc: '',
+      filename: '',
       prompt: '',
       scaleBy: 0.5,
       loading: false,
@@ -79,6 +82,7 @@ export default defineComponent({
     async selectImage(url: string, item: any) {
       this.context.drawImage(await loadImage(url), 0, 0)
       this.prompt = Array.isArray(item.metadata.history) ? item.metadata.history[0].prompt : item.metadata.history.prompt
+      this.filename = Array.isArray(item.metadata.history) ? item.metadata.history[0].filename : item.metadata.history.filename
 
     },
     async load() {
@@ -96,7 +100,17 @@ export default defineComponent({
         clone.width * this.scaleBy,
         clone.height * this.scaleBy)
     },
+    async remove() {
+      this.loading = true
+      const response = await axios.post('/api/editor/deleteImage', {
+        filename: this.filename
+      })
 
+      this.loading = false
+      this.filename = ''
+      this.clear()
+      this.getList()
+    },
     async createVariation() {
       this.loading = true
       const image = this.canvas.toDataURL('image/png')
@@ -176,20 +190,19 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
   display: grid;
   grid-template-columns: 100%;
   grid-template-areas:
-    "header"
-    "main"
-    "footer"
+    "menu"
+    "controls"
+    "document"
   ;
   height: 100%;
   background-color: #ccc7;
-
 }
 
 .menu {
   background-color: #000;
   color: #fff;
   padding: 0.2em;
-  grid-area: header;
+  grid-area: menu;
 }
 
 .menu-list {
@@ -206,15 +219,16 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 
 .form-controls {
   padding: 0.4em;
-  grid-area: main;
+  grid-area: document;
   overflow: hidden;
   position: relative;
 }
 
 .document-panel {
-  grid-area: footer;
+  grid-area: controls;
   overflow: hidden;
   position: relative;
+  margin: 0.5em;
 }
 
 .side-panel {
@@ -226,10 +240,8 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 
 .document {
   aspect-ratio: 1024 / 1024;
-  /* border: 1px solid #000; */
   height: calc(min(100%, 70vw));
   margin: auto;
-  /* box-shadow: 0 0 5px 2px #000; */
   background-color: #f7f7f7;
   background-image:
     linear-gradient(45deg, #ddd 25%, transparent 25%),
