@@ -25,6 +25,9 @@ export const editorRoutes = express.Router();
 
 editorRoutes.post("/createImage", async (req, res) => {
   const prompt = req.body.prompt
+  const metadata = req.body.metadata || { history: [] }
+  metadata.history = Array.isArray(metadata.history) ? metadata.history : [metadata.history]
+
   if (debug) console.debug(`create image, prompt: ${prompt} (${prompt.length} chars)`)
 
   const request: CreateImageRequest = {
@@ -51,34 +54,53 @@ editorRoutes.post("/createImage", async (req, res) => {
   const filename = `image-0-${datestamp}.png`
   base64ToFile(`${downloadsDir}/${filename}`, data.data[0].b64_json)
 
-  const createdDate = new Date(0); 
+  const createdDate = new Date(0);
   createdDate.setUTCSeconds(data.created);
 
-  const metadata = {
-    history: {
-      method: 'createImage',
-      filename,
-      prompt,
-      created: createdDate.toISOString(),
-      version: 'OpenAI'
-    }
-  }
+  metadata.history.push({
+    method: 'createImage',
+    filename,
+    prompt,
+    created: createdDate.toISOString(),
+    version: 'OpenAI'
+  })
 
   if (debug) console.debug('metadata', metadata)
 
   await setMetadata(`${downloadsDir}/${filename}`, metadata)
 
   res.json([{
+    filename,
+    prompt,
     metadata,
     dataUrl: 'data:image/png;base64,' + data.data[0].b64_json
   }])
 })
 
 
+editorRoutes.post("/saveImage", async (req, res) => {
+  const metadata = req.body.metadata || { history: [] }
+  metadata.history = Array.isArray(metadata.history) ? metadata.history : [metadata.history]
+
+  // TODO this has a security risk, if someone messes with filename, then they could delete all sorts!
+  const filename = req.body.filename
+
+  if (debug) console.debug('metadata', metadata)
+
+  await setMetadata(`${downloadsDir}/${filename}`, metadata)
+
+  res.json([{
+    filename,
+    metadata,
+  }])
+})
+
 editorRoutes.post("/createImageVariation", async (req, res) => {
   if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir)
+  const metadata = req.body.metadata || { history: [] }
+  metadata.history = Array.isArray(metadata.history) ? metadata.history : [metadata.history]
 
-  const pngData = req.body.image.replace('data:image/png;base64,','')
+  const pngData = req.body.image.replace('data:image/png;base64,', '')
   const imageFilename = `image-${uuid()}.png`
   fs.writeFileSync(`${tempDir}/${imageFilename}`, pngData, 'base64')
   if (debug) console.debug(`create image variation from: ${tempDir}/${imageFilename}`)
@@ -90,11 +112,11 @@ editorRoutes.post("/createImageVariation", async (req, res) => {
   } else {
     datestamp = getDatestamp()
     const response = await openai.createImageVariation(
-        fs.createReadStream(`${tempDir}/${imageFilename}`) as unknown as File,
-        1,
-        "1024x1024",
-        "b64_json",
-        undefined
+      fs.createReadStream(`${tempDir}/${imageFilename}`) as unknown as File,
+      1,
+      "1024x1024",
+      "b64_json",
+      undefined
     );
     data = response.data
     if (debugSaveResponses) fs.writeFileSync(`${mocks}/createImageVariation-${datestamp}.json`, JSON.stringify(response.data, null, '  '), 'utf8')
@@ -103,24 +125,23 @@ editorRoutes.post("/createImageVariation", async (req, res) => {
   const filename = `image-0-${datestamp}.png`
   base64ToFile(`${downloadsDir}/${filename}`, data.data[0].b64_json)
 
-  const createdDate = new Date(0); 
+  const createdDate = new Date(0);
   createdDate.setUTCSeconds(data.created);
 
-  const metadata = {
-    history: {
-      method: 'createImageVariation',
-      filename,
-      created: createdDate.toISOString(),
-      version: 'OpenAI'
-    }
-  }
+  metadata.history.push({
+    method: 'createImageVariation',
+    filename,
+    created: createdDate.toISOString(),
+    version: 'OpenAI'
+  })
 
   if (debug) console.debug('metadata', metadata)
 
   await setMetadata(`${downloadsDir}/${filename}`, metadata)
 
-  if (cleanUpTemp) fs.unlinkSync(`${tempDir}/${imageFilename}`) 
+  if (cleanUpTemp) fs.unlinkSync(`${tempDir}/${imageFilename}`)
   res.json([{
+    filename,
     metadata,
     dataUrl: 'data:image/png;base64,' + data.data[0].b64_json
   }])
@@ -128,12 +149,14 @@ editorRoutes.post("/createImageVariation", async (req, res) => {
 
 editorRoutes.post("/createImageEdit", async (req, res) => {
   if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir)
+  const metadata = req.body.metadata || { history: [] }
+  metadata.history = Array.isArray(metadata.history) ? metadata.history : [metadata.history]
 
   const imageFilename = `image-${uuid()}.png`
-  fs.writeFileSync(`${tempDir}/${imageFilename}`, req.body.image.replace('data:image/png;base64,',''), 'base64')
+  fs.writeFileSync(`${tempDir}/${imageFilename}`, req.body.image.replace('data:image/png;base64,', ''), 'base64')
 
   const maskFilename = `mask-${uuid()}.png`
-  fs.writeFileSync(`${tempDir}/${maskFilename}`, req.body.mask.replace('data:image/png;base64,',''), 'base64')
+  fs.writeFileSync(`${tempDir}/${maskFilename}`, req.body.mask.replace('data:image/png;base64,', ''), 'base64')
 
   const prompt = req.body.prompt || 'extend this image'
   if (debug) console.debug(`create image edit from: ${tempDir}/${imageFilename}, mask ${tempDir}/${maskFilename},  prompt: ${prompt}`)
@@ -153,13 +176,13 @@ editorRoutes.post("/createImageEdit", async (req, res) => {
   } else {
     datestamp = getDatestamp()
     const response = await openai.createImageEdit(
-        fs.createReadStream(`${tempDir}/${imageFilename}`) as unknown as File,
-        fs.createReadStream(`${tempDir}/${maskFilename}`) as unknown as File,
-        prompt,
-        1,
-        "1024x1024",
-        "b64_json",
-        undefined
+      fs.createReadStream(`${tempDir}/${imageFilename}`) as unknown as File,
+      fs.createReadStream(`${tempDir}/${maskFilename}`) as unknown as File,
+      prompt,
+      1,
+      "1024x1024",
+      "b64_json",
+      undefined
     );
     data = response.data
     if (debugSaveResponses) fs.writeFileSync(`${mocks}/createImageEdit-${datestamp}.json`, JSON.stringify(response.data, null, '  '), 'utf8')
@@ -168,26 +191,26 @@ editorRoutes.post("/createImageEdit", async (req, res) => {
   const filename = `image-0-${datestamp}.png`
   base64ToFile(`${downloadsDir}/${filename}`, data.data[0].b64_json)
 
-  const createdDate = new Date(0); 
+  const createdDate = new Date(0);
   createdDate.setUTCSeconds(data.created);
 
-  const metadata = {
-    history: {
-      method: 'createImageEdit',
-      prompt,
-      filename,
-      created: createdDate.toISOString(),
-      version: 'OpenAI'
-    }
-  }
+  metadata.history.push({
+    method: 'createImageEdit',
+    prompt,
+    filename,
+    created: createdDate.toISOString(),
+    version: 'OpenAI'
+  })
 
   if (debug) console.debug('metadata', metadata)
 
   await setMetadata(`${downloadsDir}/${filename}`, metadata)
 
- if (cleanUpTemp) fs.unlinkSync(`${tempDir}/${imageFilename}`) 
- if (cleanUpTemp) fs.unlinkSync(`${tempDir}/${maskFilename}`) 
+  if (cleanUpTemp) fs.unlinkSync(`${tempDir}/${imageFilename}`)
+  if (cleanUpTemp) fs.unlinkSync(`${tempDir}/${maskFilename}`)
   res.json([{
+    filename,
+    prompt,
     metadata,
     dataUrl: 'data:image/png;base64,' + data.data[0].b64_json
   }])
@@ -196,70 +219,13 @@ editorRoutes.post("/createImageEdit", async (req, res) => {
 editorRoutes.post("/deleteImage", async (req, res) => {
   if (!fs.existsSync(deletedDir)) fs.mkdirSync(deletedDir)
 
-//   const imageFilename = `image-${uuid()}.png`
-//   fs.writeFileSync(`${tempDir}/${imageFilename}`, req.body.image.replace('data:image/png;base64,',''), 'base64')
-
-//   const maskFilename = `mask-${uuid()}.png`
-//   fs.writeFileSync(`${tempDir}/${maskFilename}`, req.body.mask.replace('data:image/png;base64,',''), 'base64')
-
-  const filename = req.body.filename 
+  // TODO this has a security risk, if someone messes with filename, then they could delete all sorts!
+  const filename = req.body.filename
   if (debug) console.debug(`delete image: ${filename}`)
 
   fs.renameSync(`${downloadsDir}/${filename}`, `${deletedDir}/${filename}`)
 
-//   const request: CreateImageRequest = {
-//     prompt,
-//     n: 1,
-//     size: "1024x1024",
-//     response_format: "b64_json",
-//     user: undefined
-//   }
-
-//   let data, datestamp;
-//   if (mockRequests) {
-//     data = JSON.parse(fs.readFileSync(`${mocks}/createImageEdit-mock.json`, 'utf8'))
-//     datestamp = '20000101T000000'
-//   } else {
-//     datestamp = getDatestamp()
-//     const response = await openai.createImageEdit(
-//         fs.createReadStream(`${tempDir}/${imageFilename}`) as unknown as File,
-//         fs.createReadStream(`${tempDir}/${maskFilename}`) as unknown as File,
-//         prompt,
-//         1,
-//         "1024x1024",
-//         "b64_json",
-//         undefined
-//     );
-//     data = response.data
-//     if (debugSaveResponses) fs.writeFileSync(`${mocks}/createImageEdit-${datestamp}.json`, JSON.stringify(response.data, null, '  '), 'utf8')
-//   }
-
-//   const filename = `image-0-${datestamp}.png`
-//   base64ToFile(`${downloads}/${filename}`, data.data[0].b64_json)
-
-//   const createdDate = new Date(0); 
-//   createdDate.setUTCSeconds(data.created);
-
-//   const metadata = {
-//     history: {
-//       method: 'createImageEdit',
-//       prompt,
-//       filename,
-//       created: createdDate.toISOString(),
-//       version: 'OpenAI'
-//     }
-//   }
-
-//   if (debug) console.debug('metadata', metadata)
-
-//   await setMetadata(`${downloads}/${filename}`, metadata)
-
-//  if (cleanUpTemp) fs.unlinkSync(`${tempDir}/${imageFilename}`) 
-//  if (cleanUpTemp) fs.unlinkSync(`${tempDir}/${maskFilename}`) 
-  res.json([{
-    // metadata,
-    // dataUrl: 'data:image/png;base64,' + data.data[0].b64_json
-  }])
+  res.json([{}])
 })
 
 function base64ToFile(filePath, data) {

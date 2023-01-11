@@ -11,16 +11,18 @@
       <form class="form-controls">
         <label for="prompt">Prompt</label>
         <textarea type="text" id="prompt" v-model="prompt"></textarea>
+        <textarea class="metadata" v-model="metadataField" v-if="showMetadata"></textarea>
         <button type="button" @click="create()">Create</button>
-        <button type="reset" @click="clear()">Clear</button>
+        <button type="reset" @click="reset()">Reset</button>
         <button type="button" @click="createVariation()">Variation</button>
+        <button type="button" @click="edit()">Fill</button>
         <button type="button" @click="scale()">Scale</button>
-        <button type="button" @click="edit()">Edit</button>
-        <button type="button" @click="save()">Save</button>
-        <label for="scaleBy">By</label>
+        <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
+        <button type="button" @click="deleteImage()">Delete</button>
         <input type="text" v-model="filename" />
-        <button type="button" @click="remove()">Delete</button>
+        <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
+        <button type="button" @click="saveImage()">Save Metadata</button>
       </form>
       <div class="document-panel">
         <div class="document">
@@ -51,6 +53,9 @@ export default defineComponent({
       imageSrc: '',
       filename: '',
       prompt: '',
+      showMetadata: false,
+      metadataField: '',
+      metadataAsJson: '',
       scaleBy: 0.5,
       loading: false,
       list: [] as { filename: string }[],
@@ -59,7 +64,7 @@ export default defineComponent({
   mounted() {
     this.canvas.width = 1024
     this.canvas.height = 1024
-    this.load()
+    this.loadState()
     this.getList()
   },
   computed: {
@@ -70,29 +75,73 @@ export default defineComponent({
     },
     context(): CanvasRenderingContext2D {
       return this.canvas.getContext('2d')!
+    },
+    metadata: {
+      get() {
+        let result
+        try {
+          result = JSON.parse(this.metadataField)
+        }catch(e){
+          alert('cannot parse metadata' + this.metadataField)
+          throw 'cannot parse metadata'
+        }
+        return result
+      },
+      set(value: any) { 
+        this.metadataAsJson = JSON.stringify(value, null, '  ')
+        this.metadataField = JSON.stringify(value, null, '  ')
+      }
     }
   },
   methods: {
-    clear() {
+    clearCanvas() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
-    save() {
+    reset() {
+      this.clearCanvas()
+      this.metadata = ''
+      this.prompt = ''
+      this.filename = ''
+    },
+    async saveImage() {
+      this.loading = true
+      const response = await axios.post('/api/editor/saveImage', {
+        filename: this.filename,
+        metadata: this.metadata
+      })
+
+      this.filename = response.data[0].filename
+      this.metadata = response.data[0].metadata
+
+      this.loading = false
+      this.saveState()
+      this.getList()
+    },
+    saveState() {
       window.localStorage.setItem('image', this.canvas.toDataURL())
+      window.localStorage.setItem('metadata', this.metadataAsJson)
+      window.localStorage.setItem('prompt', this.prompt)
+      window.localStorage.setItem('filename', this.filename)
+    },
+    async loadState() {
+      this.clearCanvas()
+      const dataUrl = window.localStorage.getItem('image')
+      if (dataUrl) this.context.drawImage(await loadImage(dataUrl), 0, 0)
+      this.metadata = JSON.parse(window.localStorage.getItem('metadata') || '' )
+      this.prompt = window.localStorage.getItem('prompt') || ''
+      this.filename = window.localStorage.getItem('filename') || ''
     },
     async selectImage(url: string, item: any) {
       this.context.drawImage(await loadImage(url), 0, 0)
-      this.prompt = Array.isArray(item.metadata.history) ? item.metadata.history[0].prompt : item.metadata.history.prompt
-      this.filename = Array.isArray(item.metadata.history) ? item.metadata.history[0].filename : item.metadata.history.filename
-
-    },
-    async load() {
-      this.clear()
-      const dataUrl = window.localStorage.getItem('image')
-      if (dataUrl) this.context.drawImage(await loadImage(dataUrl), 0, 0)
+      const history = JSON.parse(JSON.stringify(Array.isArray(item.metadata.history) ? item.metadata.history : [item.metadata.history])).reverse()
+      this.prompt = history.filter(i => i.prompt)[0]?.prompt || ''
+      this.filename = item.filename
+      this.metadata = item.metadata
+      this.saveState()
     },
     async scale() {
       const clone = cloneCanvas(this.canvas)
-      this.clear()
+      this.clearCanvas()
       this.context.drawImage(
         clone,
         (this.canvas.width - clone.width * this.scaleBy) / 2,
@@ -100,7 +149,7 @@ export default defineComponent({
         clone.width * this.scaleBy,
         clone.height * this.scaleBy)
     },
-    async remove() {
+    async deleteImage() {
       this.loading = true
       const response = await axios.post('/api/editor/deleteImage', {
         filename: this.filename
@@ -108,43 +157,63 @@ export default defineComponent({
 
       this.loading = false
       this.filename = ''
-      this.clear()
+      this.metadata = ''
+      this.clearCanvas()
+      this.saveState()
       this.getList()
     },
     async createVariation() {
-      this.loading = true
       const image = this.canvas.toDataURL('image/png')
+      this.loading = true
       const response = await axios.post('/api/editor/createImageVariation', {
-        image
+        image,
+        metadata: this.metadata
       })
 
       this.context.drawImage(await loadImage(response.data[0].dataUrl), 0, 0)
+      this.filename = response.data[0].filename
+      this.metadata = response.data[0].metadata
+      const history = JSON.parse(JSON.stringify(Array.isArray(response.data[0].metadata.history) ? response.data[0].metadata.history : [response.data[0].metadata.history])).reverse()
+      this.prompt = history.filter(i => i.prompt)[0]?.prompt || ''
+      
       this.loading = false
+      this.saveState()
       this.getList()
     },
 
     async edit() {
-      this.loading = true
       const image = this.canvas.toDataURL('image/png')
       const mask = this.canvas.toDataURL('image/png')
+      this.loading = true
       const response = await axios.post('/api/editor/createImageEdit', {
         image,
         mask,
-        prompt: this.prompt
+        prompt: this.prompt,
+        metadata: this.metadata
       })
 
       this.context.drawImage(await loadImage(response.data[0].dataUrl), 0, 0)
+      this.filename = response.data[0].filename
+      this.metadata = response.data[0].metadata
+      this.prompt = response.data[0].prompt
+
       this.loading = false
+      this.saveState()
       this.getList()
     },
     async create() {
       this.loading = true
       const response = await axios.post('/api/editor/createImage', {
-        prompt: this.prompt
+        prompt: this.prompt,
       })
 
       this.context.drawImage(await loadImage(response.data[0].dataUrl), 0, 0)
+      this.filename = response.data[0].filename
+      this.metadata = response.data[0].metadata
+      this.prompt = response.data[0].prompt
+
       this.loading = false
+      this.saveState()
       this.getList()
     },
     async getList() {
@@ -260,7 +329,12 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 
 #prompt {
   width: 100%;
-  height: auto;
+  height: 3.2em;
+}
+
+.metadata {
+  width: 100%;
+  height: 9.6em;
 }
 
 .spinner {
