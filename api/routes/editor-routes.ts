@@ -211,7 +211,7 @@ editorRoutes.post("/createImageEdit", async (req, res) => {
       // Accept: application/json, text/plain, */*
       // Content-Type: multipart/form-data; boundary=--------------------------701616219903301918018942
       // User-Agent: OpenAI/NodeJS/3.1.0
-      // Authorization: Bearer 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
+      // Authorization: Bearer sk-blahblahblahblah
       // Host: api.openai.com
       // Connection: close
       // Transfer-Encoding: chunked

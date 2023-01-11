@@ -206,6 +206,31 @@ export default defineComponent({
       this.saveState()
       this.getList()
     },
+
+
+    async create2() {
+//       /images/generations
+// {
+//   method: 'POST',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     'User-Agent': 'OpenAI/NodeJS/3.1.0',
+//     Authorization: 'Bearer sk-blahblahblahblah'
+//   },
+//   data: '{"prompt":"broken skeleton with blue eyes, close up, horror lighting, realistic photo, oil","n":1,"size":"1024x1024","response_format":"b64_json"}'
+// }
+// metadata {
+//   history: [
+//     {
+//       method: 'createImage',
+//       filename: 'image-0-20230111T223524.png',
+//       prompt: 'broken skeleton with blue eyes, close up, horror lighting, realistic photo, oil',
+//       created: '2023-01-11T22:35:35.000Z',
+//       version: 'OpenAI'
+//     }
+//   ]
+// }
+    },
     async create() {
       this.loading = true
       const response = await axios.post('/api/editor/createImage', {
