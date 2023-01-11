@@ -297,8 +297,7 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 .document-panel {
   grid-area: controls;
   overflow: hidden;
-  position: relative;
-  margin: 0.5em;
+  margin: 0.4em;
 }
 
 .side-panel {
@@ -309,6 +308,9 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 }
 
 .document {
+  position: relative;
+  top: calc((100% - min(100%, 70vw)) / 2);
+  
   aspect-ratio: 1024 / 1024;
   height: calc(min(100%, 70vw));
   margin: auto;
