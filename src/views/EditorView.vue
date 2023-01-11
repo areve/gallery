@@ -23,7 +23,7 @@
         <input type="text" v-model="filename" />
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
         <button type="button" @click="saveImage()">Save</button>
-        <button type="button" @click="showOpenApiKey = !showOpenApiKey">Show Key</button>
+        <button type="button" @click="toggleKey()">Show Key</button>
         <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
       </form>
       <div class="document-panel">
@@ -59,6 +59,7 @@ export default defineComponent({
       metadataField: '',
       metadataAsJson: '',
       scaleBy: 0.5,
+      openApiKey: '',
       showOpenApiKey: false,
       loading: false,
       list: [] as { filename: string }[],
@@ -79,14 +80,6 @@ export default defineComponent({
     context(): CanvasRenderingContext2D {
       return this.canvas.getContext('2d')!
     },
-    openApiKey: {
-      get() {
-        return window.localStorage.getItem('openApiKey')
-      },
-      set(value: string) {
-        window.localStorage.setItem('openApiKey', value)
-      }
-    },
     metadata: {
       get() {
         let result
@@ -105,6 +98,10 @@ export default defineComponent({
     }
   },
   methods: {
+    toggleKey() {
+      this.showOpenApiKey = !this.showOpenApiKey
+      window.localStorage.setItem('openApiKey', this.openApiKey)
+    },
     clearCanvas() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
@@ -121,6 +118,7 @@ export default defineComponent({
       window.localStorage.setItem('filename', this.filename)
     },
     async loadState() {
+      this.openApiKey = window.localStorage.getItem('openApiKey') || ''
       this.clearCanvas()
       const dataUrl = window.localStorage.getItem('image')
       if (dataUrl) this.context.drawImage(await loadImage(dataUrl), 0, 0)
