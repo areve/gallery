@@ -82,9 +82,11 @@ editorRoutes.post("/saveImage", async (req, res) => {
   const metadata = req.body.metadata || { history: [] }
   metadata.history = Array.isArray(metadata.history) ? metadata.history : [metadata.history]
 
+  const pngData = req.body.image.replace('data:image/png;base64,', '')
   // TODO this has a security risk, if someone messes with filename, then they could delete all sorts!
   const filename = req.body.filename
-
+  fs.writeFileSync(`${downloadsDir}/${filename}`, pngData, 'base64')
+  
   if (debug) console.debug('metadata', metadata)
 
   await setMetadata(`${downloadsDir}/${filename}`, metadata)

@@ -12,7 +12,7 @@
         <label for="prompt">Prompt</label>
         <textarea type="text" id="prompt" v-model="prompt"></textarea>
         <textarea class="metadata" v-model="metadataField" v-if="showMetadata"></textarea>
-        <button type="button" @click="create()">Create</button>
+        <button type="button" @click="createServerless()">Create</button>
         <button type="reset" @click="reset()">Reset</button>
         <button type="button" @click="createVariation()">Variation</button>
         <button type="button" @click="edit()">Fill</button>
@@ -22,7 +22,9 @@
         <button type="button" @click="deleteImage()">Delete</button>
         <input type="text" v-model="filename" />
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
-        <button type="button" @click="saveImage()">Save Metadata</button>
+        <button type="button" @click="saveImage()">Save</button>
+        <button type="button" @click="showOpenApiKey = !showOpenApiKey">Show Key</button>
+        <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
       </form>
       <div class="document-panel">
         <div class="document">
@@ -57,6 +59,7 @@ export default defineComponent({
       metadataField: '',
       metadataAsJson: '',
       scaleBy: 0.5,
+      showOpenApiKey: false,
       loading: false,
       list: [] as { filename: string }[],
     };
@@ -76,18 +79,26 @@ export default defineComponent({
     context(): CanvasRenderingContext2D {
       return this.canvas.getContext('2d')!
     },
+    openApiKey: {
+      get() {
+        return window.localStorage.getItem('openApiKey')
+      },
+      set(value: string) {
+        window.localStorage.setItem('openApiKey', value)
+      }
+    },
     metadata: {
       get() {
         let result
         try {
           result = JSON.parse(this.metadataField)
-        }catch(e){
+        } catch (e) {
           alert('cannot parse metadata' + this.metadataField)
           throw 'cannot parse metadata'
         }
         return result
       },
-      set(value: any) { 
+      set(value: any) {
         this.metadataAsJson = JSON.stringify(value, null, '  ')
         this.metadataField = JSON.stringify(value, null, '  ')
       }
@@ -103,20 +114,6 @@ export default defineComponent({
       this.prompt = ''
       this.filename = ''
     },
-    async saveImage() {
-      this.loading = true
-      const response = await axios.post('/api/editor/saveImage', {
-        filename: this.filename,
-        metadata: this.metadata
-      })
-
-      this.filename = response.data[0].filename
-      this.metadata = response.data[0].metadata
-
-      this.loading = false
-      this.saveState()
-      this.getList()
-    },
     saveState() {
       window.localStorage.setItem('image', this.canvas.toDataURL())
       window.localStorage.setItem('metadata', this.metadataAsJson)
@@ -127,11 +124,12 @@ export default defineComponent({
       this.clearCanvas()
       const dataUrl = window.localStorage.getItem('image')
       if (dataUrl) this.context.drawImage(await loadImage(dataUrl), 0, 0)
-      this.metadata = JSON.parse(window.localStorage.getItem('metadata') || '' )
+      this.metadata = JSON.parse(window.localStorage.getItem('metadata') || '')
       this.prompt = window.localStorage.getItem('prompt') || ''
       this.filename = window.localStorage.getItem('filename') || ''
     },
     async selectImage(url: string, item: any) {
+      this.clearCanvas()
       this.context.drawImage(await loadImage(url), 0, 0)
       const history = JSON.parse(JSON.stringify(Array.isArray(item.metadata.history) ? item.metadata.history : [item.metadata.history])).reverse()
       this.prompt = history.filter((i: any) => i.prompt)[0]?.prompt || ''
@@ -175,7 +173,7 @@ export default defineComponent({
       this.metadata = response.data[0].metadata
       const history = JSON.parse(JSON.stringify(Array.isArray(response.data[0].metadata.history) ? response.data[0].metadata.history : [response.data[0].metadata.history])).reverse()
       this.prompt = history.filter((i: any) => i.prompt)[0]?.prompt || ''
-      
+
       this.loading = false
       this.saveState()
       this.getList()
@@ -208,29 +206,79 @@ export default defineComponent({
     },
 
 
-    async create2() {
-//       /images/generations
-// {
-//   method: 'POST',
-//   headers: {
-//     'Content-Type': 'application/json',
-//     'User-Agent': 'OpenAI/NodeJS/3.1.0',
-//     Authorization: 'Bearer sk-blahblahblahblah'
-//   },
-//   data: '{"prompt":"broken skeleton with blue eyes, close up, horror lighting, realistic photo, oil","n":1,"size":"1024x1024","response_format":"b64_json"}'
-// }
-// metadata {
-//   history: [
-//     {
-//       method: 'createImage',
-//       filename: 'image-0-20230111T223524.png',
-//       prompt: 'broken skeleton with blue eyes, close up, horror lighting, realistic photo, oil',
-//       created: '2023-01-11T22:35:35.000Z',
-//       version: 'OpenAI'
-//     }
-//   ]
-// }
+    async createServerless() {
+      this.loading = true
+      const baseUrl = 'https://api.openai.com/v1'
+      const prompt = this.prompt
+
+      const datestamp = getDatestamp()
+
+      const response = await axios.post(`
+        ${baseUrl}/images/generations`, {
+        "prompt": prompt,
+        "n": 1,
+        "size": "1024x1024",
+        "response_format": "b64_json"
+      },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this.openApiKey}`
+          },
+        })
+      // TODO Catch 401 if Authorization is wrong
+
+      this.context.drawImage(await loadImage('data:image/png;base64,' + response.data.data[0].b64_json), 0, 0)
+
+      const createdDate = new Date(0);
+      createdDate.setUTCSeconds(response.data.created);
+      const filename = `image-0-${datestamp}.png`
+
+      const metadata = {
+        history: {
+          method: 'createImage',
+          filename,
+          prompt,
+          created: createdDate.toISOString(),
+          version: 'OpenAI'
+        }
+      }
+
+      this.filename = filename
+      this.metadata = metadata
+      this.prompt = prompt
+
+      this.saveImage()
+      this.loading = false
+      this.saveState()
+      this.getList()
+
+      function getDatestamp() {
+        return new Date()
+          .toISOString()
+          .replace(/[^\dTt\.]/g, '')
+          .replace(/\..*/g, '')
+      }
+
     },
+
+    async saveImage() {
+      this.loading = true
+      const image = this.canvas.toDataURL('image/png')
+      const response = await axios.post('/api/editor/saveImage', {
+        image,
+        filename: this.filename,
+        metadata: this.metadata
+      })
+
+      this.filename = response.data[0].filename
+      this.metadata = response.data[0].metadata
+
+      this.loading = false
+      this.saveState()
+      this.getList()
+    },
+
     async create() {
       this.loading = true
       const response = await axios.post('/api/editor/createImage', {
@@ -340,7 +388,7 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 .document {
   position: relative;
   top: calc((100% - min(100%, 70vw)) / 2);
-  
+
   aspect-ratio: 1024 / 1024;
   height: calc(min(100%, 70vw));
   margin: auto;
