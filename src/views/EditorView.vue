@@ -191,6 +191,11 @@ export default defineComponent({
         prompt: this.prompt,
         metadata: this.metadata
       })
+      if (response.data.error) {
+        alert(response.data.error?.message)
+        this.loading = false
+        return
+      }
 
       this.context.drawImage(await loadImage(response.data[0].dataUrl), 0, 0)
       this.filename = response.data[0].filename
@@ -331,6 +336,7 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
 }
 
 #prompt {
+  resize: none;
   width: 100%;
   height: 3.2em;
 }

@@ -175,15 +175,54 @@ editorRoutes.post("/createImageEdit", async (req, res) => {
     datestamp = '20000101T000000'
   } else {
     datestamp = getDatestamp()
-    const response = await openai.createImageEdit(
-      fs.createReadStream(`${tempDir}/${imageFilename}`) as unknown as File,
-      fs.createReadStream(`${tempDir}/${maskFilename}`) as unknown as File,
-      prompt,
-      1,
-      "1024x1024",
-      "b64_json",
-      undefined
-    );
+    let response
+    try {
+      response = await openai.createImageEdit(
+        fs.createReadStream(`${tempDir}/${imageFilename}`) as unknown as File,
+        fs.createReadStream(`${tempDir}/${maskFilename}`) as unknown as File,
+        prompt,
+        1,
+        "1024x1024",
+        "b64_json",
+        undefined
+      );
+    } catch (e) {
+      console.error(
+        // e.request.body, 
+        // e.request.res.responseUrl, 
+        // e.request.protocol, 
+        // e.request.host, 
+        // e.request._header, 
+        // e.request.path, 
+        // e.request.method,
+        // e.request._req,
+        e.response.status, // 2xx, 400, 5xx
+        e.response.statusText,
+        e.response?.data?.error,
+      )
+
+      res.json({
+        status: e.response.status,
+        statusText: e.response.statusText,
+        error: e.response?.data?.error,
+      })
+      return
+      // OHNO, undefined https://api.openai.com/v1/images/edits https: api.openai.com POST /v1/images/edits HTTP/1.1
+      // Accept: application/json, text/plain, */*
+      // Content-Type: multipart/form-data; boundary=--------------------------701616219903301918018942
+      // User-Agent: OpenAI/NodeJS/3.1.0
+      // Authorization: Bearer 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
+      // Host: api.openai.com
+      // Connection: close
+      // Transfer-Encoding: chunked
+      //  /v1/images/edits POST undefined 400 BAD REQUEST
+      // {
+      //   code: 'billing_hard_limit_reached',
+      //   message: 'Billing hard limit has been reached',
+      //   param: null,
+      //   type: 'invalid_request_error'
+      // }
+    }
     data = response.data
     if (debugSaveResponses) fs.writeFileSync(`${mocks}/createImageEdit-${datestamp}.json`, JSON.stringify(response.data, null, '  '), 'utf8')
   }
