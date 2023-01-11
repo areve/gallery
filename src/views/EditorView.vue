@@ -134,7 +134,7 @@ export default defineComponent({
     async selectImage(url: string, item: any) {
       this.context.drawImage(await loadImage(url), 0, 0)
       const history = JSON.parse(JSON.stringify(Array.isArray(item.metadata.history) ? item.metadata.history : [item.metadata.history])).reverse()
-      this.prompt = history.filter(i => i.prompt)[0]?.prompt || ''
+      this.prompt = history.filter((i: any) => i.prompt)[0]?.prompt || ''
       this.filename = item.filename
       this.metadata = item.metadata
       this.saveState()
@@ -174,7 +174,7 @@ export default defineComponent({
       this.filename = response.data[0].filename
       this.metadata = response.data[0].metadata
       const history = JSON.parse(JSON.stringify(Array.isArray(response.data[0].metadata.history) ? response.data[0].metadata.history : [response.data[0].metadata.history])).reverse()
-      this.prompt = history.filter(i => i.prompt)[0]?.prompt || ''
+      this.prompt = history.filter((i: any) => i.prompt)[0]?.prompt || ''
       
       this.loading = false
       this.saveState()
