@@ -4,6 +4,7 @@ import { Configuration, CreateImageRequest, OpenAIApi } from 'openai'
 import fs from 'fs'
 import { v4 as uuid } from 'uuid'
 import { setMetadata } from '../lib/png-metadata'
+import bodyParser from 'body-parser'
 
 const env = dotenv.config().parsed!
 const apiKey = env.OPEN_AI_KEY
@@ -22,6 +23,8 @@ const deletedDir = './public/deleted'
 const mocks = './public/mocks'
 
 export const editorRoutes = express.Router();
+
+editorRoutes.use(bodyParser.json({limit: '10mb'}))
 
 editorRoutes.post("/createImage", async (req, res) => {
   const prompt = req.body.prompt

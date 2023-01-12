@@ -16,6 +16,7 @@
         <button type="reset" @click="reset()">Reset</button>
         <button type="button" @click="createVariation()">Variation</button>
         <button type="button" @click="edit()">Fill</button>
+        <button type="button" @click="createEditServerless()">Fill2</button>
         <button type="button" @click="scale()">Scale</button>
         <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
@@ -47,6 +48,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import axios from "axios";
+import FormData from 'form-data';
 export default defineComponent({
   name: "editor",
   components: {},
@@ -80,7 +82,7 @@ export default defineComponent({
     context(): CanvasRenderingContext2D {
       return this.canvas.getContext('2d')!
     },
-    baseUrl: function() {
+    baseUrl: function () {
       return this.openApiKey ? 'https://api.openai.com/v1' : '/api/openai'
     },
     metadata: {
@@ -206,6 +208,59 @@ export default defineComponent({
       this.getList()
     },
 
+    async createEditServerless() {
+      this.loading = true
+      const prompt = this.prompt
+      const image = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve, 'image/png'))
+      const mask = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve, 'image/png'))
+
+      const datestamp = getDatestamp()
+
+      const formData = new FormData();
+      formData.append('image', image)
+      formData.append('mask', mask)
+      formData.append('prompt', prompt)
+      formData.append('n', 1)
+      formData.append('size', "1024x1024")
+      formData.append('response_format', "b64_json")
+
+      const response = await axios.post(
+        `${this.baseUrl}/images/edits`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${this.openApiKey}`
+          }
+        })
+
+      // TODO Catch 401 if Authorization is wrong
+
+      this.context.drawImage(await loadImage('data:image/png;base64,' + response.data.data[0].b64_json), 0, 0)
+
+      const createdDate = new Date(0);
+      createdDate.setUTCSeconds(response.data.created);
+      const filename = `image-0-${datestamp}.png`
+
+      const metadata = {
+        history: {
+          method: 'createImageEdit',
+          prompt,
+          filename,
+          created: createdDate.toISOString(),
+          version: 'OpenAI'
+        }
+      }
+
+      this.filename = filename
+      this.metadata = metadata
+      this.prompt = prompt
+
+      this.saveImage()
+      this.loading = false
+      this.saveState()
+      this.getList()
+    },
     async createServerless() {
       this.loading = true
       const prompt = this.prompt
@@ -253,12 +308,7 @@ export default defineComponent({
       this.saveState()
       this.getList()
 
-      function getDatestamp() {
-        return new Date()
-          .toISOString()
-          .replace(/[^\dTt\.]/g, '')
-          .replace(/\..*/g, '')
-      }
+
 
     },
 
@@ -321,6 +371,12 @@ function cloneCanvas(canvas: HTMLCanvasElement) {
   return result;
 }
 
+function getDatestamp() {
+  return new Date()
+    .toISOString()
+    .replace(/[^\dTt\.]/g, '')
+    .replace(/\..*/g, '')
+}
 </script>
 
 <style scoped>
