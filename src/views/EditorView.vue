@@ -57,7 +57,7 @@ interface GalleryItem {
   filename: string,
   status: 'error' | 'loading' | 'ready',
   text: string
-  metadata? : any
+  metadata?: any
   dataUrl?: string
 }
 
@@ -180,14 +180,27 @@ export default defineComponent({
       this.getList()
     },
     async createEditServerless() {
-      this.loading = true
       const prompt = this.prompt
-      const metadata = this.metadata
+      const filename = `image-0-${getDatestamp()}.png`
+      const historyItem = {
+        method: 'createImageEdit',
+        prompt,
+        filename,
+        version: 'OpenAI'
+      }
+      const item: GalleryItem = {
+        filename,
+        text: prompt,
+        status: 'loading',
+        metadata: {
+          history: historyItem
+        }
+      }
+
+      this.queue.unshift(item)
 
       const image = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
       const mask = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
-
-      const datestamp = getDatestamp()
 
       const formData = new FormData();
       formData.append('image', image)
@@ -197,40 +210,27 @@ export default defineComponent({
       formData.append('size', "1024x1024")
       formData.append('response_format', "b64_json")
 
-      const response = await axios.post(
-        `${this.baseUrl}/images/edits`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${this.openApiKey}`
-          }
-        })
+      let response
+      try {
+        response = await axios.post(
+          `${this.baseUrl}/images/edits`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${this.openApiKey}`
+            }
+          })
+      } catch (e) {
+        item.status = 'error'
+        item.text = findErrorMessage(e)
+        this.queue = [...this.queue]
+        return
+      }
 
-      // TODO Catch 401 if Authorization is wrong
-      this.context.drawImage(await loadImage('data:image/png;base64,' + response.data.data[0].b64_json), 0, 0)
-
-      const createdDate = new Date(0);
-      createdDate.setUTCSeconds(response.data.created);
-      const filename = `image-0-${datestamp}.png`
-
-      this.metadata.history = Array.isArray(this.metadata.history) ? this.metadata.history : [this.metadata.history]
-      this.metadata.history.push({
-        method: 'createImageEdit',
-        prompt,
-        filename,
-        created: createdDate.toISOString(),
-        version: 'OpenAI'
-      })
-
-      this.filename = filename
-      this.metadata = metadata
-      this.prompt = prompt
-
-      this.saveDocument()
-      this.loading = false
-      this.saveState()
-      this.getList()
+      item.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
+        ; (historyItem as any).created = epochToDate(response.data.created).toISOString()
+      await this.saveImage(item)
     },
     async createVariationServerless() {
       this.loading = true
@@ -286,12 +286,21 @@ export default defineComponent({
     async createServerless() {
       const prompt = this.prompt
       const filename = `image-0-${getDatestamp()}.png`
+      const historyItem = {
+        method: 'createImage',
+        filename,
+        prompt,
+        version: 'OpenAI'
+      }
       const item: GalleryItem = {
         filename,
         text: prompt,
-        status: 'loading'
+        status: 'loading',
+        metadata: {
+          history: historyItem
+        }
       }
-      
+
       this.queue.unshift(item)
 
       let response
@@ -312,41 +321,25 @@ export default defineComponent({
           })
       } catch (e) {
         item.status = 'error'
-        item.text = 
-          (e as any)?.response?.data?.error?.message || 
-          (e as any)?.message || 
-          JSON.stringify(e)
-        this.getList()
+        item.text = findErrorMessage(e)
+        this.queue = [...this.queue]
         return
       }
 
-
-      const dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-      const metadata = {
-        history: {
-          method: 'createImage',
-          filename,
-          prompt,
-          created: epochToDate(response.data.created).toISOString(),
-          version: 'OpenAI'
-        }
-      }
-      await this.saveImage(filename, dataUrl, metadata)
+      item.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
+        ; (historyItem as any).created = epochToDate(response.data.created).toISOString()
+      await this.saveImage(item)
     },
 
-    async saveImage(filename: string, dataUrl: string, metadata: any) {
-      const response = await axios.post('/api/editor/saveImage', {
-        image: dataUrl,
-        filename,
-        metadata
-      })
+    async saveImage(item: GalleryItem) {
       // TODO try catch
-      const item: GalleryItem = this.queue.filter(x => x.filename === filename)[0]
-      item.metadata = metadata
-      item.dataUrl = dataUrl
+      const response = await axios.post('/api/editor/saveImage', {
+        image: item.dataUrl,
+        filename: item.filename,
+        metadata: item.metadata
+      })
       item.status = "ready"
-
-      this.queue = this.queue.filter(x => x.filename !== filename)
+      this.queue = this.queue.filter(x => x.filename !== item.filename)
       this.serverList.unshift(item)
     },
 
@@ -372,6 +365,15 @@ export default defineComponent({
     },
   },
 })
+
+function findErrorMessage(error: any) {
+  const result = error?.response?.data?.error?.message ||
+    error?.message
+  if (!result) {
+    console.error(error)
+  }
+  return result || 'Unknown Error'
+}
 
 function loadImage(dataUrl: string): Promise<HTMLImageElement> {
   return new Promise(async (resolve, reject) => {
