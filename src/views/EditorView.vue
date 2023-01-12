@@ -22,7 +22,7 @@
         <button type="button" @click="deleteImage()">Delete</button>
         <input type="text" v-model="filename" />
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
-        <button type="button" @click="saveImage()">Save</button>
+        <button type="button" @click="saveDocument()">Save</button>
         <button type="button" @click="toggleKey()">Show Key</button>
         <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
       </form>
@@ -36,8 +36,12 @@
     <aside class="side-panel">
       <ul class="gallery">
         <li v-for="item in list" class="gallery-item">
-          <button type="button" @click="selectImage('/downloads/' + item.filename, item)"><img
-              :src="'/downloads/' + item.filename" /></button>
+
+          <button v-if="item.status === 'loading'" type="button" class="loading-button">{{ item.text }}<div
+              class="spinner"></div></button>
+          <button v-else-if="item.status === 'error'" type="button" class="error-button">{{ item.text }}</button>
+          <button v-else type="button" @click="selectImage('/downloads/' + item.filename, item)"
+            class="gallery-button"><img :src="'/downloads/' + item.filename" /></button>
         </li>
       </ul>
     </aside>
@@ -48,6 +52,13 @@
 import { defineComponent } from "vue";
 import axios from "axios";
 import FormData from 'form-data';
+
+interface GalleryItem {
+  filename: string,
+  status: 'error' | 'loading' | 'ready',
+  text: string
+}
+
 export default defineComponent({
   name: "editor",
   components: {},
@@ -56,6 +67,8 @@ export default defineComponent({
       imageSrc: '',
       filename: '',
       prompt: '',
+      queue: [] as GalleryItem[],
+      serverList: [] as GalleryItem[],
       showMetadata: false,
       metadataField: '',
       metadataAsJson: '',
@@ -63,7 +76,6 @@ export default defineComponent({
       openApiKey: '',
       showOpenApiKey: false,
       loading: false,
-      list: [] as { filename: string }[],
     };
   },
   mounted() {
@@ -99,6 +111,9 @@ export default defineComponent({
         this.metadataAsJson = JSON.stringify(value, null, '  ')
         this.metadataField = JSON.stringify(value, null, '  ')
       }
+    },
+    list: function () {
+      return this.queue.concat(this.serverList)
     }
   },
   methods: {
@@ -191,7 +206,6 @@ export default defineComponent({
         })
 
       // TODO Catch 401 if Authorization is wrong
-
       this.context.drawImage(await loadImage('data:image/png;base64,' + response.data.data[0].b64_json), 0, 0)
 
       const createdDate = new Date(0);
@@ -211,7 +225,7 @@ export default defineComponent({
       this.metadata = metadata
       this.prompt = prompt
 
-      this.saveImage()
+      this.saveDocument()
       this.loading = false
       this.saveState()
       this.getList()
@@ -261,39 +275,53 @@ export default defineComponent({
       this.metadata = metadata
       this.prompt = prompt
 
-      this.saveImage()
+      this.saveDocument()
       this.loading = false
       this.saveState()
       this.getList()
     },
 
     async createServerless() {
-      this.loading = true
+      // this.loading = true
       const prompt = this.prompt
 
       const datestamp = getDatestamp()
+      const filename = `image-0-${datestamp}.png`
 
-      const response = await axios.post(
-        `${this.baseUrl}/images/generations`,
-        {
-          "prompt": prompt,
-          "n": 1,
-          "size": "1024x1024",
-          "response_format": "b64_json"
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.openApiKey}`
+      const item: GalleryItem = {
+        filename,
+        text: prompt,
+        status: 'loading'
+      }
+      this.queue.unshift(item)
+      let response
+      try {
+        response = await axios.post(
+          `${this.baseUrl}/images/generations`,
+          {
+            "prompt": prompt,
+            "n": 1,
+            "size": "1024x1024",
+            "response_format": "b64_json"
           },
-        })
-      // TODO Catch 401 if Authorization is wrong
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${this.openApiKey}`
+            },
+          })
+      } catch (e) {
+        item.status = 'error'
+        item.text = (e as any)?.message || JSON.stringify(e)
+        this.getList()
+        return
+      }
+      // // TODO Catch 401 if Authorization is wrong
 
-      this.context.drawImage(await loadImage('data:image/png;base64,' + response.data.data[0].b64_json), 0, 0)
+      // this.context.drawImage(await loadImage('data:image/png;base64,' + response.data.data[0].b64_json), 0, 0)
 
       const createdDate = new Date(0);
       createdDate.setUTCSeconds(response.data.created);
-      const filename = `image-0-${datestamp}.png`
 
       const metadata = {
         history: {
@@ -305,17 +333,21 @@ export default defineComponent({
         }
       }
 
-      this.filename = filename
-      this.metadata = metadata
-      this.prompt = prompt
-
-      this.saveImage()
-      this.loading = false
-      this.saveState()
-      this.getList()
+      await this.saveImage(filename, `data:image/png;base64,${response.data.data[0].b64_json}`, metadata)
+      await this.getList()
+      this.queue = this.queue.filter(x => x.filename !== filename)
     },
 
-    async saveImage() {
+    async saveImage(filename: string, image: string, metadata: any) {
+      const response = await axios.post('/api/editor/saveImage', {
+        image,
+        filename,
+        metadata
+      })
+      // TODO try catch
+    },
+    
+    async saveDocument() {
       this.loading = true
       const image = this.canvas.toDataURL('image/png')
       const response = await axios.post('/api/editor/saveImage', {
@@ -333,7 +365,7 @@ export default defineComponent({
     },
     async getList() {
       const response = await axios.get('/api/gallery/')
-      this.list = response.data
+      this.serverList = response.data
     },
   },
 })
@@ -504,5 +536,32 @@ function getDatestamp() {
   width: 100px;
   height: 100px;
   display: inline-block;
+}
+
+.loading-button {
+  width: 100px;
+  height: 100px;
+  color: #666;
+  line-height: 1.2em;
+  vertical-align: top;
+}
+
+.loading-button .spinner {
+  margin-top: -70px
+}
+
+.error-button {
+  width: 100px;
+  height: 100px;
+  color: red;
+  line-height: 1.2em;
+  vertical-align: top;
+}
+
+.gallery-button {
+  width: 100px;
+  height: 100px;
+  padding: 2px;
+  vertical-align: top;
 }
 </style>
