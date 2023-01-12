@@ -41,7 +41,7 @@
               class="spinner"></div></button>
           <button v-else-if="item.status === 'error'" type="button" class="error-button">{{ item.text }}</button>
           <button v-else type="button" @click="selectImage('/downloads/' + item.filename, item)"
-            class="gallery-button"><img :src="'/downloads/' + item.filename" /></button>
+            class="gallery-button"><img :src="item.dataUrl || '/downloads/' + item.filename" /></button>
         </li>
       </ul>
     </aside>
@@ -57,6 +57,8 @@ interface GalleryItem {
   filename: string,
   status: 'error' | 'loading' | 'ready',
   text: string
+  metadata? : any
+  dataUrl?: string
 }
 
 export default defineComponent({
@@ -282,18 +284,16 @@ export default defineComponent({
     },
 
     async createServerless() {
-      // this.loading = true
       const prompt = this.prompt
-
-      const datestamp = getDatestamp()
-      const filename = `image-0-${datestamp}.png`
-
+      const filename = `image-0-${getDatestamp()}.png`
       const item: GalleryItem = {
         filename,
         text: prompt,
         status: 'loading'
       }
+      
       this.queue.unshift(item)
+
       let response
       try {
         response = await axios.post(
@@ -312,41 +312,44 @@ export default defineComponent({
           })
       } catch (e) {
         item.status = 'error'
-        item.text = (e as any)?.message || JSON.stringify(e)
+        item.text = 
+          (e as any)?.response?.data?.error?.message || 
+          (e as any)?.message || 
+          JSON.stringify(e)
         this.getList()
         return
       }
-      // // TODO Catch 401 if Authorization is wrong
 
-      // this.context.drawImage(await loadImage('data:image/png;base64,' + response.data.data[0].b64_json), 0, 0)
 
-      const createdDate = new Date(0);
-      createdDate.setUTCSeconds(response.data.created);
-
+      const dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
       const metadata = {
         history: {
           method: 'createImage',
           filename,
           prompt,
-          created: createdDate.toISOString(),
+          created: epochToDate(response.data.created).toISOString(),
           version: 'OpenAI'
         }
       }
-
-      await this.saveImage(filename, `data:image/png;base64,${response.data.data[0].b64_json}`, metadata)
-      await this.getList()
-      this.queue = this.queue.filter(x => x.filename !== filename)
+      await this.saveImage(filename, dataUrl, metadata)
     },
 
-    async saveImage(filename: string, image: string, metadata: any) {
+    async saveImage(filename: string, dataUrl: string, metadata: any) {
       const response = await axios.post('/api/editor/saveImage', {
-        image,
+        image: dataUrl,
         filename,
         metadata
       })
       // TODO try catch
+      const item: GalleryItem = this.queue.filter(x => x.filename === filename)[0]
+      item.metadata = metadata
+      item.dataUrl = dataUrl
+      item.status = "ready"
+
+      this.queue = this.queue.filter(x => x.filename !== filename)
+      this.serverList.unshift(item)
     },
-    
+
     async saveDocument() {
       this.loading = true
       const image = this.canvas.toDataURL('image/png')
@@ -394,6 +397,12 @@ function getDatestamp() {
     .toISOString()
     .replace(/[^\dTt\.]/g, '')
     .replace(/\..*/g, '')
+}
+
+function epochToDate(epoch: number) {
+  const createdDate = new Date(0);
+  createdDate.setUTCSeconds(epoch);
+  return createdDate
 }
 </script>
 
