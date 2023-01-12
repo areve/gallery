@@ -80,6 +80,9 @@ export default defineComponent({
     context(): CanvasRenderingContext2D {
       return this.canvas.getContext('2d')!
     },
+    baseUrl: function() {
+      return this.openApiKey ? 'https://api.openai.com/v1' : '/api/openai'
+    },
     metadata: {
       get() {
         let result
@@ -205,23 +208,22 @@ export default defineComponent({
 
     async createServerless() {
       this.loading = true
-      const baseUrl = '/api/openai'
-      //const baseUrl = 'https://api.openai.com/v1'
       const prompt = this.prompt
 
       const datestamp = getDatestamp()
 
-      const response = await axios.post(`
-        ${baseUrl}/images/generations`, {
-        "prompt": prompt,
-        "n": 1,
-        "size": "1024x1024",
-        "response_format": "b64_json"
-      },
+      const response = await axios.post(
+        `${this.baseUrl}/images/generations`,
+        {
+          "prompt": prompt,
+          "n": 1,
+          "size": "1024x1024",
+          "response_format": "b64_json"
+        },
         {
           headers: {
             'Content-Type': 'application/json',
-            // Authorization: `Bearer ${this.openApiKey}`
+            Authorization: `Bearer ${this.openApiKey}`
           },
         })
       // TODO Catch 401 if Authorization is wrong
