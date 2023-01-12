@@ -162,32 +162,6 @@ export default defineComponent({
       this.saveState()
       this.getList()
     },
-    async edit() {
-      const image = this.canvas.toDataURL('image/png')
-      const mask = this.canvas.toDataURL('image/png')
-      this.loading = true
-      const response = await axios.post('/api/editor/createImageEdit', {
-        image,
-        mask,
-        prompt: this.prompt,
-        metadata: this.metadata
-      })
-      if (response.data.error) {
-        alert(response.data.error?.message)
-        this.loading = false
-        return
-      }
-
-      this.context.drawImage(await loadImage(response.data[0].dataUrl), 0, 0)
-      this.filename = response.data[0].filename
-      this.metadata = response.data[0].metadata
-      this.prompt = response.data[0].prompt
-
-      this.loading = false
-      this.saveState()
-      this.getList()
-    },
-
     async createEditServerless() {
       this.loading = true
       const prompt = this.prompt
@@ -242,25 +216,6 @@ export default defineComponent({
       this.saveState()
       this.getList()
     },
-    async createVariation() {
-      const image = this.canvas.toDataURL('image/png')
-      this.loading = true
-      const response = await axios.post('/api/editor/createImageVariation', {
-        image,
-        metadata: this.metadata
-      })
-
-      this.context.drawImage(await loadImage(response.data[0].dataUrl), 0, 0)
-      this.filename = response.data[0].filename
-      this.metadata = response.data[0].metadata
-      const history = JSON.parse(JSON.stringify(Array.isArray(response.data[0].metadata.history) ? response.data[0].metadata.history : [response.data[0].metadata.history])).reverse()
-      this.prompt = history.filter((i: any) => i.prompt)[0]?.prompt || ''
-
-      this.loading = false
-      this.saveState()
-      this.getList()
-    },
-
     async createVariationServerless() {
       this.loading = true
       const prompt = this.prompt
@@ -376,27 +331,10 @@ export default defineComponent({
       this.saveState()
       this.getList()
     },
-
-    async create() {
-      this.loading = true
-      const response = await axios.post('/api/editor/createImage', {
-        prompt: this.prompt,
-      })
-
-      this.context.drawImage(await loadImage(response.data[0].dataUrl), 0, 0)
-      this.filename = response.data[0].filename
-      this.metadata = response.data[0].metadata
-      this.prompt = response.data[0].prompt
-
-      this.loading = false
-      this.saveState()
-      this.getList()
-    },
     async getList() {
       const response = await axios.get('/api/gallery/')
       this.list = response.data
     },
-
   },
 })
 
