@@ -53,6 +53,14 @@ import { defineComponent } from "vue";
 import axios from "axios";
 import FormData from 'form-data';
 
+interface HistoryItem {
+  method: 'createImage' | 'createImageEdit' | 'createImageVariation'
+  prompt?: string
+  filename: string
+  version: 'OpenAI'
+  created?: string;
+}
+
 interface GalleryItem {
   filename: string,
   status: 'error' | 'loading' | 'ready',
@@ -182,7 +190,7 @@ export default defineComponent({
     async createEditServerless() {
       const prompt = this.prompt
       const filename = `image-0-${getDatestamp()}.png`
-      const historyItem = {
+      const historyItem: HistoryItem = {
         method: 'createImageEdit',
         prompt,
         filename,
@@ -229,17 +237,29 @@ export default defineComponent({
       }
 
       item.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-        ; (historyItem as any).created = epochToDate(response.data.created).toISOString()
+      historyItem.created = epochToDate(response.data.created).toISOString()
       await this.saveImage(item)
     },
     async createVariationServerless() {
-      this.loading = true
       const prompt = this.prompt
-      const metadata = this.metadata
+      const filename = `image-0-${getDatestamp()}.png`
+      const historyItem: HistoryItem = {
+        method: 'createImageVariation',
+        filename,
+        version: 'OpenAI'
+      }
+      const item: GalleryItem = {
+        filename,
+        text: `variation on: ${prompt}`,
+        status: 'loading',
+        metadata: {
+          history: historyItem
+        }
+      }
+
+      this.queue.unshift(item)
 
       const image = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
-
-      const datestamp = getDatestamp()
 
       const formData = new FormData();
       formData.append('image', image)
@@ -247,7 +267,9 @@ export default defineComponent({
       formData.append('size', "1024x1024")
       formData.append('response_format', "b64_json")
 
-      const response = await axios.post(
+      let response
+      try {
+      response = await axios.post(
         `${this.baseUrl}/images/variations`,
         formData,
         {
@@ -256,37 +278,24 @@ export default defineComponent({
             Authorization: `Bearer ${this.openApiKey}`
           }
         })
+      } catch(e) {
+        item.status = 'error'
+        item.text = findErrorMessage(e)
+        this.queue = [...this.queue]
+        return
+      }
 
-      // TODO Catch 401 if Authorization is wrong
+      item.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
+      historyItem.created = epochToDate(response.data.created).toISOString()
+      await this.saveImage(item)
 
-      this.context.drawImage(await loadImage('data:image/png;base64,' + response.data.data[0].b64_json), 0, 0)
 
-      const createdDate = new Date(0);
-      createdDate.setUTCSeconds(response.data.created);
-      const filename = `image-0-${datestamp}.png`
-
-      this.metadata.history = Array.isArray(this.metadata.history) ? this.metadata.history : [this.metadata.history]
-      this.metadata.history.push({
-        method: 'createImageVariation',
-        filename,
-        created: createdDate.toISOString(),
-        version: 'OpenAI'
-      })
-
-      this.filename = filename
-      this.metadata = metadata
-      this.prompt = prompt
-
-      this.saveDocument()
-      this.loading = false
-      this.saveState()
-      this.getList()
     },
 
     async createServerless() {
       const prompt = this.prompt
       const filename = `image-0-${getDatestamp()}.png`
-      const historyItem = {
+      const historyItem: HistoryItem = {
         method: 'createImage',
         filename,
         prompt,
@@ -327,7 +336,7 @@ export default defineComponent({
       }
 
       item.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-        ; (historyItem as any).created = epochToDate(response.data.created).toISOString()
+      historyItem.created = epochToDate(response.data.created).toISOString()
       await this.saveImage(item)
     },
 
