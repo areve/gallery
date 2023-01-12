@@ -191,6 +191,8 @@ export default defineComponent({
     async createEditServerless() {
       this.loading = true
       const prompt = this.prompt
+      const metadata = this.metadata
+
       const image = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
       const mask = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
 
@@ -222,15 +224,14 @@ export default defineComponent({
       createdDate.setUTCSeconds(response.data.created);
       const filename = `image-0-${datestamp}.png`
 
-      const metadata = {
-        history: {
-          method: 'createImageEdit',
-          prompt,
-          filename,
-          created: createdDate.toISOString(),
-          version: 'OpenAI'
-        }
-      }
+      this.metadata.history = Array.isArray(this.metadata.history) ? this.metadata.history : [this.metadata.history]
+      this.metadata.history.push({
+        method: 'createImageEdit',
+        prompt,
+        filename,
+        created: createdDate.toISOString(),
+        version: 'OpenAI'
+      })
 
       this.filename = filename
       this.metadata = metadata
@@ -263,6 +264,8 @@ export default defineComponent({
     async createVariationServerless() {
       this.loading = true
       const prompt = this.prompt
+      const metadata = this.metadata
+
       const image = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
 
       const datestamp = getDatestamp()
@@ -291,14 +294,13 @@ export default defineComponent({
       createdDate.setUTCSeconds(response.data.created);
       const filename = `image-0-${datestamp}.png`
 
-      const metadata = {
-        history: {
-          method: 'createImageVariation',
-          filename,
-          created: createdDate.toISOString(),
-          version: 'OpenAI'
-        }
-      }
+      this.metadata.history = Array.isArray(this.metadata.history) ? this.metadata.history : [this.metadata.history]
+      this.metadata.history.push({
+        method: 'createImageVariation',
+        filename,
+        created: createdDate.toISOString(),
+        version: 'OpenAI'
+      })
 
       this.filename = filename
       this.metadata = metadata
