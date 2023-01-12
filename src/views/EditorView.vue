@@ -15,8 +15,7 @@
         <button type="button" @click="createServerless()">Create</button>
         <button type="reset" @click="reset()">Reset</button>
         <button type="button" @click="createVariation()">Variation</button>
-        <button type="button" @click="edit()">Fill</button>
-        <button type="button" @click="createEditServerless()">Fill2</button>
+        <button type="button" @click="createEditServerless()">Fill</button>
         <button type="button" @click="scale()">Scale</button>
         <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
