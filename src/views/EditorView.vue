@@ -14,7 +14,7 @@
         <textarea class="metadata" v-model="metadataField" v-if="showMetadata"></textarea>
         <button type="button" @click="createServerless()">Create</button>
         <button type="reset" @click="reset()">Reset</button>
-        <button type="button" @click="createVariation()">Variation</button>
+        <button type="button" @click="createVariationServerless()">Variation</button>
         <button type="button" @click="createEditServerless()">Fill</button>
         <button type="button" @click="scale()">Scale</button>
         <label for="scaleBy">by</label>
@@ -162,25 +162,6 @@ export default defineComponent({
       this.saveState()
       this.getList()
     },
-    async createVariation() {
-      const image = this.canvas.toDataURL('image/png')
-      this.loading = true
-      const response = await axios.post('/api/editor/createImageVariation', {
-        image,
-        metadata: this.metadata
-      })
-
-      this.context.drawImage(await loadImage(response.data[0].dataUrl), 0, 0)
-      this.filename = response.data[0].filename
-      this.metadata = response.data[0].metadata
-      const history = JSON.parse(JSON.stringify(Array.isArray(response.data[0].metadata.history) ? response.data[0].metadata.history : [response.data[0].metadata.history])).reverse()
-      this.prompt = history.filter((i: any) => i.prompt)[0]?.prompt || ''
-
-      this.loading = false
-      this.saveState()
-      this.getList()
-    },
-
     async edit() {
       const image = this.canvas.toDataURL('image/png')
       const mask = this.canvas.toDataURL('image/png')
@@ -210,8 +191,8 @@ export default defineComponent({
     async createEditServerless() {
       this.loading = true
       const prompt = this.prompt
-      const image = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve, 'image/png'))
-      const mask = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve, 'image/png'))
+      const image = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
+      const mask = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
 
       const datestamp = getDatestamp()
 
@@ -260,6 +241,76 @@ export default defineComponent({
       this.saveState()
       this.getList()
     },
+    async createVariation() {
+      const image = this.canvas.toDataURL('image/png')
+      this.loading = true
+      const response = await axios.post('/api/editor/createImageVariation', {
+        image,
+        metadata: this.metadata
+      })
+
+      this.context.drawImage(await loadImage(response.data[0].dataUrl), 0, 0)
+      this.filename = response.data[0].filename
+      this.metadata = response.data[0].metadata
+      const history = JSON.parse(JSON.stringify(Array.isArray(response.data[0].metadata.history) ? response.data[0].metadata.history : [response.data[0].metadata.history])).reverse()
+      this.prompt = history.filter((i: any) => i.prompt)[0]?.prompt || ''
+
+      this.loading = false
+      this.saveState()
+      this.getList()
+    },
+
+    async createVariationServerless() {
+      this.loading = true
+      const prompt = this.prompt
+      const image = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
+
+      const datestamp = getDatestamp()
+
+      const formData = new FormData();
+      formData.append('image', image)
+      //TODO formData.append('prompt', 'i wonder if it would work?')
+      formData.append('n', 1)
+      formData.append('size', "1024x1024")
+      formData.append('response_format', "b64_json")
+
+      const response = await axios.post(
+        `${this.baseUrl}/images/variations`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${this.openApiKey}`
+          }
+        })
+
+      // TODO Catch 401 if Authorization is wrong
+
+      this.context.drawImage(await loadImage('data:image/png;base64,' + response.data.data[0].b64_json), 0, 0)
+
+      const createdDate = new Date(0);
+      createdDate.setUTCSeconds(response.data.created);
+      const filename = `image-0-${datestamp}.png`
+
+      const metadata = {
+        history: {
+          method: 'createImageVariation',
+          filename,
+          created: createdDate.toISOString(),
+          version: 'OpenAI'
+        }
+      }
+
+      this.filename = filename
+      this.metadata = metadata
+      this.prompt = prompt
+
+      this.saveImage()
+      this.loading = false
+      this.saveState()
+      this.getList()
+    },
+
     async createServerless() {
       this.loading = true
       const prompt = this.prompt
@@ -306,9 +357,6 @@ export default defineComponent({
       this.loading = false
       this.saveState()
       this.getList()
-
-
-
     },
 
     async saveImage() {
