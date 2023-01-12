@@ -203,10 +203,10 @@ export default defineComponent({
       this.getList()
     },
 
-
     async createServerless() {
       this.loading = true
-      const baseUrl = 'https://api.openai.com/v1'
+      const baseUrl = '/api/openai'
+      //const baseUrl = 'https://api.openai.com/v1'
       const prompt = this.prompt
 
       const datestamp = getDatestamp()
@@ -221,7 +221,7 @@ export default defineComponent({
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${this.openApiKey}`
+            // Authorization: `Bearer ${this.openApiKey}`
           },
         })
       // TODO Catch 401 if Authorization is wrong
