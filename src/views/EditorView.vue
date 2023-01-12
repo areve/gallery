@@ -269,7 +269,6 @@ export default defineComponent({
 
       const formData = new FormData();
       formData.append('image', image)
-      //TODO formData.append('prompt', 'i wonder if it would work?')
       formData.append('n', 1)
       formData.append('size', "1024x1024")
       formData.append('response_format', "b64_json")
