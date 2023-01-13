@@ -1,5 +1,5 @@
 <template>
-  <div class="layout">
+  <div class="layout" @mouseup="penUp">
     <main class="main">
       <nav class="menu">
         <ul class="menu-list">
@@ -25,11 +25,14 @@
         <button type="button" @click="saveDocument()">Save</button>
         <button type="button" @click="toggleKey()">Show Key</button>
         <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
+        <button type="button" @click="penSelected = !penSelected" :class="{ 'use-pen': penSelected }">Pen</button>
+        <label for="penSize">size</label>
+        <input type="number" id="penSize" v-model="penSize" step="5" min="0" max="1000" />
       </form>
       <div class="document-panel">
         <div class="document">
           <div class="spinner" v-if="loading"></div>
-          <canvas id="edit-canvas"></canvas>
+          <canvas id="edit-canvas" @mousedown="penDown" @mousemove="penMove"></canvas>
         </div>
       </div>
     </main>
@@ -53,6 +56,10 @@ import { defineComponent } from "vue";
 import axios from "axios";
 import FormData from 'form-data';
 
+interface Metadata {
+  history: HistoryItem[]
+}
+
 interface HistoryItem {
   method: 'createImage' | 'createImageEdit' | 'createImageVariation'
   prompt?: string
@@ -65,7 +72,7 @@ interface GalleryItem {
   filename: string,
   status: 'error' | 'loading' | 'ready',
   text: string
-  metadata?: any
+  metadata?: Metadata
   dataUrl?: string
 }
 
@@ -83,6 +90,9 @@ export default defineComponent({
       metadataField: '',
       metadataAsJson: '',
       scaleBy: 0.5,
+      penIsDown: false,
+      penSize: 50,
+      penSelected: true,
       openApiKey: '',
       showOpenApiKey: false,
       loading: false,
@@ -127,6 +137,30 @@ export default defineComponent({
     }
   },
   methods: {
+    penUp(mouse: MouseEvent) {
+      if (!this.penSelected) return;
+      this.penIsDown = false
+
+    },
+    penDown(mouse: MouseEvent) {
+      if (!this.penSelected) return;
+      this.penIsDown = true
+      this.penMove(mouse)
+    },
+    penMove(mouse: MouseEvent) {
+      if (!this.penSelected) return;
+      if (!this.penIsDown) return;
+      const ctx = this.context
+      const canvas = this.canvas
+      const x = mouse.offsetX / this.canvas.offsetWidth * canvas.width
+      const y = mouse.offsetY / this.canvas.offsetHeight * canvas.height
+      ctx.beginPath();
+      ctx.arc(x, y, this.penSize / 2, 0, 2 * Math.PI, false);
+      ctx.save();
+      ctx.clip();
+      ctx.clearRect(x - this.penSize / 2, y - this.penSize / 2, this.penSize, this.penSize)
+      ctx.restore();
+    },
     toggleKey() {
       this.showOpenApiKey = !this.showOpenApiKey
       window.localStorage.setItem('openApiKey', this.openApiKey)
@@ -196,13 +230,12 @@ export default defineComponent({
         filename,
         version: 'OpenAI'
       }
+
       const item: GalleryItem = {
         filename,
         text: prompt,
         status: 'loading',
-        metadata: {
-          history: historyItem
-        }
+        metadata: extendMetadata(this.metadata, historyItem)
       }
 
       this.queue.unshift(item)
@@ -252,9 +285,7 @@ export default defineComponent({
         filename,
         text: `variation on: ${prompt}`,
         status: 'loading',
-        metadata: {
-          history: historyItem
-        }
+        metadata: extendMetadata(this.metadata, historyItem)
       }
 
       this.queue.unshift(item)
@@ -269,16 +300,16 @@ export default defineComponent({
 
       let response
       try {
-      response = await axios.post(
-        `${this.baseUrl}/images/variations`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${this.openApiKey}`
-          }
-        })
-      } catch(e) {
+        response = await axios.post(
+          `${this.baseUrl}/images/variations`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${this.openApiKey}`
+            }
+          })
+      } catch (e) {
         item.status = 'error'
         item.text = findErrorMessage(e)
         this.queue = [...this.queue]
@@ -288,8 +319,6 @@ export default defineComponent({
       item.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
       historyItem.created = epochToDate(response.data.created).toISOString()
       await this.saveImage(item)
-
-
     },
 
     async createServerless() {
@@ -306,7 +335,7 @@ export default defineComponent({
         text: prompt,
         status: 'loading',
         metadata: {
-          history: historyItem
+          history: [historyItem]
         }
       }
 
@@ -374,6 +403,13 @@ export default defineComponent({
     },
   },
 })
+
+function extendMetadata(metadata: Metadata, historyItem: HistoryItem) {
+  const result = JSON.parse(JSON.stringify(metadata))
+  result.history = Array.isArray(result.history) ? result.history : [result.history]
+  result.history.push(historyItem)
+  return result
+}
 
 function findErrorMessage(error: any) {
   const result = error?.response?.data?.error?.message ||
@@ -583,5 +619,9 @@ function epochToDate(epoch: number) {
   height: 100px;
   padding: 2px;
   vertical-align: top;
+}
+
+.use-pen {
+  background-color: #f0f;
 }
 </style>
