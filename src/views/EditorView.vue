@@ -28,6 +28,7 @@
         <button type="button" @click="penSelected = !penSelected" :class="{ 'use-pen': penSelected }">Pen</button>
         <label for="penSize">size</label>
         <input type="number" id="penSize" v-model="penSize" step="5" min="0" max="1000" />
+        <button type="button" @click="pepper">Pepper</button>
       </form>
       <div class="document-panel">
         <div class="document">
@@ -137,6 +138,24 @@ export default defineComponent({
     }
   },
   methods: {
+    pepper() {
+      const canvas = this.canvas
+      const ctx = this.context
+      
+      for (let i = 0; i < 5000; i++) {
+        const x = Math.random() * canvas.width
+        const y = Math.random() * canvas.height
+        ctx.beginPath();
+
+        const radius = 8
+        ctx.arc(x, y, radius / 2, 0, 2 * Math.PI, false);
+        ctx.save();
+        ctx.clip();
+        ctx.clearRect(x - radius / 2, y - radius / 2, radius, radius)
+        ctx.restore();
+      }
+      
+    },
     penUp(mouse: MouseEvent) {
       if (!this.penSelected) return;
       this.penIsDown = false
