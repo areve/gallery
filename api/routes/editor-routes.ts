@@ -9,7 +9,7 @@ const config = c as EditorRoutesConfig
 
 export const editorRoutes = express.Router();
 
-editorRoutes.use(bodyParser.json({limit: '10mb'}))
+editorRoutes.use(bodyParser.json({limit: '200mb'}))
 
 editorRoutes.post("/saveImage", async (req, res) => {
   const metadata = req.body.metadata || { history: [] }

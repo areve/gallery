@@ -38,7 +38,10 @@
         <button type="button" @click="shrinkToCorner">Shrink to corner</button>
         <button type="button" @click="grow(0.5)">Shrink</button>
         <button type="button" @click="grow(2)">Grow</button>
-        <div>{{ width }}x{{ height }}</div>
+        <button type="button" @click="growWindow(0.5)">Shrink window</button>
+        <button type="button" @click="growWindow(2)">Grow window</button>
+        <span>canvas:{{ width }}x{{ height }}</span>
+        <span>window:{{ window.width }}x{{ window.height }}</span>
       </form>
       <div class="document-panel">
         <div class="document">
@@ -99,7 +102,7 @@ export default defineComponent({
       queue: [] as GalleryItem[],
       serverList: [] as GalleryItem[],
       showMetadata: false,
-      metadataField: '',
+      metadataField: '{}',
       metadataAsJson: '',
       scaleBy: 0.5,
       penIsDown: false,
@@ -116,7 +119,9 @@ export default defineComponent({
       },
       window: {
         x: 0,
-        y: 0
+        y: 0,
+        width: 1024,
+        height: 1024
       },
       dragData: null as null | {
         x: number,
@@ -163,11 +168,13 @@ export default defineComponent({
           alert('cannot parse metadata' + this.metadataField)
           throw 'cannot parse metadata'
         }
-        return result
+        return result || {}
       },
       set(value: any) {
-        this.metadataAsJson = JSON.stringify(value, null, '  ')
-        this.metadataField = JSON.stringify(value, null, '  ')
+
+        const normalizedValue = value || {}
+        this.metadataAsJson = JSON.stringify(normalizedValue, null, '  ')
+        this.metadataField = JSON.stringify(normalizedValue, null, '  ')
       }
     },
     list: function () {
@@ -258,9 +265,9 @@ export default defineComponent({
     },
     drawOverlay() {
       this.overlayContext.clearRect(0, 0, this.width, this.height)
-      this.overlayContext.fillStyle = '#ff00ff77'
+      this.overlayContext.fillStyle = '#77777777'
       this.overlayContext.fillRect(0, 0, this.width, this.height)
-      this.overlayContext.clearRect(this.window.x, this.window.y, 1024, 1024)
+      this.overlayContext.clearRect(this.window.x, this.window.y, this.window.width, this.window.height)
 
     },
     toggleKey() {
@@ -271,15 +278,12 @@ export default defineComponent({
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
     reset() {
-      this.width = 1024
-      this.height = 1024
       this.canvas.width = this.width
       this.canvas.height = this.height
       this.overlayCanvas.width = this.width
       this.overlayCanvas.height = this.height
-      //this.overlayContext.clearRect(0, 0, this.width, this.height)
       this.clearCanvas()
-      this.metadata = ''
+      this.metadata = {}
       this.prompt = ''
       this.filename = ''
       this.drawOverlay()
@@ -292,21 +296,35 @@ export default defineComponent({
     },
     async loadState() {
       this.openApiKey = window.localStorage.getItem('openApiKey') || ''
+      this.width = 1024
+      this.height = 1024
       this.reset()
       const dataUrl = window.localStorage.getItem('image')
       if (dataUrl) this.context.drawImage(await loadImage(dataUrl), 0, 0)
       this.metadata = JSON.parse(window.localStorage.getItem('metadata') || '')
       this.prompt = window.localStorage.getItem('prompt') || ''
       this.filename = window.localStorage.getItem('filename') || ''
+
     },
     async selectImage(url: string, item: any) {
+      const image = await loadImage(url)
+      this.width = image.width
+      this.height = image.height
       this.reset()
-      this.context.drawImage(await loadImage(url), 0, 0)
-      const history = JSON.parse(JSON.stringify(Array.isArray(item.metadata.history) ? item.metadata.history : [item.metadata.history])).reverse()
-      this.prompt = history.filter((i: any) => i.prompt)[0]?.prompt || ''
+
+      this.context.drawImage(image, 0, 0)
+      const history = (Array.isArray(item.metadata.history) ? [...item.metadata.history] : [item.metadata.history]).reverse()
+      this.prompt = history.filter((i: any) => i?.prompt)[0]?.prompt || ''
       this.filename = item.filename
       this.metadata = item.metadata
       this.saveState()
+    },
+    async growWindow(by: number) {
+      if (this.window.width <= 1 && by < 1) return
+      if (this.window.width >= 5120 && by > 1) return
+      this.window.width = this.window.width * by
+      this.window.height = this.window.height * by
+      this.drawOverlay()
     },
     async grow(by: number) {
       if (this.width <= 1 && by < 1) return
@@ -355,13 +373,17 @@ export default defineComponent({
 
       this.loading = false
       this.filename = ''
-      this.metadata = ''
+      this.metadata = {}
       this.clearCanvas()
       this.saveState()
       this.getList()
     },
     async createEditServerless() {
       const prompt = this.prompt
+      if (!prompt.trim()) {
+        alert('no prompt!')
+        return
+      }
       const filename = `image-0-${getDatestamp()}.png`
       const historyItem: HistoryItem = {
         method: 'createImageEdit',
@@ -379,9 +401,13 @@ export default defineComponent({
 
       this.queue.unshift(item)
 
-      const clone = cloneCanvas(this.canvas, this.window.x, this.window.y, 1024, 1024)
-      const image = await new Promise<Blob | null>(resolve => clone.toBlob(resolve))
-      const mask = await new Promise<Blob | null>(resolve => clone.toBlob(resolve))
+      const wholeCanvasClone = cloneCanvas(this.canvas)
+      const windowClone = cloneCanvas(this.canvas, this.window.x, this.window.y, this.window.width, this.window.height)
+      const scaledWindow = createCanvas(1024, 1024)
+      scaledWindow.getContext('2d')!.drawImage(windowClone, 0, 0, 1024, 1024)
+
+      const image = await new Promise<Blob | null>(resolve => scaledWindow.toBlob(resolve))
+      const mask = await new Promise<Blob | null>(resolve => scaledWindow.toBlob(resolve))
 
       const formData = new FormData();
       formData.append('image', image)
@@ -413,10 +439,8 @@ export default defineComponent({
       historyItem.created = epochToDate(response.data.created).toISOString()
       await this.saveImage(item)
 
-      if(this.toolSelected === 'outfill'){
-        const image = await loadImage(item.dataUrl)
-        this.context.drawImage(image, this.window.x, this.window.y)
-      }
+      this.context.drawImage(await loadImage(item.dataUrl), this.window.x, this.window.y, this.window.width, this.window.height)
+      this.context.drawImage(wholeCanvasClone, 0, 0, wholeCanvasClone.width, wholeCanvasClone.height)
     },
     async createVariationServerless() {
       const prompt = this.prompt
@@ -536,7 +560,7 @@ export default defineComponent({
       })
 
       this.filename = response.data[0].filename
-      this.metadata = response.data[0].metadata
+      this.metadata = response.data[0].metadata || {}
 
       this.loading = false
       this.saveState()
@@ -575,13 +599,18 @@ function loadImage(dataUrl: string): Promise<HTMLImageElement> {
   })
 }
 
+function createCanvas(width: number, height: number) {
+  const result = document.createElement('canvas')
+  result.width = width
+  result.height = height
+  return result
+}
+
 function cloneCanvas(canvas: HTMLCanvasElement, x: number = 0, y: number = 0, w: number = 0, h: number = 0) {
   const width = w === 0 ? canvas.width : w
   const height = h === 0 ? canvas.height : h
   const imageData = canvas.getContext('2d')!.getImageData(x, y, width, height)
-  const result = document.createElement('canvas');
-  result.width = width
-  result.height = height
+  const result = createCanvas(width, height);
   result.getContext('2d')!.putImageData(imageData, 0, 0)
   return result;
 }
