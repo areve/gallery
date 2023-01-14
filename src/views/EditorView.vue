@@ -38,13 +38,13 @@
         <button type="button" @click="shrinkToCorner">Shrink to corner</button>
         <button type="button" @click="grow(0.5)">Shrink</button>
         <button type="button" @click="grow(2)">Grow</button>
-        <button type="button" @click="growWindow(0.5)">Shrink window</button>
-        <button type="button" @click="growWindow(2)">Grow window</button>
+        <button type="button" @click="growWindow(-512)">Shrink window</button>
+        <button type="button" @click="growWindow(512)">Grow window</button>
         <span>canvas:{{ width }}x{{ height }}</span>
         <span>window:{{ window.width }}x{{ window.height }}</span>
       </form>
       <div class="document-panel">
-        <div class="document">
+        <div class="document" :style="{ 'aspect-ratio': width + ' / ' + height }">
           <div class="spinner" v-if="loading"></div>
           <canvas id="edit-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
           <canvas id="overlay-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
@@ -230,6 +230,8 @@ export default defineComponent({
       }
     },
     mouseMove(mouse: MouseEvent) {
+      this.drawOverlay()
+
       if (this.toolSelected === 'pen') {
         if (!this.penIsDown) return;
         const ctx = this.context
@@ -265,10 +267,12 @@ export default defineComponent({
     },
     drawOverlay() {
       this.overlayContext.clearRect(0, 0, this.width, this.height)
-      this.overlayContext.fillStyle = '#77777777'
-      this.overlayContext.fillRect(0, 0, this.width, this.height)
-      this.overlayContext.clearRect(this.window.x, this.window.y, this.window.width, this.window.height)
-
+      console.log('', this.toolSelected)
+      if (this.toolSelected === 'outfill') {
+        this.overlayContext.fillStyle = '#77777777'
+        this.overlayContext.fillRect(0, 0, this.width, this.height)
+        this.overlayContext.clearRect(this.window.x, this.window.y, this.window.width, this.window.height)
+      }
     },
     toggleKey() {
       this.showOpenApiKey = !this.showOpenApiKey
@@ -320,10 +324,10 @@ export default defineComponent({
       this.saveState()
     },
     async growWindow(by: number) {
-      if (this.window.width <= 1 && by < 1) return
+      if (this.window.width <= 512 && by < 1) return
       if (this.window.width >= 5120 && by > 1) return
-      this.window.width = this.window.width * by
-      this.window.height = this.window.height * by
+      this.window.width = this.window.width + by
+      this.window.height = this.window.height + by
       this.drawOverlay()
     },
     async grow(by: number) {
@@ -695,8 +699,9 @@ function epochToDate(epoch: number) {
   position: relative;
   top: calc((100% - min(100%, 70vw)) / 2);
 
-  aspect-ratio: 1024 / 1024;
-  height: calc(min(100%, 70vw));
+  /* aspect-ratio: 1024 / 1024; */
+  max-width: calc(min(100%, 70vw));
+  max-height: calc(min(100%, 70vw));
   margin: auto;
   background-color: #f7f7f7;
   background-image:
