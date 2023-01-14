@@ -1,5 +1,5 @@
 <template>
-  <div class="layout" @mouseup="penUp">
+  <div class="layout" @mouseup="mouseUp">
     <main class="main">
       <nav class="menu">
         <ul class="menu-list">
@@ -25,15 +25,26 @@
         <button type="button" @click="saveDocument()">Save</button>
         <button type="button" @click="toggleKey()">Show Key</button>
         <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
-        <button type="button" @click="penSelected = !penSelected" :class="{ 'use-pen': penSelected }">Pen</button>
+        <button type="button" @click="toolSelected = 'pen'" :class="{ 'use-tool': toolSelected === 'pen' }">Pen</button>
+        <button type="button" @click="toolSelected = 'drag'"
+          :class="{ 'use-tool': toolSelected === 'drag' }">Drag</button>
+        <button type="button" @click="toolSelected = 'outfill'"
+          :class="{ 'use-tool': toolSelected === 'outfill' }">Outfill</button>
         <label for="penSize">size</label>
         <input type="number" id="penSize" v-model="penSize" step="5" min="0" max="1000" />
+        <label for="snap">snap</label>
+        <input type="number" id="snap" v-model="snapSize" step="1" min="1" max="256" />
         <button type="button" @click="pepper">Pepper</button>
+        <button type="button" @click="shrinkToCorner">Shrink to corner</button>
+        <button type="button" @click="grow(0.5)">Shrink</button>
+        <button type="button" @click="grow(2)">Grow</button>
+        <div>{{ width }}x{{ height }}</div>
       </form>
       <div class="document-panel">
         <div class="document">
           <div class="spinner" v-if="loading"></div>
-          <canvas id="edit-canvas" @mousedown="penDown" @mousemove="penMove"></canvas>
+          <canvas id="edit-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
+          <canvas id="overlay-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
         </div>
       </div>
     </main>
@@ -93,15 +104,33 @@ export default defineComponent({
       scaleBy: 0.5,
       penIsDown: false,
       penSize: 50,
-      penSelected: true,
+      snapSize: 128,
+      toolSelected: 'outfill',
+      dragOutfillData: null as null | {
+        x: number,
+        y: number
+        window: {
+          x: number,
+          y: number
+        }
+      },
+      window: {
+        x: 0,
+        y: 0
+      },
+      dragData: null as null | {
+        x: number,
+        y: number,
+        data: ImageData
+      },
       openApiKey: '',
       showOpenApiKey: false,
       loading: false,
+      width: 1024,
+      height: 1024,
     };
   },
   mounted() {
-    this.canvas.width = 1024
-    this.canvas.height = 1024
     this.loadState()
     this.getList()
   },
@@ -111,8 +140,16 @@ export default defineComponent({
         "edit-canvas"
       ) as HTMLCanvasElement
     },
+    overlayCanvas() {
+      return document.getElementById(
+        "overlay-canvas"
+      ) as HTMLCanvasElement
+    },
     context(): CanvasRenderingContext2D {
       return this.canvas.getContext('2d')!
+    },
+    overlayContext(): CanvasRenderingContext2D {
+      return this.overlayCanvas.getContext('2d')!
     },
     baseUrl: function () {
       return this.openApiKey ? 'https://api.openai.com/v1' : '/api/openai'
@@ -141,7 +178,7 @@ export default defineComponent({
     pepper() {
       const canvas = this.canvas
       const ctx = this.context
-      
+
       for (let i = 0; i < 5000; i++) {
         const x = Math.random() * canvas.width
         const y = Math.random() * canvas.height
@@ -154,31 +191,77 @@ export default defineComponent({
         ctx.clearRect(x - radius / 2, y - radius / 2, radius, radius)
         ctx.restore();
       }
-      
-    },
-    penUp(mouse: MouseEvent) {
-      if (!this.penSelected) return;
-      this.penIsDown = false
 
     },
-    penDown(mouse: MouseEvent) {
-      if (!this.penSelected) return;
-      this.penIsDown = true
-      this.penMove(mouse)
+    mouseUp(mouse: MouseEvent) {
+      if (this.toolSelected === 'pen') {
+        this.penIsDown = false
+      } else if (this.toolSelected === 'drag') {
+        this.dragData = null
+      } else if (this.toolSelected === 'outfill') {
+        this.dragOutfillData = null
+      }
     },
-    penMove(mouse: MouseEvent) {
-      if (!this.penSelected) return;
-      if (!this.penIsDown) return;
-      const ctx = this.context
-      const canvas = this.canvas
-      const x = mouse.offsetX / this.canvas.offsetWidth * canvas.width
-      const y = mouse.offsetY / this.canvas.offsetHeight * canvas.height
-      ctx.beginPath();
-      ctx.arc(x, y, this.penSize / 2, 0, 2 * Math.PI, false);
-      ctx.save();
-      ctx.clip();
-      ctx.clearRect(x - this.penSize / 2, y - this.penSize / 2, this.penSize, this.penSize)
-      ctx.restore();
+    mouseDown(mouse: MouseEvent) {
+      if (this.toolSelected === 'pen') {
+        this.penIsDown = true
+        this.mouseMove(mouse)
+      } else if (this.toolSelected === 'drag') {
+        const canvas = this.canvas
+        const ctx = this.context
+        this.dragData = {
+          x: mouse.offsetX,
+          y: mouse.offsetY,
+          data: this.context.getImageData(0, 0, this.canvas.width, this.canvas.height)
+        }
+      } else if (this.toolSelected === 'outfill') {
+        this.dragOutfillData = {
+          x: mouse.offsetX,
+          y: mouse.offsetY,
+          window: { ...this.window },
+        }
+      }
+    },
+    mouseMove(mouse: MouseEvent) {
+      if (this.toolSelected === 'pen') {
+        if (!this.penIsDown) return;
+        const ctx = this.context
+        const canvas = this.canvas
+        const x = mouse.offsetX / this.canvas.offsetWidth * canvas.width
+        const y = mouse.offsetY / this.canvas.offsetHeight * canvas.height
+        ctx.beginPath();
+        ctx.arc(x, y, this.penSize / 2, 0, 2 * Math.PI, false);
+        ctx.save();
+        ctx.clip();
+        ctx.clearRect(x - this.penSize / 2, y - this.penSize / 2, this.penSize, this.penSize)
+        ctx.restore();
+      } else if (this.toolSelected === 'drag') {
+        if (!this.dragData) return
+        const ctx = this.context
+        const canvas = this.canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        const dx = (mouse.offsetX - this.dragData.x) / this.canvas.offsetWidth * canvas.width
+        const dy = (mouse.offsetY - this.dragData.y) / this.canvas.offsetHeight * canvas.height
+        const snapDx = Math.floor(dx / this.snapSize) * this.snapSize
+        const snapDy = Math.floor(dy / this.snapSize) * this.snapSize
+        ctx.putImageData(this.dragData.data, snapDx, snapDy)
+      } else if (this.toolSelected === 'outfill') {
+        if (!this.dragOutfillData) return
+        const dx = (mouse.offsetX - this.dragOutfillData.x) / this.canvas.offsetWidth * this.width
+        const dy = (mouse.offsetY - this.dragOutfillData.y) / this.canvas.offsetHeight * this.height
+        const snapDx = Math.floor(dx / this.snapSize) * this.snapSize
+        const snapDy = Math.floor(dy / this.snapSize) * this.snapSize
+        this.drawOverlay()
+        this.window.x = this.dragOutfillData.window.x + snapDx
+        this.window.y = this.dragOutfillData.window.y + snapDy
+      }
+    },
+    drawOverlay() {
+      this.overlayContext.clearRect(0, 0, this.width, this.height)
+      this.overlayContext.fillStyle = '#ff00ff77'
+      this.overlayContext.fillRect(0, 0, this.width, this.height)
+      this.overlayContext.clearRect(this.window.x, this.window.y, 1024, 1024)
+
     },
     toggleKey() {
       this.showOpenApiKey = !this.showOpenApiKey
@@ -188,20 +271,28 @@ export default defineComponent({
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     },
     reset() {
+      this.width = 1024
+      this.height = 1024
+      this.canvas.width = this.width
+      this.canvas.height = this.height
+      this.overlayCanvas.width = this.width
+      this.overlayCanvas.height = this.height
+      //this.overlayContext.clearRect(0, 0, this.width, this.height)
       this.clearCanvas()
       this.metadata = ''
       this.prompt = ''
       this.filename = ''
+      this.drawOverlay()
     },
     saveState() {
-      window.localStorage.setItem('image', this.canvas.toDataURL())
+      window.localStorage.setItem('image', '')
       window.localStorage.setItem('metadata', this.metadataAsJson)
       window.localStorage.setItem('prompt', this.prompt)
       window.localStorage.setItem('filename', this.filename)
     },
     async loadState() {
       this.openApiKey = window.localStorage.getItem('openApiKey') || ''
-      this.clearCanvas()
+      this.reset()
       const dataUrl = window.localStorage.getItem('image')
       if (dataUrl) this.context.drawImage(await loadImage(dataUrl), 0, 0)
       this.metadata = JSON.parse(window.localStorage.getItem('metadata') || '')
@@ -209,13 +300,42 @@ export default defineComponent({
       this.filename = window.localStorage.getItem('filename') || ''
     },
     async selectImage(url: string, item: any) {
-      this.clearCanvas()
+      this.reset()
       this.context.drawImage(await loadImage(url), 0, 0)
       const history = JSON.parse(JSON.stringify(Array.isArray(item.metadata.history) ? item.metadata.history : [item.metadata.history])).reverse()
       this.prompt = history.filter((i: any) => i.prompt)[0]?.prompt || ''
       this.filename = item.filename
       this.metadata = item.metadata
       this.saveState()
+    },
+    async grow(by: number) {
+      if (this.width <= 1 && by < 1) return
+      if (this.width >= 5120 && by > 1) return
+      const clone = cloneCanvas(this.canvas)
+      this.clearCanvas()
+      this.width = Math.min(5120, this.width * by)
+      this.height = Math.min(5120, this.height * by)
+      this.canvas.width = this.width
+      this.canvas.height = this.height
+      this.overlayCanvas.width = this.width
+      this.overlayCanvas.height = this.height
+      this.context.drawImage(
+        clone,
+        (this.width - clone.width) / 2,
+        (this.height - clone.height) / 2,
+        clone.width,
+        clone.height)
+      this.drawOverlay()
+    },
+    async shrinkToCorner() {
+      const clone = cloneCanvas(this.canvas)
+      this.clearCanvas()
+      this.context.drawImage(
+        clone,
+        0,
+        0,
+        clone.width * 0.5,
+        clone.height * 0.5)
     },
     async scale() {
       const clone = cloneCanvas(this.canvas)
@@ -259,8 +379,9 @@ export default defineComponent({
 
       this.queue.unshift(item)
 
-      const image = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
-      const mask = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
+      const clone = cloneCanvas(this.canvas, this.window.x, this.window.y, 1024, 1024)
+      const image = await new Promise<Blob | null>(resolve => clone.toBlob(resolve))
+      const mask = await new Promise<Blob | null>(resolve => clone.toBlob(resolve))
 
       const formData = new FormData();
       formData.append('image', image)
@@ -291,6 +412,11 @@ export default defineComponent({
       item.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
       historyItem.created = epochToDate(response.data.created).toISOString()
       await this.saveImage(item)
+
+      if(this.toolSelected === 'outfill'){
+        const image = await loadImage(item.dataUrl)
+        this.context.drawImage(image, this.window.x, this.window.y)
+      }
     },
     async createVariationServerless() {
       const prompt = this.prompt
@@ -449,11 +575,13 @@ function loadImage(dataUrl: string): Promise<HTMLImageElement> {
   })
 }
 
-function cloneCanvas(canvas: HTMLCanvasElement) {
-  const imageData = canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.width)
+function cloneCanvas(canvas: HTMLCanvasElement, x: number = 0, y: number = 0, w: number = 0, h: number = 0) {
+  const width = w === 0 ? canvas.width : w
+  const height = h === 0 ? canvas.height : h
+  const imageData = canvas.getContext('2d')!.getImageData(x, y, width, height)
   const result = document.createElement('canvas');
-  result.width = canvas.width
-  result.height = canvas.height
+  result.width = width
+  result.height = height
   result.getContext('2d')!.putImageData(imageData, 0, 0)
   return result;
 }
@@ -553,6 +681,13 @@ function epochToDate(epoch: number) {
 }
 
 #edit-canvas {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#overlay-canvas {
+  position: absolute;
   width: 100%;
   height: 100%;
 }
@@ -640,7 +775,7 @@ function epochToDate(epoch: number) {
   vertical-align: top;
 }
 
-.use-pen {
+.use-tool {
   background-color: #f0f;
 }
 </style>
