@@ -40,6 +40,7 @@
         <button type="button" @click="grow(2)">Grow</button>
         <button type="button" @click="growWindow(-512)">Shrink window</button>
         <button type="button" @click="growWindow(512)">Grow window</button>
+        <button type="button" @click="autoCrop()">Auto crop</button>
         <span>canvas:{{ width }}x{{ height }}</span>
         <span>window:{{ window.width }}x{{ window.height }}</span>
       </form>
@@ -267,12 +268,10 @@ export default defineComponent({
     },
     drawOverlay() {
       this.overlayContext.clearRect(0, 0, this.width, this.height)
-      console.log('', this.toolSelected)
-      if (this.toolSelected === 'outfill') {
-        this.overlayContext.fillStyle = '#77777777'
-        this.overlayContext.fillRect(0, 0, this.width, this.height)
-        this.overlayContext.clearRect(this.window.x, this.window.y, this.window.width, this.window.height)
-      }
+      this.overlayContext.fillStyle = '#77777777'
+      this.overlayContext.fillRect(0, 0, this.width, this.height)
+      this.overlayContext.clearRect(this.window.x, this.window.y, this.window.width, this.window.height)
+    
     },
     toggleKey() {
       this.showOpenApiKey = !this.showOpenApiKey
@@ -322,6 +321,38 @@ export default defineComponent({
       this.filename = item.filename
       this.metadata = item.metadata
       this.saveState()
+    },
+    async autoCrop(by: number) {
+
+      const width = this.width
+      const height = this.height
+      const imageData = this.context.getImageData(0, 0, width, height)
+  
+      const pix = imageData.data;
+
+      let minX = width
+      let maxX = 0
+      let minY = height
+      let maxY = 0
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const a = pix[(y * width + x) * 4 + 0]
+          if (a > 0) {
+            minX = Math.min(minX, x)
+            minY = Math.min(minY, y)
+            maxX = Math.max(maxX, x)
+            maxY = Math.max(maxY, y)
+          }
+        }
+      }
+
+      const clone = cloneCanvas(this.canvas, minX, minY, maxX + 1 - minX, maxY + 1 - minY)
+      this.canvas.width = clone.width
+      this.canvas.height = clone.height
+      this.width = clone.width
+      this.height = clone.height
+      this.context.drawImage(clone, 0, 0)
+      await this.saveDocument()
     },
     async growWindow(by: number) {
       if (this.window.width <= 512 && by < 1) return
