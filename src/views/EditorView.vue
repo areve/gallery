@@ -322,7 +322,7 @@ export default defineComponent({
       this.metadata = item.metadata
       this.saveState()
     },
-    async autoCrop(by: number) {
+    async autoCrop() {
 
       const width = this.width
       const height = this.height
