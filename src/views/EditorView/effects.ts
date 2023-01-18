@@ -1,6 +1,5 @@
-import { cloneCanvas } from "./canvas";
+import { cloneContext } from "./canvas";
 
-// TODO this method is rather a nasty effect, but may be useful still
 export function shotgunEffect(context: CanvasRenderingContext2D) {
   for (let i = 0; i < 5000; i++) {
     const x = Math.random() * context.canvas.width
@@ -17,15 +16,15 @@ export function shotgunEffect(context: CanvasRenderingContext2D) {
 }
 
 export async function scaleImage(context: CanvasRenderingContext2D, by: number) {
-  const clone = cloneCanvas(context)
+  const clone = cloneContext(context)
   context.clearRect(0, 0, context.canvas.width, context.canvas.height)
 
   context.drawImage(
-    clone,
-    (context.canvas.width - clone.width * by) / 2,
-    (context.canvas.height - clone.height * by) / 2,
-    clone.width * by,
-    clone.height * by)
+    clone.canvas,
+    (context.canvas.width - clone.canvas.width * by) / 2,
+    (context.canvas.height - clone.canvas.height * by) / 2,
+    clone.canvas.width * by,
+    clone.canvas.height * by)
 }
 
 export async function autoCrop(context: CanvasRenderingContext2D) {
@@ -49,6 +48,6 @@ export async function autoCrop(context: CanvasRenderingContext2D) {
     }
   }
 
-  return cloneCanvas(context, minX, minY, maxX + 1 - minX, maxY + 1 - minY)
+  return cloneContext(context, minX, minY, maxX + 1 - minX, maxY + 1 - minY)
 }
 

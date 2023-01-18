@@ -74,7 +74,7 @@ import type { GalleryItem, Metadata, Rect, Tools } from './EditorView-interfaces
 import { loadImage, clone, getDatestamp, extendMetadata } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
 import { shotgunEffect, scaleImage, autoCrop as autoCropCanvas } from './EditorView/effects';
-import { cloneCanvas, createCanvas } from './EditorView/canvas';
+import { cloneContext, createContext } from './EditorView/canvas';
 
 const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
@@ -190,26 +190,26 @@ function clearDocumentCanvas() {
 async function scaleDocumentCanvas(by: number) {
   if (width.value <= 1 && by < 1) return
   if (width.value >= 5120 && by > 1) return
-  const clone = cloneCanvas(documentContext.value)
+  const clone = cloneContext(documentContext.value)
   clearDocumentCanvas()
   width.value = Math.min(5120, width.value * by)
   height.value = Math.min(5120, height.value * by)
   // overlayCanvas.value.width = width.value
   // overlayCanvas.value.height = height.value
   documentContext.value.drawImage(
-    clone,
-    (width.value - clone.width) / 2,
-    (height.value - clone.height) / 2,
-    clone.width,
-    clone.height)
+    clone.canvas,
+    (width.value - clone.canvas.width) / 2,
+    (height.value - clone.canvas.height) / 2,
+    clone.canvas.width,
+    clone.canvas.height)
   drawOverlay()
 }
 
 async function autoCrop() {
   const cropped = await autoCropCanvas(documentContext.value)
-  width.value = cropped.width
-  height.value = cropped.height
-  documentContext.value.drawImage(cropped, 0, 0)
+  width.value = cropped.canvas.width
+  height.value = cropped.canvas.height
+  documentContext.value.drawImage(cropped.canvas, 0, 0)
 }
 
 function drawOverlay() {
@@ -329,15 +329,15 @@ async function outpaintImage() {
 
   const filename = `image-0-${getDatestamp()}.png`
 
-  const wholeCanvasClone = cloneCanvas(documentContext.value)
-  const windowClone = cloneCanvas(documentContext.value, frame.value.x, frame.value.y, frame.value.width, frame.value.height)
+  const wholeCanvasClone = cloneContext(documentContext.value)
+  const windowClone = cloneContext(documentContext.value, frame.value.x, frame.value.y, frame.value.width, frame.value.height)
 
   // TODO replace with createContext
-  const scaledWindow = createCanvas(1024, 1024)
-  scaledWindow.getContext('2d')!.drawImage(windowClone, 0, 0, 1024, 1024)
+  const scaledWindow = createContext(1024, 1024)
+  scaledWindow.drawImage(windowClone.canvas, 0, 0, 1024, 1024)
 
-  const image = (await new Promise<Blob | null>(resolve => scaledWindow.toBlob(resolve)))!
-  const mask = (await new Promise<Blob | null>(resolve => scaledWindow.toBlob(resolve)))!
+  const image = (await new Promise<Blob | null>(resolve => scaledWindow.canvas.toBlob(resolve)))!
+  const mask = (await new Promise<Blob | null>(resolve => scaledWindow.canvas.toBlob(resolve)))!
 
   // TODO validate that mask has pixels
   // TODO as Metadata problem again
@@ -358,7 +358,7 @@ async function outpaintImage() {
   const generatedImage = await openAiEditImage(item, openApiKey.value)
   // TODO ! used below
   documentContext.value.drawImage(await loadImage(generatedImage.dataUrl!), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
-  documentContext.value.drawImage(wholeCanvasClone, 0, 0, wholeCanvasClone.width, wholeCanvasClone.height)
+  documentContext.value.drawImage(wholeCanvasClone.canvas, 0, 0, wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
 
   const updatedItem = await saveGalleryItem(generatedImage)
   replaceInGallery(updatedItem)
