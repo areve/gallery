@@ -74,7 +74,7 @@ import type { GalleryItem, Metadata, Rect, Tools } from './EditorView-interfaces
 import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
 import { shotgunEffect } from './EditorView/effects';
-import { clearCircle } from './EditorView/draw';
+import { clearCircle, scaleImage } from './EditorView/draw';
 import { cloneContext, createContext, autoCropImage } from './EditorView/canvas';
 import { getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
