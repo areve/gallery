@@ -23,7 +23,7 @@
         <input type="text" v-model="filename" />
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
         <button type="button" @click="saveDocument()">Save</button>
-        <button type="button" @click="toggleOpenApiKey()">Show Key</button>
+        <button type="button" @click="toggleOpenApiKey()">Toggle Key</button>
         <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
         <button type="button" @click="toolSelected = 'pen'" :class="{ 'use-tool': toolSelected === 'pen' }">Pen</button>
         <button type="button" @click="toolSelected = 'drag'"
@@ -167,9 +167,9 @@ function saveState() {
 
 async function setupDocument() {
   const canvas = document.getElementById("edit-canvas") as HTMLCanvasElement
-  documentContext.value = canvas.getContext('2d') as CanvasRenderingContext2D
+  documentContext.value = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
   const overlayCanvas = document.getElementById("overlay-canvas") as HTMLCanvasElement
-  overlayContext.value = overlayCanvas.getContext('2d') as CanvasRenderingContext2D
+  overlayContext.value = overlayCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
 }
 
 function resetDocument() {

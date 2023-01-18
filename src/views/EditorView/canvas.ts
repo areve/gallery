@@ -2,7 +2,7 @@ export function createContext(width: number, height: number) {
   const canvas = document.createElement('canvas')
   canvas.width = width
   canvas.height = height
-  return canvas.getContext('2d')!
+  return canvas.getContext('2d', { willReadFrequently: true })!
 }
 
 export function cloneContext(context: CanvasRenderingContext2D, x: number = 0, y: number = 0, w: number = 0, h: number = 0) {
