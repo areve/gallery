@@ -11,42 +11,42 @@
       <form class="form-controls">
         <label for="prompt">Prompt</label>
         <textarea type="text" id="prompt" v-model="prompt"></textarea>
-        <textarea class="metadata" v-model="metadataField" v-if="showMetadata"></textarea>
-        <button type="button" @click="createServerless()">Create</button>
-        <button type="reset" @click="reset()">Reset</button>
-        <button type="button" @click="createVariationServerless()">Variation</button>
-        <button type="button" @click="createEditServerless()">Fill</button>
-        <button type="button" @click="scale()">Scale</button>
+        <textarea class="metadata" v-model="metadataAsJson" v-if="showMetadata"></textarea>
+        <button type="button" @click="generateImage()">Generate</button>
+        <button type="reset" @click="resetDocument()">Reset</button>
+        <button type="button" @click="variationImage()">Variation</button>
+        <button type="button" @click="outpaintImage()">Outpaint</button>
+        <button type="button" @click="scaleImage(documentContext, scaleImageBy)">Scale image</button>
         <label for="scaleBy">by</label>
-        <input type="number" id="scaleBy" v-model="scaleBy" step="0.00001" min="0" />
-        <button type="button" @click="deleteImage()">Delete</button>
+        <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
+        <button type="button" @click="deleteGalleryItem(filename)">Delete</button>
         <input type="text" v-model="filename" />
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
         <button type="button" @click="saveDocument()">Save</button>
-        <button type="button" @click="toggleKey()">Show Key</button>
+        <button type="button" @click="toggleOpenApiKey()">Show Key</button>
         <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
         <button type="button" @click="toolSelected = 'pen'" :class="{ 'use-tool': toolSelected === 'pen' }">Pen</button>
         <button type="button" @click="toolSelected = 'drag'"
           :class="{ 'use-tool': toolSelected === 'drag' }">Drag</button>
-        <button type="button" @click="toolSelected = 'outfill'"
-          :class="{ 'use-tool': toolSelected === 'outfill' }">Outfill</button>
+        <button type="button" @click="toolSelected = 'drag-frame'"
+          :class="{ 'use-tool': toolSelected === 'drag-frame' }">Drag frame</button>
         <label for="penSize">size</label>
         <input type="number" id="penSize" v-model="penSize" step="5" min="0" max="1000" />
         <label for="snap">snap</label>
         <input type="number" id="snap" v-model="snapSize" step="1" min="1" max="256" />
-        <button type="button" @click="pepper">Pepper</button>
-        <button type="button" @click="shrinkToCorner">Shrink to corner</button>
-        <button type="button" @click="grow(0.5)">Shrink</button>
-        <button type="button" @click="grow(2)">Grow</button>
-        <button type="button" @click="growWindow(-512)">Shrink window</button>
-        <button type="button" @click="growWindow(512)">Grow window</button>
-        <button type="button" @click="autoCrop()">Auto crop</button>
+        <button type="button" @click="shotgunEffect(documentContext)">Shotgun effect</button>
+
+        <button type="button" @click="scaleDocumentCanvas(0.5)">Shrink</button>
+        <button type="button" @click="scaleDocumentCanvas(2)">Grow</button>
+        <button type="button" @click="growFrame(-512)">Shrink frame</button>
+        <button type="button" @click="growFrame(512)">Grow frame</button>
+        <button type="button" @click="autoCrop(); saveDocument()">Auto crop</button>
         <span>canvas:{{ width }}x{{ height }}</span>
-        <span>window:{{ window.width }}x{{ window.height }}</span>
+        <span>window:{{ frame.width }}x{{ frame.height }}</span>
       </form>
       <div class="document-panel">
         <div class="document" :style="{ 'aspect-ratio': width + ' / ' + height }">
-          <div class="spinner" v-if="loading"></div>
+
           <canvas id="edit-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
           <canvas id="overlay-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
         </div>
@@ -54,543 +54,383 @@
     </main>
     <aside class="side-panel">
       <ul class="gallery">
-        <li v-for="item in list" class="gallery-item">
-
-          <button v-if="item.status === 'loading'" type="button" class="loading-button">{{ item.text }}<div
+        <li v-for="item in galleryItems" class="gallery-item">
+          <button v-if="item.status === 'loading'" type="button" class="loading-button">{{ findPrompt(item) }}<div
               class="spinner"></div></button>
-          <button v-else-if="item.status === 'error'" type="button" class="error-button">{{ item.text }}</button>
-          <button v-else type="button" @click="selectImage('/downloads/' + item.filename, item)"
-            class="gallery-button"><img :src="item.dataUrl || '/downloads/' + item.filename" /></button>
+          <button v-else-if="item.status === 'error'" type="button" class="error-button">{{ findError(item) }}</button>
+          <button v-else type="button" @click="loadGalleryItem(item)" class="gallery-button"><img
+              :src="item.dataUrl || '/downloads/' + item.filename" /></button>
         </li>
       </ul>
     </aside>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script lang="ts" setup>
+
+import { computed, onMounted, ref, watchSyncEffect } from 'vue';
 import axios from "axios";
-import FormData from 'form-data';
-import type { GalleryItem, HistoryItem } from "./EditorView-interfaces";
-import { loadImage, cloneCanvas, getDatestamp, createCanvas, findErrorMessage, epochToDate, extendMetadata } from "./EditorView-utils";
+import type { GalleryItem, Metadata, Rect, Tools } from './EditorView-interfaces';
+import { loadImage, clone, getDatestamp, extendMetadata } from './EditorView-utils';
+import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
+import { shotgunEffect, scaleImage, autoCrop as autoCropCanvas } from './EditorView/effects';
+import { cloneCanvas, createCanvas } from './EditorView/canvas';
 
+const prompt = ref<string>('')
+const showMetadata = ref<boolean>(false)
+const scaleImageBy = ref<number>(0.5)
+const filename = ref<string>('')
+const metadata = ref<Metadata | {}>({})
 
-export default defineComponent({
-  name: "editor",
-  components: {},
-  data() {
-    return {
-      imageSrc: '',
-      filename: '',
-      prompt: '',
-      queue: [] as GalleryItem[],
-      serverList: [] as GalleryItem[],
-      showMetadata: false,
-      metadataField: '{}',
-      metadataAsJson: '',
-      scaleBy: 0.5,
-      penIsDown: false,
-      penSize: 50,
-      snapSize: 128,
-      toolSelected: 'outfill',
-      dragOutfillData: null as null | {
-        x: number,
-        y: number
-        window: {
-          x: number,
-          y: number
-        }
-      },
-      window: {
-        x: 0,
-        y: 0,
-        width: 1024,
-        height: 1024
-      },
-      dragData: null as null | {
-        x: number,
-        y: number,
-        data: ImageData
-      },
-      openApiKey: '',
-      showOpenApiKey: false,
-      loading: false,
-      width: 1024,
-      height: 1024,
-    };
+const metadataAsJson = computed({
+  get: () => {
+    return JSON.stringify(metadata.value)
   },
-  mounted() {
-    this.loadState()
-    this.getList()
-  },
-  computed: {
-    canvas() {
-      return document.getElementById(
-        "edit-canvas"
-      ) as HTMLCanvasElement
-    },
-    overlayCanvas() {
-      return document.getElementById(
-        "overlay-canvas"
-      ) as HTMLCanvasElement
-    },
-    context(): CanvasRenderingContext2D {
-      return this.canvas.getContext('2d')!
-    },
-    overlayContext(): CanvasRenderingContext2D {
-      return this.overlayCanvas.getContext('2d')!
-    },
-    baseUrl: function () {
-      return this.openApiKey ? 'https://api.openai.com/v1' : '/api/openai'
-    },
-    metadata: {
-      get() {
-        let result
-        try {
-          result = JSON.parse(this.metadataField)
-        } catch (e) {
-          alert('cannot parse metadata' + this.metadataField)
-          throw 'cannot parse metadata'
-        }
-        return result || {}
-      },
-      set(value: any) {
+  set: (value: string) => {
+    throw ('unimplemented yet')
+    return JSON.parse(value)
+  }
+})
+const showOpenApiKey = ref<boolean>(false)
+const toolSelected = ref<Tools>('pen')
+const penSize = ref<number>(100)
+const snapSize = ref<number>(128)
+const openApiKey = ref<string>('')
+const galleryItems = ref<GalleryItem[]>([])
 
-        const normalizedValue = value || {}
-        this.metadataAsJson = JSON.stringify(normalizedValue, null, '  ')
-        this.metadataField = JSON.stringify(normalizedValue, null, '  ')
-      }
-    },
-    list: function () {
-      return this.queue.concat(this.serverList)
-    }
-  },
-  methods: {
-    pepper() {
-      const canvas = this.canvas
-      const ctx = this.context
+const documentContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
+const overlayContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
 
-      for (let i = 0; i < 5000; i++) {
-        const x = Math.random() * canvas.width
-        const y = Math.random() * canvas.height
-        ctx.beginPath();
+const width = ref<number>(1024)
+const height = ref<number>(1024)
 
-        const radius = 8
-        ctx.arc(x, y, radius / 2, 0, 2 * Math.PI, false);
-        ctx.save();
-        ctx.clip();
-        ctx.clearRect(x - radius / 2, y - radius / 2, radius, radius)
-        ctx.restore();
-      }
+// TODO don't use any!
+const dragOrigin = ref<any>(null)
 
-    },
-    mouseUp(mouse: MouseEvent) {
-      if (this.toolSelected === 'pen') {
-        this.penIsDown = false
-      } else if (this.toolSelected === 'drag') {
-        this.dragData = null
-      } else if (this.toolSelected === 'outfill') {
-        this.dragOutfillData = null
-      }
-    },
-    mouseDown(mouse: MouseEvent) {
-      if (this.toolSelected === 'pen') {
-        this.penIsDown = true
-        this.mouseMove(mouse)
-      } else if (this.toolSelected === 'drag') {
-        const canvas = this.canvas
-        const ctx = this.context
-        this.dragData = {
-          x: mouse.offsetX,
-          y: mouse.offsetY,
-          data: this.context.getImageData(0, 0, this.canvas.width, this.canvas.height)
-        }
-      } else if (this.toolSelected === 'outfill') {
-        this.dragOutfillData = {
-          x: mouse.offsetX,
-          y: mouse.offsetY,
-          window: { ...this.window },
-        }
-      }
-    },
-    mouseMove(mouse: MouseEvent) {
-      this.drawOverlay()
 
-      if (this.toolSelected === 'pen') {
-        if (!this.penIsDown) return;
-        const ctx = this.context
-        const canvas = this.canvas
-        const x = mouse.offsetX / this.canvas.offsetWidth * canvas.width
-        const y = mouse.offsetY / this.canvas.offsetHeight * canvas.height
-        ctx.beginPath();
-        ctx.arc(x, y, this.penSize / 2, 0, 2 * Math.PI, false);
-        ctx.save();
-        ctx.clip();
-        ctx.clearRect(x - this.penSize / 2, y - this.penSize / 2, this.penSize, this.penSize)
-        ctx.restore();
-      } else if (this.toolSelected === 'drag') {
-        if (!this.dragData) return
-        const ctx = this.context
-        const canvas = this.canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
-        const dx = (mouse.offsetX - this.dragData.x) / this.canvas.offsetWidth * canvas.width
-        const dy = (mouse.offsetY - this.dragData.y) / this.canvas.offsetHeight * canvas.height
-        const snapDx = Math.floor(dx / this.snapSize) * this.snapSize
-        const snapDy = Math.floor(dy / this.snapSize) * this.snapSize
-        ctx.putImageData(this.dragData.data, snapDx, snapDy)
-      } else if (this.toolSelected === 'outfill') {
-        if (!this.dragOutfillData) return
-        const dx = (mouse.offsetX - this.dragOutfillData.x) / this.canvas.offsetWidth * this.width
-        const dy = (mouse.offsetY - this.dragOutfillData.y) / this.canvas.offsetHeight * this.height
-        const snapDx = Math.floor(dx / this.snapSize) * this.snapSize
-        const snapDy = Math.floor(dy / this.snapSize) * this.snapSize
-        this.drawOverlay()
-        this.window.x = this.dragOutfillData.window.x + snapDx
-        this.window.y = this.dragOutfillData.window.y + snapDy
-      }
-    },
-    drawOverlay() {
-      this.overlayContext.clearRect(0, 0, this.width, this.height)
-      this.overlayContext.fillStyle = '#77777777'
-      this.overlayContext.fillRect(0, 0, this.width, this.height)
-      this.overlayContext.clearRect(this.window.x, this.window.y, this.window.width, this.window.height)
-    
-    },
-    toggleKey() {
-      this.showOpenApiKey = !this.showOpenApiKey
-      window.localStorage.setItem('openApiKey', this.openApiKey)
-    },
-    clearCanvas() {
-      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-    },
-    reset() {
-      this.canvas.width = this.width
-      this.canvas.height = this.height
-      this.overlayCanvas.width = this.width
-      this.overlayCanvas.height = this.height
-      this.clearCanvas()
-      this.metadata = {}
-      this.prompt = ''
-      this.filename = ''
-      this.drawOverlay()
-    },
-    saveState() {
-      window.localStorage.setItem('image', '')
-      window.localStorage.setItem('metadata', this.metadataAsJson)
-      window.localStorage.setItem('prompt', this.prompt)
-      window.localStorage.setItem('filename', this.filename)
-    },
-    async loadState() {
-      this.openApiKey = window.localStorage.getItem('openApiKey') || ''
-      this.width = 1024
-      this.height = 1024
-      this.reset()
-      const dataUrl = window.localStorage.getItem('image')
-      if (dataUrl) this.context.drawImage(await loadImage(dataUrl), 0, 0)
-      this.metadata = JSON.parse(window.localStorage.getItem('metadata') || '')
-      this.prompt = window.localStorage.getItem('prompt') || ''
-      this.filename = window.localStorage.getItem('filename') || ''
+function toggleOpenApiKey() {
+  showOpenApiKey.value = !showOpenApiKey.value
+  if (!showOpenApiKey.value) {
+    window.localStorage.setItem('openApiKey', openApiKey.value)
+  }
+}
 
-    },
-    async selectImage(url: string, item: any) {
-      const image = await loadImage(url)
-      this.width = image.width
-      this.height = image.height
-      this.reset()
-
-      this.context.drawImage(image, 0, 0)
-      const history = (Array.isArray(item.metadata.history) ? [...item.metadata.history] : [item.metadata.history]).reverse()
-      this.prompt = history.filter((i: any) => i?.prompt)[0]?.prompt || ''
-      this.filename = item.filename
-      this.metadata = item.metadata
-      this.saveState()
-    },
-    async autoCrop() {
-
-      const width = this.width
-      const height = this.height
-      const imageData = this.context.getImageData(0, 0, width, height)
-  
-      const pix = imageData.data;
-
-      let minX = width
-      let maxX = 0
-      let minY = height
-      let maxY = 0
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const a = pix[(y * width + x) * 4 + 0]
-          if (a > 0) {
-            minX = Math.min(minX, x)
-            minY = Math.min(minY, y)
-            maxX = Math.max(maxX, x)
-            maxY = Math.max(maxY, y)
-          }
-        }
-      }
-
-      const clone = cloneCanvas(this.canvas, minX, minY, maxX + 1 - minX, maxY + 1 - minY)
-      this.canvas.width = clone.width
-      this.canvas.height = clone.height
-      this.width = clone.width
-      this.height = clone.height
-      this.context.drawImage(clone, 0, 0)
-      await this.saveDocument()
-    },
-    async growWindow(by: number) {
-      if (this.window.width <= 512 && by < 1) return
-      if (this.window.width >= 5120 && by > 1) return
-      this.window.width = this.window.width + by
-      this.window.height = this.window.height + by
-      this.drawOverlay()
-    },
-    async grow(by: number) {
-      if (this.width <= 1 && by < 1) return
-      if (this.width >= 5120 && by > 1) return
-      const clone = cloneCanvas(this.canvas)
-      this.clearCanvas()
-      this.width = Math.min(5120, this.width * by)
-      this.height = Math.min(5120, this.height * by)
-      this.canvas.width = this.width
-      this.canvas.height = this.height
-      this.overlayCanvas.width = this.width
-      this.overlayCanvas.height = this.height
-      this.context.drawImage(
-        clone,
-        (this.width - clone.width) / 2,
-        (this.height - clone.height) / 2,
-        clone.width,
-        clone.height)
-      this.drawOverlay()
-    },
-    async shrinkToCorner() {
-      const clone = cloneCanvas(this.canvas)
-      this.clearCanvas()
-      this.context.drawImage(
-        clone,
-        0,
-        0,
-        clone.width * 0.5,
-        clone.height * 0.5)
-    },
-    async scale() {
-      const clone = cloneCanvas(this.canvas)
-      this.clearCanvas()
-      this.context.drawImage(
-        clone,
-        (this.canvas.width - clone.width * this.scaleBy) / 2,
-        (this.canvas.height - clone.height * this.scaleBy) / 2,
-        clone.width * this.scaleBy,
-        clone.height * this.scaleBy)
-    },
-    async deleteImage() {
-      this.loading = true
-      const response = await axios.post('/api/editor/deleteImage', {
-        filename: this.filename
-      })
-
-      this.loading = false
-      this.filename = ''
-      this.metadata = {}
-      this.clearCanvas()
-      this.saveState()
-      this.getList()
-    },
-    async createEditServerless() {
-      const prompt = this.prompt
-      if (!prompt.trim()) {
-        alert('no prompt!')
-        return
-      }
-      const filename = `image-0-${getDatestamp()}.png`
-      const historyItem: HistoryItem = {
-        method: 'createImageEdit',
-        prompt,
-        filename,
-        version: 'OpenAI'
-      }
-
-      const item: GalleryItem = {
-        filename,
-        text: prompt,
-        status: 'loading',
-        metadata: extendMetadata(this.metadata, historyItem)
-      }
-
-      this.queue.unshift(item)
-
-      const wholeCanvasClone = cloneCanvas(this.canvas)
-      const windowClone = cloneCanvas(this.canvas, this.window.x, this.window.y, this.window.width, this.window.height)
-      const scaledWindow = createCanvas(1024, 1024)
-      scaledWindow.getContext('2d')!.drawImage(windowClone, 0, 0, 1024, 1024)
-
-      const image = await new Promise<Blob | null>(resolve => scaledWindow.toBlob(resolve))
-      const mask = await new Promise<Blob | null>(resolve => scaledWindow.toBlob(resolve))
-
-      const formData = new FormData();
-      formData.append('image', image)
-      formData.append('mask', mask)
-      formData.append('prompt', prompt)
-      formData.append('n', 1)
-      formData.append('size', "1024x1024")
-      formData.append('response_format', "b64_json")
-
-      let response
-      try {
-        response = await axios.post(
-          `${this.baseUrl}/images/edits`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${this.openApiKey}`
-            }
-          })
-      } catch (e) {
-        item.status = 'error'
-        item.text = findErrorMessage(e)
-        this.queue = [...this.queue]
-        return
-      }
-
-      item.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-      historyItem.created = epochToDate(response.data.created).toISOString()
-      await this.saveImage(item)
-
-      this.context.drawImage(await loadImage(item.dataUrl), this.window.x, this.window.y, this.window.width, this.window.height)
-      this.context.drawImage(wholeCanvasClone, 0, 0, wholeCanvasClone.width, wholeCanvasClone.height)
-    },
-    async createVariationServerless() {
-      const prompt = this.prompt
-      const filename = `image-0-${getDatestamp()}.png`
-      const historyItem: HistoryItem = {
-        method: 'createImageVariation',
-        filename,
-        version: 'OpenAI'
-      }
-      const item: GalleryItem = {
-        filename,
-        text: `variation on: ${prompt}`,
-        status: 'loading',
-        metadata: extendMetadata(this.metadata, historyItem)
-      }
-
-      this.queue.unshift(item)
-
-      const image = await new Promise<Blob | null>(resolve => this.canvas.toBlob(resolve))
-
-      const formData = new FormData();
-      formData.append('image', image)
-      formData.append('n', 1)
-      formData.append('size', "1024x1024")
-      formData.append('response_format', "b64_json")
-
-      let response
-      try {
-        response = await axios.post(
-          `${this.baseUrl}/images/variations`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${this.openApiKey}`
-            }
-          })
-      } catch (e) {
-        item.status = 'error'
-        item.text = findErrorMessage(e)
-        this.queue = [...this.queue]
-        return
-      }
-
-      item.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-      historyItem.created = epochToDate(response.data.created).toISOString()
-      await this.saveImage(item)
-    },
-
-    async createServerless() {
-      const prompt = this.prompt
-      const filename = `image-0-${getDatestamp()}.png`
-      const historyItem: HistoryItem = {
-        method: 'createImage',
-        filename,
-        prompt,
-        version: 'OpenAI'
-      }
-      const item: GalleryItem = {
-        filename,
-        text: prompt,
-        status: 'loading',
-        metadata: {
-          history: [historyItem]
-        }
-      }
-
-      this.queue.unshift(item)
-
-      let response
-      try {
-        response = await axios.post(
-          `${this.baseUrl}/images/generations`,
-          {
-            "prompt": prompt,
-            "n": 1,
-            "size": "1024x1024",
-            "response_format": "b64_json"
-          },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${this.openApiKey}`
-            },
-          })
-      } catch (e) {
-        item.status = 'error'
-        item.text = findErrorMessage(e)
-        this.queue = [...this.queue]
-        return
-      }
-
-      item.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-      historyItem.created = epochToDate(response.data.created).toISOString()
-      await this.saveImage(item)
-    },
-
-    async saveImage(item: GalleryItem) {
-      // TODO try catch
-      const response = await axios.post('/api/editor/saveImage', {
-        image: item.dataUrl,
-        filename: item.filename,
-        metadata: item.metadata
-      })
-      item.status = "ready"
-      this.queue = this.queue.filter(x => x.filename !== item.filename)
-      this.serverList.unshift(item)
-    },
-
-    async saveDocument() {
-      this.loading = true
-      const image = this.canvas.toDataURL('image/png')
-      const response = await axios.post('/api/editor/saveImage', {
-        image,
-        filename: this.filename,
-        metadata: this.metadata
-      })
-
-      this.filename = response.data[0].filename
-      this.metadata = response.data[0].metadata || {}
-
-      this.loading = false
-      this.saveState()
-      this.getList()
-    },
-    async getList() {
-      const response = await axios.get('/api/gallery/')
-      this.serverList = response.data
-    },
-  },
+watchSyncEffect(() => {
+  if (!documentContext.value.canvas) return
+  if (!overlayContext.value.canvas) return
+  documentContext.value.canvas.height = height.value
+  documentContext.value.canvas.width = width.value
+  overlayContext.value.canvas.height = height.value
+  overlayContext.value.canvas.width = width.value
 })
 
+watchSyncEffect(() => {
+  if (!documentContext.value.canvas) return
+  if (!overlayContext.value.canvas) return
+  void (frame.value)
+  drawOverlay()
+})
+
+
+
+
+const frame = ref<Rect>({
+  x: 0,
+  y: 0,
+  width: width.value,
+  height: height.value
+})
+
+onMounted(async () => {
+  await setupDocument()
+  await loadState()
+  await loadGallery()
+})
+
+function loadState() {
+  openApiKey.value = window.localStorage.getItem('openApiKey') || ''
+  width.value = 1024
+  height.value = 1024
+  resetDocument()
+  metadata.value = JSON.parse(window.localStorage.getItem('metadata') || '')
+  prompt.value = window.localStorage.getItem('prompt') || ''
+  filename.value = window.localStorage.getItem('filename') || ''
+}
+
+function saveState() {
+  window.localStorage.setItem('metadata', JSON.stringify(metadata.value))
+  window.localStorage.setItem('prompt', prompt.value)
+  window.localStorage.setItem('filename', filename.value)
+}
+
+async function setupDocument() {
+  const canvas = document.getElementById("edit-canvas") as HTMLCanvasElement
+  documentContext.value = canvas.getContext('2d') as CanvasRenderingContext2D
+  const overlayCanvas = document.getElementById("overlay-canvas") as HTMLCanvasElement
+  overlayContext.value = overlayCanvas.getContext('2d') as CanvasRenderingContext2D
+}
+
+function resetDocument() {
+  // this.canvas.width = this.width
+  // this.canvas.height = this.height
+  // this.overlayCanvas.width = this.width
+  // this.overlayCanvas.height = this.height
+  clearDocumentCanvas()
+  metadata.value = {}
+  prompt.value = ''
+  filename.value = ''
+  drawOverlay()
+}
+
+function clearDocumentCanvas() {
+  documentContext.value.clearRect(0, 0, documentContext.value.canvas.width, documentContext.value.canvas.height)
+}
+
+
+async function scaleDocumentCanvas(by: number) {
+  if (width.value <= 1 && by < 1) return
+  if (width.value >= 5120 && by > 1) return
+  const clone = cloneCanvas(documentContext.value)
+  clearDocumentCanvas()
+  width.value = Math.min(5120, width.value * by)
+  height.value = Math.min(5120, height.value * by)
+  // overlayCanvas.value.width = width.value
+  // overlayCanvas.value.height = height.value
+  documentContext.value.drawImage(
+    clone,
+    (width.value - clone.width) / 2,
+    (height.value - clone.height) / 2,
+    clone.width,
+    clone.height)
+  drawOverlay()
+}
+
+async function autoCrop() {
+  const cropped = await autoCropCanvas(documentContext.value)
+  width.value = cropped.width
+  height.value = cropped.height
+  documentContext.value.drawImage(cropped, 0, 0)
+}
+
+function drawOverlay() {
+  overlayContext.value.clearRect(0, 0, width.value, height.value)
+  overlayContext.value.fillStyle = '#77777777'
+  overlayContext.value.fillRect(0, 0, width.value, height.value)
+  overlayContext.value.clearRect(frame.value.x, frame.value.y, frame.value.width, frame.value.height)
+}
+
+async function loadGallery() {
+  const response = await axios.get('/api/gallery/')
+  galleryItems.value = response.data
+}
+
+async function loadGalleryItem(item: GalleryItem) {
+  const image = await loadImage(`/downloads/${item.filename}`)
+
+  width.value = image.width
+  height.value = image.height
+
+  documentContext.value.drawImage(image, 0, 0)
+  // TODO ugly code
+  const history = (Array.isArray(item.metadata.history) ? [...item.metadata.history] : [item.metadata.history]).reverse()
+  prompt.value = history.filter((i: any) => i?.prompt)[0]?.prompt || ''
+  filename.value = item.filename
+  metadata.value = clone(item.metadata)
+  saveState()
+}
+
+async function deleteGalleryItem(deleteFilename: string) {
+  // TODO try catch the response
+  const response = await axios.post('/api/editor/deleteImage', {
+    filename: deleteFilename
+  })
+  filename.value = ''
+  metadata.value = {}
+  clearDocumentCanvas()
+  saveState()
+
+  // TODO loadGallery is inefficient here
+  await loadGallery()
+}
+
+async function saveGalleryItem(item: GalleryItem) {
+  // TODO try catch response
+  const response = await axios.post('/api/editor/saveImage', {
+    image: item.dataUrl,
+    filename: item.filename,
+    metadata: item.metadata
+  })
+
+  return response.data[0] as GalleryItem
+}
+
+async function saveDocument() {
+  const item = await saveGalleryItem({
+    dataUrl: documentContext.value.canvas.toDataURL('image/png'),
+    status: 'loading',
+    filename: filename.value,
+    metadata: metadata.value as Metadata // TODO as Metadata?
+  })
+
+  filename.value = item.filename
+  metadata.value = item.metadata || {}
+  saveState()
+
+  // TODO loadGallery inefficient here
+  await loadGallery()
+}
+
+function findPrompt(item: GalleryItem) {
+  // TODO yuk function
+  const history = (Array.isArray(item.metadata?.history) ? [...item.metadata!.history] : [item.metadata!.history]).reverse()
+  const prompt = history.filter((i: any) => i?.prompt)[0]?.prompt || ''
+
+  return prompt
+}
+
+function findError(item: GalleryItem) {
+  // TODO yuk function
+  const history = (Array.isArray(item.metadata?.history) ? [...item.metadata!.history] : [item.metadata!.history]).reverse()
+  const error = history.filter((i: any) => i?.error)[0]?.error || ''
+  return error
+}
+
+function replaceInGallery(updatedItem: GalleryItem) {
+  galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
+}
+
+async function generateImage() {
+  const filename = `image-0-${getDatestamp()}.png`
+  const item: GalleryItem = {
+    filename,
+    status: 'loading',
+    metadata: {
+      history: [{
+        method: 'createImage',
+        filename,
+        prompt: prompt.value,
+        version: 'OpenAI'
+      }]
+    }
+  }
+
+  galleryItems.value = [item, ...galleryItems.value]
+  const generatedImage = await openAiGenerateImage(item, openApiKey.value)
+  const updatedItem = await saveGalleryItem(generatedImage)
+  replaceInGallery(updatedItem)
+}
+
+
+async function outpaintImage() {
+  if (!prompt.value.trim()) {
+    alert('no prompt!')
+    return
+  }
+
+  const filename = `image-0-${getDatestamp()}.png`
+
+  const wholeCanvasClone = cloneCanvas(documentContext.value)
+  const windowClone = cloneCanvas(documentContext.value, frame.value.x, frame.value.y, frame.value.width, frame.value.height)
+
+  // TODO replace with createContext
+  const scaledWindow = createCanvas(1024, 1024)
+  scaledWindow.getContext('2d')!.drawImage(windowClone, 0, 0, 1024, 1024)
+
+  const image = (await new Promise<Blob | null>(resolve => scaledWindow.toBlob(resolve)))!
+  const mask = (await new Promise<Blob | null>(resolve => scaledWindow.toBlob(resolve)))!
+
+  // TODO validate that mask has pixels
+  // TODO as Metadata problem again
+  const item: GalleryItem = {
+    filename,
+    status: 'loading',
+    metadata: extendMetadata(metadata.value as Metadata, {
+      method: 'createImageEdit',
+      prompt: prompt.value,
+      image,
+      mask,
+      filename,
+      version: 'OpenAI'
+    })
+  }
+
+  galleryItems.value = [item, ...galleryItems.value]
+  const generatedImage = await openAiEditImage(item, openApiKey.value)
+  // TODO ! used below
+  documentContext.value.drawImage(await loadImage(generatedImage.dataUrl!), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
+  documentContext.value.drawImage(wholeCanvasClone, 0, 0, wholeCanvasClone.width, wholeCanvasClone.height)
+
+  const updatedItem = await saveGalleryItem(generatedImage)
+  replaceInGallery(updatedItem)
+}
+
+async function variationImage() {
+  const filename = `image-0-${getDatestamp()}.png`
+  const image = (await new Promise<Blob | null>(resolve => documentContext.value.canvas.toBlob(resolve)))!
+  const item: GalleryItem = {
+    filename,
+    status: 'loading',
+    metadata: extendMetadata(metadata.value as Metadata, {
+      method: 'createImageVariation',
+      image,
+      filename,
+      version: 'OpenAI'
+    })
+  }
+  galleryItems.value = [item, ...galleryItems.value]
+  const generatedImage = await openAiImageVariation(item, openApiKey.value)
+  const updatedItem = await saveGalleryItem(generatedImage)
+  replaceInGallery(updatedItem)
+}
+
+async function growFrame(by: number) {
+  if (frame.value.width <= 512 && by < 1) return
+  if (frame.value.width >= 5120 && by > 1) return
+  frame.value.width = frame.value.width + by
+  frame.value.height = frame.value.height + by
+  drawOverlay()
+}
+
+function mouseUp(mouse: MouseEvent) {
+  dragOrigin.value = null
+}
+
+function mouseDown(mouse: MouseEvent) {
+  dragOrigin.value = {
+    x: mouse.offsetX,
+    y: mouse.offsetY,
+    data: documentContext.value.getImageData(0, 0, width.value, height.value),
+    frame: { ...frame.value }
+  }
+}
+
+function mouseMove(mouse: MouseEvent) {
+  if (!dragOrigin.value) return
+
+  const dx = (mouse.offsetX - dragOrigin.value.x) / documentContext.value.canvas.offsetWidth * documentContext.value.canvas.width
+  const dy = (mouse.offsetY - dragOrigin.value.y) / documentContext.value.canvas.offsetHeight * documentContext.value.canvas.height
+  const snapDx = Math.floor(dx / snapSize.value) * snapSize.value
+  const snapDy = Math.floor(dy / snapSize.value) * snapSize.value
+
+  if (toolSelected.value === 'pen') {
+    // TODO this could be a circle effect
+    const ctx = documentContext.value
+    const x = mouse.offsetX / documentContext.value.canvas.offsetWidth * documentContext.value.canvas.width
+    const y = mouse.offsetY / documentContext.value.canvas.offsetHeight * documentContext.value.canvas.height
+    ctx.beginPath();
+    ctx.arc(x, y, penSize.value / 2, 0, 2 * Math.PI, false);
+    ctx.save();
+    ctx.clip();
+    ctx.clearRect(x - penSize.value / 2, y - penSize.value / 2, penSize.value, penSize.value)
+    ctx.restore();
+  } else if (toolSelected.value === 'drag') {
+    documentContext.value.clearRect(0, 0, width.value, height.value)
+    documentContext.value.putImageData(dragOrigin.value.data, snapDx, snapDy)
+  } else if (toolSelected.value === 'drag-frame') {
+    frame.value.x = dragOrigin.value.frame.x + snapDx
+    frame.value.y = dragOrigin.value.frame.y + snapDy
+  }
+}
 </script>
 
 <style scoped>
