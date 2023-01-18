@@ -20,7 +20,6 @@ export async function getGallery() {
 }
 
 export async function getGalleryItem(filename:string) {
-  // TODO try catch response
   return await loadImage(`/downloads/${filename}`)
 }
 

@@ -70,7 +70,7 @@
 
 import { computed, onMounted, ref, watchSyncEffect } from 'vue';
 import axios from "axios";
-import type { GalleryItem, Metadata, Rect, Tools } from './EditorView-interfaces';
+import type { GalleryItem, Metadata, Rect, Tools, DragOrigin } from './EditorView-interfaces';
 import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
 import { shotgunEffect } from './EditorView/effects';
@@ -105,9 +105,7 @@ const overlayContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContex
 
 const width = ref<number>(1024)
 const height = ref<number>(1024)
-
-// TODO don't use any!
-const dragOrigin = ref<any>(null)
+const dragOrigin = ref<DragOrigin | null>(null)
 
 
 function toggleOpenApiKey() {
@@ -232,9 +230,9 @@ async function loadGalleryItem(item: GalleryItem) {
   height.value = image.height
 
   documentContext.value.drawImage(image, 0, 0)
-  // TODO ugly code
   const history = getReverseHistory(item)
 
+  // TODO ugly code
   prompt.value = history.filter(i => i?.prompt)[0]?.prompt || ''
   filename.value = item.filename
   metadata.value = clone(item.metadata)
@@ -272,16 +270,16 @@ async function saveDocument() {
 }
 
 function findPrompt(item: GalleryItem) {
+  const history = getReverseHistory(item)
   // TODO yuk function
-  const history = (Array.isArray(item.metadata?.history) ? [...item.metadata!.history] : [item.metadata!.history]).reverse()
   const prompt = history.filter((i: any) => i?.prompt)[0]?.prompt || ''
 
   return prompt
 }
 
 function findError(item: GalleryItem) {
+  const history = getReverseHistory(item)
   // TODO yuk function
-  const history = (Array.isArray(item.metadata?.history) ? [...item.metadata!.history] : [item.metadata!.history]).reverse()
   const error = history.filter((i: any) => i?.error)[0]?.error || ''
   return error
 }

@@ -58,3 +58,10 @@ export interface Rect {
 }
 
 export type Tools = 'pen' | 'drag' | 'drag-frame'
+
+export interface DragOrigin {
+  x: number;
+  y: number;
+  data: ImageData;
+  frame: Rect;
+}
