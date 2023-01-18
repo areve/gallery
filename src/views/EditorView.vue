@@ -71,10 +71,12 @@
 import { computed, onMounted, ref, watchSyncEffect } from 'vue';
 import axios from "axios";
 import type { GalleryItem, Metadata, Rect, Tools } from './EditorView-interfaces';
-import { loadImage, clone, getDatestamp, extendMetadata } from './EditorView-utils';
+import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
-import { shotgunEffect, scaleImage, autoCrop as autoCropCanvas } from './EditorView/effects';
-import { cloneContext, createContext } from './EditorView/canvas';
+import { shotgunEffect } from './EditorView/effects';
+import { clearCircle } from './EditorView/draw';
+import { cloneContext, createContext, autoCropImage } from './EditorView/canvas';
+import { getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
 const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
@@ -206,7 +208,7 @@ async function scaleDocumentCanvas(by: number) {
 }
 
 async function autoCrop() {
-  const cropped = await autoCropCanvas(documentContext.value)
+  const cropped = await autoCropImage(documentContext.value)
   width.value = cropped.canvas.width
   height.value = cropped.canvas.height
   documentContext.value.drawImage(cropped.canvas, 0, 0)
@@ -220,20 +222,20 @@ function drawOverlay() {
 }
 
 async function loadGallery() {
-  const response = await axios.get('/api/gallery/')
-  galleryItems.value = response.data
+  galleryItems.value = await getGallery()
 }
 
 async function loadGalleryItem(item: GalleryItem) {
-  const image = await loadImage(`/downloads/${item.filename}`)
+  const image = await getGalleryItem(item.filename)
 
   width.value = image.width
   height.value = image.height
 
   documentContext.value.drawImage(image, 0, 0)
   // TODO ugly code
-  const history = (Array.isArray(item.metadata.history) ? [...item.metadata.history] : [item.metadata.history]).reverse()
-  prompt.value = history.filter((i: any) => i?.prompt)[0]?.prompt || ''
+  const history = getReverseHistory(item)
+
+  prompt.value = history.filter(i => i?.prompt)[0]?.prompt || ''
   filename.value = item.filename
   metadata.value = clone(item.metadata)
   saveState()
@@ -251,17 +253,6 @@ async function deleteGalleryItem(deleteFilename: string) {
 
   // TODO loadGallery is inefficient here
   await loadGallery()
-}
-
-async function saveGalleryItem(item: GalleryItem) {
-  // TODO try catch response
-  const response = await axios.post('/api/editor/saveImage', {
-    image: item.dataUrl,
-    filename: item.filename,
-    metadata: item.metadata
-  })
-
-  return response.data[0] as GalleryItem
 }
 
 async function saveDocument() {
@@ -332,7 +323,6 @@ async function outpaintImage() {
   const wholeCanvasClone = cloneContext(documentContext.value)
   const windowClone = cloneContext(documentContext.value, frame.value.x, frame.value.y, frame.value.width, frame.value.height)
 
-  // TODO replace with createContext
   const scaledWindow = createContext(1024, 1024)
   scaledWindow.drawImage(windowClone.canvas, 0, 0, 1024, 1024)
 
@@ -404,6 +394,8 @@ function mouseDown(mouse: MouseEvent) {
   }
 }
 
+
+
 function mouseMove(mouse: MouseEvent) {
   if (!dragOrigin.value) return
 
@@ -413,16 +405,11 @@ function mouseMove(mouse: MouseEvent) {
   const snapDy = Math.floor(dy / snapSize.value) * snapSize.value
 
   if (toolSelected.value === 'pen') {
-    // TODO this could be a circle effect
     const ctx = documentContext.value
     const x = mouse.offsetX / documentContext.value.canvas.offsetWidth * documentContext.value.canvas.width
     const y = mouse.offsetY / documentContext.value.canvas.offsetHeight * documentContext.value.canvas.height
-    ctx.beginPath();
-    ctx.arc(x, y, penSize.value / 2, 0, 2 * Math.PI, false);
-    ctx.save();
-    ctx.clip();
-    ctx.clearRect(x - penSize.value / 2, y - penSize.value / 2, penSize.value, penSize.value)
-    ctx.restore();
+    clearCircle(documentContext.value, x, y, penSize.value / 2)
+
   } else if (toolSelected.value === 'drag') {
     documentContext.value.clearRect(0, 0, width.value, height.value)
     documentContext.value.putImageData(dragOrigin.value.data, snapDx, snapDy)

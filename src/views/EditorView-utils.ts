@@ -1,4 +1,4 @@
-import type { HistoryItem, Metadata } from "./EditorView-interfaces"
+import type { GalleryItem, HistoryItem, Metadata } from "./EditorView-interfaces"
 
 export function extendMetadata(metadata: Metadata, historyItem: HistoryItem) {
   const result = JSON.parse(JSON.stringify(metadata))
@@ -41,4 +41,8 @@ export function epochToDate(epoch: number) {
 
 export function clone<T>(value: T) {
   return JSON.parse(JSON.stringify(value)) as T
+}
+
+export function getReverseHistory(item: GalleryItem) {
+  return (Array.isArray(item.metadata.history) ? [...item.metadata.history] : [item.metadata.history]).reverse()
 }
