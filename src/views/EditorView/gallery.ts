@@ -37,14 +37,19 @@ export async function getGalleryItem(filename: string) {
   return await loadImage(`/downloads/${filename}`)
 }
 
-export async function deleteGaleryItem(filename: string) {
+export async function deleteGalleryItem(filename: string) {
+  const result: GalleryItem = {
+    status: 'deleted',
+    filename,
+    metadata: { history: [] }
+  }
   try {
     await axios.post('/api/editor/deleteImage', {
       filename
     })
   } catch (e) {
-    console.error(e)
-    return findErrorMessage(e)
+    result.status = 'error'
+    result.error = findErrorMessage(e)
   }
-  return true
+  return result
 }

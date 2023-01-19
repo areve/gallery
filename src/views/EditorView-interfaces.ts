@@ -36,7 +36,7 @@ export type GalleryItem = GalleryItemNormal | GalleryItemDataUrl
 
 export interface GalleryItemNormal {
   filename: string,
-  status: 'error' | 'loading' | 'saved',
+  status: 'error' | 'loading' | 'saved' | 'deleted',
   error?: string
   metadata: GalleryMetadata
   modified?: Date

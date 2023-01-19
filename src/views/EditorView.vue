@@ -19,7 +19,7 @@
         <button type="button" @click="scaleImage(documentContext, scaleImageBy)">Scale image</button>
         <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
-        <button type="button" @click="deleteGalleryItem(filename)">Delete</button>
+        <button type="button" @click="deleteImage(filename)">Delete</button>
         <input type="text" v-model="filename" />
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
         <button type="button" @click="saveDocument()">Save</button>
@@ -77,7 +77,7 @@ import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './Ed
 import { shotgunEffect } from './EditorView/effects';
 import { clearCircle, scaleImage } from './EditorView/draw';
 import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } from './EditorView/canvas';
-import { deleteGaleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
+import { deleteGalleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
 const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
@@ -234,23 +234,17 @@ async function loadGalleryItem(item: GalleryItem) {
   saveState()
 }
 
-async function deleteGalleryItem(deleteFilename: string) {
+async function deleteImage(deleteFilename: string) {
   const itemToDelete = clone(galleryItems.value.filter(i => i.filename === deleteFilename)[0])
   itemToDelete.status = 'loading'
   updateGalleryItem(itemToDelete)
 
-  const result = await deleteGaleryItem(deleteFilename)
+  const result = await deleteGalleryItem(deleteFilename)
 
-  if (result === true) {
-    filename.value = ''
-    metadata.value = { history: [] }
-    clearDocumentCanvas()
-    saveState()
-    galleryItems.value = galleryItems.value.filter(i => i.filename !== deleteFilename)
+  if (result.status === 'error') {
+    updateGalleryItem(result)
   } else{
-    itemToDelete.status = 'error'
-    itemToDelete.error = result
-    updateGalleryItem(itemToDelete)
+    galleryItems.value = galleryItems.value.filter(i => i.filename !== result.filename)
   }
 }
 
