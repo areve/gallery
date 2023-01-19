@@ -44,5 +44,15 @@ export function clone<T>(value: T) {
 }
 
 export function getReverseHistory(item: GalleryItem) {
-  return (Array.isArray(item.metadata.history) ? [...item.metadata.history] : [item.metadata.history]).reverse()
+  return clone([...item.metadata.history].reverse())
+}
+
+export function mostRecentPrompt(item: GalleryItem): string {
+  const history = getReverseHistory(item)
+  return (history.filter((item: any) => 'prompt' in item)[0] as any).prompt || ''
+}
+
+export function mostRecentError(item: GalleryItem): string {
+  const history = getReverseHistory(item)
+  return history.filter(item => item?.error)[0]?.error || ''
 }

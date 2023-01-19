@@ -55,9 +55,9 @@
     <aside class="side-panel">
       <ul class="gallery">
         <li v-for="item in galleryItems" class="gallery-item">
-          <button v-if="item.status === 'loading'" type="button" class="loading-button">{{ findPrompt(item) }}<div
+          <button v-if="item.status === 'loading'" type="button" class="loading-button">{{ mostRecentPrompt(item) }}<div
               class="spinner"></div></button>
-          <button v-else-if="item.status === 'error'" type="button" class="error-button">{{ findError(item) }}</button>
+          <button v-else-if="item.status === 'error'" type="button" class="error-button">{{ mostRecentPrompt(item) }}</button>
           <button v-else type="button" @click="loadGalleryItem(item)" class="gallery-button"><img
               :src="item.dataUrl || '/downloads/' + item.filename" /></button>
         </li>
@@ -70,7 +70,7 @@
 
 import { computed, onMounted, ref, watchSyncEffect } from 'vue';
 import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, HistoryItem, HistoryItemEdit, HistoryItemGeneration } from './EditorView-interfaces';
-import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory } from './EditorView-utils';
+import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory, mostRecentPrompt, mostRecentError } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
 import { shotgunEffect } from './EditorView/effects';
 import { clearCircle, scaleImage } from './EditorView/draw';
@@ -226,10 +226,7 @@ async function loadGalleryItem(item: GalleryItem) {
   height.value = image.height
 
   documentContext.value.drawImage(image, 0, 0)
-  const history = getReverseHistory(item)
-
-  // TODO ugly code
-  prompt.value = history.filter(item => item?.prompt)[0]?.prompt || ''
+  prompt.value = mostRecentPrompt(item)
   filename.value = item.filename
   metadata.value = clone(item.metadata)
   saveState()
@@ -262,20 +259,7 @@ async function saveDocument() {
   await loadGallery()
 }
 
-function findPrompt(item: GalleryItem) {
-  const history = getReverseHistory(item)
-  // TODO yuk function
-  const prompt = (history.filter((item: any) => item?.prompt)[0] as any).prompt || ''
 
-  return prompt
-}
-
-function findError(item: GalleryItem) {
-  const history = getReverseHistory(item)
-  // TODO yuk function
-  const error = history.filter((item: any) => item?.error)[0]?.error || ''
-  return error
-}
 
 function replaceInGallery(updatedItem: GalleryItem) {
   galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
