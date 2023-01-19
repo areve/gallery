@@ -16,10 +16,18 @@ export async function saveGalleryItem(item: GalleryItem) {
 export async function getGallery() {
   // TODO try catch response
   const response = await axios.get('/api/gallery/')
-    return response.data
+  return response.data
 }
 
-export async function getGalleryItem(filename:string) {
+export async function getGalleryItem(filename: string) {
   return await loadImage(`/downloads/${filename}`)
 }
 
+
+export async function deleteGaleryItem(filename: string) {
+  // TODO try catch the response
+  const response = await axios.post('/api/editor/deleteImage', {
+    filename
+  })
+  return response.data
+}

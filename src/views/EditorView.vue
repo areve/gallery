@@ -76,7 +76,7 @@ import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './Ed
 import { shotgunEffect } from './EditorView/effects';
 import { clearCircle, scaleImage } from './EditorView/draw';
 import { cloneContext, createContext, autoCropImage } from './EditorView/canvas';
-import { getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
+import { deleteGaleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
 const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
@@ -130,9 +130,6 @@ watchSyncEffect(() => {
   void (frame.value)
   drawOverlay()
 })
-
-
-
 
 const frame = ref<Rect>({
   x: 0,
@@ -240,10 +237,7 @@ async function loadGalleryItem(item: GalleryItem) {
 }
 
 async function deleteGalleryItem(deleteFilename: string) {
-  // TODO try catch the response
-  const response = await axios.post('/api/editor/deleteImage', {
-    filename: deleteFilename
-  })
+  await deleteGaleryItem(deleteFilename)
   filename.value = ''
   metadata.value = {}
   clearDocumentCanvas()
