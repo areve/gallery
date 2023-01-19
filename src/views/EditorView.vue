@@ -69,7 +69,6 @@
 <script lang="ts" setup>
 
 import { computed, onMounted, ref, watchSyncEffect } from 'vue';
-import axios from "axios";
 import type { GalleryItem, Metadata, Rect, Tools, DragOrigin } from './EditorView-interfaces';
 import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
