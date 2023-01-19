@@ -15,6 +15,22 @@ export function cloneContext(context: CanvasRenderingContext2D, x: number = 0, y
 }
 
 
+export async function imageCountEmptyPixels(context: CanvasRenderingContext2D) {
+  const w = context.canvas.width
+  const h = context.canvas.height
+  const imageData = context.getImageData(0, 0, w, h)
+  const pix = imageData.data;
+  let count = 0;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const a = pix[(y * w + x) * 4 + 3]
+      if (a === 0) count++
+    }
+  }
+  
+  return count
+}
+
 export async function autoCropImage(context: CanvasRenderingContext2D) {
   const w = context.canvas.width
   const h = context.canvas.height
@@ -26,7 +42,7 @@ export async function autoCropImage(context: CanvasRenderingContext2D) {
   let maxY = 0
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      const a = pix[(y * w + x) * 4 + 0]
+      const a = pix[(y * w + x) * 4 + 3]
       if (a > 0) {
         minX = Math.min(minX, x)
         minY = Math.min(minY, y)

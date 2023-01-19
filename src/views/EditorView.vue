@@ -57,7 +57,9 @@
         <li v-for="item in galleryItems" class="gallery-item">
           <button v-if="item.status === 'loading'" type="button" class="loading-button">{{ mostRecentPrompt(item) }}<div
               class="spinner"></div></button>
-          <button v-else-if="item.status === 'error'" type="button" class="error-button">{{ mostRecentPrompt(item) }}</button>
+          <button v-else-if="item.status === 'error'" type="button" class="error-button">{{
+            mostRecentPrompt(item)
+          }}</button>
           <button v-else type="button" @click="loadGalleryItem(item)" class="gallery-button"><img
               :src="item.dataUrl || '/downloads/' + item.filename" /></button>
         </li>
@@ -74,7 +76,7 @@ import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory, most
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
 import { shotgunEffect } from './EditorView/effects';
 import { clearCircle, scaleImage } from './EditorView/draw';
-import { cloneContext, createContext, autoCropImage } from './EditorView/canvas';
+import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } from './EditorView/canvas';
 import { deleteGaleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
 const prompt = ref<string>('')
@@ -93,7 +95,7 @@ const metadataAsJson = computed({
   }
 })
 const showOpenApiKey = ref<boolean>(false)
-const toolSelected = ref<Tools>('pen')
+const toolSelected = ref<Tools>('drag')
 const penSize = ref<number>(100)
 const snapSize = ref<number>(128)
 const openApiKey = ref<string>('')
@@ -233,6 +235,7 @@ async function loadGalleryItem(item: GalleryItem) {
 }
 
 async function deleteGalleryItem(deleteFilename: string) {
+  // TODO no loading spinner whilst we wait
   await deleteGaleryItem(deleteFilename)
   filename.value = ''
   metadata.value = { history: [] }
@@ -286,7 +289,6 @@ async function generateImage() {
   replaceInGallery(updatedItem)
 }
 
-
 async function outpaintImage() {
   if (!prompt.value.trim()) {
     alert('no prompt!')
@@ -300,11 +302,13 @@ async function outpaintImage() {
 
   const scaledWindow = createContext(1024, 1024)
   scaledWindow.drawImage(windowClone.canvas, 0, 0, 1024, 1024)
+  if (await imageCountEmptyPixels(scaledWindow) === 0) {
+    alert('no empty pixels!')
+    return
+  }
 
   const image = (await new Promise<Blob | null>(resolve => scaledWindow.canvas.toBlob(resolve)))!
-  const mask = (await new Promise<Blob | null>(resolve => scaledWindow.canvas.toBlob(resolve)))!
-
-  // TODO validate that mask has pixels
+  
   const item: GalleryItem = {
     filename,
     status: 'loading',
@@ -312,7 +316,7 @@ async function outpaintImage() {
       method: 'createImageEdit',
       prompt: prompt.value,
       image,
-      mask,
+      mask: image,
       filename,
       version: 'OpenAI'
     })
