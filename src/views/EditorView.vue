@@ -61,7 +61,7 @@
             mostRecentPrompt(item)
           }}</button>
           <button v-else type="button" @click="loadGalleryItem(item)" class="gallery-button"><img
-              :src="item.dataUrl || '/downloads/' + item.filename" /></button>
+              :src="(item as any).dataUrl || '/downloads/' + item.filename" /></button>
         </li>
       </ul>
     </aside>
@@ -266,8 +266,6 @@ async function saveDocument() {
   updateGalleryItem(item)
 }
 
-
-
 function updateGalleryItem(updatedItem: GalleryItem) {
   if (galleryItems.value.find(item => item.filename === updatedItem.filename)) {
     galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
@@ -377,8 +375,6 @@ function mouseDown(mouse: MouseEvent) {
     frame: { ...frame.value }
   }
 }
-
-
 
 function mouseMove(mouse: MouseEvent) {
   if (!dragOrigin.value) return
