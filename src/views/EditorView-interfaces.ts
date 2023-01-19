@@ -4,7 +4,7 @@ export interface GalleryMetadata {
 
 export type HistoryItem = HistoryItemGeneration | HistoryItemEdit | HistoryItemVariation
 export interface HistoryItemGeneration {
-  method: 'createImage'
+  method: 'generation'
   error?: string
   prompt: string
   filename: string
@@ -12,7 +12,7 @@ export interface HistoryItemGeneration {
   created?: string;
 }
 export interface HistoryItemEdit {
-  method:  'createImageEdit'
+  method:  'edit'
   error?: string
   prompt: string
   filename: string
@@ -23,7 +23,7 @@ export interface HistoryItemEdit {
 }
 
 export interface HistoryItemVariation {
-  method: 'createImageVariation'
+  method: 'variation'
   error?: string
   filename: string
   image: Blob,

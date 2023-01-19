@@ -71,7 +71,7 @@
 <script lang="ts" setup>
 
 import { computed, onMounted, ref, watchSyncEffect } from 'vue';
-import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, HistoryItem, HistoryItemEdit, HistoryItemGeneration } from './EditorView-interfaces';
+import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, HistoryItem, HistoryItemEdit, HistoryItemGeneration, GalleryItemDataUrl } from './EditorView-interfaces';
 import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory, mostRecentPrompt, mostRecentError } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
 import { shotgunEffect } from './EditorView/effects';
@@ -269,7 +269,7 @@ async function generateImage() {
     status: 'loading',
     metadata: {
       history: [{
-        method: 'createImage',
+        method: 'generation', 
         filename,
         prompt: prompt.value,
         version: 'OpenAI'
@@ -290,6 +290,7 @@ async function outpaintImage() {
   }
 
   const filename = `image-0-${getDatestamp()}.png`
+  const filenameFinal = `image-0-${getDatestamp()}.png`
 
   const wholeCanvasClone = cloneContext(documentContext.value)
   const windowClone = cloneContext(documentContext.value, frame.value.x, frame.value.y, frame.value.width, frame.value.height)
@@ -307,22 +308,27 @@ async function outpaintImage() {
     filename,
     status: 'loading',
     metadata: extendMetadata(metadata.value, {
-      method: 'createImageEdit',
+      method: 'edit', 
       prompt: prompt.value,
-      image, // TODO does this get saved into files as metadata!
+      image, // TODO  this get doesn't get saved into files as metadata only because clone doesn't work right
       mask: image, // TODO does this get saved into files as metadata!
       filename,
       version: 'OpenAI'
     })
   }
 
-  // TODO should not be drawing to documentContext unless we are still on this document
   updateGalleryItem(item)
   const generatedImage = await openAiEditImage(item, openApiKey.value)
-  documentContext.value.drawImage(await loadImage(generatedImage.dataUrl), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
-  documentContext.value.drawImage(wholeCanvasClone.canvas, 0, 0, wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
   const updatedItem = await saveGalleryItem(generatedImage)
   updateGalleryItem(updatedItem)
+
+  const finalContext = createContext(wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
+  finalContext.drawImage(await loadImage(generatedImage.dataUrl), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
+  finalContext.drawImage(wholeCanvasClone.canvas, 0, 0, wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
+  const finalItem = clone(item) as GalleryItemDataUrl
+  finalItem.dataUrl = finalContext.canvas.toDataURL()
+  finalItem.filename = filenameFinal
+  saveGalleryItem(finalItem)
 }
 
 async function variationImage() {
@@ -332,7 +338,7 @@ async function variationImage() {
     filename,
     status: 'loading',
     metadata: extendMetadata(metadata.value, {
-      method: 'createImageVariation',
+      method: 'variation', 
       image, // TODO does this get saved into files as metadata!
       filename,
       version: 'OpenAI'
