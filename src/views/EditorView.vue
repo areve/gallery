@@ -69,7 +69,7 @@
 <script lang="ts" setup>
 
 import { computed, onMounted, ref, watchSyncEffect } from 'vue';
-import type { GalleryItem, Metadata, Rect, Tools, DragOrigin } from './EditorView-interfaces';
+import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, HistoryItem, HistoryItemEdit, HistoryItemGeneration } from './EditorView-interfaces';
 import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
 import { shotgunEffect } from './EditorView/effects';
@@ -81,7 +81,7 @@ const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
 const scaleImageBy = ref<number>(0.5)
 const filename = ref<string>('')
-const metadata = ref<Metadata | {}>({})
+const metadata = ref<GalleryMetadata>({ history: [] })
 
 const metadataAsJson = computed({
   get: () => {
@@ -172,7 +172,7 @@ function resetDocument() {
   // this.overlayCanvas.width = this.width
   // this.overlayCanvas.height = this.height
   clearDocumentCanvas()
-  metadata.value = {}
+  metadata.value = { history: [] }
   prompt.value = ''
   filename.value = ''
   drawOverlay()
@@ -229,7 +229,7 @@ async function loadGalleryItem(item: GalleryItem) {
   const history = getReverseHistory(item)
 
   // TODO ugly code
-  prompt.value = history.filter(i => i?.prompt)[0]?.prompt || ''
+  prompt.value = history.filter(item => item?.prompt)[0]?.prompt || ''
   filename.value = item.filename
   metadata.value = clone(item.metadata)
   saveState()
@@ -238,7 +238,7 @@ async function loadGalleryItem(item: GalleryItem) {
 async function deleteGalleryItem(deleteFilename: string) {
   await deleteGaleryItem(deleteFilename)
   filename.value = ''
-  metadata.value = {}
+  metadata.value = { history: [] }
   clearDocumentCanvas()
   saveState()
 
@@ -251,7 +251,7 @@ async function saveDocument() {
     dataUrl: documentContext.value.canvas.toDataURL('image/png'),
     status: 'loading',
     filename: filename.value,
-    metadata: metadata.value as Metadata // TODO as Metadata?
+    metadata: metadata.value
   })
 
   filename.value = item.filename
@@ -265,7 +265,7 @@ async function saveDocument() {
 function findPrompt(item: GalleryItem) {
   const history = getReverseHistory(item)
   // TODO yuk function
-  const prompt = history.filter((i: any) => i?.prompt)[0]?.prompt || ''
+  const prompt = (history.filter((item: any) => item?.prompt)[0] as any).prompt || ''
 
   return prompt
 }
@@ -273,7 +273,7 @@ function findPrompt(item: GalleryItem) {
 function findError(item: GalleryItem) {
   const history = getReverseHistory(item)
   // TODO yuk function
-  const error = history.filter((i: any) => i?.error)[0]?.error || ''
+  const error = history.filter((item: any) => item?.error)[0]?.error || ''
   return error
 }
 
@@ -321,11 +321,10 @@ async function outpaintImage() {
   const mask = (await new Promise<Blob | null>(resolve => scaledWindow.canvas.toBlob(resolve)))!
 
   // TODO validate that mask has pixels
-  // TODO as Metadata problem again
   const item: GalleryItem = {
     filename,
     status: 'loading',
-    metadata: extendMetadata(metadata.value as Metadata, {
+    metadata: extendMetadata(metadata.value, {
       method: 'createImageEdit',
       prompt: prompt.value,
       image,
@@ -337,10 +336,8 @@ async function outpaintImage() {
 
   galleryItems.value = [item, ...galleryItems.value]
   const generatedImage = await openAiEditImage(item, openApiKey.value)
-  // TODO ! used below
-  documentContext.value.drawImage(await loadImage(generatedImage.dataUrl!), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
+  documentContext.value.drawImage(await loadImage(generatedImage.dataUrl), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
   documentContext.value.drawImage(wholeCanvasClone.canvas, 0, 0, wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
-
   const updatedItem = await saveGalleryItem(generatedImage)
   replaceInGallery(updatedItem)
 }
@@ -351,7 +348,7 @@ async function variationImage() {
   const item: GalleryItem = {
     filename,
     status: 'loading',
-    metadata: extendMetadata(metadata.value as Metadata, {
+    metadata: extendMetadata(metadata.value, {
       method: 'createImageVariation',
       image,
       filename,

@@ -1,8 +1,8 @@
 import axios from "axios"
-import type { GalleryItem } from "../EditorView-interfaces"
+import type { GalleryItem, GalleryItemDataUrl } from "../EditorView-interfaces"
 import { loadImage } from "../EditorView-utils"
 
-export async function saveGalleryItem(item: GalleryItem) {
+export async function saveGalleryItem(item: GalleryItemDataUrl) {
   // TODO try catch response
   const response = await axios.post('/api/editor/saveImage', {
     image: item.dataUrl,

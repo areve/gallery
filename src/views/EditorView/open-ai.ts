@@ -1,9 +1,9 @@
 import axios from "axios";
-import type { GalleryItem, HistoryItemEdit, HistoryItemGeneration, OpenAiResponse } from "../EditorView-interfaces";
+import type { GalleryItem, GalleryItemDataUrl, HistoryItemEdit, HistoryItemGeneration, OpenAiResponse } from "../EditorView-interfaces";
 import { clone, epochToDate, findErrorMessage } from "../EditorView-utils";
 
 export async function openAiGenerateImage(item: GalleryItem, openApiKey: string) {
-   const result = clone(item)
+   const result = clone(item) as GalleryItemDataUrl
 
    const command = item.metadata.history[0] as HistoryItemGeneration
    let response
@@ -36,7 +36,7 @@ export async function openAiGenerateImage(item: GalleryItem, openApiKey: string)
 }
 
 export async function openAiEditImage(item: GalleryItem, openApiKey: string) {
-   const result = clone(item)
+   const result = clone(item) as GalleryItemDataUrl
 
 
    const command = item.metadata.history[item.metadata.history.length - 1] as HistoryItemEdit
@@ -74,7 +74,7 @@ export async function openAiEditImage(item: GalleryItem, openApiKey: string) {
 
 export async function openAiImageVariation(item: GalleryItem, openApiKey: string) {
 
-   const result = clone(item)
+   const result = clone(item) as GalleryItemDataUrl
 
 
    const command = item.metadata.history[item.metadata.history.length - 1] as HistoryItemEdit

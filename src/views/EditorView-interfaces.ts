@@ -1,4 +1,4 @@
-export interface Metadata {
+export interface GalleryMetadata {
   history: HistoryItem[]
 }
 
@@ -31,13 +31,23 @@ export interface HistoryItemVariation {
   created?: string;
 }
 
-export interface GalleryItem {
+export type GalleryItem = GalleryItemA | GalleryItemDataUrl
+
+export interface GalleryItemA {
   filename: string,
   status: 'error' | 'loading' | 'saved',
   // text?: string
-  metadata: Metadata
+  metadata: GalleryMetadata
   modified?: Date
-  dataUrl?: string
+}
+
+export interface GalleryItemDataUrl {
+  filename: string,
+  status: 'error' | 'loading' | 'saved',
+  // text?: string
+  metadata: GalleryMetadata
+  modified?: Date
+  dataUrl: string
 }
 
 export interface OpenAiResponse {

@@ -2,12 +2,12 @@ import express from 'express'
 import fs, { lstatSync } from 'fs'
 import { readMetadata } from '../lib/png-metadata';
 import bodyParser from 'body-parser'
-import { GalleryItem, Metadata  } from '../../src/views/EditorView-interfaces'
+import { GalleryItem, GalleryMetadata } from '../../src/views/EditorView-interfaces'
 
 const downloads = './public/downloads'
 
 export const galleryRoutes = express.Router();
-galleryRoutes.use(bodyParser.json({limit: '10mb'}))
+galleryRoutes.use(bodyParser.json({ limit: '10mb' }))
 
 galleryRoutes.get("/", async (req, res) => {
   const dir = fs.readdirSync(downloads)
@@ -28,10 +28,14 @@ galleryRoutes.get("/", async (req, res) => {
   res.json(list)
 })
 
-function tryReadMetadata(filePath): Metadata {
-  try {
-    return readMetadata(filePath) as unknown as Metadata
-  } catch(e) {
+function tryReadMetadata(filePath): GalleryMetadata {
+  let result: GalleryMetadata = {
+    history: []
   }
-  return {} as Metadata
+
+  try {
+    result.history = readMetadata(filePath).history || []
+  } catch (e) {
+  }
+  return result
 }
