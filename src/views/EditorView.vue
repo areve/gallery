@@ -58,7 +58,7 @@
           <button v-if="item.status === 'loading'" type="button" class="loading-button">{{ mostRecentPrompt(item) }}<div
               class="spinner"></div></button>
           <button v-else-if="item.status === 'error'" type="button" class="error-button">{{
-            mostRecentPrompt(item)
+            mostRecentError(item)
           }}</button>
           <button v-else type="button" @click="loadGalleryItem(item)" class="gallery-button"><img
               :src="(item as any).dataUrl || '/downloads/' + item.filename" /></button>
@@ -239,13 +239,19 @@ async function deleteGalleryItem(deleteFilename: string) {
   itemToDelete.status = 'loading'
   updateGalleryItem(itemToDelete)
 
-  await deleteGaleryItem(deleteFilename)
-  filename.value = ''
-  metadata.value = { history: [] }
-  clearDocumentCanvas()
-  saveState()
+  const result = await deleteGaleryItem(deleteFilename)
 
-  galleryItems.value = galleryItems.value.filter(i => i.filename !== deleteFilename)
+  if (result === true) {
+    filename.value = ''
+    metadata.value = { history: [] }
+    clearDocumentCanvas()
+    saveState()
+    galleryItems.value = galleryItems.value.filter(i => i.filename !== deleteFilename)
+  } else{
+    itemToDelete.status = 'error'
+    itemToDelete.error = result
+    updateGalleryItem(itemToDelete)
+  }
 }
 
 async function saveDocument() {

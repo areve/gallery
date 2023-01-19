@@ -31,12 +31,13 @@ export interface HistoryItemVariation {
   created?: string;
 }
 
-export type GalleryItem = GalleryItemA | GalleryItemDataUrl
+export type GalleryItem = GalleryItemNormal | GalleryItemDataUrl
 
-export interface GalleryItemA {
+
+export interface GalleryItemNormal {
   filename: string,
   status: 'error' | 'loading' | 'saved',
-  // text?: string
+  error?: string
   metadata: GalleryMetadata
   modified?: Date
 }
@@ -44,7 +45,7 @@ export interface GalleryItemA {
 export interface GalleryItemDataUrl {
   filename: string,
   status: 'error' | 'loading' | 'saved',
-  // text?: string
+  error?: string
   metadata: GalleryMetadata
   modified?: Date
   dataUrl: string

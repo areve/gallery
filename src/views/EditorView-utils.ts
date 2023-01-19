@@ -54,5 +54,5 @@ export function mostRecentPrompt(item: GalleryItem): string {
 
 export function mostRecentError(item: GalleryItem): string {
   const history = getReverseHistory(item)
-  return history.filter(item => item?.error)[0]?.error || ''
+  return (item as any).error || history.filter(item => item?.error)[0]?.error || ''
 }

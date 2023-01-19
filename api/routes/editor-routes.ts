@@ -22,10 +22,10 @@ editorRoutes.post("/saveImage", async (req, res) => {
   if (config.debug) console.debug('metadata', metadata)
   await setMetadata(`${config.downloadsDir}/${filename}`, metadata)
 
-  res.json([{
+  res.json({
     filename,
     metadata,
-  }])
+  })
 })
 
 editorRoutes.post("/deleteImage", async (req, res) => {
@@ -35,5 +35,7 @@ editorRoutes.post("/deleteImage", async (req, res) => {
   if (config.debug) console.debug(`delete image: ${filename}`)
   fs.renameSync(`${config.downloadsDir}/${filename}`, `${config.deletedDir}/${filename}`)
 
-  res.json([{}])
+  res.json({
+    filename
+  })
 })
