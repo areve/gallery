@@ -108,6 +108,12 @@ const width = ref<number>(1024)
 const height = ref<number>(1024)
 const dragOrigin = ref<DragOrigin | null>(null)
 
+const frame = ref<Rect>({
+  x: 0,
+  y: 0,
+  width: width.value,
+  height: height.value
+})
 
 function toggleOpenApiKey() {
   showOpenApiKey.value = !showOpenApiKey.value
@@ -132,13 +138,6 @@ watchSyncEffect(() => {
   drawOverlay()
 })
 
-const frame = ref<Rect>({
-  x: 0,
-  y: 0,
-  width: width.value,
-  height: height.value
-})
-
 onMounted(async () => {
   await setupDocument()
   await loadState()
@@ -147,8 +146,6 @@ onMounted(async () => {
 
 function loadState() {
   openApiKey.value = window.localStorage.getItem('openApiKey') || ''
-  width.value = 1024
-  height.value = 1024
   resetDocument()
   metadata.value = JSON.parse(window.localStorage.getItem('metadata') || '')
   prompt.value = window.localStorage.getItem('prompt') || ''
@@ -169,31 +166,22 @@ async function setupDocument() {
 }
 
 function resetDocument() {
-  // this.canvas.width = this.width
-  // this.canvas.height = this.height
-  // this.overlayCanvas.width = this.width
-  // this.overlayCanvas.height = this.height
-  clearDocumentCanvas()
+  width.value = 1024
+  height.value = 1024
+  documentContext.value.clearRect(0, 0, documentContext.value.canvas.width, documentContext.value.canvas.height)
   metadata.value = { history: [] }
   prompt.value = ''
   filename.value = ''
   drawOverlay()
 }
 
-function clearDocumentCanvas() {
-  documentContext.value.clearRect(0, 0, documentContext.value.canvas.width, documentContext.value.canvas.height)
-}
-
-
 async function scaleDocumentCanvas(by: number) {
   if (width.value <= 1 && by < 1) return
   if (width.value >= 5120 && by > 1) return
   const clone = cloneContext(documentContext.value)
-  clearDocumentCanvas()
+  documentContext.value.clearRect(0, 0, documentContext.value.canvas.width, documentContext.value.canvas.height)
   width.value = Math.min(5120, width.value * by)
   height.value = Math.min(5120, height.value * by)
-  // overlayCanvas.value.width = width.value
-  // overlayCanvas.value.height = height.value
   documentContext.value.drawImage(
     clone.canvas,
     (width.value - clone.canvas.width) / 2,
@@ -260,7 +248,7 @@ async function saveDocument() {
   const item = await saveGalleryItem(newItem)
 
   filename.value = item.filename
-  metadata.value = item.metadata || {}
+  metadata.value = item.metadata
   saveState()
 
   updateGalleryItem(item)
@@ -321,13 +309,14 @@ async function outpaintImage() {
     metadata: extendMetadata(metadata.value, {
       method: 'createImageEdit',
       prompt: prompt.value,
-      image,
-      mask: image,
+      image, // TODO does this get saved into files as metadata!
+      mask: image, // TODO does this get saved into files as metadata!
       filename,
       version: 'OpenAI'
     })
   }
 
+  // TODO should not be drawing to documentContext unless we are still on this document
   updateGalleryItem(item)
   const generatedImage = await openAiEditImage(item, openApiKey.value)
   documentContext.value.drawImage(await loadImage(generatedImage.dataUrl), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
@@ -344,7 +333,7 @@ async function variationImage() {
     status: 'loading',
     metadata: extendMetadata(metadata.value, {
       method: 'createImageVariation',
-      image,
+      image, // TODO does this get saved into files as metadata!
       filename,
       version: 'OpenAI'
     })
