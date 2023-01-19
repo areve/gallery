@@ -235,37 +235,45 @@ async function loadGalleryItem(item: GalleryItem) {
 }
 
 async function deleteGalleryItem(deleteFilename: string) {
-  // TODO no loading spinner whilst we wait
+  const itemToDelete = clone(galleryItems.value.filter(i => i.filename === deleteFilename)[0])
+  itemToDelete.status = 'loading'
+  updateGalleryItem(itemToDelete)
+
   await deleteGaleryItem(deleteFilename)
   filename.value = ''
   metadata.value = { history: [] }
   clearDocumentCanvas()
   saveState()
 
-  // TODO loadGallery is inefficient here
-  await loadGallery()
+  galleryItems.value = galleryItems.value.filter(i => i.filename !== deleteFilename)
 }
 
 async function saveDocument() {
-  const item = await saveGalleryItem({
+  const newItem: GalleryItem = {
     dataUrl: documentContext.value.canvas.toDataURL('image/png'),
     status: 'loading',
     filename: filename.value,
     metadata: metadata.value
-  })
+  }
+
+  updateGalleryItem(newItem)
+  const item = await saveGalleryItem(newItem)
 
   filename.value = item.filename
   metadata.value = item.metadata || {}
   saveState()
 
-  // TODO loadGallery inefficient here
-  await loadGallery()
+  updateGalleryItem(item)
 }
 
 
 
-function replaceInGallery(updatedItem: GalleryItem) {
-  galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
+function updateGalleryItem(updatedItem: GalleryItem) {
+  if (galleryItems.value.find(item => item.filename === updatedItem.filename)) {
+    galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
+  } else {
+    galleryItems.value = [updatedItem, ...galleryItems.value]
+  }
 }
 
 async function generateImage() {
@@ -283,10 +291,10 @@ async function generateImage() {
     }
   }
 
-  galleryItems.value = [item, ...galleryItems.value]
+  updateGalleryItem(item)
   const generatedImage = await openAiGenerateImage(item, openApiKey.value)
   const updatedItem = await saveGalleryItem(generatedImage)
-  replaceInGallery(updatedItem)
+  updateGalleryItem(updatedItem)
 }
 
 async function outpaintImage() {
@@ -322,12 +330,12 @@ async function outpaintImage() {
     })
   }
 
-  galleryItems.value = [item, ...galleryItems.value]
+  updateGalleryItem(item)
   const generatedImage = await openAiEditImage(item, openApiKey.value)
   documentContext.value.drawImage(await loadImage(generatedImage.dataUrl), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
   documentContext.value.drawImage(wholeCanvasClone.canvas, 0, 0, wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
   const updatedItem = await saveGalleryItem(generatedImage)
-  replaceInGallery(updatedItem)
+  updateGalleryItem(updatedItem)
 }
 
 async function variationImage() {
@@ -343,10 +351,10 @@ async function variationImage() {
       version: 'OpenAI'
     })
   }
-  galleryItems.value = [item, ...galleryItems.value]
+  updateGalleryItem(item)
   const generatedImage = await openAiImageVariation(item, openApiKey.value)
   const updatedItem = await saveGalleryItem(generatedImage)
-  replaceInGallery(updatedItem)
+  updateGalleryItem(updatedItem)
 }
 
 async function growFrame(by: number) {
