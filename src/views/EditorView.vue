@@ -231,7 +231,7 @@ async function deleteImage(deleteFilename: string) {
 
   if (result.status === 'error') {
     updateGalleryItem(result)
-  } else{
+  } else {
     galleryItems.value = galleryItems.value.filter(i => i.filename !== result.filename)
   }
 }
@@ -269,7 +269,7 @@ async function generateImage() {
     status: 'loading',
     metadata: {
       history: [{
-        method: 'generation', 
+        method: 'generation',
         filename,
         prompt: prompt.value,
         version: 'OpenAI'
@@ -279,8 +279,12 @@ async function generateImage() {
 
   updateGalleryItem(item)
   const generatedImage = await openAiGenerateImage(item, openApiKey.value)
-  const updatedItem = await saveGalleryItem(generatedImage)
-  updateGalleryItem(updatedItem)
+  if (generatedImage.status === 'error') {
+    updateGalleryItem(generatedImage)
+  } else {
+    const updatedItem = await saveGalleryItem(generatedImage)
+    updateGalleryItem(updatedItem)
+  }
 }
 
 async function outpaintImage() {
@@ -303,12 +307,12 @@ async function outpaintImage() {
   }
 
   const image = (await new Promise<Blob | null>(resolve => scaledWindow.canvas.toBlob(resolve)))!
-  
+
   const item: GalleryItem = {
     filename,
     status: 'loading',
     metadata: extendMetadata(metadata.value, {
-      method: 'edit', 
+      method: 'edit',
       prompt: prompt.value,
       image, // TODO  this get doesn't get saved into files as metadata only because clone doesn't work right
       mask: image, // TODO does this get saved into files as metadata!
@@ -319,16 +323,23 @@ async function outpaintImage() {
 
   updateGalleryItem(item)
   const generatedImage = await openAiEditImage(item, openApiKey.value)
-  const updatedItem = await saveGalleryItem(generatedImage)
-  updateGalleryItem(updatedItem)
+  if (generatedImage.status === 'error') {
+    updateGalleryItem(generatedImage)
+  } else {
 
-  const finalContext = createContext(wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
-  finalContext.drawImage(await loadImage(generatedImage.dataUrl), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
-  finalContext.drawImage(wholeCanvasClone.canvas, 0, 0, wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
-  const finalItem = clone(item) as GalleryItemDataUrl
-  finalItem.dataUrl = finalContext.canvas.toDataURL()
-  finalItem.filename = filenameFinal
-  saveGalleryItem(finalItem)
+    const updatedItem = await saveGalleryItem(generatedImage)
+    updateGalleryItem(updatedItem)
+
+    const finalContext = createContext(wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
+    finalContext.drawImage(await loadImage(generatedImage.dataUrl), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
+    finalContext.drawImage(wholeCanvasClone.canvas, 0, 0, wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
+    const finalItem = clone(item) as GalleryItemDataUrl
+    finalItem.dataUrl = finalContext.canvas.toDataURL()
+    finalItem.filename = filenameFinal
+    saveGalleryItem(finalItem)
+
+    // TODO, now what about the composition image? needs painting if that's what we are doing, and saving if that's what we are
+  }
 }
 
 async function variationImage() {
@@ -338,7 +349,7 @@ async function variationImage() {
     filename,
     status: 'loading',
     metadata: extendMetadata(metadata.value, {
-      method: 'variation', 
+      method: 'variation',
       image, // TODO does this get saved into files as metadata!
       filename,
       version: 'OpenAI'
@@ -346,8 +357,12 @@ async function variationImage() {
   }
   updateGalleryItem(item)
   const generatedImage = await openAiImageVariation(item, openApiKey.value)
-  const updatedItem = await saveGalleryItem(generatedImage)
-  updateGalleryItem(updatedItem)
+  if (generatedImage.status === 'error') {
+    updateGalleryItem(generatedImage)
+  } else {
+    const updatedItem = await saveGalleryItem(generatedImage)
+    updateGalleryItem(updatedItem)
+  }
 }
 
 async function growFrame(by: number) {
