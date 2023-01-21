@@ -81,7 +81,7 @@ import { deleteGalleryItem, getGallery, getGalleryItem, saveGalleryItem } from '
 
 const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
-const scaleImageBy = ref<number>(0.5)
+const scaleImageBy = ref<number>(0.33333)
 const filename = ref<string>('')
 const metadata = ref<GalleryMetadata>({ history: [] })
 
@@ -96,7 +96,7 @@ const metadataAsJson = computed({
 })
 const showOpenApiKey = ref<boolean>(false)
 const toolSelected = ref<Tools>('drag')
-const penSize = ref<number>(100)
+const penSize = ref<number>(300)
 const snapSize = ref<number>(128)
 const openApiKey = ref<string>('')
 const galleryItems = ref<GalleryItem[]>([])
