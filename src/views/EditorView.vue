@@ -172,7 +172,17 @@ function resetDocument() {
   metadata.value = { history: [] }
   prompt.value = ''
   filename.value = ''
+  resetFrame()
   drawOverlay()
+}
+
+function resetFrame() {
+  frame.value = {
+    x: 0,
+    y: 0,
+    width: width.value,
+    height: height.value,
+  }
 }
 
 async function scaleDocumentCanvas(by: number) {
@@ -182,13 +192,36 @@ async function scaleDocumentCanvas(by: number) {
   documentContext.value.clearRect(0, 0, documentContext.value.canvas.width, documentContext.value.canvas.height)
   width.value = Math.min(5120, width.value * by)
   height.value = Math.min(5120, height.value * by)
+  const dx = (width.value - clone.canvas.width) / 2
+  const dy = (width.value - clone.canvas.width) / 2
   documentContext.value.drawImage(
     clone.canvas,
-    (width.value - clone.canvas.width) / 2,
-    (height.value - clone.canvas.height) / 2,
+    dx,
+    dy,
     clone.canvas.width,
     clone.canvas.height)
+
+  const scaleDocumentCanvas_keepFrameSize = false
+  if (scaleDocumentCanvas_keepFrameSize) {
+    frame.value.x += dx
+    frame.value.y += dy
+  } else {
+    frame.value.width += clone.canvas.width
+    frame.value.height += clone.canvas.height
+  }
+
+  if (!rectanglesIntersect(frame.value, { x: 0, y: 0, width: width.value, height: height.value })) {
+    resetFrame()
+  }
   drawOverlay()
+}
+
+function rectanglesIntersect(a: Rect, b: Rect) {
+  const isLeft = a.x + a.width < b.x
+  const isRight = a.x > b.x + b.width
+  const isAbove = a.y > b.y + b.height
+  const isBelow = a.y + a.height < b.y
+  return !(isLeft || isRight || isAbove || isBelow)
 }
 
 async function autoCrop() {
@@ -214,6 +247,7 @@ async function loadGalleryItem(item: GalleryItem) {
 
   width.value = image.width
   height.value = image.height
+  resetFrame()
 
   documentContext.value.drawImage(image, 0, 0)
   prompt.value = mostRecentPrompt(item)
@@ -294,9 +328,18 @@ async function outpaintImage() {
   }
 
   const filename = `image-0-${getDatestamp()}.png`
-  const filenameFinal = `image-0-${getDatestamp()}.png`
+  const compositionRequired = () => frame.value.height !== 1024 || 
+    frame.value.width !== 1024 ||
+    frame.value.width !== width.value || 
+    frame.value.height !== height.value
 
-  const wholeCanvasClone = cloneContext(documentContext.value)
+  const compositionData = compositionRequired() ?
+    {
+      filename: `image-1-${getDatestamp()}.png`,
+      wholeCanvasClone: cloneContext(documentContext.value),
+      frame: clone(frame.value)
+    }: null
+
   const windowClone = cloneContext(documentContext.value, frame.value.x, frame.value.y, frame.value.width, frame.value.height)
 
   const scaledWindow = createContext(1024, 1024)
@@ -330,15 +373,20 @@ async function outpaintImage() {
     const updatedItem = await saveGalleryItem(generatedImage)
     updateGalleryItem(updatedItem)
 
-    const finalContext = createContext(wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
-    finalContext.drawImage(await loadImage(generatedImage.dataUrl), frame.value.x, frame.value.y, frame.value.width, frame.value.height)
-    finalContext.drawImage(wholeCanvasClone.canvas, 0, 0, wholeCanvasClone.canvas.width, wholeCanvasClone.canvas.height)
-    const finalItem = clone(item) as GalleryItemDataUrl
-    finalItem.dataUrl = finalContext.canvas.toDataURL()
-    finalItem.filename = filenameFinal
-    saveGalleryItem(finalItem)
+    if (compositionData) {
+      const finalContext = createContext(compositionData.wholeCanvasClone.canvas.width, compositionData.wholeCanvasClone.canvas.height)
+      finalContext.drawImage(await loadImage(generatedImage.dataUrl), compositionData.frame.x, compositionData.frame.y, compositionData.frame.width, compositionData.frame.height)
+      finalContext.drawImage(compositionData.wholeCanvasClone.canvas, 0, 0, compositionData.wholeCanvasClone.canvas.width, compositionData.wholeCanvasClone.canvas.height)
+  
+      const finalItem = clone(item) as GalleryItemDataUrl
+      finalItem.status = 'saved'
+      finalItem.dataUrl = finalContext.canvas.toDataURL()
+      finalItem.filename = compositionData.filename
+      await saveGalleryItem(finalItem)
+      updateGalleryItem(finalItem)
+    }
 
-    // TODO, now what about the composition image? needs painting if that's what we are doing, and saving if that's what we are
+    // TODO, if the image selected we can update the canvas immediatly
   }
 }
 
@@ -368,6 +416,8 @@ async function variationImage() {
 async function growFrame(by: number) {
   if (frame.value.width <= 512 && by < 1) return
   if (frame.value.width >= 5120 && by > 1) return
+  frame.value.x -= by / 2
+  frame.value.y -= by / 2
   frame.value.width = frame.value.width + by
   frame.value.height = frame.value.height + by
   drawOverlay()
