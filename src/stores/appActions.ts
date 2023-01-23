@@ -19,6 +19,9 @@ const id = () => Math.random()
 export const onSave = ref<AppAction>(undefined!)
 export const save = () => onSave.value = { id: id() }
 
+export const onReset = ref<AppAction>(undefined!)
+export const reset = () => onReset.value = { id: id() }
+
 export const onApplyEffect = ref<ApplyEffect>(undefined!)
 export const applyEffect = (type: EffectType) => {
     onApplyEffect.value = {
@@ -26,6 +29,8 @@ export const applyEffect = (type: EffectType) => {
         type
     }
 }
+
+// TODO this could just be a state rather than an event
 export const onSelectTool = ref<SelectTool>(undefined!)
 export const selectTool = (tool: Tools) => {
     onSelectTool.value = {

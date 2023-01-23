@@ -8,7 +8,6 @@
         <textarea type="text" id="prompt" v-model="prompt"></textarea>
         <textarea class="metadata" v-model="metadataAsJson" v-if="showMetadata"></textarea>
         <button type="button" @click="generateImage()">Generate</button>
-        <button type="reset" @click="resetDocument()">Reset</button>
         <button type="button" @click="variationImage()">Variation</button>
         <button type="button" @click="outpaintImage()">Outpaint</button>
         <button type="button" @click="scaleImage(documentContext, scaleImageBy)">Scale image</button>
@@ -73,7 +72,7 @@ import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } fro
 import { deleteGalleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
 import Menu from '@/components/Menu.vue'
-import { onSave, onApplyEffect, onSelectTool } from '@/stores/appActions'
+import { onSave, onApplyEffect, onSelectTool, onReset } from '@/stores/appActions'
 import { useKeyboardHandler } from '@/stores/keyboardHandler';
 
 
@@ -147,6 +146,7 @@ watchSyncEffect(() => {
 })
 
 watch(onSave, saveDocument)
+watch(onReset, resetDocument)
 watch(onApplyEffect, action => {
   if (action.type === 'shotgun') shotgunEffect(documentContext.value)
 })

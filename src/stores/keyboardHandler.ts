@@ -1,11 +1,12 @@
 import { ref } from "vue";
 
 import { useKeypress } from 'vue3-keypress'
-import { applyEffect, save, selectTool } from "./appActions";
+import { applyEffect, reset, save, selectTool } from "./appActions";
 
 const keyCodes = {
   "e": 69,
   "g": 71,
+  "r": 82,
   "s": 83,
   "1": 49,
   "2": 50,
@@ -20,6 +21,12 @@ export function useKeyboardHandler() {
         keyCode: keyCodes.s,
         modifiers: ["ctrlKey"],
         success: () => save(),
+        preventDefault: true,
+      },
+      {
+        keyCode: keyCodes.r,
+        modifiers: ["ctrlKey"],
+        success: () => reset(),
         preventDefault: true,
       },
       {
@@ -61,6 +68,12 @@ export function useKeyboardHandler() {
     keyBinds: [
       {
         keyCode: keyCodes.s, // disable default behaviour
+        modifiers: ["ctrlKey"],
+        success: () => null,
+        preventDefault: true,
+      },
+      {
+        keyCode: keyCodes.r, // disable default behaviour
         modifiers: ["ctrlKey"],
         success: () => null,
         preventDefault: true,
