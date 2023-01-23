@@ -73,7 +73,11 @@ import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } fro
 import { deleteGalleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
 import Menu from '@/components/Menu.vue'
-import { onSave, onApplyEffect } from '@/stores/appActions'
+import { onSave, onApplyEffect, onSelectTool } from '@/stores/appActions'
+import { useKeyboardHandler } from '@/stores/keyboardHandler';
+
+
+useKeyboardHandler()
 
 // TODO make it possible to select multiple images and delete them
 // TODO make it possible to have currently selected image
@@ -146,6 +150,7 @@ watch(onSave, saveDocument)
 watch(onApplyEffect, action => {
   if (action.type === 'shotgun') shotgunEffect(documentContext.value)
 })
+watch(onSelectTool, action => toolSelected.value = action.tool)
 
 onMounted(async () => {
   await setupDocument()

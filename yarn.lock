@@ -2981,6 +2981,11 @@ vue-tsc@^1.0.12:
     "@volar/vue-language-core" "1.0.22"
     "@volar/vue-typescript" "1.0.22"
 
+vue3-keypress@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/vue3-keypress/-/vue3-keypress-4.0.1.tgz#161959779dda7a0bb86902fac594c75117a0dca4"
+  integrity sha512-oKxLpVsQq1iosuwi38fbH+K2NL2HqbFT8U7yE1fzxcUB0Mup1vS7OcnNMqkgv+FHFJTNvlYAOwLctVK/ahz6Ng==
+
 vue@^3.2.45:
   version "3.2.45"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.45.tgz#94a116784447eb7dbd892167784619fef379b3c8"
