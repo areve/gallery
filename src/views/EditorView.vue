@@ -79,6 +79,14 @@ import { clearCircle, scaleImage } from './EditorView/draw';
 import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } from './EditorView/canvas';
 import { deleteGalleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
+// TODO make it possible to select multiple images and delete them
+// TODO make it possible to have currently selected image
+// TODO tidy up the controls somehow
+// TODO add drag drop image 
+// TODO add copy paste selection 
+// TODO pan zoom and drag canvas
+// TODO add gallery folders
+
 const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
 const scaleImageBy = ref<number>(0.33333)
