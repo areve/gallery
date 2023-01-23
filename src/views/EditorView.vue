@@ -67,17 +67,7 @@
       </div>
     </main>
     <aside class="side-panel">
-      <ul class="gallery">
-        <li v-for="item in galleryItems" class="gallery-item">
-          <button v-if="item.status === 'loading'" type="button" class="loading-button">{{ mostRecentPrompt(item) }}<div
-              class="spinner"></div></button>
-          <button v-else-if="item.status === 'error'" type="button" class="error-button">{{
-            mostRecentError(item)
-          }}</button>
-          <button v-else type="button" @click="loadGalleryItem(item)" class="gallery-button"><img
-              :src="(item as any).dataUrl || '/downloads/' + item.filename" /></button>
-        </li>
-      </ul>
+      <Gallery></Gallery>
     </aside>
   </div>
 </template>
@@ -91,11 +81,12 @@ import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './Ed
 import { shotgunEffect } from './EditorView/effects';
 import { clearCircle, scaleImage } from './EditorView/draw';
 import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } from './EditorView/canvas';
-import { deleteGalleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
 import Menu from '@/components/Menu.vue'
+import Gallery from '@/components/Gallery.vue'
 import { onApplyEffect, onSelectTool, onAction, action } from '@/stores/appActions'
 import { useKeyboardHandler } from '@/stores/keyboardHandler';
+import { deleteGalleryItem, loadGalleryItemZZ, onSelected, saveGalleryItem, updateGalleryItem } from '@/stores/galleryService';
 
 
 useKeyboardHandler()
@@ -128,7 +119,7 @@ const toolSelected = ref<Tools>('drag')
 const penSize = ref<number>(300)
 const snapSize = ref<number>(128)
 const openApiKey = ref<string>('')
-const galleryItems = ref<GalleryItem[]>([])
+//const galleryItems = ref<GalleryItem[]>([])
 
 const documentContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
 const overlayContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
@@ -181,7 +172,6 @@ watch(onSelectTool, action => toolSelected.value = action.tool)
 onMounted(async () => {
   await setupDocument()
   await loadState()
-  await loadGallery()
 })
 
 function loadState() {
@@ -278,12 +268,11 @@ function drawOverlay() {
   overlayContext.value.clearRect(frame.value.x, frame.value.y, frame.value.width, frame.value.height)
 }
 
-async function loadGallery() {
-  galleryItems.value = await getGallery()
-}
+
+watch(onSelected, action => loadGalleryItem(action.item))
 
 async function loadGalleryItem(item: GalleryItem) {
-  const image = await getGalleryItem(item.filename)
+  const image = await loadGalleryItemZZ(item)
 
   width.value = image.width
   height.value = image.height
@@ -297,17 +286,7 @@ async function loadGalleryItem(item: GalleryItem) {
 }
 
 async function deleteImage(deleteFilename: string) {
-  const itemToDelete = clone(galleryItems.value.filter(i => i.filename === deleteFilename)[0])
-  itemToDelete.status = 'loading'
-  updateGalleryItem(itemToDelete)
-
-  const result = await deleteGalleryItem(deleteFilename)
-
-  if (result.status === 'error') {
-    updateGalleryItem(result)
-  } else {
-    galleryItems.value = galleryItems.value.filter(i => i.filename !== result.filename)
-  }
+  deleteGalleryItem(deleteFilename)
 }
 
 async function saveDocument() {
@@ -318,23 +297,14 @@ async function saveDocument() {
     metadata: metadata.value
   }
 
-  updateGalleryItem(newItem)
   const item = await saveGalleryItem(newItem)
 
   filename.value = item.filename
   metadata.value = item.metadata
   saveState()
 
-  updateGalleryItem(item)
 }
 
-function updateGalleryItem(updatedItem: GalleryItem) {
-  if (galleryItems.value.find(item => item.filename === updatedItem.filename)) {
-    galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
-  } else {
-    galleryItems.value = [updatedItem, ...galleryItems.value]
-  }
-}
 
 async function generateImage() {
   const filename = `image-0-${getDatestamp()}.png`

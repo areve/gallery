@@ -2,7 +2,7 @@ import axios from "axios"
 import type { GalleryItem, GalleryItemDataUrl } from "../EditorView-interfaces"
 import { clone, findErrorMessage, loadImage } from "../EditorView-utils"
 
-export async function saveGalleryItem(item: GalleryItemDataUrl) {
+export async function saveGalleryItemEx(item: GalleryItemDataUrl) {
   let response
   try {
     response = await axios.post('/api/editor/saveImage', {
@@ -21,7 +21,7 @@ export async function saveGalleryItem(item: GalleryItemDataUrl) {
   return response.data as GalleryItem
 }
 
-export async function getGallery() {
+export async function getGalleryEx() {
   let response
   try {
     response = await axios.get('/api/gallery/')
@@ -33,11 +33,11 @@ export async function getGallery() {
   return response.data as GalleryItem[]
 }
 
-export async function getGalleryItem(filename: string) {
+export async function getGalleryItemEx(filename: string) {
   return await loadImage(`/downloads/${filename}`)
 }
 
-export async function deleteGalleryItem(filename: string) {
+export async function deleteGalleryItemEx(filename: string) {
   const result: GalleryItem = {
     status: 'deleted',
     filename,
