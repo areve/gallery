@@ -1,21 +1,19 @@
 import type { GalleryItem, GalleryItemDataUrl } from "@/views/EditorView-interfaces";
-import { clone } from "@/views/EditorView-utils";
+import { clone, findErrorMessage, loadImage } from "@/views/EditorView-utils";
 import { ref } from "vue";
-import { deleteGalleryItemEx, getGalleryEx, getGalleryItemEx, saveGalleryItemEx } from '@/views/EditorView/gallery';
-
+import axios from "axios"
 
 const id = () => Math.random()
 
-interface GalleryItemSelected { id: number, item: GalleryItem}
-export const onSelected = ref<GalleryItemSelected>(undefined!)
-export const selectItem = (item: GalleryItem) => onSelected.value = { id: id(), item }
+interface GalleryItemSelected { id: number, item: GalleryItem }
 
 export const galleryItems = ref<GalleryItem[]>([])
+export const onSelected = ref<GalleryItemSelected>(undefined!)
+export const selectItem = (item: GalleryItem) => onSelected.value = { id: id(), item }
 
 export async function loadGallery() {
     galleryItems.value = await getGalleryEx()
 }
-
 
 export async function saveGalleryItem(item: GalleryItemDataUrl) {
     updateGalleryItem(item)
@@ -24,9 +22,7 @@ export async function saveGalleryItem(item: GalleryItemDataUrl) {
     return result
 }
 
-
 export async function deleteGalleryItem(deleteFilename: string) {
-
     const itemToDelete = clone(galleryItems.value.filter(i => i.filename === deleteFilename)[0])
     itemToDelete.status = 'loading'
     updateGalleryItem(itemToDelete)
@@ -38,21 +34,70 @@ export async function deleteGalleryItem(deleteFilename: string) {
     } else {
         galleryItems.value = galleryItems.value.filter(i => i.filename !== result.filename)
     }
-
 }
+
 export async function loadGalleryItemZZ(item: GalleryItem) {
     return await getGalleryItemEx(item.filename)
-
 }
+
 export function updateGalleryItem(updatedItem: GalleryItem) {
     if (galleryItems.value.find(item => item.filename === updatedItem.filename)) {
-      galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
+        galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
     } else {
-      galleryItems.value = [updatedItem, ...galleryItems.value]
+        galleryItems.value = [updatedItem, ...galleryItems.value]
     }
+}
+
+
+
+export async function saveGalleryItemEx(item: GalleryItemDataUrl) {
+  let response
+  try {
+    response = await axios.post('/api/editor/saveImage', {
+      image: item.dataUrl,
+      filename: item.filename,
+      metadata: item.metadata
+    })
+  } catch (e) {
+    console.error(e)
+    const result = clone(item)
+    result.error = findErrorMessage(e)
+    result.status = 'error'
+    return result
   }
-  
 
-// export const onAction = ref<AppAction>(undefined!)
-// export const action = (action: AppActionType) => onAction.value = { id: id(), action }
+  return response.data as GalleryItem
+}
 
+export async function getGalleryEx() {
+  let response
+  try {
+    response = await axios.get('/api/gallery/')
+  } catch (e) {
+    console.error(e)
+    return [] as GalleryItem[]
+  }
+
+  return response.data as GalleryItem[]
+}
+
+export async function getGalleryItemEx(filename: string) {
+  return await loadImage(`/downloads/${filename}`)
+}
+
+export async function deleteGalleryItemEx(filename: string) {
+  const result: GalleryItem = {
+    status: 'deleted',
+    filename,
+    metadata: { history: [] }
+  }
+  try {
+    await axios.post('/api/editor/deleteImage', {
+      filename
+    })
+  } catch (e) {
+    result.status = 'error'
+    result.error = findErrorMessage(e)
+  }
+  return result
+}
