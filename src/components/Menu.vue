@@ -9,8 +9,8 @@
 
         <input type="checkbox" id="sm1">
         <ul class="sub-menu">
-          <li class="menu-item" @click="save" role="button">Save</li>
-          <li class="menu-item" @click="reset" role="button">Reset</li>
+          <li class="menu-item" @click="action('save')" role="button">Save</li>
+          <li class="menu-item" @click="action('reset')" role="button">Reset</li>
         </ul>
       </li>
       <li class="menu-item">Image
@@ -19,7 +19,7 @@
 
         <input type="checkbox" id="sm3">
         <ul class="sub-menu">
-          <li class="menu-item" @click="applyEffect('shotgun')" role="button">Shotgun effect</li>
+          <li class="menu-item" @click="action('auto-crop')" role="button">Auto-crop</li>
           <li class="menu-item">Effect
             <span class="drop-icon">▾</span>
             <label title="Toggle Drop-down" class="drop-icon" for="more2">▾</label>
@@ -38,7 +38,8 @@
 
 <script  lang="ts" setup>
 
-import { save, applyEffect, reset } from '@/stores/appActions'
+import { action, applyEffect } from '@/stores/appActions'
+
 
 </script>
 

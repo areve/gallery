@@ -1,26 +1,29 @@
 import type { Tools } from "@/views/EditorView-interfaces";
 import { ref } from "vue";
 
-export interface AppAction {
+
+export type AppActionType = 'save'| 'reset'| 'auto-crop'
+export interface AppActionBase {
     id: number
+}
+
+export interface AppAction extends AppActionBase {
+    action: AppActionType
 }
 
 export type EffectType = 'shotgun'
 
-export interface ApplyEffect extends AppAction {
+export interface ApplyEffect extends AppActionBase {
     type: EffectType
 } 
-export interface SelectTool extends AppAction {
+export interface SelectTool extends AppActionBase {
     tool: Tools
 } 
 
 const id = () => Math.random()
 
-export const onSave = ref<AppAction>(undefined!)
-export const save = () => onSave.value = { id: id() }
-
-export const onReset = ref<AppAction>(undefined!)
-export const reset = () => onReset.value = { id: id() }
+export const onAction = ref<AppAction>(undefined!)
+export const action = (action: AppActionType) => onAction.value = { id: id(), action }
 
 export const onApplyEffect = ref<ApplyEffect>(undefined!)
 export const applyEffect = (type: EffectType) => {

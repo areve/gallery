@@ -1,7 +1,7 @@
 import { ref } from "vue";
 
 import { useKeypress } from 'vue3-keypress'
-import { applyEffect, reset, save, selectTool } from "./appActions";
+import { action, applyEffect, selectTool } from "./appActions";
 
 const keyCodes = {
   "e": 69,
@@ -20,13 +20,13 @@ export function useKeyboardHandler() {
       {
         keyCode: keyCodes.s,
         modifiers: ["ctrlKey"],
-        success: () => save(),
+        success: () => action('save'),
         preventDefault: true,
       },
       {
         keyCode: keyCodes.r,
         modifiers: ["ctrlKey"],
-        success: () => reset(),
+        success: () => action('reset'),
         preventDefault: true,
       },
       {

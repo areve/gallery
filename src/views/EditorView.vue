@@ -4,38 +4,60 @@
       <Menu></Menu>
 
       <form class="form-controls">
-        <label for="prompt">Prompt</label>
         <textarea type="text" id="prompt" v-model="prompt"></textarea>
+      </form>
+      <section class="tool-panel">
+        <h3>Document Settings</h3>
+        <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
         <textarea class="metadata" v-model="metadataAsJson" v-if="showMetadata"></textarea>
-        <button type="button" @click="generateImage()">Generate</button>
-        <button type="button" @click="variationImage()">Variation</button>
-        <button type="button" @click="outpaintImage()">Outpaint</button>
+        <input type="text" v-model="filename" />
+        <button type="button" @click="deleteImage(filename)">Delete</button>
+        
+      </section>
+      <section class="tool-panel">
+        <h3>App Settings</h3>
+        <button type="button" @click="toggleOpenApiKey()">Toggle Key</button>
+        <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
+      </section>
+      <section class="tool-panel">
+        <h3>Scale</h3>
         <button type="button" @click="scaleImage(documentContext, scaleImageBy)">Scale image</button>
         <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
-        <button type="button" @click="deleteImage(filename)">Delete</button>
-        <input type="text" v-model="filename" />
-        <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
-        <button type="button" @click="toggleOpenApiKey()">Toggle Key</button>
-        <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
+        <button type="button" @click="scaleDocumentCanvas(0.5)">Shrink</button>
+        <button type="button" @click="scaleDocumentCanvas(2)">Grow</button>
+        <button type="button" @click="growFrame(-512)">Shrink frame</button>
+        <button type="button" @click="growFrame(512)">Grow frame</button>
+      </section>
+      <section class="tool-panel">
+        <h3>OpenAI</h3>
+        <button type="button" @click="generateImage()">Generate</button>
+        <button type="button" @click="variationImage()">Variation</button>
+        <button type="button" @click="outpaintImage()">Outpaint</button>
+      </section>
+      <section class="tool-panel">
+        <h3>Tool</h3>
         <button type="button" @click="toolSelected = 'pen'" :class="{ 'use-tool': toolSelected === 'pen' }">Pen</button>
         <button type="button" @click="toolSelected = 'drag'"
           :class="{ 'use-tool': toolSelected === 'drag' }">Drag</button>
         <button type="button" @click="toolSelected = 'drag-frame'"
           :class="{ 'use-tool': toolSelected === 'drag-frame' }">Drag frame</button>
-        <label for="penSize">size</label>
+      </section>
+      <section class="tool-panel" v-if="toolSelected === 'pen'">
+        <h3>Pen Settings</h3>
+        <label for="penSize">Pen size</label>
         <input type="number" id="penSize" v-model="penSize" step="5" min="0" max="1000" />
+      </section>
+      <section class="tool-panel" v-if="toolSelected === 'drag' || toolSelected === 'drag-frame'">
+        <h3>Drag Settings</h3>
         <label for="snap">snap</label>
         <input type="number" id="snap" v-model="snapSize" step="1" min="1" max="256" />
-        
-        <button type="button" @click="scaleDocumentCanvas(0.5)">Shrink</button>
-        <button type="button" @click="scaleDocumentCanvas(2)">Grow</button>
-        <button type="button" @click="growFrame(-512)">Shrink frame</button>
-        <button type="button" @click="growFrame(512)">Grow frame</button>
-        <button type="button" @click="autoCrop(); saveDocument()">Auto crop</button>
+      </section>
+      
+      <span class="status-bar">
         <span>canvas:{{ width }}x{{ height }}</span>
         <span>window:{{ frame.width }}x{{ frame.height }}</span>
-      </form>
+      </span>
       <div class="document-panel">
         <div class="document" :style="{ 'aspect-ratio': width + ' / ' + height }">
 
@@ -72,7 +94,7 @@ import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } fro
 import { deleteGalleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
 import Menu from '@/components/Menu.vue'
-import { onSave, onApplyEffect, onSelectTool, onReset } from '@/stores/appActions'
+import { onApplyEffect, onSelectTool, onAction, action } from '@/stores/appActions'
 import { useKeyboardHandler } from '@/stores/keyboardHandler';
 
 
@@ -145,8 +167,12 @@ watchSyncEffect(() => {
   drawOverlay()
 })
 
-watch(onSave, saveDocument)
-watch(onReset, resetDocument)
+watch(onAction, action => {
+  if (action.action === 'save') saveDocument()
+  if (action.action === 'reset') resetDocument()
+  if (action.action === 'auto-crop') autoCrop()
+})
+
 watch(onApplyEffect, action => {
   if (action.type === 'shotgun') shotgunEffect(documentContext.value)
 })
@@ -476,4 +502,12 @@ function mouseMove(mouse: MouseEvent) {
 
 <style scoped>
 @import './EditorView.css';
+
+.tool-panel {
+  margin: 0.4em;
+}
+
+.tool-panel h3 {
+  display: none;
+}
 </style>
