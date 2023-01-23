@@ -21,25 +21,6 @@
   background-color: #ccc7;
 }
 
-.menu {
-  background-color: #000;
-  color: #fff;
-  padding: 0.2em;
-  grid-area: menu;
-}
-
-.menu-list {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: row;
-}
-
-.menu-item {
-  padding: 0.1em 0.4em;
-}
-
 .form-controls {
   padding: 0.4em;
   grid-area: document;

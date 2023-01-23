@@ -1,13 +1,8 @@
 <template>
   <div class="layout" @mouseup="mouseUp">
     <main class="main">
-      <nav class="menu">
-        <ul class="menu-list">
-          <li class="menu-item">File</li>
-          <li class="menu-item">Edit</li>
-          <li class="menu-item">About</li>
-        </ul>
-      </nav>
+      <Menu></Menu>
+
       <form class="form-controls">
         <label for="prompt">Prompt</label>
         <textarea type="text" id="prompt" v-model="prompt"></textarea>
@@ -70,7 +65,7 @@
 
 <script lang="ts" setup>
 
-import { computed, onMounted, ref, watchSyncEffect } from 'vue';
+import { computed, onMounted, ref, watch, watchEffect, watchSyncEffect } from 'vue';
 import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, HistoryItem, HistoryItemEdit, HistoryItemGeneration, GalleryItemDataUrl } from './EditorView-interfaces';
 import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory, mostRecentPrompt, mostRecentError } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
@@ -78,6 +73,9 @@ import { shotgunEffect } from './EditorView/effects';
 import { clearCircle, scaleImage } from './EditorView/draw';
 import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } from './EditorView/canvas';
 import { deleteGalleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
+
+import Menu from '@/components/Menu.vue'
+import { onSave } from '@/stores/appActions'
 
 // TODO make it possible to select multiple images and delete them
 // TODO make it possible to have currently selected image
@@ -89,7 +87,7 @@ import { deleteGalleryItem, getGallery, getGalleryItem, saveGalleryItem } from '
 
 const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
-const scaleImageBy = ref<number>(0.33333)
+const scaleImageBy = ref<number>(0.5)
 const filename = ref<string>('')
 const metadata = ref<GalleryMetadata>({ history: [] })
 
@@ -145,6 +143,8 @@ watchSyncEffect(() => {
   void (frame.value)
   drawOverlay()
 })
+
+watch([onSave], saveDocument)
 
 onMounted(async () => {
   await setupDocument()
@@ -336,9 +336,9 @@ async function outpaintImage() {
   }
 
   const filename = `image-0-${getDatestamp()}.png`
-  const compositionRequired = () => frame.value.height !== 1024 || 
+  const compositionRequired = () => frame.value.height !== 1024 ||
     frame.value.width !== 1024 ||
-    frame.value.width !== width.value || 
+    frame.value.width !== width.value ||
     frame.value.height !== height.value
 
   const compositionData = compositionRequired() ?
@@ -346,7 +346,7 @@ async function outpaintImage() {
       filename: `image-1-${getDatestamp()}.png`,
       wholeCanvasClone: cloneContext(documentContext.value),
       frame: clone(frame.value)
-    }: null
+    } : null
 
   const windowClone = cloneContext(documentContext.value, frame.value.x, frame.value.y, frame.value.width, frame.value.height)
 
@@ -385,7 +385,7 @@ async function outpaintImage() {
       const finalContext = createContext(compositionData.wholeCanvasClone.canvas.width, compositionData.wholeCanvasClone.canvas.height)
       finalContext.drawImage(await loadImage(generatedImage.dataUrl), compositionData.frame.x, compositionData.frame.y, compositionData.frame.width, compositionData.frame.height)
       finalContext.drawImage(compositionData.wholeCanvasClone.canvas, 0, 0, compositionData.wholeCanvasClone.canvas.width, compositionData.wholeCanvasClone.canvas.height)
-  
+
       const finalItem = clone(item) as GalleryItemDataUrl
       finalItem.status = 'saved'
       finalItem.dataUrl = finalContext.canvas.toDataURL()
