@@ -167,6 +167,7 @@ import { save, applyEffect } from '@/stores/appActions'
   position: absolute;
   right: 1.5em;
   top: 1.25em;
+  display: none; /* TODO maybe remove */
 }
 
 #menu label.drop-icon,
@@ -178,18 +179,20 @@ import { save, applyEffect } from '@/stores/appActions'
   background-color: rgba(0, 0, 0, .125);
   text-shadow: 0 0 0 transparent;
   color: rgba(255, 255, 255, .75);
+  display: none; /* TODO maybe remove */
 }
 
 #menu .drop-icon {
   line-height: 1;
+  display: none; /* TODO maybe remove */
 }
 
 
-@media only screen and (min-width: 52em) {
+@media only screen and (min-width: 1em) { /* TODO 52em is better for a breakpoint */
 
   #toggle-menu,
   #menu .menu-item {
-    padding: 0.1em 0.4em;
+    padding: 0.2em 1em;
   }
 
 
@@ -204,6 +207,7 @@ import { save, applyEffect } from '@/stores/appActions'
 
   #menu ul span.drop-icon {
     display: inline-block;
+    display: none; /* TODO maybe remove */
   }
 
   #menu li {
