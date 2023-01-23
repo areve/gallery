@@ -2,16 +2,18 @@
   <nav class="menu">
     <ul class="menu-list">
       <li class="menu-item">File</li>
-      <li class="menu-item">Edit</li>
-      <li class="menu-item">About</li>
       <li class="menu-item" @click="save" role="button">Save</li>
+      <li class="menu-item">Edit</li>
+      <li class="menu-item">Image</li>
+      <li class="menu-item" @click="applyEffect('shotgun')" role="button">Shotgun effect</li>
+      <li class="menu-item">About</li>
     </ul>
   </nav>
 </template>
 
-<script setup>
+<script  lang="ts" setup>
 
-import { save } from '@/stores/appActions'
+import { save, applyEffect } from '@/stores/appActions'
 
 </script>
 

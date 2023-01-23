@@ -17,7 +17,6 @@
         <button type="button" @click="deleteImage(filename)">Delete</button>
         <input type="text" v-model="filename" />
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
-        <button type="button" @click="saveDocument()">Save</button>
         <button type="button" @click="toggleOpenApiKey()">Toggle Key</button>
         <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
         <button type="button" @click="toolSelected = 'pen'" :class="{ 'use-tool': toolSelected === 'pen' }">Pen</button>
@@ -29,8 +28,7 @@
         <input type="number" id="penSize" v-model="penSize" step="5" min="0" max="1000" />
         <label for="snap">snap</label>
         <input type="number" id="snap" v-model="snapSize" step="1" min="1" max="256" />
-        <button type="button" @click="shotgunEffect(documentContext)">Shotgun effect</button>
-
+        
         <button type="button" @click="scaleDocumentCanvas(0.5)">Shrink</button>
         <button type="button" @click="scaleDocumentCanvas(2)">Grow</button>
         <button type="button" @click="growFrame(-512)">Shrink frame</button>
@@ -75,7 +73,7 @@ import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } fro
 import { deleteGalleryItem, getGallery, getGalleryItem, saveGalleryItem } from './EditorView/gallery';
 
 import Menu from '@/components/Menu.vue'
-import { onSave } from '@/stores/appActions'
+import { onSave, onApplyEffect } from '@/stores/appActions'
 
 // TODO make it possible to select multiple images and delete them
 // TODO make it possible to have currently selected image
@@ -144,7 +142,10 @@ watchSyncEffect(() => {
   drawOverlay()
 })
 
-watch([onSave], saveDocument)
+watch(onSave, saveDocument)
+watch(onApplyEffect, action => {
+  if (action.type === 'shotgun') shotgunEffect(documentContext.value)
+})
 
 onMounted(async () => {
   await setupDocument()
