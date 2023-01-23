@@ -169,6 +169,8 @@ watch(onApplyEffect, action => {
 })
 watch(onSelectTool, action => toolSelected.value = action.tool)
 
+watch(onSelected, action => galleryItemSelected(action.item))
+
 onMounted(async () => {
   await setupDocument()
   await loadState()
@@ -269,7 +271,6 @@ function drawOverlay() {
 }
 
 
-watch(onSelected, action => galleryItemSelected(action.item))
 
 async function galleryItemSelected(item: GalleryItem) {
   const image = await loadGalleryItem(item)
@@ -321,6 +322,7 @@ async function generateImage() {
     }
   }
 
+  // TODO not sure if I want this method to be exposed?
   updateGalleryItem(item)
   const generatedImage = await openAiGenerateImage(item, openApiKey.value)
   if (generatedImage.status === 'error') {

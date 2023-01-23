@@ -49,7 +49,7 @@ export function updateGalleryItem(updatedItem: GalleryItem) {
 }
 
 
-
+// TODO the Ex methods are callers wrap the http request, they needn't be in this file
 async function saveGalleryItemEx(item: GalleryItemDataUrl) {
   let response
   try {
