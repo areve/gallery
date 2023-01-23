@@ -36,7 +36,7 @@ export async function deleteGalleryItem(deleteFilename: string) {
     }
 }
 
-export async function loadGalleryItemZZ(item: GalleryItem) {
+export async function loadGalleryItem(item: GalleryItem) {
     return await getGalleryItemEx(item.filename)
 }
 
@@ -50,7 +50,7 @@ export function updateGalleryItem(updatedItem: GalleryItem) {
 
 
 
-export async function saveGalleryItemEx(item: GalleryItemDataUrl) {
+async function saveGalleryItemEx(item: GalleryItemDataUrl) {
   let response
   try {
     response = await axios.post('/api/editor/saveImage', {
@@ -69,7 +69,7 @@ export async function saveGalleryItemEx(item: GalleryItemDataUrl) {
   return response.data as GalleryItem
 }
 
-export async function getGalleryEx() {
+async function getGalleryEx() {
   let response
   try {
     response = await axios.get('/api/gallery/')
@@ -81,11 +81,11 @@ export async function getGalleryEx() {
   return response.data as GalleryItem[]
 }
 
-export async function getGalleryItemEx(filename: string) {
+async function getGalleryItemEx(filename: string) {
   return await loadImage(`/downloads/${filename}`)
 }
 
-export async function deleteGalleryItemEx(filename: string) {
+async function deleteGalleryItemEx(filename: string) {
   const result: GalleryItem = {
     status: 'deleted',
     filename,

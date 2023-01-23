@@ -86,7 +86,7 @@ import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
 import { onApplyEffect, onSelectTool, onAction, action } from '@/stores/appActions'
 import { useKeyboardHandler } from '@/stores/keyboardHandler';
-import { deleteGalleryItem, loadGalleryItemZZ, onSelected, saveGalleryItem, updateGalleryItem } from '@/stores/galleryService';
+import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem, updateGalleryItem } from '@/stores/galleryService';
 
 
 useKeyboardHandler()
@@ -269,10 +269,10 @@ function drawOverlay() {
 }
 
 
-watch(onSelected, action => loadGalleryItem(action.item))
+watch(onSelected, action => galleryItemSelected(action.item))
 
-async function loadGalleryItem(item: GalleryItem) {
-  const image = await loadGalleryItemZZ(item)
+async function galleryItemSelected(item: GalleryItem) {
+  const image = await loadGalleryItem(item)
 
   width.value = image.width
   height.value = image.height
