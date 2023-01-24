@@ -1,4 +1,4 @@
-import type { GalleryItem, HistoryItem, GalleryMetadata } from "./EditorView-interfaces"
+import type { GalleryItem, HistoryItem, GalleryMetadata } from "@/interfaces/EditorView-interfaces"
 
 export function extendMetadata(metadata: GalleryMetadata, historyItem: HistoryItem) {
   const result = JSON.parse(JSON.stringify(metadata))

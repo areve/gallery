@@ -1,4 +1,4 @@
-import type { Tools } from "@/views/EditorView-interfaces";
+import type { Tools } from "@/interfaces/EditorView-interfaces";
 import { ref } from "vue";
 
 

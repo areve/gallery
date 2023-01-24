@@ -74,9 +74,9 @@
 
 <script lang="ts" setup>
 
-import { computed, onMounted, ref, watch, watchEffect, watchSyncEffect } from 'vue';
-import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, HistoryItem, HistoryItemEdit, HistoryItemGeneration, GalleryItemDataUrl } from './EditorView-interfaces';
-import { loadImage, clone, getDatestamp, extendMetadata, getReverseHistory, mostRecentPrompt, mostRecentError } from './EditorView-utils';
+import { computed, onMounted, ref, watch, watchSyncEffect } from 'vue';
+import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, GalleryItemDataUrl } from '@/interfaces/EditorView-interfaces';
+import { loadImage, clone, getDatestamp, extendMetadata, mostRecentPrompt } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
 import { shotgunEffect } from './EditorView/effects';
 import { clearCircle, scaleImage } from './EditorView/draw';
@@ -84,7 +84,7 @@ import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } fro
 
 import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
-import { onApplyEffect, onSelectTool, onAction, action } from '@/stores/appActions'
+import { onApplyEffect, onSelectTool, onAction } from '@/stores/appActions'
 import { useKeyboardHandler } from '@/stores/keyboardHandler';
 import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem, updateGalleryItem } from '@/stores/galleryService';
 

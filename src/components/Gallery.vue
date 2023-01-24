@@ -14,7 +14,6 @@
 
 <script  lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import type { GalleryItem } from '@/views/EditorView-interfaces';
 import { mostRecentError, mostRecentPrompt } from '@/views/EditorView-utils';
 import { galleryItems, loadGallery, selectItem } from '@/stores/galleryService';
 
