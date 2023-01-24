@@ -68,7 +68,7 @@ async function flatten({ metadata, width, height, layers }: FlattenOptions) {
     }
 
     const finalItem = await saveGalleryItem(item)
-    updateGalleryItem(finalItem)
+    return updateGalleryItem(finalItem)
 }
 
 export function createLayer(context: CanvasRenderingContext2D) {

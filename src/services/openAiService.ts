@@ -1,7 +1,7 @@
 import type { GalleryItem, GalleryMetadata } from "@/interfaces/EditorView-interfaces"
 import { extendMetadata, getDatestamp } from "@/views/EditorView-utils"
 import { imageCountEmptyPixels } from "@/views/EditorView/canvas"
-import { openAiEditImage, openAiGenerateImage } from "@/services/openAiApi"
+import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/services/openAiApi"
 import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
 
@@ -16,9 +16,13 @@ interface OutpaintOptions {
     image: CanvasRenderingContext2D,
     metadata: GalleryMetadata
 }
+interface VariationOptions {
+    image: CanvasRenderingContext2D,
+    metadata: GalleryMetadata
+}
 
 async function generate({ prompt }: GenerateOptions) {
-    const filename = `image-0-${getDatestamp()}.png`
+    const filename = `generation-${getDatestamp()}.png`
     const item: GalleryItem = {
         filename,
         status: 'loading',
@@ -37,7 +41,7 @@ async function generate({ prompt }: GenerateOptions) {
     if (generatedImage.status === 'error') {
         updateGalleryItem(generatedImage)
         return generatedImage
-    } 
+    }
 
     const updatedItem = await saveGalleryItem(generatedImage)
     updateGalleryItem(updatedItem)
@@ -55,16 +59,16 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
         return
     }
 
-    const maskAndImage = (await new Promise<Blob | null>(resolve => image.canvas.toBlob(resolve)))!
-    const filename = `image-0-${getDatestamp()}.png`
+    const imageBlob = (await new Promise<Blob | null>(resolve => image.canvas.toBlob(resolve)))!
+    const filename = `outpaint-${getDatestamp()}.png`
     const item: GalleryItem = {
         filename,
         status: 'loading',
         metadata: extendMetadata(metadata, {
             method: 'edit',
             prompt,
-            image: maskAndImage,
-            mask: maskAndImage,
+            image: imageBlob,
+            mask: imageBlob,
             filename,
             version: 'OpenAI'
         })
@@ -75,7 +79,32 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
     if (generatedImage.status === 'error') {
         updateGalleryItem(generatedImage)
         return generatedImage
-    } 
+    }
+
+    const updatedItem = await saveGalleryItem(generatedImage)
+    updateGalleryItem(updatedItem)
+    return updatedItem
+}
+async function variation({ image, metadata }: VariationOptions) {
+    const imageBlob = (await new Promise<Blob | null>(resolve => image.canvas.toBlob(resolve)))!
+    const filename = `variation-${getDatestamp()}.png`
+    const item: GalleryItem = {
+        filename,
+        status: 'loading',
+        metadata: extendMetadata(metadata, {
+            method: 'variation',
+            image: imageBlob, // TODO does this get saved into files as metadata! no but it's by accident
+            filename,
+            version: 'OpenAI'
+        })
+    }
+
+    updateGalleryItem(item)
+    const generatedImage = await openAiImageVariation(item, openApiKey.value)
+    if (generatedImage.status === 'error') {
+        updateGalleryItem(generatedImage)
+        return generatedImage
+    }
 
     const updatedItem = await saveGalleryItem(generatedImage)
     updateGalleryItem(updatedItem)
@@ -85,5 +114,6 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
 export default {
     generate,
     outpaint,
+    variation,
     openApiKey
 }

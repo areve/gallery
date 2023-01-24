@@ -316,8 +316,15 @@ async function generateImage() {
 }
 
 async function outpaintImage() {
-  const image = createContext(1024, 1024)
-  image.drawImage(documentContext.value.canvas, 0, 0, 1024, 1024)
+  // TODO this save is perhaps not needed, rethink later
+  await compositionService.flatten({
+    metadata: metadata.value,
+    width: documentContext.value.canvas.width,
+    height: documentContext.value.canvas.height,
+    layers: [
+      createLayer(documentContext.value)
+    ]
+  })
 
   const compositionRequired = frame.value.height !== 1024 ||
     frame.value.width !== 1024 ||
@@ -326,12 +333,12 @@ async function outpaintImage() {
 
   const compositionData = compositionRequired ? {
     documentContext: cloneContext(documentContext.value),
-    frame: clone(frame.value) // cloneContext(documentContext.value, frame.value.x, frame.value.y, frame.value.width, frame.value.height)
+    frame: clone(frame.value) 
   } : null
 
   const outpaintResult = await openAiService.outpaint({
     prompt: prompt.value,
-    image,
+    image: createContextFromFrame(1024, 1024),
     metadata: metadata.value
   })
 
@@ -356,26 +363,22 @@ async function outpaintImage() {
 }
 
 async function variationImage() {
-  const filename = `image-0-${getDatestamp()}.png`
-  const image = (await new Promise<Blob | null>(resolve => documentContext.value.canvas.toBlob(resolve)))!
-  const item: GalleryItem = {
-    filename,
-    status: 'loading',
-    metadata: extendMetadata(metadata.value, {
-      method: 'variation',
-      image, // TODO does this get saved into files as metadata!
-      filename,
-      version: 'OpenAI'
-    })
-  }
-  updateGalleryItem(item)
-  const generatedImage = await openAiImageVariation(item, openAiService.openApiKey.value)
-  if (generatedImage.status === 'error') {
-    updateGalleryItem(generatedImage)
-  } else {
-    const updatedItem = await saveGalleryItem(generatedImage)
-    updateGalleryItem(updatedItem)
-  }
+  const outpaintResult = await openAiService.variation({
+    image: createContextFromFrame(1024, 1024),
+    metadata: metadata.value
+  })
+}
+
+function createContextFromFrame(width: number, height: number) {
+  const image = createContext(width, 1024)
+  image.drawImage(documentContext.value.canvas,
+    frame.value.x,
+    frame.value.y,
+    frame.value.width,
+    frame.value.height,
+    0, 0, width, height,
+  )
+  return image
 }
 
 async function growFrame(by: number) {
