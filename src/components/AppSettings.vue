@@ -10,13 +10,11 @@
 <script  lang="ts" setup>
 
 import openAiService from '@/services/openAiService';
-import { panel } from '@/services/panelState';
+import { panel } from '@/services/appState';
 import { watch } from 'vue';
 
 watch(panel.value, () => {
-  console.log(panel.value.settings.visible)
   if (!panel.value.settings.visible) {
-    console.log('save', openAiService.openApiKey.value)
     window.localStorage.setItem('openApiKey', openAiService.openApiKey.value)
   }
 })
@@ -24,4 +22,12 @@ watch(panel.value, () => {
 </script>
 
 <style scoped>
+
+.tool-panel {
+  margin: 0.4em;
+}
+
+.tool-panel h3 {
+  display: none;
+}
 </style>

@@ -29,24 +29,7 @@
         <button type="button" @click="variationImage()">Variation</button>
         <button type="button" @click="outpaintImage()">Outpaint</button>
       </section>
-      <section class="tool-panel">
-        <h3>Tool</h3>
-        <button type="button" @click="toolSelected = 'pen'" :class="{ 'use-tool': toolSelected === 'pen' }">Pen</button>
-        <button type="button" @click="toolSelected = 'drag'"
-          :class="{ 'use-tool': toolSelected === 'drag' }">Drag</button>
-        <button type="button" @click="toolSelected = 'drag-frame'"
-          :class="{ 'use-tool': toolSelected === 'drag-frame' }">Drag frame</button>
-      </section>
-      <section class="tool-panel" v-if="toolSelected === 'pen'">
-        <h3>Pen Settings</h3>
-        <label for="penSize">Pen size</label>
-        <input type="number" id="penSize" v-model="penSize" step="5" min="0" max="1000" />
-      </section>
-      <section class="tool-panel" v-if="toolSelected === 'drag' || toolSelected === 'drag-frame'">
-        <h3>Drag Settings</h3>
-        <label for="snap">snap</label>
-        <input type="number" id="snap" v-model="snapSize" step="1" min="1" max="256" />
-      </section>
+      <ToolPanel />
 
       <div class="document-panel">
         <div class="document" :style="{ 'aspect-ratio': width + ' / ' + height }">
@@ -83,7 +66,8 @@ import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem } from 
 import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
-import { panel } from '@/services/panelState';
+import { panel, penSize, snapSize, toolSelected } from '@/services/appState';
+import ToolPanel from '@/components/ToolPanel.vue';
 
 useKeyboardHandler()
 
@@ -110,9 +94,6 @@ const metadataAsJson = computed({
     return JSON.parse(value)
   }
 })
-const toolSelected = ref<Tools>('drag')
-const penSize = ref<number>(300)
-const snapSize = ref<number>(128)
 
 const documentContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
 const overlayContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
@@ -165,7 +146,6 @@ onMounted(async () => {
 })
 
 function loadState() {
-  console.log('load', window.localStorage.getItem('openApiKey') || '')
   openAiService.openApiKey.value = window.localStorage.getItem('openApiKey') || ''
   resetDocument()
   metadata.value = JSON.parse(window.localStorage.getItem('metadata') || '')
@@ -391,11 +371,9 @@ function mouseMove(mouse: MouseEvent) {
   const snapDy = Math.floor(dy / snapSize.value) * snapSize.value
 
   if (toolSelected.value === 'pen') {
-    const ctx = documentContext.value
     const x = mouse.offsetX / documentContext.value.canvas.offsetWidth * documentContext.value.canvas.width
     const y = mouse.offsetY / documentContext.value.canvas.offsetHeight * documentContext.value.canvas.height
     clearCircle(documentContext.value, x, y, penSize.value / 2)
-
   } else if (toolSelected.value === 'drag') {
     documentContext.value.clearRect(0, 0, width.value, height.value)
     documentContext.value.putImageData(dragOrigin.value.data, snapDx, snapDy)
