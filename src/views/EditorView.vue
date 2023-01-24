@@ -88,7 +88,7 @@ import { onApplyEffect, onSelectTool, onAction } from '@/stores/appActions'
 import { useKeyboardHandler } from '@/stores/keyboardHandler';
 import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem, updateGalleryItem } from '@/stores/galleryService';
 import openAiService from '@/stores/openAiService';
-import compositionService from '@/stores/compositionService';
+import compositionService, { createLayer } from '@/stores/compositionService';
 import galleryApi from '@/stores/galleryApi';
 
 useKeyboardHandler()
@@ -336,31 +336,22 @@ async function outpaintImage() {
   })
 
   if (compositionData && outpaintResult) {
-    // TODO the following could be simplified a lot with some helpers
-    await compositionService.layers(
-      metadata.value,
-      {
-        image: createContext(compositionData.documentContext.canvas.width, compositionData.documentContext.canvas.height),
-        x: 0,
-        y: 0,
-        width: image.canvas.width,
-        height: image.canvas.height
-      },
-      {
-        image: createContextFromImage(await galleryApi.getGalleryItem(outpaintResult.filename)),
-        x: compositionData.frame.x,
-        y: compositionData.frame.y,
-        width: compositionData.frame.width,
-        height: compositionData.frame.height
-      },
-      {
-        image: compositionData.documentContext, 
-        x: 0,
-        y: 0,
-        width: compositionData.documentContext.canvas.width,
-        height: compositionData.documentContext.canvas.height
-      }
-    )
+    await compositionService.flatten({
+      metadata: metadata.value,
+      width: compositionData.documentContext.canvas.width, 
+      height: compositionData.documentContext.canvas.height,
+      layers: [
+        {
+          // TODO possibly may this one function call
+          image: createContextFromImage(await galleryApi.getGalleryItem(outpaintResult.filename)),
+          x: compositionData.frame.x,
+          y: compositionData.frame.y,
+          width: compositionData.frame.width,
+          height: compositionData.frame.height
+        },
+        createLayer(compositionData.documentContext)
+      ]
+    })
   }
 }
 

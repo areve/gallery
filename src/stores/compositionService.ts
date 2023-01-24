@@ -12,9 +12,9 @@ interface Layer {
 }
 
 async function layers(metadata: GalleryMetadata, baseLayer: Layer, ...layers: Layer[]) {
-       layers.forEach(layer => {
+    layers.forEach(layer => {
         baseLayer.image.drawImage(
-            layer.image.canvas, 
+            layer.image.canvas,
             layer.x,
             layer.y,
             layer.width,
@@ -34,9 +34,55 @@ async function layers(metadata: GalleryMetadata, baseLayer: Layer, ...layers: La
     }
 
     const finalItem = await saveGalleryItem(item)
-    updateGalleryItem(finalItem)    
+    updateGalleryItem(finalItem)
+}
+
+interface FlattenOptions {
+    metadata: GalleryMetadata,
+    width: number,
+    height: number,
+    layers: Layer[]
+}
+
+async function flatten({ metadata, width, height, layers }: FlattenOptions) {
+    const context = createContext(width, height)
+    layers.forEach(layer => {
+        context.drawImage(
+            layer.image.canvas,
+            layer.x,
+            layer.y,
+            layer.width,
+            layer.height)
+    })
+
+    const filename = `composition-${getDatestamp()}.png`
+    const item: GalleryItemDataUrl = {
+        filename,
+        dataUrl: context.canvas.toDataURL(),
+        status: 'loading',
+        metadata: extendMetadata(metadata, {
+            method: 'composition',
+            filename,
+            created: new Date().toISOString()
+        })
+    }
+
+    const finalItem = await saveGalleryItem(item)
+    updateGalleryItem(finalItem)
+}
+
+export function createLayer(context: CanvasRenderingContext2D) {
+    return {
+        image: context,
+        x: 0,
+        y: 0,
+        width: context.canvas.width,
+        height: context.canvas.height
+    }
 }
 
 export default {
-    layers
+    layers,
+    flatten,
+    createLayer
 }
