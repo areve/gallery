@@ -34,6 +34,7 @@ async function getGallery() {
 }
 
 async function getGalleryItem(filename: string) {
+  // TODO could be better perhaps if this returned a GalleryItem
   return await loadImage(`/downloads/${filename}`)
 }
 

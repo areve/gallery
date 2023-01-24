@@ -1,4 +1,4 @@
-import type { GalleryItem, HistoryItem, GalleryMetadata } from "@/interfaces/EditorView-interfaces"
+import type { GalleryItem, HistoryItem, GalleryMetadata, Rect } from "@/interfaces/EditorView-interfaces"
 
 export function extendMetadata(metadata: GalleryMetadata, historyItem: HistoryItem) {
   const result = JSON.parse(JSON.stringify(metadata))
@@ -55,4 +55,12 @@ export function mostRecentPrompt(item: GalleryItem): string {
 export function mostRecentError(item: GalleryItem): string {
   const history = getReverseHistory(item)
   return (item as any).error || history.filter(item => item?.error)[0]?.error || ''
+}
+
+export function rectanglesIntersect(a: Rect, b: Rect) {
+  const isLeft = a.x + a.width < b.x
+  const isRight = a.x > b.x + b.width
+  const isAbove = a.y > b.y + b.height
+  const isBelow = a.y + a.height < b.y
+  return !(isLeft || isRight || isAbove || isBelow)
 }

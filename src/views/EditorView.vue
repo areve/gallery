@@ -75,18 +75,17 @@
 <script lang="ts" setup>
 
 import { computed, onMounted, ref, watch, watchSyncEffect } from 'vue';
-import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, GalleryItemDataUrl } from '@/interfaces/EditorView-interfaces';
-import { clone, getDatestamp, extendMetadata, mostRecentPrompt } from './EditorView-utils';
-import { openAiImageVariation } from '@/services/openAiApi';
+import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin } from '@/interfaces/EditorView-interfaces';
+import { clone, mostRecentPrompt, rectanglesIntersect } from './EditorView-utils';
 import { shotgunEffect } from './EditorView/effects';
 import { clearCircle, scaleImage } from './EditorView/draw';
-import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels, createContextFromImage } from './EditorView/canvas';
+import { cloneContext, createContext, autoCropImage, createContextFromImage } from './EditorView/canvas';
 
 import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
 import { onApplyEffect, onSelectTool, onAction } from '@/services/appActions'
 import { useKeyboardHandler } from '@/services/keyboardHandler';
-import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem, updateGalleryItem } from '@/services/galleryService';
+import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem } from '@/services/galleryService';
 import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
@@ -248,14 +247,6 @@ async function scaleDocumentCanvas(by: number) {
   drawOverlay()
 }
 
-function rectanglesIntersect(a: Rect, b: Rect) {
-  const isLeft = a.x + a.width < b.x
-  const isRight = a.x > b.x + b.width
-  const isAbove = a.y > b.y + b.height
-  const isBelow = a.y + a.height < b.y
-  return !(isLeft || isRight || isAbove || isBelow)
-}
-
 async function autoCrop() {
   const cropped = await autoCropImage(documentContext.value)
   width.value = cropped.canvas.width
@@ -269,8 +260,6 @@ function drawOverlay() {
   overlayContext.value.fillRect(0, 0, width.value, height.value)
   overlayContext.value.clearRect(frame.value.x, frame.value.y, frame.value.width, frame.value.height)
 }
-
-
 
 async function galleryItemSelected(item: GalleryItem) {
   const image = await loadGalleryItem(item)
@@ -303,7 +292,6 @@ async function saveDocument() {
   filename.value = item.filename
   metadata.value = item.metadata
   saveState()
-
 }
 
 
@@ -311,21 +299,28 @@ async function generateImage() {
   await openAiService.generate({
     prompt: prompt.value,
   })
+}
 
-
+async function variationImage() {
+  await openAiService.variation({
+    image: createContextFromFrame(1024, 1024),
+    metadata: metadata.value
+  })
 }
 
 async function outpaintImage() {
-  // TODO this save is perhaps not needed, rethink later
-  await compositionService.flatten({
-    metadata: metadata.value,
-    width: documentContext.value.canvas.width,
-    height: documentContext.value.canvas.height,
-    layers: [
-      createLayer(documentContext.value)
-    ]
-  })
-
+  const outpaintImage_saveBeforeOutpaint = false
+  if (outpaintImage_saveBeforeOutpaint) {
+    await compositionService.flatten({
+      metadata: metadata.value,
+      width: documentContext.value.canvas.width,
+      height: documentContext.value.canvas.height,
+      layers: [
+        createLayer(documentContext.value)
+      ]
+    })
+  }
+  
   const compositionRequired = frame.value.height !== 1024 ||
     frame.value.width !== 1024 ||
     frame.value.width !== width.value ||
@@ -349,8 +344,7 @@ async function outpaintImage() {
       height: compositionData.documentContext.canvas.height,
       layers: [
         {
-          // TODO possibly may this one function call
-          image: createContextFromImage(await galleryApi.getGalleryItem(outpaintResult.filename)),
+          context: createContextFromImage(await galleryApi.getGalleryItem(outpaintResult.filename)),
           x: compositionData.frame.x,
           y: compositionData.frame.y,
           width: compositionData.frame.width,
@@ -362,12 +356,6 @@ async function outpaintImage() {
   }
 }
 
-async function variationImage() {
-  const outpaintResult = await openAiService.variation({
-    image: createContextFromFrame(1024, 1024),
-    metadata: metadata.value
-  })
-}
 
 function createContextFromFrame(width: number, height: number) {
   const image = createContext(width, 1024)
@@ -381,7 +369,7 @@ function createContextFromFrame(width: number, height: number) {
   return image
 }
 
-async function growFrame(by: number) {
+function growFrame(by: number) {
   if (frame.value.width <= 512 && by < 1) return
   if (frame.value.width >= 5120 && by > 1) return
   frame.value.x -= by / 2
