@@ -12,12 +12,12 @@
         <textarea class="metadata" v-model="metadataAsJson" v-if="showMetadata"></textarea>
         <input type="text" v-model="filename" />
         <button type="button" @click="deleteImage(filename)">Delete</button>
-        
+
       </section>
       <section class="tool-panel">
         <h3>App Settings</h3>
         <button type="button" @click="toggleOpenApiKey()">Toggle Key</button>
-        <input type="text" v-model="openApiKey" v-if="showOpenApiKey" />
+        <input type="text" v-model="openAiService.openApiKey" v-if="showOpenApiKey" />
       </section>
       <section class="tool-panel">
         <h3>Scale</h3>
@@ -53,7 +53,7 @@
         <label for="snap">snap</label>
         <input type="number" id="snap" v-model="snapSize" step="1" min="1" max="256" />
       </section>
-      
+
       <span class="status-bar">
         <span>canvas:{{ width }}x{{ height }}</span>
         <span>window:{{ frame.width }}x{{ frame.height }}</span>
@@ -76,18 +76,20 @@
 
 import { computed, onMounted, ref, watch, watchSyncEffect } from 'vue';
 import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, GalleryItemDataUrl } from '@/interfaces/EditorView-interfaces';
-import { loadImage, clone, getDatestamp, extendMetadata, mostRecentPrompt } from './EditorView-utils';
+import { clone, getDatestamp, extendMetadata, mostRecentPrompt } from './EditorView-utils';
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
 import { shotgunEffect } from './EditorView/effects';
 import { clearCircle, scaleImage } from './EditorView/draw';
-import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels } from './EditorView/canvas';
+import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels, createContextFromImage } from './EditorView/canvas';
 
 import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
 import { onApplyEffect, onSelectTool, onAction } from '@/stores/appActions'
 import { useKeyboardHandler } from '@/stores/keyboardHandler';
 import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem, updateGalleryItem } from '@/stores/galleryService';
-
+import openAiService from '@/stores/openAiService';
+import compositionService from '@/stores/compositionService';
+import galleryApi from '@/stores/galleryApi';
 
 useKeyboardHandler()
 
@@ -118,8 +120,6 @@ const showOpenApiKey = ref<boolean>(false)
 const toolSelected = ref<Tools>('drag')
 const penSize = ref<number>(300)
 const snapSize = ref<number>(128)
-const openApiKey = ref<string>('')
-//const galleryItems = ref<GalleryItem[]>([])
 
 const documentContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
 const overlayContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
@@ -138,7 +138,7 @@ const frame = ref<Rect>({
 function toggleOpenApiKey() {
   showOpenApiKey.value = !showOpenApiKey.value
   if (!showOpenApiKey.value) {
-    window.localStorage.setItem('openApiKey', openApiKey.value)
+    window.localStorage.setItem('openApiKey', openAiService.openApiKey.value)
   }
 }
 
@@ -177,7 +177,7 @@ onMounted(async () => {
 })
 
 function loadState() {
-  openApiKey.value = window.localStorage.getItem('openApiKey') || ''
+  openAiService.openApiKey.value = window.localStorage.getItem('openApiKey') || ''
   resetDocument()
   metadata.value = JSON.parse(window.localStorage.getItem('metadata') || '')
   prompt.value = window.localStorage.getItem('prompt') || ''
@@ -308,97 +308,59 @@ async function saveDocument() {
 
 
 async function generateImage() {
-  const filename = `image-0-${getDatestamp()}.png`
-  const item: GalleryItem = {
-    filename,
-    status: 'loading',
-    metadata: {
-      history: [{
-        method: 'generation',
-        filename,
-        prompt: prompt.value,
-        version: 'OpenAI'
-      }]
-    }
-  }
+  await openAiService.generate({
+    prompt: prompt.value,
+  })
 
-  // TODO not sure if I want this method to be exposed?
-  updateGalleryItem(item)
-  const generatedImage = await openAiGenerateImage(item, openApiKey.value)
-  if (generatedImage.status === 'error') {
-    updateGalleryItem(generatedImage)
-  } else {
-    const updatedItem = await saveGalleryItem(generatedImage)
-    updateGalleryItem(updatedItem)
-  }
+
 }
 
 async function outpaintImage() {
-  if (!prompt.value.trim()) {
-    alert('no prompt!')
-    return
-  }
+  const image = createContext(1024, 1024)
+  image.drawImage(documentContext.value.canvas, 0, 0, 1024, 1024)
 
-  const filename = `image-0-${getDatestamp()}.png`
-  const compositionRequired = () => frame.value.height !== 1024 ||
+  const compositionRequired = frame.value.height !== 1024 ||
     frame.value.width !== 1024 ||
     frame.value.width !== width.value ||
     frame.value.height !== height.value
 
-  const compositionData = compositionRequired() ?
-    {
-      filename: `image-1-${getDatestamp()}.png`,
-      wholeCanvasClone: cloneContext(documentContext.value),
-      frame: clone(frame.value)
-    } : null
+  const compositionData = compositionRequired ? {
+    documentContext: cloneContext(documentContext.value),
+    frame: clone(frame.value) // cloneContext(documentContext.value, frame.value.x, frame.value.y, frame.value.width, frame.value.height)
+  } : null
 
-  const windowClone = cloneContext(documentContext.value, frame.value.x, frame.value.y, frame.value.width, frame.value.height)
+  const outpaintResult = await openAiService.outpaint({
+    prompt: prompt.value,
+    image,
+    metadata: metadata.value
+  })
 
-  const scaledWindow = createContext(1024, 1024)
-  scaledWindow.drawImage(windowClone.canvas, 0, 0, 1024, 1024)
-  if (await imageCountEmptyPixels(scaledWindow) === 0) {
-    alert('no empty pixels!')
-    return
-  }
-
-  const image = (await new Promise<Blob | null>(resolve => scaledWindow.canvas.toBlob(resolve)))!
-
-  const item: GalleryItem = {
-    filename,
-    status: 'loading',
-    metadata: extendMetadata(metadata.value, {
-      method: 'edit',
-      prompt: prompt.value,
-      image, // TODO  this get doesn't get saved into files as metadata only because clone doesn't work right
-      mask: image, // TODO does this get saved into files as metadata!
-      filename,
-      version: 'OpenAI'
-    })
-  }
-
-  updateGalleryItem(item)
-  const generatedImage = await openAiEditImage(item, openApiKey.value)
-  if (generatedImage.status === 'error') {
-    updateGalleryItem(generatedImage)
-  } else {
-
-    const updatedItem = await saveGalleryItem(generatedImage)
-    updateGalleryItem(updatedItem)
-
-    if (compositionData) {
-      const finalContext = createContext(compositionData.wholeCanvasClone.canvas.width, compositionData.wholeCanvasClone.canvas.height)
-      finalContext.drawImage(await loadImage(generatedImage.dataUrl), compositionData.frame.x, compositionData.frame.y, compositionData.frame.width, compositionData.frame.height)
-      finalContext.drawImage(compositionData.wholeCanvasClone.canvas, 0, 0, compositionData.wholeCanvasClone.canvas.width, compositionData.wholeCanvasClone.canvas.height)
-
-      const finalItem = clone(item) as GalleryItemDataUrl
-      finalItem.status = 'saved'
-      finalItem.dataUrl = finalContext.canvas.toDataURL()
-      finalItem.filename = compositionData.filename
-      await saveGalleryItem(finalItem)
-      updateGalleryItem(finalItem)
-    }
-
-    // TODO, if the image selected we can update the canvas immediatly
+  if (compositionData && outpaintResult) {
+    // TODO the following could be simplified a lot with some helpers
+    await compositionService.layers(
+      metadata.value,
+      {
+        image: createContext(compositionData.documentContext.canvas.width, compositionData.documentContext.canvas.height),
+        x: 0,
+        y: 0,
+        width: image.canvas.width,
+        height: image.canvas.height
+      },
+      {
+        image: createContextFromImage(await galleryApi.getGalleryItem(outpaintResult.filename)),
+        x: compositionData.frame.x,
+        y: compositionData.frame.y,
+        width: compositionData.frame.width,
+        height: compositionData.frame.height
+      },
+      {
+        image: compositionData.documentContext, 
+        x: 0,
+        y: 0,
+        width: compositionData.documentContext.canvas.width,
+        height: compositionData.documentContext.canvas.height
+      }
+    )
   }
 }
 
@@ -416,7 +378,7 @@ async function variationImage() {
     })
   }
   updateGalleryItem(item)
-  const generatedImage = await openAiImageVariation(item, openApiKey.value)
+  const generatedImage = await openAiImageVariation(item, openAiService.openApiKey.value)
   if (generatedImage.status === 'error') {
     updateGalleryItem(generatedImage)
   } else {

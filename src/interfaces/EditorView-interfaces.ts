@@ -2,7 +2,7 @@ export interface GalleryMetadata {
   history: HistoryItem[]
 }
 
-export type HistoryItem = HistoryItemGeneration | HistoryItemEdit | HistoryItemVariation
+export type HistoryItem = HistoryItemGeneration | HistoryItemEdit | HistoryItemVariation | HistoryItemComposition
 export interface HistoryItemGeneration {
   method: 'generation'
   error?: string
@@ -11,6 +11,7 @@ export interface HistoryItemGeneration {
   version: 'OpenAI'
   created?: string;
 }
+
 export interface HistoryItemEdit {
   method:  'edit'
   error?: string
@@ -30,6 +31,14 @@ export interface HistoryItemVariation {
   version: 'OpenAI'
   created?: string;
 }
+
+export interface HistoryItemComposition {
+  method: 'composition'
+  error?: string
+  filename: string
+  created: string;
+}
+
 
 export type GalleryItem = GalleryItemNormal | GalleryItemDataUrl
 

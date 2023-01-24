@@ -28,7 +28,6 @@ export async function openAiGenerateImage(item: GalleryItem, openApiKey: string)
       return result
    }
 
-   console.log('aaa')
    const openAiImage = (response.data as OpenAiResponse).data[0]
    result.dataUrl = `data:image/png;base64,${openAiImage.b64_json}`
    result.metadata.history[0].created = epochToDate(response.data.created).toISOString()

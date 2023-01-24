@@ -5,6 +5,15 @@ export function createContext(width: number, height: number) {
   return canvas.getContext('2d', { willReadFrequently: true })!
 }
 
+export function createContextFromImage(image: HTMLImageElement) {
+  const canvas = document.createElement('canvas')
+  canvas.width = image.width
+  canvas.height = image.height
+  const context =  canvas.getContext('2d', { willReadFrequently: true })!
+  context.drawImage(image, 0, 0, image.width, image.height)
+  return context
+}
+
 export function cloneContext(context: CanvasRenderingContext2D, x: number = 0, y: number = 0, w: number = 0, h: number = 0) {
   const width = w === 0 ? context.canvas.width : w
   const height = h === 0 ? context.canvas.height : h
