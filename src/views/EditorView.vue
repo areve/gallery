@@ -2,17 +2,15 @@
   <div class="layout" @mouseup="mouseUp">
     <main class="main">
       <Menu></Menu>
-
-      <form class="form-controls">
+      <section class="prompt-panel">
         <textarea type="text" id="prompt" v-model="prompt"></textarea>
-      </form>
+      </section>
       <section class="tool-panel">
         <h3>Document Settings</h3>
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
         <textarea class="metadata" v-model="metadataAsJson" v-if="showMetadata"></textarea>
         <input type="text" v-model="filename" />
         <button type="button" @click="deleteImage(filename)">Delete</button>
-
       </section>
       <section class="tool-panel">
         <h3>App Settings</h3>
@@ -54,17 +52,16 @@
         <input type="number" id="snap" v-model="snapSize" step="1" min="1" max="256" />
       </section>
 
-      <span class="status-bar">
-        <span>canvas:{{ width }}x{{ height }}</span>
-        <span>window:{{ frame.width }}x{{ frame.height }}</span>
-      </span>
       <div class="document-panel">
         <div class="document" :style="{ 'aspect-ratio': width + ' / ' + height }">
-
           <canvas id="edit-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
           <canvas id="overlay-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
         </div>
       </div>
+      <span class="status-bar">
+        <span>canvas:{{ width }}x{{ height }}</span>
+        <span>window:{{ frame.width }}x{{ frame.height }}</span>
+      </span>
     </main>
     <aside class="side-panel">
       <Gallery></Gallery>

@@ -21,7 +21,7 @@
   background-color: #ccc7;
 }
 
-.form-controls {
+.prompt-panel {
   padding: 0.4em;
   grid-area: document;
   overflow: hidden;
