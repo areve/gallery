@@ -12,11 +12,7 @@
         <input type="text" v-model="filename" />
         <button type="button" @click="deleteImage(filename)">Delete</button>
       </section>
-      <section class="tool-panel">
-        <h3>App Settings</h3>
-        <button type="button" @click="toggleOpenApiKey()">Toggle Key</button>
-        <input type="text" v-model="openAiService.openApiKey" v-if="showOpenApiKey" />
-      </section>
+      <AppSettings />
       <section class="tool-panel">
         <h3>Scale</h3>
         <button type="button" @click="scaleImage(documentContext, scaleImageBy)">Scale image</button>
@@ -70,6 +66,7 @@
 </template>
 
 <script lang="ts" setup>
+import AppSettings from '@/components/AppSettings.vue';
 
 import { computed, onMounted, ref, watch, watchSyncEffect } from 'vue';
 import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin } from '@/interfaces/EditorView-interfaces';
@@ -86,6 +83,7 @@ import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem } from 
 import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
+import { panel } from '@/services/panelState';
 
 useKeyboardHandler()
 
@@ -112,7 +110,6 @@ const metadataAsJson = computed({
     return JSON.parse(value)
   }
 })
-const showOpenApiKey = ref<boolean>(false)
 const toolSelected = ref<Tools>('drag')
 const penSize = ref<number>(300)
 const snapSize = ref<number>(128)
@@ -131,12 +128,6 @@ const frame = ref<Rect>({
   height: height.value
 })
 
-function toggleOpenApiKey() {
-  showOpenApiKey.value = !showOpenApiKey.value
-  if (!showOpenApiKey.value) {
-    window.localStorage.setItem('openApiKey', openAiService.openApiKey.value)
-  }
-}
 
 watchSyncEffect(() => {
   if (!documentContext.value.canvas) return
@@ -158,6 +149,7 @@ watch(onAction, action => {
   if (action.action === 'save') saveDocument()
   if (action.action === 'reset') resetDocument()
   if (action.action === 'auto-crop') autoCrop()
+  if (action.action === 'show-settings') panel.value.settings.visible = true
 })
 
 watch(onApplyEffect, action => {
@@ -173,6 +165,7 @@ onMounted(async () => {
 })
 
 function loadState() {
+  console.log('load', window.localStorage.getItem('openApiKey') || '')
   openAiService.openApiKey.value = window.localStorage.getItem('openApiKey') || ''
   resetDocument()
   metadata.value = JSON.parse(window.localStorage.getItem('metadata') || '')

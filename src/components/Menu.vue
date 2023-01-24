@@ -11,6 +11,7 @@
         <ul class="sub-menu">
           <li class="menu-item" @click="action('save')" role="button">Save</li>
           <li class="menu-item" @click="action('reset')" role="button">Reset</li>
+          <li class="menu-item" @click="action('show-settings')" role="button">Settings</li>
         </ul>
       </li>
       <li class="menu-item">Image

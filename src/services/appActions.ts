@@ -2,7 +2,7 @@ import type { Tools } from "@/interfaces/EditorView-interfaces";
 import { ref } from "vue";
 
 
-export type AppActionType = 'save'| 'reset'| 'auto-crop'
+export type AppActionType = 'save'| 'reset'| 'auto-crop' | 'show-settings'
 export interface AppActionBase {
     id: number
 }
