@@ -38,7 +38,7 @@
 
 <script  lang="ts" setup>
 
-import { action, applyEffect } from '@/stores/appActions'
+import { action, applyEffect } from '@/services/appActions'
 
 
 </script>

@@ -77,19 +77,19 @@
 import { computed, onMounted, ref, watch, watchSyncEffect } from 'vue';
 import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, GalleryItemDataUrl } from '@/interfaces/EditorView-interfaces';
 import { clone, getDatestamp, extendMetadata, mostRecentPrompt } from './EditorView-utils';
-import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from './EditorView/open-ai';
+import { openAiImageVariation } from '@/services/openAiApi';
 import { shotgunEffect } from './EditorView/effects';
 import { clearCircle, scaleImage } from './EditorView/draw';
 import { cloneContext, createContext, autoCropImage, imageCountEmptyPixels, createContextFromImage } from './EditorView/canvas';
 
 import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
-import { onApplyEffect, onSelectTool, onAction } from '@/stores/appActions'
-import { useKeyboardHandler } from '@/stores/keyboardHandler';
-import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem, updateGalleryItem } from '@/stores/galleryService';
-import openAiService from '@/stores/openAiService';
-import compositionService, { createLayer } from '@/stores/compositionService';
-import galleryApi from '@/stores/galleryApi';
+import { onApplyEffect, onSelectTool, onAction } from '@/services/appActions'
+import { useKeyboardHandler } from '@/services/keyboardHandler';
+import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem, updateGalleryItem } from '@/services/galleryService';
+import openAiService from '@/services/openAiService';
+import compositionService, { createLayer } from '@/services/compositionService';
+import galleryApi from '@/services/galleryApi';
 
 useKeyboardHandler()
 
@@ -338,7 +338,7 @@ async function outpaintImage() {
   if (compositionData && outpaintResult) {
     await compositionService.flatten({
       metadata: metadata.value,
-      width: compositionData.documentContext.canvas.width, 
+      width: compositionData.documentContext.canvas.width,
       height: compositionData.documentContext.canvas.height,
       layers: [
         {

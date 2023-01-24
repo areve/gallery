@@ -1,7 +1,7 @@
 import type { GalleryItem, GalleryMetadata } from "@/interfaces/EditorView-interfaces"
 import { extendMetadata, getDatestamp } from "@/views/EditorView-utils"
 import { imageCountEmptyPixels } from "@/views/EditorView/canvas"
-import { openAiEditImage, openAiGenerateImage } from "@/views/EditorView/open-ai"
+import { openAiEditImage, openAiGenerateImage } from "@/services/openAiApi"
 import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
 
