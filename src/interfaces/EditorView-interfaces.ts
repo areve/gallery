@@ -1,3 +1,5 @@
+import type { Ref } from "vue"
+
 export interface GalleryMetadata {
   history: HistoryItem[]
 }
@@ -84,4 +86,13 @@ export interface DragOrigin {
   y: number;
   data: ImageData;
   frame: Rect;
+}
+
+export interface DocumentVueReady {
+  documentContext: CanvasRenderingContext2D,
+  bounds: Ref<Rect>,
+  frame: Ref<Rect>,
+  resetFrame: Function, // TODO better type
+  mouseUp: Function, // TODO better type
+  drawOverlay: Function
 }
