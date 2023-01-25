@@ -18,10 +18,10 @@
         <button type="button" @click="scaleImage(documentService.documentContext.value, scaleImageBy)">Scale image</button>
         <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
-        <button type="button" @click="scaleDocumentCanvas(0.5)">Shrink</button>
-        <button type="button" @click="scaleDocumentCanvas(2)">Grow</button>
-        <button type="button" @click="growFrame(-512)">Shrink frame</button>
-        <button type="button" @click="growFrame(512)">Grow frame</button>
+        <button type="button" @click="documentService.scale(0.5)">Shrink</button>
+        <button type="button" @click="documentService.scale(2)">Grow</button>
+        <button type="button" @click="documentService.growFrame(-512)">Shrink frame</button>
+        <button type="button" @click="documentService.growFrame(512)">Grow frame</button>
       </section>
       <section class="tool-panel">
         <h3>OpenAI</h3>
@@ -95,8 +95,8 @@ const metadataAsJson = computed({
 
 watch(onAction, action => {
   if (action.action === 'save') saveDocument()
-  if (action.action === 'reset') resetThings()
-  if (action.action === 'auto-crop') autoCrop()
+  if (action.action === 'reset') reset()
+  if (action.action === 'auto-crop') documentService.autoCrop()
   if (action.action === 'show-settings') panel.value.settings.visible = true
 })
 
@@ -113,7 +113,7 @@ onMounted(async () => {
 
 function loadState() {
   openAiService.openApiKey.value = window.localStorage.getItem('openApiKey') || ''
-  resetThings()
+  reset()
   metadata.value = JSON.parse(window.localStorage.getItem('metadata') || '')
   prompt.value = window.localStorage.getItem('prompt') || ''
   filename.value = window.localStorage.getItem('filename') || ''
@@ -125,7 +125,7 @@ function saveState() {
   window.localStorage.setItem('filename', filename.value)
 }
 
-function resetThings() {
+function reset() {
   documentService.resetDocument();
   metadata.value = { history: [] }
   prompt.value = ''
@@ -133,43 +133,6 @@ function resetThings() {
   documentService.resetFrame()
 }
 
-async function scaleDocumentCanvas(by: number) {
-  if (documentService.bounds.value.width <= 1 && by < 1) return
-  if (documentService.bounds.value.width >= 5120 && by > 1) return
-  const clone = cloneContext(documentService.documentContext.value)
-  documentService.documentContext.value.clearRect(0, 0, documentService.documentContext.value.canvas.width, documentService.documentContext.value.canvas.height)
-  documentService.bounds.value.width = Math.min(5120, documentService.bounds.value.width * by)
-  documentService.bounds.value.height = Math.min(5120, documentService.bounds.value.height * by)
-  const dx = (documentService.bounds.value.width - clone.canvas.width) / 2
-  const dy = (documentService.bounds.value.width - clone.canvas.width) / 2
-  documentService.documentContext.value.drawImage(
-    clone.canvas,
-    dx,
-    dy,
-    clone.canvas.width,
-    clone.canvas.height)
-
-  const scaleDocumentCanvas_keepFrameSize = false
-  if (scaleDocumentCanvas_keepFrameSize) {
-    documentService.frame.value.x += dx
-    documentService.frame.value.y += dy
-  } else {
-    documentService.frame.value.width += clone.canvas.width
-    documentService.frame.value.height += clone.canvas.height
-  }
-
-  if (!rectanglesIntersect(documentService.frame.value, { x: 0, y: 0, width: documentService.bounds.value.width, height: documentService.bounds.value.height })) {
-    documentService.resetFrame()
-  }
-  documentService.drawOverlay()
-}
-
-async function autoCrop() {
-  const cropped = await autoCropImage(documentService.documentContext.value)
-  documentService.bounds.value.width = cropped.canvas.width
-  documentService.bounds.value.height = cropped.canvas.height
-  documentService.  documentContext.value.drawImage(cropped.canvas, 0, 0)
-}
 
 async function galleryItemSelected(item: GalleryItem) {
   const image = await loadGalleryItem(item)
@@ -212,7 +175,7 @@ async function generateImage() {
 
 async function variationImage() {
   await openAiService.variation({
-    image: createContextFromFrame(1024, 1024),
+    image: documentService.createContextFromFrame(1024, 1024),
     metadata: metadata.value
   })
 }
@@ -242,7 +205,7 @@ async function outpaintImage() {
 
   const outpaintResult = await openAiService.outpaint({
     prompt: prompt.value,
-    image: createContextFromFrame(1024, 1024),
+    image: documentService.createContextFromFrame(1024, 1024),
     metadata: metadata.value
   })
 
@@ -265,28 +228,6 @@ async function outpaintImage() {
   }
 }
 
-function createContextFromFrame(width: number, height: number) {
-  const image = createContext(width, 1024)
-  image.drawImage(documentService.documentContext.value.canvas,
-  documentService.frame.value.x,
-  documentService.frame.value.y,
-  documentService.frame.value.width,
-  documentService.frame.value.height,
-    0, 0, width, height,
-  )
-  return image
-}
-
-function growFrame(by: number) {
-  // TODO getting stuck at 512 was frustrating for me
-  if (documentService.frame.value.width <= 512 && by < 1) return
-  if (documentService.frame.value.width >= 5120 && by > 1) return
-  documentService.frame.value.x -= by / 2
-  documentService.frame.value.y -= by / 2
-  documentService.frame.value.width = documentService.frame.value.width + by
-  documentService.frame.value.height = documentService.frame.value.height + by
-  documentService.drawOverlay()
-}
 
 function mouseUp(mouse: MouseEvent) {
   documentService.mouseUp(mouse)
