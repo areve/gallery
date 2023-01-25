@@ -337,7 +337,54 @@ function mouseUp(mouse: MouseEvent) {
 </script>
 
 <style scoped>
-@import './EditorView.css';
+
+.layout {
+  display: grid;
+  grid-template-columns: 70% 30%;
+  grid-template-rows: 100%;
+  grid-template-areas: "main sidebar";
+  height: 100%;
+}
+
+.main {
+  grid-area: main;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: min-content auto min-content;
+  grid-template-areas:
+    "menu"
+    "controls"
+    "document"
+  ;
+  height: 100%;
+  background-color: #ccc7;
+}
+
+.prompt-panel {
+  padding: 0.4em;
+  grid-area: document;
+  overflow: hidden;
+  position: relative;
+}
+
+.side-panel {
+  grid-area: sidebar;
+  overflow-y: scroll;
+  padding: 0.4em;
+  background-color: #ccc7;
+}
+
+#prompt {
+  resize: none;
+  width: 100%;
+  height: 3.2em;
+}
+
+.metadata {
+  width: 100%;
+  height: 9.6em;
+}
+
 
 .tool-panel {
   margin: 0.4em;
