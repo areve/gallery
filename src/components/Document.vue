@@ -1,6 +1,6 @@
 <template>
   <div class="document-panel">
-    <div class="document" :style="{ 'aspect-ratio': width + ' / ' + height }">
+    <div class="document" :style="{ 'aspect-ratio': documentService.bounds.value.width + ' / ' + documentService.bounds.value.height }">
       <canvas id="edit-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
       <canvas id="overlay-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
     </div>
@@ -10,133 +10,72 @@
 
 <script  lang="ts" setup>
 
-import type { DocumentVueReady, DragOrigin, Rect } from '@/interfaces/EditorView-interfaces';
 import { penSize, snapSize, toolSelected } from '@/services/appState';
-import { onMounted, ref, watchPostEffect, watchSyncEffect, type Ref } from 'vue';
+import documentService from '@/services/documentService';
+import { onMounted, ref, watchSyncEffect } from 'vue';
 import { clearCircle } from '../views/EditorView/draw';
 
 
-const documentContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
-const overlayContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
-
-const dragOrigin = ref<DragOrigin | null>(null)
-
-const props = withDefaults(defineProps<{
-  width: number
-  height: number
-}>(), {
-
-})
-
-const bounds = ref<Rect>({
-  x: 0,
-  y: 0,
-  width: props.width,
-  height: props.height
-})
-
-const frame = ref<Rect>({
-  x: 0,
-  y: 0,
-  width: props.width,
-  height: props.height
-})
-
-watchPostEffect(() => {
-  emit('resize', props.width, props.height,)
-})
-
-const emit = defineEmits<{
-  (e: 'resize', width: number, height: number,): void
-  (e: 'ready', ready: DocumentVueReady): void
-}>()
-
 onMounted(async () => {
   await setupDocument()
-  emit('ready', {
-    // TODO may be better to share these things with a documentState or documentService
-    documentContext: documentContext.value,
-    bounds: bounds,
-    frame: frame,
-    resetFrame: resetFrame,
-    mouseUp: mouseUp,
-    drawOverlay: drawOverlay
-  } as DocumentVueReady)
 })
 
 watchSyncEffect(() => {
-  if (!documentContext.value.canvas) return
-  if (!overlayContext.value.canvas) return
-  documentContext.value.canvas.height = props.height
-  documentContext.value.canvas.width = props.width
-  overlayContext.value.canvas.height = props.height
-  overlayContext.value.canvas.width = props.width
+  if (!documentService.documentContext.value?.canvas) return
+  if (!documentService.overlayContext.value.canvas) return
+  documentService.documentContext.value.canvas.height = documentService.bounds.value.height
+  documentService.documentContext.value.canvas.width = documentService.bounds.value.width
+  documentService.overlayContext.value.canvas.height = documentService.bounds.value.height
+  documentService.overlayContext.value.canvas.width = documentService.bounds.value.width
 })
 
 watchSyncEffect(() => {
-  if (!documentContext.value.canvas) return
-  if (!overlayContext.value.canvas) return
-  void (frame.value)
-  drawOverlay()
+  if (!documentService.documentContext.value?.canvas) return
+  if (!documentService.overlayContext.value.canvas) return
+  void (documentService.frame.value)
+  documentService.drawOverlay()
 })
 
-function drawOverlay() {
-  overlayContext.value.clearRect(0, 0, props.width, props.height)
-  overlayContext.value.fillStyle = '#77777777'
-  overlayContext.value.fillRect(0, 0, props.width, props.height)
-  overlayContext.value.clearRect(frame.value.x, frame.value.y, frame.value.width, frame.value.height)
-}
 
 async function setupDocument() {
   // TODO use $ref instead
   const canvas = document.getElementById("edit-canvas") as HTMLCanvasElement
-  documentContext.value = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  documentService.documentContext.value = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
   const overlayCanvas = document.getElementById("overlay-canvas") as HTMLCanvasElement
-  overlayContext.value = overlayCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  documentService.overlayContext.value = overlayCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
 }
 
 
-function resetFrame() {
-  frame.value = {
-    x: 0,
-    y: 0,
-    width: props.width,
-    height: props.height,
-  }
-}
 
-function mouseUp(mouse: MouseEvent) {
-  dragOrigin.value = null
-}
 
 function mouseDown(mouse: MouseEvent) {
-    dragOrigin.value = {
+    documentService.dragOrigin.value = {
       x: mouse.offsetX,
       y: mouse.offsetY,
-      data: documentContext.value.getImageData(0, 0, props.width, props.height),
-      frame: { ...frame.value }
+      data: documentService.documentContext.value.getImageData(0, 0, documentService.bounds.value.width, documentService.bounds.value.height),
+      frame: { ...documentService.frame.value }
     }
 }
 
 
 function mouseMove(mouse: MouseEvent) {
-    if (!dragOrigin.value) return
+    if (!documentService.dragOrigin.value) return
 
-    const dx = (mouse.offsetX - dragOrigin.value.x) / documentContext.value.canvas.offsetWidth * documentContext.value.canvas.width
-    const dy = (mouse.offsetY - dragOrigin.value.y) / documentContext.value.canvas.offsetHeight * documentContext.value.canvas.height
+    const dx = (mouse.offsetX - documentService.dragOrigin.value.x) / documentService.documentContext.value.canvas.offsetWidth * documentService.documentContext.value.canvas.width
+    const dy = (mouse.offsetY - documentService.dragOrigin.value.y) / documentService.documentContext.value.canvas.offsetHeight * documentService.documentContext.value.canvas.height
     const snapDx = Math.floor(dx / snapSize.value) * snapSize.value
     const snapDy = Math.floor(dy / snapSize.value) * snapSize.value
 
     if (toolSelected.value === 'pen') {
-      const x = mouse.offsetX / documentContext.value.canvas.offsetWidth * documentContext.value.canvas.width
-      const y = mouse.offsetY / documentContext.value.canvas.offsetHeight * documentContext.value.canvas.height
-      clearCircle(documentContext.value, x, y, penSize.value / 2)
+      const x = mouse.offsetX / documentService.documentContext.value.canvas.offsetWidth * documentService.documentContext.value.canvas.width
+      const y = mouse.offsetY / documentService.documentContext.value.canvas.offsetHeight * documentService.documentContext.value.canvas.height
+      clearCircle(documentService.documentContext.value, x, y, penSize.value / 2)
     } else if (toolSelected.value === 'drag') {
-      documentContext.value.clearRect(0, 0, props.width, props.height)
-      documentContext.value.putImageData(dragOrigin.value.data, snapDx, snapDy)
+      documentService.documentContext.value.clearRect(0, 0, documentService.bounds.value.width, documentService.bounds.value.height)
+      documentService.documentContext.value.putImageData(documentService.dragOrigin.value.data, snapDx, snapDy)
     } else if (toolSelected.value === 'drag-frame') {
-      frame.value.x = dragOrigin.value.frame.x + snapDx
-      frame.value.y = dragOrigin.value.frame.y + snapDy
+      documentService.frame.value.x = documentService.dragOrigin.value.frame.x + snapDx
+      documentService.frame.value.y = documentService.dragOrigin.value.frame.y + snapDy
     }
 }
 </script>

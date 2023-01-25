@@ -15,7 +15,7 @@
       <AppSettings />
       <section class="tool-panel">
         <h3>Scale</h3>
-        <button type="button" @click="scaleImage(documentContext, scaleImageBy)">Scale image</button>
+        <button type="button" @click="scaleImage(documentService.documentContext.value, scaleImageBy)">Scale image</button>
         <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
         <button type="button" @click="scaleDocumentCanvas(0.5)">Shrink</button>
@@ -30,11 +30,11 @@
         <button type="button" @click="outpaintImage()">Outpaint</button>
       </section>
       <ToolPanel />
-      <Document @resize="onresize" @ready="onready" :width="bounds.width" :height="bounds.height" />
+      <Document />
 
       <span class="status-bar">
-        <span>canvas:{{ bounds.width }}x{{ bounds.height }}</span>
-        <span>frame:{{ frame.width }}x{{ frame.height }}</span>
+        <span>canvas:{{ documentService.bounds.value.width }}x{{ documentService.bounds.value.height }}</span>
+        <span>frame:{{ documentService.frame.value.width }}x{{ documentService.frame.value.height }}</span>
       </span>
     </main>
     <aside class="side-panel">
@@ -50,13 +50,12 @@ import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
 import ToolPanel from '@/components/ToolPanel.vue'
 
-import { computed, onMounted, ref, watch, type Ref } from 'vue';
-import type { GalleryItem, GalleryMetadata, Rect, DocumentVueReady } from '@/interfaces/EditorView-interfaces';
+import { computed, onMounted, ref, watch } from 'vue';
+import type { GalleryItem, GalleryMetadata } from '@/interfaces/EditorView-interfaces';
 import { clone, mostRecentPrompt, rectanglesIntersect } from './EditorView-utils';
 import { shotgunEffect } from './EditorView/effects';
 import { scaleImage } from './EditorView/draw';
 import { cloneContext, createContext, autoCropImage, createContextFromImage } from './EditorView/canvas';
-
 
 import { onApplyEffect, onSelectTool, onAction } from '@/services/appActions'
 import { useKeyboardHandler } from '@/services/keyboardHandler';
@@ -65,6 +64,7 @@ import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
 import { panel, toolSelected } from '@/services/appState';
+import documentService from '@/services/documentService'
 
 useKeyboardHandler()
 
@@ -82,21 +82,6 @@ const scaleImageBy = ref<number>(0.5)
 const filename = ref<string>('')
 const metadata = ref<GalleryMetadata>({ history: [] })
 
-let frame = ref<Rect>({
-  x: 0,
-  y: 0,
-  width: 1024,
-  height: 1024,
-})
-
-let bounds = ref<Rect>({
-  x: 0,
-  y: 0,
-  width: 1024,
-  height: 1024,
-})
-let resetFrame: Function;
-
 const metadataAsJson = computed({
   get: () => {
     return JSON.stringify(metadata.value)
@@ -107,22 +92,15 @@ const metadataAsJson = computed({
   }
 })
 
-// const documentContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
-let documentContext: CanvasRenderingContext2D
-// const overlayContext = ref<CanvasRenderingContext2D>({} as CanvasRenderingContext2D)
-
-
-
-
 watch(onAction, action => {
   if (action.action === 'save') saveDocument()
-  if (action.action === 'reset') resetDocument()
+  if (action.action === 'reset') resetThings()
   if (action.action === 'auto-crop') autoCrop()
   if (action.action === 'show-settings') panel.value.settings.visible = true
 })
 
 watch(onApplyEffect, action => {
-  if (action.type === 'shotgun') shotgunEffect(documentContext)
+  if (action.type === 'shotgun') shotgunEffect(documentService.documentContext.value)
 })
 watch(onSelectTool, action => toolSelected.value = action.tool)
 
@@ -132,26 +110,9 @@ onMounted(async () => {
   await loadState()
 })
 
-let documentMouseUp = function () { } as Function
-let drawOverlay = function () { } as Function
-
-function onresize(widthz: number, heightz: number) {
-  console.log('reszie', widthz, heightz)
-  bounds.value.width = widthz
-  bounds.value.height = heightz
-}
-
-function onready(ready: DocumentVueReady) {
-  documentContext = ready.documentContext
-  frame = ready.frame
-  bounds = ready.bounds
-  resetFrame = ready.resetFrame
-  documentMouseUp = ready.mouseUp
-}
-
 function loadState() {
   openAiService.openApiKey.value = window.localStorage.getItem('openApiKey') || ''
-  resetDocument()
+  resetThings()
   metadata.value = JSON.parse(window.localStorage.getItem('metadata') || '')
   prompt.value = window.localStorage.getItem('prompt') || ''
   filename.value = window.localStorage.getItem('filename') || ''
@@ -163,30 +124,24 @@ function saveState() {
   window.localStorage.setItem('filename', filename.value)
 }
 
-
-function resetDocument() {
-  if (!documentContext?.canvas) return
-  bounds.value.width = 1024
-  bounds.value.height = 1024
-  documentContext.clearRect(0, 0, documentContext.canvas.width, documentContext.canvas.height)
+function resetThings() {
+  documentService.resetDocument();
   metadata.value = { history: [] }
   prompt.value = ''
   filename.value = ''
-  resetFrame()
-  drawOverlay()
+  documentService.resetFrame()
 }
 
-
 async function scaleDocumentCanvas(by: number) {
-  if (bounds.value.width <= 1 && by < 1) return
-  if (bounds.value.width >= 5120 && by > 1) return
-  const clone = cloneContext(documentContext)
-  documentContext.clearRect(0, 0, documentContext.canvas.width, documentContext.canvas.height)
-  bounds.value.width = Math.min(5120, bounds.value.width * by)
-  bounds.value.height = Math.min(5120, bounds.value.height * by)
-  const dx = (bounds.value.width - clone.canvas.width) / 2
-  const dy = (bounds.value.width - clone.canvas.width) / 2
-  documentContext.drawImage(
+  if (documentService.bounds.value.width <= 1 && by < 1) return
+  if (documentService.bounds.value.width >= 5120 && by > 1) return
+  const clone = cloneContext(documentService.documentContext.value)
+  documentService.documentContext.value.clearRect(0, 0, documentService.documentContext.value.canvas.width, documentService.documentContext.value.canvas.height)
+  documentService.bounds.value.width = Math.min(5120, documentService.bounds.value.width * by)
+  documentService.bounds.value.height = Math.min(5120, documentService.bounds.value.height * by)
+  const dx = (documentService.bounds.value.width - clone.canvas.width) / 2
+  const dy = (documentService.bounds.value.width - clone.canvas.width) / 2
+  documentService.documentContext.value.drawImage(
     clone.canvas,
     dx,
     dy,
@@ -195,35 +150,34 @@ async function scaleDocumentCanvas(by: number) {
 
   const scaleDocumentCanvas_keepFrameSize = false
   if (scaleDocumentCanvas_keepFrameSize) {
-    frame.value.x += dx
-    frame.value.y += dy
+    documentService.frame.value.x += dx
+    documentService.frame.value.y += dy
   } else {
-    frame.value.width += clone.canvas.width
-    frame.value.height += clone.canvas.height
+    documentService.frame.value.width += clone.canvas.width
+    documentService.frame.value.height += clone.canvas.height
   }
 
-  if (!rectanglesIntersect(frame.value, { x: 0, y: 0, width: bounds.value.width, height: bounds.value.height })) {
-    resetFrame()
+  if (!rectanglesIntersect(documentService.frame.value, { x: 0, y: 0, width: documentService.bounds.value.width, height: documentService.bounds.value.height })) {
+    documentService.resetFrame()
   }
-  drawOverlay()
+  documentService.drawOverlay()
 }
 
 async function autoCrop() {
-  const cropped = await autoCropImage(documentContext)
-  bounds.value.width = cropped.canvas.width
-  bounds.value.height = cropped.canvas.height
-  documentContext.drawImage(cropped.canvas, 0, 0)
+  const cropped = await autoCropImage(documentService.documentContext.value)
+  documentService.bounds.value.width = cropped.canvas.width
+  documentService.bounds.value.height = cropped.canvas.height
+  documentService.  documentContext.value.drawImage(cropped.canvas, 0, 0)
 }
-
 
 async function galleryItemSelected(item: GalleryItem) {
   const image = await loadGalleryItem(item)
 
-  bounds.value.width = image.width
-  bounds.value.height = image.height
-  resetFrame()
+  documentService.bounds.value.width = image.width
+  documentService.bounds.value.height = image.height
+  documentService.resetFrame()
 
-  documentContext.drawImage(image, 0, 0)
+  documentService.documentContext.value.drawImage(image, 0, 0)
   prompt.value = mostRecentPrompt(item)
   filename.value = item.filename
   metadata.value = clone(item.metadata)
@@ -236,7 +190,7 @@ async function deleteImage(deleteFilename: string) {
 
 async function saveDocument() {
   const newItem: GalleryItem = {
-    dataUrl: documentContext.canvas.toDataURL('image/png'),
+    dataUrl: documentService.documentContext.value.canvas.toDataURL('image/png'),
     status: 'loading',
     filename: filename.value,
     metadata: metadata.value
@@ -248,7 +202,6 @@ async function saveDocument() {
   metadata.value = item.metadata
   saveState()
 }
-
 
 async function generateImage() {
   await openAiService.generate({
@@ -268,22 +221,22 @@ async function outpaintImage() {
   if (outpaintImage_saveBeforeOutpaint) {
     await compositionService.flatten({
       metadata: metadata.value,
-      width: documentContext.canvas.width,
-      height: documentContext.canvas.height,
+      width: documentService.documentContext.value.canvas.width,
+      height: documentService.documentContext.value.canvas.height,
       layers: [
-        createLayer(documentContext)
+        createLayer(documentService.documentContext.value)
       ]
     })
   }
 
-  const compositionRequired = frame.value.height !== 1024 ||
-    frame.value.width !== 1024 ||
-    frame.value.width !== bounds.value.width ||
-    frame.value.height !== bounds.value.height
+  const compositionRequired = documentService.frame.value.height !== 1024 ||
+  documentService.frame.value.width !== 1024 ||
+  documentService.frame.value.width !== documentService.bounds.value.width ||
+  documentService.frame.value.height !== documentService.bounds.value.height
 
   const compositionData = compositionRequired ? {
-    documentContext: cloneContext(documentContext),
-    frame: clone(frame.value)
+    documentContext: cloneContext(documentService.documentContext.value),
+    frame: clone(documentService.frame.value)
   } : null
 
   const outpaintResult = await openAiService.outpaint({
@@ -311,14 +264,13 @@ async function outpaintImage() {
   }
 }
 
-
 function createContextFromFrame(width: number, height: number) {
   const image = createContext(width, 1024)
-  image.drawImage(documentContext.canvas,
-    frame.value.x,
-    frame.value.y,
-    frame.value.width,
-    frame.value.height,
+  image.drawImage(documentService.documentContext.value.canvas,
+  documentService.frame.value.x,
+  documentService.frame.value.y,
+  documentService.frame.value.width,
+  documentService.frame.value.height,
     0, 0, width, height,
   )
   return image
@@ -326,19 +278,18 @@ function createContextFromFrame(width: number, height: number) {
 
 function growFrame(by: number) {
   // TODO getting stuck at 512 was frustrating for me
-  if (frame.value.width <= 512 && by < 1) return
-  if (frame.value.width >= 5120 && by > 1) return
-  frame.value.x -= by / 2
-  frame.value.y -= by / 2
-  frame.value.width = frame.value.width + by
-  frame.value.height = frame.value.height + by
-  drawOverlay()
+  if (documentService.frame.value.width <= 512 && by < 1) return
+  if (documentService.frame.value.width >= 5120 && by > 1) return
+  documentService.frame.value.x -= by / 2
+  documentService.frame.value.y -= by / 2
+  documentService.frame.value.width = documentService.frame.value.width + by
+  documentService.frame.value.height = documentService.frame.value.height + by
+  documentService.drawOverlay()
 }
 
 function mouseUp(mouse: MouseEvent) {
-  documentMouseUp()
+  documentService.mouseUp(mouse)
 }
-
 
 </script>
 
@@ -389,7 +340,6 @@ function mouseUp(mouse: MouseEvent) {
   width: 100%;
   height: 9.6em;
 }
-
 
 .tool-panel {
   margin: 0.4em;
