@@ -54,6 +54,7 @@ const emit = defineEmits<{
 onMounted(async () => {
   await setupDocument()
   emit('ready', {
+    // TODO may be better to share these things with a documentState or documentService
     documentContext: documentContext.value,
     bounds: bounds,
     frame: frame,

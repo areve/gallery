@@ -81,14 +81,14 @@ const showMetadata = ref<boolean>(false)
 const scaleImageBy = ref<number>(0.5)
 const filename = ref<string>('')
 const metadata = ref<GalleryMetadata>({ history: [] })
-// const width = ref<number>(1024)
-// const height = ref<number>(1024)
+
 let frame = ref<Rect>({
   x: 0,
   y: 0,
   width: 1024,
   height: 1024,
 })
+
 let bounds = ref<Rect>({
   x: 0,
   y: 0,
