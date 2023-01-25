@@ -34,7 +34,7 @@
 
       <span class="status-bar">
         <span>canvas:{{ bounds.width }}x{{ bounds.height }}</span>
-        <!-- <span>window:{{ frame.width }}x{{ frame.height }}</span> -->
+        <span>frame:{{ frame.width }}x{{ frame.height }}</span>
       </span>
     </main>
     <aside class="side-panel">
@@ -51,7 +51,7 @@ import { computed, onMounted, ref, watch, watchSyncEffect, type Ref } from 'vue'
 import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, DocumentVueReady } from '@/interfaces/EditorView-interfaces';
 import { clone, mostRecentPrompt, rectanglesIntersect } from './EditorView-utils';
 import { shotgunEffect } from './EditorView/effects';
-import { clearCircle, scaleImage } from './EditorView/draw';
+import { scaleImage } from './EditorView/draw';
 import { cloneContext, createContext, autoCropImage, createContextFromImage } from './EditorView/canvas';
 
 import Menu from '@/components/Menu.vue'
