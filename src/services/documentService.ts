@@ -1,4 +1,5 @@
-import type { DragOrigin, Rect } from "@/interfaces/EditorView-interfaces";
+import type { DragOrigin } from "@/interfaces/DragOrigin";
+import type { Rect } from "@/interfaces/Rect";
 import { ref, type Ref } from "vue";
 
 const dragOrigin = ref<DragOrigin | null>(null)

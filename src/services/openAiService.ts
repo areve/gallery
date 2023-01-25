@@ -1,9 +1,10 @@
-import type { GalleryItem, GalleryMetadata } from "@/interfaces/EditorView-interfaces"
 import { extendMetadata, getDatestamp } from "@/views/EditorView-utils"
 import { imageCountEmptyPixels } from "@/views/EditorView/canvas"
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/services/openAiApi"
 import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
+import type { GalleryItem } from "@/interfaces/GalleryItem"
+import type { GalleryMetadata } from "@/interfaces/GalleryMetadata"
 
 const openApiKey = ref<string>('')
 

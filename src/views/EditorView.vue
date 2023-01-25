@@ -51,7 +51,6 @@ import Gallery from '@/components/Gallery.vue'
 import ToolPanel from '@/components/ToolPanel.vue'
 
 import { computed, onMounted, ref, watch } from 'vue';
-import type { GalleryItem, GalleryMetadata } from '@/interfaces/EditorView-interfaces';
 import { clone, mostRecentPrompt, rectanglesIntersect } from './EditorView-utils';
 import { shotgunEffect } from './EditorView/effects';
 import { scaleImage } from './EditorView/draw';
@@ -65,6 +64,8 @@ import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
 import { panel, toolSelected } from '@/services/appState';
 import documentService from '@/services/documentService'
+import type { GalleryItem } from '@/interfaces/GalleryItem'
+import type { GalleryMetadata } from '@/interfaces/GalleryMetadata'
 
 useKeyboardHandler()
 

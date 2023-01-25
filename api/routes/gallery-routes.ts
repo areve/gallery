@@ -2,7 +2,8 @@ import express from 'express'
 import fs, { lstatSync } from 'fs'
 import { readMetadata } from '../lib/png-metadata';
 import bodyParser from 'body-parser'
-import { GalleryItem, GalleryMetadata } from '../../src/interfaces/EditorView-interfaces'
+import { GalleryItem } from '../../src/interfaces/GalleryItem'
+import { GalleryMetadata } from '../../src/interfaces/GalleryMetadata'
 
 const downloads = './public/downloads'
 

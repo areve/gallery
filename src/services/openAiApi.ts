@@ -1,5 +1,9 @@
+import type { GalleryItem } from "@/interfaces/GalleryItem";
+import type { GalleryItemDataUrl } from "@/interfaces/GalleryItemDataUrl";
+import type { HistoryItemEdit } from "@/interfaces/HistoryItemEdit";
+import type { HistoryItemGeneration } from "@/interfaces/HistoryItemGeneration";
+import type { OpenAiResponse } from "@/interfaces/OpenAiResponse";
 import axios from "axios";
-import type { GalleryItem, GalleryItemDataUrl, HistoryItemEdit, HistoryItemGeneration, OpenAiResponse } from "@/interfaces/EditorView-interfaces";
 import { clone, epochToDate, findErrorMessage } from "../views/EditorView-utils";
 
 export async function openAiGenerateImage(item: GalleryItem, openApiKey: string) {

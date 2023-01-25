@@ -1,4 +1,5 @@
-import type { GalleryItem, GalleryItemDataUrl } from "@/interfaces/EditorView-interfaces"
+import type { GalleryItem } from "@/interfaces/GalleryItem"
+import type { GalleryItemDataUrl } from "@/interfaces/GalleryItemDataUrl"
 import { clone, findErrorMessage, loadImage } from "@/views/EditorView-utils"
 import axios from "axios"
 

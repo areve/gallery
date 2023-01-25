@@ -1,4 +1,5 @@
-import type { GalleryItem, GalleryItemDataUrl, GalleryMetadata } from "@/interfaces/EditorView-interfaces"
+import type { GalleryItemDataUrl } from "@/interfaces/GalleryItemDataUrl"
+import type { GalleryMetadata } from "@/interfaces/GalleryMetadata"
 import { extendMetadata, getDatestamp } from "@/views/EditorView-utils"
 import { createContext } from "@/views/EditorView/canvas"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
