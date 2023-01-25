@@ -44,26 +44,27 @@
 </template>
 
 <script lang="ts" setup>
-import Document from '@/components/Document.vue';
-import AppSettings from '@/components/AppSettings.vue';
+import Document from '@/components/Document.vue'
+import AppSettings from '@/components/AppSettings.vue'
+import Menu from '@/components/Menu.vue'
+import Gallery from '@/components/Gallery.vue'
+import ToolPanel from '@/components/ToolPanel.vue'
 
-import { computed, onMounted, ref, watch, watchSyncEffect, type Ref } from 'vue';
-import type { GalleryItem, GalleryMetadata, Rect, Tools, DragOrigin, DocumentVueReady } from '@/interfaces/EditorView-interfaces';
+import { computed, onMounted, ref, watch, type Ref } from 'vue';
+import type { GalleryItem, GalleryMetadata, Rect, DocumentVueReady } from '@/interfaces/EditorView-interfaces';
 import { clone, mostRecentPrompt, rectanglesIntersect } from './EditorView-utils';
 import { shotgunEffect } from './EditorView/effects';
 import { scaleImage } from './EditorView/draw';
 import { cloneContext, createContext, autoCropImage, createContextFromImage } from './EditorView/canvas';
 
-import Menu from '@/components/Menu.vue'
-import Gallery from '@/components/Gallery.vue'
+
 import { onApplyEffect, onSelectTool, onAction } from '@/services/appActions'
 import { useKeyboardHandler } from '@/services/keyboardHandler';
 import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem } from '@/services/galleryService';
 import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
-import { panel, penSize, snapSize, toolSelected } from '@/services/appState';
-import ToolPanel from '@/components/ToolPanel.vue';
+import { panel, toolSelected } from '@/services/appState';
 
 useKeyboardHandler()
 
@@ -82,7 +83,12 @@ const filename = ref<string>('')
 const metadata = ref<GalleryMetadata>({ history: [] })
 // const width = ref<number>(1024)
 // const height = ref<number>(1024)
-let frame: Ref<Rect>;
+let frame = ref<Rect>({
+  x: 0,
+  y: 0,
+  width: 1024,
+  height: 1024,
+})
 let bounds = ref<Rect>({
   x: 0,
   y: 0,
@@ -126,8 +132,8 @@ onMounted(async () => {
   await loadState()
 })
 
-let documentMouseUp = function(){} as Function
-let drawOverlay = function(){} as Function
+let documentMouseUp = function () { } as Function
+let drawOverlay = function () { } as Function
 
 function onresize(widthz: number, heightz: number) {
   console.log('reszie', widthz, heightz)
@@ -337,7 +343,6 @@ function mouseUp(mouse: MouseEvent) {
 </script>
 
 <style scoped>
-
 .layout {
   display: grid;
   grid-template-columns: 70% 30%;
