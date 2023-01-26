@@ -1,31 +1,23 @@
 import type { ArtworkMetadata } from "./ArtworkMetadata";
 import type { Rect } from "./Rect";
 
-export type Artwork =
-  ArtworkFile |
-  ArtworkActive |
-  ArtworkWaiting |
-  ArtworkDisplayed |
-  ArtworkError |
-  ArtworkDeleted
-
 type ArtworkStatus = 'file' | 'active' | 'loading' | 'waiting' | 'displayed' | 'error' | 'deleted'
 
-export interface ArtworkBase {
+export interface Artwork {
   status: ArtworkStatus,
   filename: string
   metadata: ArtworkMetadata
 }
 
-export interface ArtworkFile extends ArtworkBase {
+export interface ArtworkFile extends Artwork {
   status: 'file' | 'loading'
 }
 
-export interface ArtworkInMemory extends ArtworkBase {
+export interface ArtworkInMemory extends Artwork {
   dataUrl: string
 }
 
-export interface ArtworkActive extends ArtworkBase, ArtworkExportable {
+export interface ArtworkActive extends Artwork, ArtworkExportable {
   status: 'active'
   frame: Rect;
   bounds: Rect;
@@ -33,25 +25,24 @@ export interface ArtworkActive extends ArtworkBase, ArtworkExportable {
   overlayContext: CanvasRenderingContext2D;
 }
 
-export interface ArtworkWaiting extends ArtworkBase {
+export interface ArtworkWaiting extends Artwork {
   status: 'waiting'
 }
 
-export interface ArtworkDisplayed extends ArtworkBase, ArtworkExportable {
+export interface ArtworkDisplayed extends Artwork, ArtworkExportable {
   status: 'displayed'
   context: CanvasRenderingContext2D
 }
 
-export interface ArtworkError extends ArtworkBase {
+export interface ArtworkError extends Artwork {
   status: 'error'
   error: string
-  // TODO desired state and more details?
 }
 
-export interface ArtworkDeleted extends ArtworkBase {
+export interface ArtworkDeleted extends Artwork {
   status: 'deleted'
 }
-export interface ArtworkExportable extends ArtworkBase {
+export interface ArtworkExportable extends Artwork {
   toDataURL(): string
 }
 
