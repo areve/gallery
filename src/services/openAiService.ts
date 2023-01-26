@@ -4,7 +4,7 @@ import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/se
 import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
-import type { Artwork } from "@/interfaces/Artwork"
+import type { Artwork, ArtworkInMemory } from "@/interfaces/Artwork"
 
 const openApiKey = ref<string>('')
 
@@ -24,27 +24,39 @@ interface VariationOptions {
 
 async function generate({ prompt }: GenerateOptions) {
     const filename = `generation-${getDatestamp()}.png`
-    const item: Artwork = {
+    const item: ArtworkInMemory = {
         filename,
+        dataUrl: null!, // TODO null!
         status: 'waiting',
+        //TODO add created/modified back here not in metadata
         metadata: {
-            history: [],
+            history: [{
+                method: 'generation',
+                prompt,
+                filename,
+                version: 'OpenAI'
+            }],
             modified: new Date()
         }
     }
 
     updateGalleryItem(item)
-    const generatedImage = await openAiGenerateImage(
+    const imageResult = await openAiGenerateImage(
         { prompt },
-        item, openApiKey.value)
-    if (generatedImage.status === 'error') {
-        updateGalleryItem(generatedImage)
-        return generatedImage
+        openApiKey.value)
+    if (imageResult.status === 'error') {
+        item.metadata.history[item.metadata.history.length - 1].error = imageResult.error
+        item.status === imageResult.status
+        updateGalleryItem(item)
+        return item
     }
 
-    const updatedItem = await saveGalleryItem(generatedImage)
-    updateGalleryItem(updatedItem)
-    return updatedItem
+    item.metadata.history[item.metadata.history.length - 1].created = imageResult.created
+    item.dataUrl = imageResult.dataUrl
+    const updatedItem = await saveGalleryItem(item)
+
+    updateGalleryItem(item)
+    return item
 }
 
 async function outpaint({ prompt, image, metadata }: OutpaintOptions) {

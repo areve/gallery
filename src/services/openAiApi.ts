@@ -1,17 +1,9 @@
 import type { Artwork, ArtworkError, ArtworkInMemory } from "@/interfaces/Artwork";
-import type { OpenAiResponse } from "@/interfaces/OpenAiResponse";
+import type { ImageResult, ImageResultError, ImageResultReady, OpenAiResponse } from "@/interfaces/OpenAiResponse";
 import axios from "axios";
 import { clone, epochToDate, extendMetadata, findErrorMessage } from "../lib/utils";
 
-// TODO this is doing more than just comms with the API and it shouldn't
-export async function openAiGenerateImage(command: { prompt: string }, item: Artwork, openApiKey: string) {
-   const result = clone(item) as ArtworkInMemory
-   result.metadata = extendMetadata(result.metadata, {
-      method: 'generation',
-      prompt: command.prompt,
-      filename: item.filename,
-      version: 'OpenAI'
-   })
+export async function openAiGenerateImage(command: { prompt: string }, openApiKey: string): Promise<ImageResult> {
    let response
    try {
       response = await axios.post(
@@ -29,16 +21,18 @@ export async function openAiGenerateImage(command: { prompt: string }, item: Art
             },
          })
    } catch (e) {
-      result.status = 'error'
-      result.metadata.history[result.metadata.history.length - 1].error = findErrorMessage(e)
-      return result as any as ArtworkError
+      return <ImageResultError>{
+         status: 'error',
+         error: findErrorMessage(e)
+      }
    }
 
    const openAiImage = (response.data as OpenAiResponse).data[0]
-   result.dataUrl = `data:image/png;base64,${openAiImage.b64_json}`
-   result.metadata.history[result.metadata.history.length - 1].created = epochToDate(response.data.created).toISOString()
-
-   return result
+   return <ImageResultReady>{
+      status: 'ready',
+      created: epochToDate(response.data.created).toISOString(),
+      dataUrl: `data:image/png;base64,${openAiImage.b64_json}`
+   }
 }
 
 export async function openAiEditImage(command: { image: Blob, mask: Blob, prompt: string }, item: Artwork, openApiKey: string) {
