@@ -95,6 +95,9 @@ onMounted(async () => {
   height: 100px;
   padding: 2px;
   vertical-align: top;
+  overflow: hidden;
 }
-
+.gallery-button img {
+  max-height: 100%;
+}
 </style>
