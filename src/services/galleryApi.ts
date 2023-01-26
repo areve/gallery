@@ -1,12 +1,12 @@
-import type { ArtworkDeleted, ArtworkDisplayed, ArtworkError, ArtworkFile, ArtworkInMemory } from "@/interfaces/Artwork"
+import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork } from "@/interfaces/Artwork"
 import { clone, findErrorMessage, loadImage } from "@/lib/utils"
 import axios from "axios"
 
-async function saveGalleryItem(item: ArtworkDisplayed | ArtworkInMemory) {
+async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   let response
   try {
     response = await axios.post('/api/editor/saveImage', {
-      image: (item as ArtworkInMemory).dataUrl || (item as ArtworkDisplayed).context.canvas.toDataURL(),
+      image: (item as ArtworkInMemory).dataUrl || (item as ArtworkOnCanvas).context.canvas.toDataURL(),
       filename: item.filename,
       metadata: item.metadata
     })
@@ -20,7 +20,7 @@ async function saveGalleryItem(item: ArtworkDisplayed | ArtworkInMemory) {
     return result
   }
 
-  return response.data as ArtworkFile
+  return response.data as Artwork
 }
 
 async function getGallery() {
@@ -29,10 +29,10 @@ async function getGallery() {
     response = await axios.get('/api/gallery/')
   } catch (e) {
     console.error(e)
-    return [] as ArtworkFile[]
+    return [] as Artwork[]
   }
 
-  return response.data as ArtworkFile[]
+  return response.data as Artwork[]
 }
 
 async function getGalleryItem(filename: string) {

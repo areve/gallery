@@ -2,7 +2,7 @@ import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
 import { extendMetadata, getDatestamp } from "@/lib/utils"
 import { createContext } from "@/lib/canvas"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
-import type { Artwork, ArtworkDisplayed, ArtworkError } from "@/interfaces/Artwork"
+import type { Artwork, ArtworkOnCanvas, ArtworkError } from "@/interfaces/Artwork"
 
 interface Layer {
     context: CanvasRenderingContext2D, 
@@ -31,7 +31,7 @@ async function flatten({ metadata, width, height, layers }: FlattenOptions) {
     })
 
     const filename = `composition-${getDatestamp()}.png`
-    const item: ArtworkDisplayed = {
+    const item: ArtworkOnCanvas = {
         filename,
         context,
         status: 'ready',

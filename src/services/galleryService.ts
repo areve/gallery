@@ -1,21 +1,22 @@
-import type { Artwork, ArtworkDisplayed, ArtworkFile, ArtworkInMemory } from "@/interfaces/Artwork";
+import type { Artwork, ArtworkOnCanvas, ArtworkInMemory } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import { ref } from "vue";
 import galleryApi from "./galleryApi";
 
 const id = () => Math.random()
 
-interface GalleryItemSelected { id: number, item: ArtworkFile }
+// TODO reanme or remove this
+interface GalleryItemSelected { id: number, item: Artwork }
 
 export const galleryItems = ref<Artwork[]>([])
 export const onSelected = ref<GalleryItemSelected>(undefined!)
-export const selectItem = (item: ArtworkFile) => onSelected.value = { id: id(), item }
+export const selectItem = (item: Artwork) => onSelected.value = { id: id(), item }
 
 export async function loadGallery() {
     galleryItems.value = await galleryApi.getGallery()
 }
 
-export async function saveGalleryItem(item: ArtworkDisplayed | ArtworkInMemory) {
+export async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
     const itemToSave = clone(item) 
     itemToSave.status = 'waiting'
     updateGalleryItem(itemToSave)
@@ -36,7 +37,7 @@ export async function deleteGalleryItem(deleteFilename: string) {
     }
 }
 
-export async function loadGalleryItem(item: ArtworkFile) {
+export async function loadGalleryItem(item: Artwork) {
     return await galleryApi.getGalleryItem(item.filename)
 }
 

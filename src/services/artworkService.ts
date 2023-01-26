@@ -3,7 +3,7 @@ import type { Rect } from "@/interfaces/Rect";
 import { clone, rectanglesIntersect } from "@/lib/utils";
 import { cloneContext, createContext, autoCropImage } from '@/lib/canvas';
 import { ref, type Ref } from "vue";
-import type { ArtworkActive, ArtworkDisplayed, ArtworkFile } from "@/interfaces/Artwork";
+import type { Artwork, ArtworkActive, ArtworkOnCanvas } from "@/interfaces/Artwork";
 import { loadGalleryItem, saveGalleryItem } from "./galleryService";
 
 const dragOrigin = ref<DragOrigin | null>(null)
@@ -124,7 +124,7 @@ async function autoCrop() {
     artwork.value.context.drawImage(cropped.canvas, 0, 0)
 }
 
-async function load(item: ArtworkFile) {
+async function load(item: Artwork) {
     const image = await loadGalleryItem(item)
     artwork.value.bounds.width = image.width
     artwork.value.bounds.height = image.height

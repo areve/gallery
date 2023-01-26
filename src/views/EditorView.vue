@@ -31,7 +31,7 @@
         <button type="button" @click="outpaintImage()">Outpaint</button>
       </section>
       <ToolPanel />
-      <Artwork />
+      <ArtworkVue />
 
       <span class="status-bar">
         <span>canvas:{{ artworkService.artwork.value.bounds.width }}x{{
@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import Artwork from '@/components/Artwork.vue'
+import ArtworkVue from '@/components/Artwork.vue'
 import AppSettings from '@/components/AppSettings.vue'
 import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
@@ -69,7 +69,7 @@ import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
 import { panel, toolSelected } from '@/services/appState';
 import artworkService from '@/services/artworkService'
-import type { ArtworkFile } from '@/interfaces/Artwork'
+import type { Artwork } from '@/interfaces/Artwork'
 
 useKeyboardHandler()
 
@@ -133,7 +133,7 @@ function reset() {
   artworkService.resetArtwork();
 }
 
-async function galleryItemSelected(item: ArtworkFile) {
+async function galleryItemSelected(item: Artwork) {
   artworkService.load(item)
   prompt.value = mostRecentPrompt(item)
   saveState()

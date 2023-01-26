@@ -9,21 +9,17 @@ export interface Artwork {
   metadata: ArtworkMetadata
 }
 
-export interface ArtworkFile extends Artwork {
-}
-
 export interface ArtworkInMemory extends Artwork {
   dataUrl: string
 }
 
-export interface ArtworkActive extends Artwork, ArtworkDisplayed {
+export interface ArtworkActive extends Artwork, ArtworkOnCanvas {
   frame: Rect;
   bounds: Rect;
   overlayContext: CanvasRenderingContext2D;
 }
 
-// TODO rename ArtworkDisplayed? 
-export interface ArtworkDisplayed extends Artwork {
+export interface ArtworkOnCanvas extends Artwork {
   context: CanvasRenderingContext2D
 }
 
