@@ -8,6 +8,8 @@ import type { Artwork } from "@/interfaces/Artwork";
 const dragOrigin = ref<DragOrigin | null>(null)
 
 const artwork = ref<Artwork>({
+    filename: '',
+    metadata: { history: [] },
     frame: {
         x: 0,
         y: 0,

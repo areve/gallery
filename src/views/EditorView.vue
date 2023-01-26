@@ -9,8 +9,8 @@
         <h3>Document Settings</h3>
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
         <textarea class="metadata" v-model="metadataAsJson" v-if="showMetadata"></textarea>
-        <input type="text" v-model="filename" />
-        <button type="button" @click="deleteImage(filename)">Delete</button>
+        <input type="text" v-model="artworkService.artwork.value.filename" />
+        <button type="button" @click="deleteImage(artworkService.artwork.value.filename)">Delete</button>
       </section>
       <AppSettings />
       <section class="tool-panel">
@@ -80,12 +80,10 @@ useKeyboardHandler()
 const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
 const scaleImageBy = ref<number>(0.5)
-const filename = ref<string>('')
-const metadata = ref<GalleryMetadata>({ history: [] })
 
 const metadataAsJson = computed({
   get: () => {
-    return JSON.stringify(metadata.value)
+    return JSON.stringify(artworkService.artwork.value.metadata)
   },
   set: (value: string) => {
     throw ('unimplemented yet')
@@ -114,22 +112,22 @@ onMounted(async () => {
 function loadState() {
   openAiService.openApiKey.value = window.localStorage.getItem('openApiKey') || ''
   reset()
-  metadata.value = JSON.parse(window.localStorage.getItem('metadata') || '')
+  artworkService.artwork.value.metadata = JSON.parse(window.localStorage.getItem('metadata') || '')
   prompt.value = window.localStorage.getItem('prompt') || ''
-  filename.value = window.localStorage.getItem('filename') || ''
+  artworkService.artwork.value.filename = window.localStorage.getItem('filename') || ''
 }
 
 function saveState() {
-  window.localStorage.setItem('metadata', JSON.stringify(metadata.value))
+  window.localStorage.setItem('metadata', JSON.stringify(artworkService.artwork.value.metadata))
   window.localStorage.setItem('prompt', prompt.value)
-  window.localStorage.setItem('filename', filename.value)
+  window.localStorage.setItem('filename', artworkService.artwork.value.filename)
 }
 
 function reset() {
   artworkService.resetDocument();
-  metadata.value = { history: [] }
+  artworkService.artwork.value.metadata = { history: [] }
   prompt.value = ''
-  filename.value = ''
+  artworkService.artwork.value.filename = ''
   artworkService.resetFrame()
 }
 
@@ -143,8 +141,8 @@ async function galleryItemSelected(item: GalleryItem) {
 
   artworkService.artwork.value.documentContext.drawImage(image, 0, 0)
   prompt.value = mostRecentPrompt(item)
-  filename.value = item.filename
-  metadata.value = clone(item.metadata)
+  artworkService.artwork.value.filename = item.filename
+  artworkService.artwork.value.metadata = clone(item.metadata)
   saveState()
 }
 
@@ -156,14 +154,14 @@ async function saveDocument() {
   const newItem: GalleryItem = {
     dataUrl: artworkService.artwork.value.documentContext.canvas.toDataURL('image/png'),
     status: 'loading',
-    filename: filename.value,
-    metadata: metadata.value
+    filename: artworkService.artwork.value.filename,
+    metadata: artworkService.artwork.value.metadata
   }
 
   const item = await saveGalleryItem(newItem)
 
-  filename.value = item.filename
-  metadata.value = item.metadata
+  artworkService.artwork.value.filename = item.filename
+  artworkService.artwork.value.metadata = item.metadata
   saveState()
 }
 
@@ -176,7 +174,7 @@ async function generateImage() {
 async function variationImage() {
   await openAiService.variation({
     image: artworkService.createContextFromFrame(1024, 1024),
-    metadata: metadata.value
+    metadata: artworkService.artwork.value.metadata
   })
 }
 
@@ -184,7 +182,7 @@ async function outpaintImage() {
   const outpaintImage_saveBeforeOutpaint = false
   if (outpaintImage_saveBeforeOutpaint) {
     await compositionService.flatten({
-      metadata: metadata.value,
+      metadata: artworkService.artwork.value.metadata,
       width: artworkService.artwork.value.documentContext.canvas.width,
       height: artworkService.artwork.value.documentContext.canvas.height,
       layers: [
@@ -206,12 +204,12 @@ async function outpaintImage() {
   const outpaintResult = await openAiService.outpaint({
     prompt: prompt.value,
     image: artworkService.createContextFromFrame(1024, 1024),
-    metadata: metadata.value
+    metadata: artworkService.artwork.value.metadata
   })
 
   if (compositionData && outpaintResult) {
     await compositionService.flatten({
-      metadata: metadata.value,
+      metadata: artworkService.artwork.value.metadata,
       width: compositionData.documentContext.canvas.width,
       height: compositionData.documentContext.canvas.height,
       layers: [
