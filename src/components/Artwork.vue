@@ -15,9 +15,10 @@ import { penSize, snapSize, toolSelected } from '@/services/appState';
 import artworkService from '@/services/artworkService'
 import { onMounted, ref, watchSyncEffect } from 'vue';
 import { clearCircle } from '@/lib/draw';
-import { dragOrigin } from '@/services/mouseService';
+import { globalDragOrigin } from '@/services/mouseService';
 import type { DragOrigin } from '@/interfaces/DragOrigin';
 
+const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!)
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!)
 onMounted(async () => {
@@ -41,7 +42,11 @@ watchSyncEffect(() => {
   artworkService.drawOverlay()
 })
 
-// TODO may be able to move this  to the mouse service?
+watchSyncEffect(() => {
+  if (globalDragOrigin.value) return
+  dragOrigin.value = null
+})
+
 function mouseDown(mouse: MouseEvent) {
   dragOrigin.value = {
     x: mouse.offsetX,

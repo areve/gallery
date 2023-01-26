@@ -1,7 +1,11 @@
-import type { DragOrigin } from "@/interfaces/DragOrigin"
 import { ref } from "vue"
 
-export const dragOrigin = ref<DragOrigin | null>()
+export const globalDragOrigin = ref<MouseEvent | null>()
+
+export function mouseDown(mouse: MouseEvent) {
+    globalDragOrigin.value = mouse
+}
+
 export function mouseUp(mouse: MouseEvent) {
-    dragOrigin.value = null
+    globalDragOrigin.value = null
 }

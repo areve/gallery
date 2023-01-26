@@ -1,5 +1,5 @@
 <template>
-  <div class="layout" @mouseup="mouseUp">
+  <div class="layout" @mouseup="mouseUp" @mousedown="mouseDown">
     <main class="main">
       <Menu></Menu>
       <section class="prompt-panel">
@@ -70,7 +70,7 @@ import galleryApi from '@/services/galleryApi';
 import { panel, toolSelected } from '@/services/appState';
 import artworkService from '@/services/artworkService'
 import type { Artwork } from '@/interfaces/Artwork'
-import { mouseUp } from '@/services/mouseService'
+import { mouseUp, mouseDown } from '@/services/mouseService'
 
 useKeyboardHandler()
 
@@ -208,7 +208,7 @@ async function outpaintImage() {
     })
   }
 }
-  
+
 </script>
 
 <style scoped>
