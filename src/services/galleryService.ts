@@ -16,8 +16,9 @@ export async function loadGallery() {
 }
 
 export async function saveGalleryItem(item: ArtworkDisplayed | ArtworkInMemory) {
-    // TODO clone and add 'updating' or something
-    updateGalleryItem(item)
+    const itemToSave = clone(item) 
+    itemToSave.status = 'waiting'
+    updateGalleryItem(itemToSave)
     const result = await galleryApi.saveGalleryItem(item)
     updateGalleryItem(result)
     return result
@@ -27,9 +28,7 @@ export async function deleteGalleryItem(deleteFilename: string) {
     const itemToDelete = clone(galleryItems.value.filter(i => i.filename === deleteFilename)[0])
     itemToDelete.status = 'waiting'
     updateGalleryItem(itemToDelete)
-
     const result = await galleryApi.deleteGalleryItem(deleteFilename)
-
     if (result.status === 'error') {
         updateGalleryItem(result)
     } else {
