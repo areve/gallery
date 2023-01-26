@@ -3,7 +3,7 @@ export interface OpenAiImage {
 }
 
 export interface OpenAiResponse {
-
+  created: number,
   data: OpenAiImage[];
 }
 

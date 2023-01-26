@@ -5,6 +5,7 @@ import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
 import type { Artwork, ArtworkError, ArtworkInMemory } from "@/interfaces/Artwork"
+import type { ImageResultError, ImageResultReady } from "@/interfaces/OpenAiResponse"
 
 const openApiKey = ref<string>('')
 
@@ -23,6 +24,11 @@ interface VariationOptions {
 }
 
 async function generate({ prompt }: GenerateOptions) {
+    if (!prompt.trim()) {
+        alert('no prompt!')
+        return
+    }
+
     const filename = `generation-${getDatestamp()}.png`
     const item: Artwork = {
         filename,
@@ -39,24 +45,8 @@ async function generate({ prompt }: GenerateOptions) {
     }
 
     updateGalleryItem(item)
-    const imageResult = await openAiGenerateImage(
-        { prompt },
-        openApiKey.value)
-    if (imageResult.status === 'error') {
-        const errorResult = clone(item) as ArtworkError
-        last(errorResult.metadata.history).error = imageResult.error
-        errorResult.status === imageResult.status
-        updateGalleryItem(errorResult)
-        return errorResult            
-    }
-
-    const result = clone(item) as ArtworkInMemory
-    last(result.metadata.history).created = imageResult.created.toISOString()
-    result.dataUrl = imageResult.dataUrl
-    const updatedItem = await saveGalleryItem(result)
-
-    updateGalleryItem(updatedItem)
-    return updatedItem
+    const imageResult = await openAiGenerateImage({ prompt }, openApiKey.value)
+    return await handleImageResult(imageResult, item)
 }
 
 async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
@@ -76,21 +66,17 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
         filename,
         modified: new Date(),
         status: 'waiting',
-        metadata
+        metadata: extendMetadata(metadata, {
+            method: 'edit',
+            prompt,
+            filename,
+            version: 'OpenAI'
+        })
     }
 
     updateGalleryItem(item)
-    const generatedImage = await openAiEditImage(
-        { image: imageBlob, mask: imageBlob, prompt },
-        item, openApiKey.value)
-    if (generatedImage.status === 'error') {
-        updateGalleryItem(generatedImage)
-        return generatedImage
-    }
-
-    const updatedItem = await saveGalleryItem(generatedImage)
-    updateGalleryItem(updatedItem)
-    return updatedItem
+    const imageResult = await openAiEditImage({ image: imageBlob, mask: imageBlob, prompt }, openApiKey.value)
+    return await handleImageResult(imageResult, item)
 }
 
 async function variation({ image, metadata }: VariationOptions) {
@@ -100,19 +86,32 @@ async function variation({ image, metadata }: VariationOptions) {
         filename,
         modified: new Date(),
         status: 'waiting',
-        metadata: metadata
+        metadata: extendMetadata(metadata, {
+            method: 'variation',
+            filename,
+            version: 'OpenAI'
+        })
     }
 
     updateGalleryItem(item)
-    const generatedImage = await openAiImageVariation(
-        { image: imageBlob },
-        item, openApiKey.value)
-    if (generatedImage.status === 'error') {
-        updateGalleryItem(generatedImage)
-        return generatedImage
+    const imageResult = await openAiImageVariation({ image: imageBlob }, openApiKey.value)
+    return await handleImageResult(imageResult, item)
+}
+
+async function handleImageResult(imageResult: ImageResultError | ImageResultReady, item: Artwork) {
+    if (imageResult.status === 'error') {
+        const errorResult = clone(item) as ArtworkError
+        last(errorResult.metadata.history).error = imageResult.error
+        errorResult.status === imageResult.status
+        updateGalleryItem(errorResult)
+        return errorResult
     }
 
-    const updatedItem = await saveGalleryItem(generatedImage)
+    const result = clone(item) as ArtworkInMemory
+    last(result.metadata.history).created = imageResult.created.toISOString()
+    result.dataUrl = imageResult.dataUrl
+    const updatedItem = await saveGalleryItem(result)
+
     updateGalleryItem(updatedItem)
     return updatedItem
 }

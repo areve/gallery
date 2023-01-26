@@ -1,25 +1,64 @@
-import type { Artwork, ArtworkError, ArtworkInMemory } from "@/interfaces/Artwork";
 import type { ImageResult, ImageResultError, ImageResultReady, OpenAiResponse } from "@/interfaces/OpenAiResponse";
-import axios from "axios";
-import { clone, epochToDate, extendMetadata, findErrorMessage, last } from "../lib/utils";
+import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
+import { epochToDate, findErrorMessage } from "../lib/utils";
 
 export async function openAiGenerateImage(command: { prompt: string }, openApiKey: string): Promise<ImageResult> {
-   let response
-   try {
-      response = await axios.post(
-         `${getBaseUrl(openApiKey)}/images/generations`,
-         {
-            "prompt": command.prompt,
-            "n": 1,
-            "size": "1024x1024",
-            "response_format": "b64_json"
+   return await tryPost(
+      `${getBaseUrl(openApiKey)}/images/generations`,
+      {
+         "prompt": command.prompt,
+         "n": 1,
+         "size": "1024x1024",
+         "response_format": "b64_json"
+      },
+      {
+         headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${openApiKey}`
          },
-         {
-            headers: {
-               'Content-Type': 'application/json',
-               Authorization: `Bearer ${openApiKey}`
-            },
-         })
+      })
+}
+
+export async function openAiEditImage(command: { image: Blob, mask: Blob, prompt: string }, openApiKey: string) {
+   return await tryPost(
+      `${getBaseUrl(openApiKey)}/images/edits`,
+      formData({
+         image: command.image,
+         mask: command.mask,
+         prompt: command.prompt,
+         n: "1",
+         size: "1024x1024",
+         response_format: "b64_json",
+      }),
+      {
+         headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${openApiKey}`
+         }
+      })
+}
+
+export async function openAiImageVariation(command: { image: Blob }, openApiKey: string) {
+   return await tryPost(
+      `${getBaseUrl(openApiKey)}/images/variations`,
+      formData({
+         image: command.image,
+         n: "1",
+         size: "1024x1024",
+         response_format: "b64_json",
+      }),
+      {
+         headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${openApiKey}`
+         }
+      })
+}
+
+async function tryPost(url: string, data: any, config: AxiosRequestConfig<any>) {
+   let response: AxiosResponse<OpenAiResponse>
+   try {
+      response = await axios.post(url, data, config)
    } catch (e) {
       return <ImageResultError>{
          status: 'error',
@@ -27,7 +66,7 @@ export async function openAiGenerateImage(command: { prompt: string }, openApiKe
       }
    }
 
-   const openAiImage = (response.data as OpenAiResponse).data[0]
+   const openAiImage = response.data.data[0]
    return <ImageResultReady>{
       status: 'ready',
       created: epochToDate(response.data.created),
@@ -35,84 +74,14 @@ export async function openAiGenerateImage(command: { prompt: string }, openApiKe
    }
 }
 
-export async function openAiEditImage(command: { image: Blob, mask: Blob, prompt: string }, item: Artwork, openApiKey: string) {
-   const result = clone(item) as ArtworkInMemory
-   result.metadata = extendMetadata(result.metadata, {
-      method: 'edit',
-      prompt: command.prompt,
-      filename: item.filename,
-      version: 'OpenAI'
-   })
-
-   const formData = new FormData();
-   formData.append('image', command.image)
-   formData.append('mask', command.mask)
-   formData.append('prompt', command.prompt)
-   formData.append('n', "1")
-   formData.append('size', "1024x1024")
-   formData.append('response_format', "b64_json")
-
-   let response
-   try {
-      response = await axios.post(
-         `${getBaseUrl(openApiKey)}/images/edits`,
-         formData,
-         {
-            headers: {
-               "Content-Type": "multipart/form-data",
-               Authorization: `Bearer ${openApiKey}`
-            }
-         })
-   } catch (e) {
-      result.status = 'error'
-      last(result.metadata.history).error = findErrorMessage(e)
-      return result
-   }
-
-   result.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-   last(result.metadata.history).created = epochToDate(response.data.created).toISOString()
-
-   return result
-}
-
-export async function openAiImageVariation(command: { image: Blob }, item: Artwork, openApiKey: string) {
-   const result = clone(item) as ArtworkInMemory
-   result.metadata = extendMetadata(result.metadata, {
-      method: 'variation',
-      filename: item.filename,
-      version: 'OpenAI'
-   })
-   const formData = new FormData();
-   formData.append('image', command.image)
-   formData.append('n', "1")
-   formData.append('size', "1024x1024")
-   formData.append('response_format', "b64_json")
-
-   let response
-   try {
-      response = await axios.post(
-         `${getBaseUrl(openApiKey)}/images/variations`,
-         formData,
-         {
-            headers: {
-               "Content-Type": "multipart/form-data",
-               Authorization: `Bearer ${openApiKey}`
-            }
-         })
-   } catch (e) {
-      result.status = 'error'
-      last(result.metadata.history).error = findErrorMessage(e)
-      return result
-   }
-
-   result.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-   last(result.metadata.history).created = epochToDate(response.data.created).toISOString()
-
-   return result
-
-}
-
 function getBaseUrl(openApiKey: string | null) {
    return openApiKey ? 'https://api.openai.com/v1' : '/api/openai'
 }
 
+function formData(value: { [key: string]: string | Blob; }) {
+   const result = new FormData()
+   Object.keys(value).forEach(key => {
+      result.append(key, value[key])
+   })
+   return result
+}
