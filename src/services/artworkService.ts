@@ -26,7 +26,7 @@ const artwork = ref<Artwork>({
         height: 1024,
     },
     // TODO this cast may be very bad
-    documentContext: {} as CanvasRenderingContext2D,
+    mainContext: {} as CanvasRenderingContext2D,
     overlayContext: {} as CanvasRenderingContext2D
 })
 
@@ -52,10 +52,10 @@ function drawOverlay() {
 }
 
 function resetArtwork() {
-    if (!artwork.value.documentContext?.canvas) return
+    if (!artwork.value.mainContext?.canvas) return
     artwork.value.bounds.width = 1024
     artwork.value.bounds.height = 1024
-    artwork.value.documentContext.clearRect(0, 0, artwork.value.documentContext.canvas.width, artwork.value.documentContext.canvas.height)
+    artwork.value.mainContext.clearRect(0, 0, artwork.value.mainContext.canvas.width, artwork.value.mainContext.canvas.height)
     artwork.value.metadata = { history: [] }
     artwork.value.filename = ''
     resetFrame()
@@ -65,21 +65,21 @@ function resetArtwork() {
 async function scale(by: number) {
     if (artwork.value.bounds.width <= 1 && by < 1) return
     if (artwork.value.bounds.width >= 5120 && by > 1) return
-    const clone = cloneContext(artwork.value.documentContext)
-    artwork.value.documentContext.clearRect(0, 0, artwork.value.documentContext.canvas.width, artwork.value.documentContext.canvas.height)
+    const clone = cloneContext(artwork.value.mainContext)
+    artwork.value.mainContext.clearRect(0, 0, artwork.value.mainContext.canvas.width, artwork.value.mainContext.canvas.height)
     artwork.value.bounds.width = Math.min(5120, artwork.value.bounds.width * by)
     artwork.value.bounds.height = Math.min(5120, artwork.value.bounds.height * by)
     const dx = (artwork.value.bounds.width - clone.canvas.width) / 2
     const dy = (artwork.value.bounds.width - clone.canvas.width) / 2
-    artwork.value.documentContext.drawImage(
+    artwork.value.mainContext.drawImage(
         clone.canvas,
         dx,
         dy,
         clone.canvas.width,
         clone.canvas.height)
 
-    const scaleDocumentCanvas_keepFrameSize = false
-    if (scaleDocumentCanvas_keepFrameSize) {
+    const scaleArtwork_keepFrameSize = false
+    if (scaleArtwork_keepFrameSize) {
         artwork.value.frame.x += dx
         artwork.value.frame.y += dy
     } else {
@@ -95,7 +95,7 @@ async function scale(by: number) {
 
 function createContextFromFrame(width: number, height: number) {
     const image = createContext(width, 1024)
-    image.drawImage(artwork.value.documentContext.canvas,
+    image.drawImage(artwork.value.mainContext.canvas,
         artwork.value.frame.x,
         artwork.value.frame.y,
         artwork.value.frame.width,
@@ -118,10 +118,10 @@ function growFrame(by: number) {
 
 
 async function autoCrop() {
-    const cropped = await autoCropImage(artwork.value.documentContext)
+    const cropped = await autoCropImage(artwork.value.mainContext)
     artwork.value.bounds.width = cropped.canvas.width
     artwork.value.bounds.height = cropped.canvas.height
-    artwork.value.documentContext.drawImage(cropped.canvas, 0, 0)
+    artwork.value.mainContext.drawImage(cropped.canvas, 0, 0)
 }
 
 // TODO how and GalleryItem and related?
@@ -130,14 +130,14 @@ async function load(item: GalleryItem) {
     artwork.value.bounds.width = image.width
     artwork.value.bounds.height = image.height
     resetFrame()
-    artwork.value.documentContext.drawImage(image, 0, 0)
+    artwork.value.mainContext.drawImage(image, 0, 0)
     artwork.value.filename = item.filename
     artwork.value.metadata = clone(item.metadata)
 }
 
 async function save() {
     const newItem: GalleryItem = {
-        dataUrl: artwork.value.documentContext.canvas.toDataURL('image/png'),
+        dataUrl: artwork.value.mainContext.canvas.toDataURL('image/png'),
         status: 'loading',
         filename: artwork.value.filename,
         metadata: artwork.value.metadata

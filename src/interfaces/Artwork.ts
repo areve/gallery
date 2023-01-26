@@ -6,6 +6,6 @@ export interface Artwork {
   metadata: GalleryMetadata;
   frame: Rect;
   bounds: Rect;
-  documentContext: CanvasRenderingContext2D;
+  mainContext: CanvasRenderingContext2D;
   overlayContext: CanvasRenderingContext2D;
 }

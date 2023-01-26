@@ -21,16 +21,16 @@ onMounted(async () => {
 })
 
 watchSyncEffect(() => {
-  if (!artworkService.artwork.value.documentContext?.canvas) return
+  if (!artworkService.artwork.value.mainContext?.canvas) return
   if (!artworkService.artwork.value.overlayContext.canvas) return
-  artworkService.artwork.value.documentContext.canvas.height = artworkService.artwork.value.bounds.height
-  artworkService.artwork.value.documentContext.canvas.width = artworkService.artwork.value.bounds.width
+  artworkService.artwork.value.mainContext.canvas.height = artworkService.artwork.value.bounds.height
+  artworkService.artwork.value.mainContext.canvas.width = artworkService.artwork.value.bounds.width
   artworkService.artwork.value.overlayContext.canvas.height = artworkService.artwork.value.bounds.height
   artworkService.artwork.value.overlayContext.canvas.width = artworkService.artwork.value.bounds.width
 })
 
 watchSyncEffect(() => {
-  if (!artworkService.artwork.value.documentContext?.canvas) return
+  if (!artworkService.artwork.value.mainContext?.canvas) return
   if (!artworkService.artwork.value.overlayContext.canvas) return
   void (artworkService.artwork.value.frame)
   artworkService.drawOverlay()
@@ -40,7 +40,7 @@ watchSyncEffect(() => {
 async function setupDocument() {
   // TODO use $ref instead
   const canvas = document.getElementById("edit-canvas") as HTMLCanvasElement
-  artworkService.artwork.value.documentContext = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  artworkService.artwork.value.mainContext = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
   const overlayCanvas = document.getElementById("overlay-canvas") as HTMLCanvasElement
   artworkService.artwork.value.overlayContext = overlayCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
 }
@@ -52,7 +52,7 @@ function mouseDown(mouse: MouseEvent) {
     artworkService.dragOrigin.value = {
       x: mouse.offsetX,
       y: mouse.offsetY,
-      data: artworkService.artwork.value.documentContext.getImageData(0, 0, artworkService.artwork.value.bounds.width, artworkService.artwork.value.bounds.height),
+      data: artworkService.artwork.value.mainContext.getImageData(0, 0, artworkService.artwork.value.bounds.width, artworkService.artwork.value.bounds.height),
       frame: { ...artworkService.artwork.value.frame }
     }
 }
@@ -61,18 +61,18 @@ function mouseDown(mouse: MouseEvent) {
 function mouseMove(mouse: MouseEvent) {
     if (!artworkService.dragOrigin.value) return
 
-    const dx = (mouse.offsetX - artworkService.dragOrigin.value.x) / artworkService.artwork.value.documentContext.canvas.offsetWidth * artworkService.artwork.value.documentContext.canvas.width
-    const dy = (mouse.offsetY - artworkService.dragOrigin.value.y) / artworkService.artwork.value.documentContext.canvas.offsetHeight * artworkService.artwork.value.documentContext.canvas.height
+    const dx = (mouse.offsetX - artworkService.dragOrigin.value.x) / artworkService.artwork.value.mainContext.canvas.offsetWidth * artworkService.artwork.value.mainContext.canvas.width
+    const dy = (mouse.offsetY - artworkService.dragOrigin.value.y) / artworkService.artwork.value.mainContext.canvas.offsetHeight * artworkService.artwork.value.mainContext.canvas.height
     const snapDx = Math.floor(dx / snapSize.value) * snapSize.value
     const snapDy = Math.floor(dy / snapSize.value) * snapSize.value
 
     if (toolSelected.value === 'pen') {
-      const x = mouse.offsetX / artworkService.artwork.value.documentContext.canvas.offsetWidth * artworkService.artwork.value.documentContext.canvas.width
-      const y = mouse.offsetY / artworkService.artwork.value.documentContext.canvas.offsetHeight * artworkService.artwork.value.documentContext.canvas.height
-      clearCircle(artworkService.artwork.value.documentContext, x, y, penSize.value / 2)
+      const x = mouse.offsetX / artworkService.artwork.value.mainContext.canvas.offsetWidth * artworkService.artwork.value.mainContext.canvas.width
+      const y = mouse.offsetY / artworkService.artwork.value.mainContext.canvas.offsetHeight * artworkService.artwork.value.mainContext.canvas.height
+      clearCircle(artworkService.artwork.value.mainContext, x, y, penSize.value / 2)
     } else if (toolSelected.value === 'drag') {
-      artworkService.artwork.value.documentContext.clearRect(0, 0, artworkService.artwork.value.bounds.width, artworkService.artwork.value.bounds.height)
-      artworkService.artwork.value.documentContext.putImageData(artworkService.dragOrigin.value.data, snapDx, snapDy)
+      artworkService.artwork.value.mainContext.clearRect(0, 0, artworkService.artwork.value.bounds.width, artworkService.artwork.value.bounds.height)
+      artworkService.artwork.value.mainContext.putImageData(artworkService.dragOrigin.value.data, snapDx, snapDy)
     } else if (toolSelected.value === 'drag-frame') {
       artworkService.artwork.value.frame.x = artworkService.dragOrigin.value.frame.x + snapDx
       artworkService.artwork.value.frame.y = artworkService.dragOrigin.value.frame.y + snapDy
