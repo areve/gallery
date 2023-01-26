@@ -1,4 +1,4 @@
-import type { GalleryItem } from "@/interfaces/GalleryItem"
+import type { Artwork, ArtworkBase, ArtworkError } from "@/interfaces/Artwork"
 import type { GalleryMetadata } from "@/interfaces/GalleryMetadata"
 import type { HistoryItem } from "@/interfaces/HistoryItem"
 import type { Rect } from "@/interfaces/Rect"
@@ -46,16 +46,16 @@ export function clone<T>(value: T) {
   return JSON.parse(JSON.stringify(value)) as T
 }
 
-export function getReverseHistory(item: GalleryItem) {
+export function getReverseHistory(item: ArtworkBase) {
   return clone([...item.metadata.history].reverse())
 }
 
-export function mostRecentPrompt(item: GalleryItem): string {
+export function mostRecentPrompt(item: ArtworkBase): string {
   const history = getReverseHistory(item)
   return (history.filter((item: any) => 'prompt' in item)[0] as any).prompt || ''
 }
 
-export function mostRecentError(item: GalleryItem): string {
+export function mostRecentError(item: ArtworkBase | ArtworkError): string {
   const history = getReverseHistory(item)
   return (item as any).error || history.filter(item => item?.error)[0]?.error || ''
 }

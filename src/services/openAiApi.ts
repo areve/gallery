@@ -1,13 +1,12 @@
-import type { GalleryItem } from "@/interfaces/GalleryItem";
-import type { GalleryItemDataUrl } from "@/interfaces/GalleryItemDataUrl";
+import type { ArtworkBase, ArtworkError, ArtworkInMemory } from "@/interfaces/Artwork";
 import type { HistoryItemEdit } from "@/interfaces/HistoryItemEdit";
 import type { HistoryItemGeneration } from "@/interfaces/HistoryItemGeneration";
 import type { OpenAiResponse } from "@/interfaces/OpenAiResponse";
 import axios from "axios";
 import { clone, epochToDate, findErrorMessage } from "../lib/utils";
 
-export async function openAiGenerateImage(item: GalleryItem, openApiKey: string) {
-   const result = clone(item) as GalleryItemDataUrl
+export async function openAiGenerateImage(item: ArtworkBase, openApiKey: string) {
+   const result = clone(item) as ArtworkInMemory // TODO using as is dangerous
 
    const command = item.metadata.history[0] as HistoryItemGeneration
    let response
@@ -29,7 +28,7 @@ export async function openAiGenerateImage(item: GalleryItem, openApiKey: string)
    } catch (e) {
       result.status = 'error'
       result.metadata.history[0].error = findErrorMessage(e)
-      return result
+      return result as any as ArtworkError
    }
 
    const openAiImage = (response.data as OpenAiResponse).data[0]
@@ -39,8 +38,8 @@ export async function openAiGenerateImage(item: GalleryItem, openApiKey: string)
    return result
 }
 
-export async function openAiEditImage(item: GalleryItem, openApiKey: string) {
-   const result = clone(item) as GalleryItemDataUrl
+export async function openAiEditImage(item: ArtworkBase, openApiKey: string) {
+   const result = clone(item) as ArtworkInMemory
 
 
    const command = item.metadata.history[item.metadata.history.length - 1] as HistoryItemEdit
@@ -76,14 +75,15 @@ export async function openAiEditImage(item: GalleryItem, openApiKey: string) {
    return result
 }
 
-export async function openAiImageVariation(item: GalleryItem, openApiKey: string) {
+export async function openAiImageVariation(item: ArtworkBase, openApiKey: string) {
 
-   const result = clone(item) as GalleryItemDataUrl
+   const result = clone(item) as ArtworkInMemory
 
 
+   // TODO this is such a dumb way of passing the image!
    const command = item.metadata.history[item.metadata.history.length - 1] as HistoryItemEdit
 
-         const formData = new FormData();
+      const formData = new FormData();
       formData.append('image', command.image)
       formData.append('n', "1")
       formData.append('size', "1024x1024")

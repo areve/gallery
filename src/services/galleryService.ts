@@ -1,22 +1,22 @@
-import type { GalleryItem } from "@/interfaces/GalleryItem";
-import type { GalleryItemDataUrl } from "@/interfaces/GalleryItemDataUrl";
+import type { Artwork, ArtworkBase, ArtworkDisplayed, ArtworkExportable, ArtworkFile, ArtworkInMemory } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import { ref } from "vue";
 import galleryApi from "./galleryApi";
 
 const id = () => Math.random()
 
-interface GalleryItemSelected { id: number, item: GalleryItem }
+interface GalleryItemSelected { id: number, item: ArtworkFile }
 
-export const galleryItems = ref<GalleryItem[]>([])
+export const galleryItems = ref<ArtworkBase[]>([])
 export const onSelected = ref<GalleryItemSelected>(undefined!)
-export const selectItem = (item: GalleryItem) => onSelected.value = { id: id(), item }
+export const selectItem = (item: ArtworkFile) => onSelected.value = { id: id(), item }
 
 export async function loadGallery() {
     galleryItems.value = await galleryApi.getGallery()
 }
 
-export async function saveGalleryItem(item: GalleryItemDataUrl) {
+export async function saveGalleryItem(item: ArtworkExportable | ArtworkInMemory) {
+    // TODO clone and add 'updating' or something
     updateGalleryItem(item)
     const result = await galleryApi.saveGalleryItem(item)
     updateGalleryItem(result)
@@ -37,11 +37,11 @@ export async function deleteGalleryItem(deleteFilename: string) {
     }
 }
 
-export async function loadGalleryItem(item: GalleryItem) {
+export async function loadGalleryItem(item: ArtworkFile) {
     return await galleryApi.getGalleryItem(item.filename)
 }
 
-export function updateGalleryItem(updatedItem: GalleryItem) {
+export function updateGalleryItem(updatedItem: ArtworkBase) {
     if (galleryItems.value.find(item => item.filename === updatedItem.filename)) {
         galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
     } else {

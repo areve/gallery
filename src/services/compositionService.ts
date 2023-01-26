@@ -1,8 +1,8 @@
-import type { GalleryItemDataUrl } from "@/interfaces/GalleryItemDataUrl"
 import type { GalleryMetadata } from "@/interfaces/GalleryMetadata"
 import { extendMetadata, getDatestamp } from "@/lib/utils"
 import { createContext } from "@/lib/canvas"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
+import type { ArtworkBase, ArtworkDisplayed, ArtworkError, ArtworkExportable } from "@/interfaces/Artwork"
 
 interface Layer {
     context: CanvasRenderingContext2D, // TODO calling it image, is that ok?
@@ -31,15 +31,18 @@ async function flatten({ metadata, width, height, layers }: FlattenOptions) {
     })
 
     const filename = `composition-${getDatestamp()}.png`
-    const item: GalleryItemDataUrl = {
+    const item: ArtworkDisplayed = {
         filename,
-        dataUrl: context.canvas.toDataURL(),
-        status: 'loading',
+        context,
+        status: 'displayed',
         metadata: extendMetadata(metadata, {
             method: 'composition',
             filename,
             created: new Date().toISOString()
-        })
+        }),
+        toDataURL() { // TODO try to lose this method
+            return this.context.canvas.toDataURL()
+        },
     }
 
     const finalItem = await saveGalleryItem(item)

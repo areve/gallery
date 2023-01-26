@@ -3,8 +3,8 @@ import { imageCountEmptyPixels } from "@/lib/canvas"
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/services/openAiApi"
 import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
-import type { GalleryItem } from "@/interfaces/GalleryItem"
 import type { GalleryMetadata } from "@/interfaces/GalleryMetadata"
+import type { ArtworkBase, ArtworkWaiting } from "@/interfaces/Artwork"
 
 const openApiKey = ref<string>('')
 
@@ -24,7 +24,7 @@ interface VariationOptions {
 
 async function generate({ prompt }: GenerateOptions) {
     const filename = `generation-${getDatestamp()}.png`
-    const item: GalleryItem = {
+    const item: ArtworkBase = {
         filename,
         status: 'loading',
         metadata: {
@@ -62,9 +62,9 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
 
     const imageBlob = (await new Promise<Blob | null>(resolve => image.canvas.toBlob(resolve)))!
     const filename = `outpaint-${getDatestamp()}.png`
-    const item: GalleryItem = {
+    const item: ArtworkWaiting = {
         filename,
-        status: 'loading',
+        status: 'waiting',
         metadata: extendMetadata(metadata, {
             method: 'edit',
             prompt,
@@ -89,9 +89,9 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
 async function variation({ image, metadata }: VariationOptions) {
     const imageBlob = (await new Promise<Blob | null>(resolve => image.canvas.toBlob(resolve)))!
     const filename = `variation-${getDatestamp()}.png`
-    const item: GalleryItem = {
+    const item: ArtworkWaiting = {
         filename,
-        status: 'loading',
+        status: 'waiting',
         metadata: extendMetadata(metadata, {
             method: 'variation',
             image: imageBlob, // TODO does this get saved into files as metadata! no but it's by accident

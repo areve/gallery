@@ -69,8 +69,7 @@ import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
 import { panel, toolSelected } from '@/services/appState';
 import artworkService from '@/services/artworkService'
-import type { GalleryItem } from '@/interfaces/GalleryItem'
-import type { GalleryMetadata } from '@/interfaces/GalleryMetadata'
+import type { ArtworkFile } from '@/interfaces/Artwork'
 
 useKeyboardHandler()
 
@@ -134,7 +133,7 @@ function reset() {
   artworkService.resetArtwork();
 }
 
-async function galleryItemSelected(item: GalleryItem) {
+async function galleryItemSelected(item: ArtworkFile) {
   artworkService.load(item)
   prompt.value = mostRecentPrompt(item)
   saveState()

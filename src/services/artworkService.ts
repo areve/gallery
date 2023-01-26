@@ -3,13 +3,13 @@ import type { Rect } from "@/interfaces/Rect";
 import { clone, rectanglesIntersect } from "@/lib/utils";
 import { cloneContext, createContext, autoCropImage } from '@/lib/canvas';
 import { ref, type Ref } from "vue";
-import type { Artwork } from "@/interfaces/Artwork";
-import type { GalleryItem } from "@/interfaces/GalleryItem";
+import type { Artwork, ArtworkActive, ArtworkDisplayed, ArtworkFile } from "@/interfaces/Artwork";
 import { loadGalleryItem, saveGalleryItem } from "./galleryService";
 
 const dragOrigin = ref<DragOrigin | null>(null)
 
-const artwork = ref<Artwork>({
+const artwork = ref<ArtworkActive>({
+    status: 'active',
     filename: '',
     metadata: { history: [] },
     frame: {
@@ -27,7 +27,10 @@ const artwork = ref<Artwork>({
     },
     // TODO this cast may be very bad
     mainContext: {} as CanvasRenderingContext2D,
-    overlayContext: {} as CanvasRenderingContext2D
+    overlayContext: {} as CanvasRenderingContext2D,
+    toDataURL() {
+        return this.mainContext.canvas.toDataURL()
+    },
 })
 
 function resetFrame() {
@@ -125,7 +128,7 @@ async function autoCrop() {
 }
 
 // TODO how and GalleryItem and related?
-async function load(item: GalleryItem) {
+async function load(item: ArtworkFile) {
     const image = await loadGalleryItem(item)
     artwork.value.bounds.width = image.width
     artwork.value.bounds.height = image.height
@@ -136,14 +139,18 @@ async function load(item: GalleryItem) {
 }
 
 async function save() {
-    const newItem: GalleryItem = {
-        dataUrl: artwork.value.mainContext.canvas.toDataURL('image/png'),
-        status: 'loading',
-        filename: artwork.value.filename,
-        metadata: artwork.value.metadata
-    }
+    // const newItem: ArtworkDisplayed = {
+    //     //dataUrl: artwork.value.mainContext.canvas.toDataURL('image/png'),
+    //     image: artwork.value.mainContext,
+    //     status: 'displayed',
+    //     filename: artwork.value.filename,
+    //     metadata: artwork.value.metadata
+    // }
 
-    const item = await saveGalleryItem(newItem)
+    // var newItem2 = clone(artwork.value)
+    // newItem2.status =
+
+    const item = await saveGalleryItem(artwork.value)
 
     artwork.value.filename = item.filename
     artwork.value.metadata = item.metadata

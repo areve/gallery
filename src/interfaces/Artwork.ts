@@ -11,7 +11,7 @@ export type Artwork =
 
 type ArtworkStatus = 'file' | 'active' | 'loading' | 'waiting' | 'displayed' | 'error' | 'deleted'
 
-interface ArtworkBase {
+export interface ArtworkBase {
   status: ArtworkStatus,
   filename: string
   metadata: GalleryMetadata // TODO rename to ArtworkMetadata?, and include modified time in here
@@ -21,7 +21,11 @@ export interface ArtworkFile extends ArtworkBase {
   status: 'file' | 'loading'
 }
 
-export interface ArtworkActive extends ArtworkBase {
+export interface ArtworkInMemory extends ArtworkBase {
+  dataUrl: string
+}
+
+export interface ArtworkActive extends ArtworkBase, ArtworkExportable {
   status: 'active'
   frame: Rect;
   bounds: Rect;
@@ -33,9 +37,9 @@ export interface ArtworkWaiting extends ArtworkBase {
   status: 'waiting'
 }
 
-export interface ArtworkDisplayed extends ArtworkBase {
+export interface ArtworkDisplayed extends ArtworkBase, ArtworkExportable {
   status: 'displayed'
-  image: HTMLImageElement | CanvasRenderingContext2D
+  context: CanvasRenderingContext2D
 }
 
 export interface ArtworkError extends ArtworkBase {
@@ -46,5 +50,8 @@ export interface ArtworkError extends ArtworkBase {
 
 export interface ArtworkDeleted extends ArtworkBase {
   status: 'deleted'
+}
+export interface ArtworkExportable extends ArtworkBase {
+  toDataURL(): string
 }
 
