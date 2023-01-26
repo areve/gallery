@@ -1,7 +1,7 @@
 import type { ArtworkMetadata } from "./ArtworkMetadata";
 import type { Rect } from "./Rect";
 
-type ArtworkStatus = 'file' | 'active' | 'loading' | 'waiting' | 'displayed' | 'error' | 'deleted'
+type ArtworkStatus = 'file' | 'active' | 'loading' | 'waiting' | 'displayed' | 'error' | 'deleted' | 'inmemory'
 
 export interface Artwork {
   status: ArtworkStatus,
@@ -14,14 +14,14 @@ export interface ArtworkFile extends Artwork {
 }
 
 export interface ArtworkInMemory extends Artwork {
+  status: 'inmemory' // TODO not really a status
   dataUrl: string
 }
 
-export interface ArtworkActive extends Artwork, ArtworkExportable {
-  status: 'active'
+export interface ArtworkActive extends Artwork, ArtworkDisplayed {
+  status: 'displayed'
   frame: Rect;
   bounds: Rect;
-  mainContext: CanvasRenderingContext2D;
   overlayContext: CanvasRenderingContext2D;
 }
 
@@ -29,7 +29,8 @@ export interface ArtworkWaiting extends Artwork {
   status: 'waiting'
 }
 
-export interface ArtworkDisplayed extends Artwork, ArtworkExportable {
+// TODO rename ArtworkDisplay? 
+export interface ArtworkDisplayed extends Artwork {
   status: 'displayed'
   context: CanvasRenderingContext2D
 }
@@ -42,7 +43,3 @@ export interface ArtworkError extends Artwork {
 export interface ArtworkDeleted extends Artwork {
   status: 'deleted'
 }
-export interface ArtworkExportable extends Artwork {
-  toDataURL(): string
-}
-

@@ -1,4 +1,4 @@
-import type { Artwork, ArtworkDisplayed, ArtworkExportable, ArtworkFile, ArtworkInMemory } from "@/interfaces/Artwork";
+import type { Artwork, ArtworkDisplayed, ArtworkFile, ArtworkInMemory } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import { ref } from "vue";
 import galleryApi from "./galleryApi";
@@ -15,7 +15,7 @@ export async function loadGallery() {
     galleryItems.value = await galleryApi.getGallery()
 }
 
-export async function saveGalleryItem(item: ArtworkExportable | ArtworkInMemory) {
+export async function saveGalleryItem(item: ArtworkDisplayed | ArtworkInMemory) {
     // TODO clone and add 'updating' or something
     updateGalleryItem(item)
     const result = await galleryApi.saveGalleryItem(item)

@@ -2,10 +2,10 @@ import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
 import { extendMetadata, getDatestamp } from "@/lib/utils"
 import { createContext } from "@/lib/canvas"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
-import type { Artwork, ArtworkDisplayed, ArtworkError, ArtworkExportable } from "@/interfaces/Artwork"
+import type { Artwork, ArtworkDisplayed, ArtworkError } from "@/interfaces/Artwork"
 
 interface Layer {
-    context: CanvasRenderingContext2D, // TODO calling it image, is that ok?
+    context: CanvasRenderingContext2D, 
     x: number,
     y: number,
     width: number,
@@ -39,10 +39,7 @@ async function flatten({ metadata, width, height, layers }: FlattenOptions) {
             method: 'composition',
             filename,
             created: new Date().toISOString()
-        }),
-        toDataURL() { // TODO try to lose this method
-            return this.context.canvas.toDataURL()
-        },
+        })
     }
 
     const finalItem = await saveGalleryItem(item)

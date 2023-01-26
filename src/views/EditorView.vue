@@ -15,7 +15,7 @@
       <AppSettings />
       <section class="tool-panel">
         <h3>Scale</h3>
-        <button type="button" @click="scaleImage(artworkService.artwork.value.mainContext, scaleImageBy)">Scale
+        <button type="button" @click="scaleImage(artworkService.artwork.value.context, scaleImageBy)">Scale
           image</button>
         <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
@@ -103,7 +103,7 @@ watch(onAction, action => {
 })
 
 watch(onApplyEffect, action => {
-  if (action.type === 'shotgun') shotgunEffect(artworkService.artwork.value.mainContext)
+  if (action.type === 'shotgun') shotgunEffect(artworkService.artwork.value.context)
 })
 watch(onSelectTool, action => toolSelected.value = action.tool)
 
@@ -166,10 +166,10 @@ async function outpaintImage() {
   if (outpaintImage_saveBeforeOutpaint) {
     await compositionService.flatten({
       metadata: artworkService.artwork.value.metadata,
-      width: artworkService.artwork.value.mainContext.canvas.width,
-      height: artworkService.artwork.value.mainContext.canvas.height,
+      width: artworkService.artwork.value.context.canvas.width,
+      height: artworkService.artwork.value.context.canvas.height,
       layers: [
-        createLayer(artworkService.artwork.value.mainContext)
+        createLayer(artworkService.artwork.value.context)
       ]
     })
   }
@@ -180,7 +180,7 @@ async function outpaintImage() {
     artworkService.artwork.value.frame.height !== artworkService.artwork.value.bounds.height
 
   const compositionData = compositionRequired ? {
-    context: cloneContext(artworkService.artwork.value.mainContext),
+    context: cloneContext(artworkService.artwork.value.context),
     frame: clone(artworkService.artwork.value.frame)
   } : null
 
