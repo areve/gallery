@@ -15,12 +15,16 @@
 <script  lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { mostRecentError, mostRecentPrompt } from '@/lib/utils'
-import { galleryItems, loadGallery, selectItem } from '@/services/galleryService';
+import { galleryItems, loadGallery, selectedItem } from '@/services/galleryService';
+import type { Artwork } from '@/interfaces/Artwork';
 
 onMounted(async () => {
   await loadGallery()
 })
 
+function selectItem(item: Artwork){
+  selectedItem.value = item
+}
 </script>
 
 <style scoped>

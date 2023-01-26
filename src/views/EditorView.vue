@@ -63,7 +63,7 @@ import { cloneContext, autoCropImage, createContextFromImage } from '@/lib/canva
 
 import { onApplyEffect, onSelectTool, onAction } from '@/services/appActions'
 import { useKeyboardHandler } from '@/services/keyboardHandler';
-import { deleteGalleryItem, loadGalleryItem, onSelected, saveGalleryItem } from '@/services/galleryService';
+import { deleteGalleryItem, loadGalleryItem, saveGalleryItem, selectedItem } from '@/services/galleryService';
 import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
@@ -107,7 +107,7 @@ watch(onApplyEffect, action => {
 })
 watch(onSelectTool, action => toolSelected.value = action.tool)
 
-watch(onSelected, action => galleryItemSelected(action.item))
+watch(selectedItem, artwork => artwork && galleryItemSelected(artwork))
 
 onMounted(async () => {
   await loadState()

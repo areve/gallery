@@ -5,12 +5,9 @@ import galleryApi from "./galleryApi";
 
 const id = () => Math.random()
 
-// TODO reanme or remove this, it'd be better as a state
-interface GalleryItemSelected { id: number, item: Artwork }
+export const selectedItem = ref<Artwork>()
 
 export const galleryItems = ref<Artwork[]>([])
-export const onSelected = ref<GalleryItemSelected>(undefined!)
-export const selectItem = (item: Artwork) => onSelected.value = { id: id(), item }
 
 export async function loadGallery() {
     galleryItems.value = await galleryApi.getGallery()
