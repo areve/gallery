@@ -124,13 +124,15 @@ async function load(item: Artwork) {
     artwork.value.context.drawImage(artworkImage.image, 0, 0)
     artwork.value.filename = artworkImage.filename
     artwork.value.metadata = clone(artworkImage.metadata)
-    artwork.value.modified = artworkImage.modified
+    artwork.value.modified = new Date(artworkImage.modified)
 }
 
 async function save() {
     const item = await saveGalleryItem(artwork.value)
     artwork.value.filename = item.filename
     artwork.value.metadata = item.metadata
+    
+    return item
 }
 
 export default {
