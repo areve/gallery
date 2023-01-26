@@ -24,8 +24,8 @@ onMounted(async () => {
 })
 
 watchSyncEffect(() => {
-  if (!artworkService.artwork.value.context?.canvas) return
-  if (!artworkService.artwork.value.overlayContext.canvas) return
+  if (!artworkService.artwork.value.context) return
+  if (!artworkService.artwork.value.overlayContext) return
   artworkService.artwork.value.context.canvas.height = artworkService.artwork.value.bounds.height
   artworkService.artwork.value.context.canvas.width = artworkService.artwork.value.bounds.width
   artworkService.artwork.value.overlayContext.canvas.height = artworkService.artwork.value.bounds.height
@@ -33,8 +33,8 @@ watchSyncEffect(() => {
 })
 
 watchSyncEffect(() => {
-  if (!artworkService.artwork.value.context?.canvas) return
-  if (!artworkService.artwork.value.overlayContext.canvas) return
+  if (!artworkService.artwork.value.context) return
+  if (!artworkService.artwork.value.overlayContext) return
   void (artworkService.artwork.value.frame)
   artworkService.drawOverlay()
 })

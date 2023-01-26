@@ -26,9 +26,8 @@ const artwork = ref<ArtworkActive>({
         width: 1024,
         height: 1024,
     },
-    // TODO this cast may be very bad
-    context: {} as CanvasRenderingContext2D,
-    overlayContext: {} as CanvasRenderingContext2D
+    context: undefined!,
+    overlayContext: undefined!
 })
 
 function resetFrame() {
@@ -53,7 +52,7 @@ function drawOverlay() {
 }
 
 function resetArtwork() {
-    if (!artwork.value.context?.canvas) return
+    if (!artwork.value.context) return
     artwork.value.bounds.width = 1024
     artwork.value.bounds.height = 1024
     artwork.value.context.clearRect(0, 0, artwork.value.context.canvas.width, artwork.value.context.canvas.height)
