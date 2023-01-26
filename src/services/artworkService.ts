@@ -9,7 +9,7 @@ import { loadGalleryItem, saveGalleryItem } from "./galleryService";
 const dragOrigin = ref<DragOrigin | null>(null)
 
 const artwork = ref<ArtworkActive>({
-    status: 'displayed',
+    status: 'ready',
     filename: '',
     metadata: { history: [], modified: new Date() },
     frame: {
@@ -135,16 +135,6 @@ async function load(item: ArtworkFile) {
 }
 
 async function save() {
-    // const newItem: ArtworkDisplayed = {
-    //     //dataUrl: artwork.value.context.canvas.toDataURL('image/png'),
-    //     image: artwork.value.context,
-    //     status: 'displayed',
-    //     filename: artwork.value.filename,
-    //     metadata: artwork.value.metadata
-    // }
-
-    // var newItem2 = clone(artwork.value)
-    // newItem2.status =
 
     const item = await saveGalleryItem(artwork.value)
 

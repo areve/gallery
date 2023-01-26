@@ -1,7 +1,7 @@
 <template>
 <ul class="gallery">
         <li v-for="item in galleryItems" class="gallery-item">
-          <button v-if="item.status === 'loading'" type="button" class="loading-button">{{ mostRecentPrompt(item) }}<div
+          <button v-if="item.status === 'waiting'" type="button" class="loading-button">{{ mostRecentPrompt(item) }}<div
               class="spinner"></div></button>
           <button v-else-if="item.status === 'error'" type="button" class="error-button">{{
             mostRecentError(item)

@@ -4,7 +4,7 @@ import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/se
 import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
-import type { Artwork, ArtworkWaiting } from "@/interfaces/Artwork"
+import type { Artwork } from "@/interfaces/Artwork"
 
 const openApiKey = ref<string>('')
 
@@ -26,7 +26,7 @@ async function generate({ prompt }: GenerateOptions) {
     const filename = `generation-${getDatestamp()}.png`
     const item: Artwork = {
         filename,
-        status: 'loading',
+        status: 'waiting',
         metadata: {
             history: [{
                 method: 'generation',
@@ -63,7 +63,7 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
 
     const imageBlob = (await new Promise<Blob | null>(resolve => image.canvas.toBlob(resolve)))!
     const filename = `outpaint-${getDatestamp()}.png`
-    const item: ArtworkWaiting = {
+    const item: Artwork = {
         filename,
         status: 'waiting',
         metadata: extendMetadata(metadata, {
@@ -90,7 +90,7 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
 async function variation({ image, metadata }: VariationOptions) {
     const imageBlob = (await new Promise<Blob | null>(resolve => image.canvas.toBlob(resolve)))!
     const filename = `variation-${getDatestamp()}.png`
-    const item: ArtworkWaiting = {
+    const item: Artwork = {
         filename,
         status: 'waiting',
         metadata: extendMetadata(metadata, {

@@ -25,7 +25,7 @@ export async function saveGalleryItem(item: ArtworkDisplayed | ArtworkInMemory) 
 
 export async function deleteGalleryItem(deleteFilename: string) {
     const itemToDelete = clone(galleryItems.value.filter(i => i.filename === deleteFilename)[0])
-    itemToDelete.status = 'loading'
+    itemToDelete.status = 'waiting'
     updateGalleryItem(itemToDelete)
 
     const result = await galleryApi.deleteGalleryItem(deleteFilename)

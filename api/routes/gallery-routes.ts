@@ -21,7 +21,7 @@ galleryRoutes.get("/", async (req, res) => {
     if (metadata) list.push({
       filename,
       metadata,
-      status: 'file',
+      status: 'ready',
     })
   })
   list.sort((a, b) => (b.metadata.modified?.getTime() || 0) - (a.metadata.modified?.getTime() || 0))

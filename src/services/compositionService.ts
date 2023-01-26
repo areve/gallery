@@ -34,7 +34,7 @@ async function flatten({ metadata, width, height, layers }: FlattenOptions) {
     const item: ArtworkDisplayed = {
         filename,
         context,
-        status: 'displayed',
+        status: 'ready',
         metadata: extendMetadata(metadata, {
             method: 'composition',
             filename,
