@@ -15,6 +15,7 @@ import { penSize, snapSize, toolSelected } from '@/services/appState';
 import artworkService from '@/services/artworkService'
 import { onMounted, ref, watchSyncEffect } from 'vue';
 import { clearCircle } from '@/lib/draw';
+import { dragOrigin } from '@/services/mouseService';
 
 const canvas = ref<HTMLCanvasElement>(undefined!)
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!)
@@ -40,12 +41,9 @@ watchSyncEffect(() => {
 })
 
 
-
-
-
-
+// TODO may be able to move this  to the mouse service?
 function mouseDown(mouse: MouseEvent) {
-  artworkService.dragOrigin.value = {
+  dragOrigin.value = {
     x: mouse.offsetX,
     y: mouse.offsetY,
     data: artworkService.artwork.value.context.getImageData(0, 0, artworkService.artwork.value.bounds.width, artworkService.artwork.value.bounds.height),
@@ -53,12 +51,11 @@ function mouseDown(mouse: MouseEvent) {
   }
 }
 
-
 function mouseMove(mouse: MouseEvent) {
-  if (!artworkService.dragOrigin.value) return
+  if (!dragOrigin.value) return
 
-  const dx = (mouse.offsetX - artworkService.dragOrigin.value.x) / artworkService.artwork.value.context.canvas.offsetWidth * artworkService.artwork.value.context.canvas.width
-  const dy = (mouse.offsetY - artworkService.dragOrigin.value.y) / artworkService.artwork.value.context.canvas.offsetHeight * artworkService.artwork.value.context.canvas.height
+  const dx = (mouse.offsetX - dragOrigin.value.x) / artworkService.artwork.value.context.canvas.offsetWidth * artworkService.artwork.value.context.canvas.width
+  const dy = (mouse.offsetY - dragOrigin.value.y) / artworkService.artwork.value.context.canvas.offsetHeight * artworkService.artwork.value.context.canvas.height
   const snapDx = Math.floor(dx / snapSize.value) * snapSize.value
   const snapDy = Math.floor(dy / snapSize.value) * snapSize.value
 
@@ -68,10 +65,10 @@ function mouseMove(mouse: MouseEvent) {
     clearCircle(artworkService.artwork.value.context, x, y, penSize.value / 2)
   } else if (toolSelected.value === 'drag') {
     artworkService.artwork.value.context.clearRect(0, 0, artworkService.artwork.value.bounds.width, artworkService.artwork.value.bounds.height)
-    artworkService.artwork.value.context.putImageData(artworkService.dragOrigin.value.data, snapDx, snapDy)
+    artworkService.artwork.value.context.putImageData(dragOrigin.value.data, snapDx, snapDy)
   } else if (toolSelected.value === 'drag-frame') {
-    artworkService.artwork.value.frame.x = artworkService.dragOrigin.value.frame.x + snapDx
-    artworkService.artwork.value.frame.y = artworkService.dragOrigin.value.frame.y + snapDy
+    artworkService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx
+    artworkService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy
   }
 }
 </script>

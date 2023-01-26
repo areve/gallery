@@ -2,7 +2,7 @@ import type { DragOrigin } from "@/interfaces/DragOrigin";
 import type { Rect } from "@/interfaces/Rect";
 import { clone, rectanglesIntersect } from "@/lib/utils";
 import { cloneContext, createContext, autoCropImage } from '@/lib/canvas';
-import { ref, type Ref } from "vue";
+import { ref, watch, watchEffect, type Ref } from "vue";
 import type { Artwork, ArtworkActive, ArtworkOnCanvas } from "@/interfaces/Artwork";
 import { loadGalleryItem, saveGalleryItem } from "./galleryService";
 
@@ -39,10 +39,6 @@ function resetFrame() {
     }
 }
 
-// TODO create a mouseStateService?
-function mouseUp(mouse: MouseEvent) {
-    dragOrigin.value = null
-}
 
 function drawOverlay() {
     artwork.value.overlayContext.clearRect(0, 0, artwork.value.bounds.width, artwork.value.bounds.height)
@@ -149,10 +145,8 @@ export default {
     growFrame,
     autoCrop,
     artwork,
-    mouseUp,
     scale,
     resetArtwork,
-    dragOrigin,
     drawOverlay,
     load,
     save

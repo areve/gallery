@@ -70,6 +70,7 @@ import galleryApi from '@/services/galleryApi';
 import { panel, toolSelected } from '@/services/appState';
 import artworkService from '@/services/artworkService'
 import type { Artwork } from '@/interfaces/Artwork'
+import { mouseUp } from '@/services/mouseService'
 
 useKeyboardHandler()
 
@@ -207,13 +208,7 @@ async function outpaintImage() {
     })
   }
 }
-
-
-// TODO some mouse service?
-function mouseUp(mouse: MouseEvent) {
-  artworkService.mouseUp(mouse)
-}
-
+  
 </script>
 
 <style scoped>
