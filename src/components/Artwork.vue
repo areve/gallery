@@ -2,8 +2,8 @@
   <div class="artwork-panel">
     <div class="artwork"
       :style="{ 'aspect-ratio': artworkService.artwork.value.bounds.width + ' / ' + artworkService.artwork.value.bounds.height }">
-      <canvas id="edit-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
-      <canvas id="overlay-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
+      <canvas ref="canvas" class="edit-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
+      <canvas ref="overlayCanvas" class="overlay-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
     </div>
   </div>
 
@@ -16,12 +16,11 @@ import artworkService from '@/services/artworkService'
 import { onMounted, ref, watchSyncEffect } from 'vue';
 import { clearCircle } from '@/lib/draw';
 
+const canvas = ref<HTMLCanvasElement>(undefined!)
+const overlayCanvas = ref<HTMLCanvasElement>(undefined!)
 onMounted(async () => {
-  // TODO use $ref instead
-  const canvas = document.getElementById("edit-canvas") as HTMLCanvasElement
-  artworkService.artwork.value.context = canvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
-  const overlayCanvas = document.getElementById("overlay-canvas") as HTMLCanvasElement
-  artworkService.artwork.value.overlayContext = overlayCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  artworkService.artwork.value.context = canvas.value.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  artworkService.artwork.value.overlayContext = overlayCanvas.value.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
 })
 
 watchSyncEffect(() => {
@@ -102,13 +101,13 @@ function mouseMove(mouse: MouseEvent) {
   background-repeat: repeat;
 }
 
-#edit-canvas {
+.edit-canvas {
   position: absolute;
   width: 100%;
   height: 100%;
 }
 
-#overlay-canvas {
+.overlay-canvas {
   position: absolute;
   width: 100%;
   height: 100%;
