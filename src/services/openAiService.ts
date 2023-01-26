@@ -1,5 +1,5 @@
-import { extendMetadata, getDatestamp } from "@/views/EditorView-utils"
-import { imageCountEmptyPixels } from "@/views/EditorView/canvas"
+import { extendMetadata, getDatestamp } from "@/lib/utils"
+import { imageCountEmptyPixels } from "@/lib/canvas"
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/services/openAiApi"
 import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"

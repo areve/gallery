@@ -51,10 +51,10 @@ import Gallery from '@/components/Gallery.vue'
 import ToolPanel from '@/components/ToolPanel.vue'
 
 import { computed, onMounted, ref, watch } from 'vue';
-import { clone, mostRecentPrompt, rectanglesIntersect } from './EditorView-utils';
-import { shotgunEffect } from './EditorView/effects';
-import { scaleImage } from './EditorView/draw';
-import { cloneContext, createContext, autoCropImage, createContextFromImage } from './EditorView/canvas';
+import { clone, mostRecentPrompt, rectanglesIntersect } from '@/lib/utils';
+import { shotgunEffect } from '@/lib/effects';
+import { scaleImage } from '@/lib/draw';
+import { cloneContext, createContext, autoCropImage, createContextFromImage } from '@/lib/canvas';
 
 import { onApplyEffect, onSelectTool, onAction } from '@/services/appActions'
 import { useKeyboardHandler } from '@/services/keyboardHandler';

@@ -4,7 +4,7 @@ import type { HistoryItemEdit } from "@/interfaces/HistoryItemEdit";
 import type { HistoryItemGeneration } from "@/interfaces/HistoryItemGeneration";
 import type { OpenAiResponse } from "@/interfaces/OpenAiResponse";
 import axios from "axios";
-import { clone, epochToDate, findErrorMessage } from "../views/EditorView-utils";
+import { clone, epochToDate, findErrorMessage } from "../lib/utils";
 
 export async function openAiGenerateImage(item: GalleryItem, openApiKey: string) {
    const result = clone(item) as GalleryItemDataUrl

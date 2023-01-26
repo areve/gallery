@@ -13,7 +13,7 @@
 import { penSize, snapSize, toolSelected } from '@/services/appState';
 import documentService from '@/services/documentService';
 import { onMounted, ref, watchSyncEffect } from 'vue';
-import { clearCircle } from '../views/EditorView/draw';
+import { clearCircle } from '@/lib/draw';
 
 
 onMounted(async () => {

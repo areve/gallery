@@ -14,7 +14,7 @@
 
 <script  lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { mostRecentError, mostRecentPrompt } from '@/views/EditorView-utils';
+import { mostRecentError, mostRecentPrompt } from '@/lib/utils'
 import { galleryItems, loadGallery, selectItem } from '@/services/galleryService';
 
 onMounted(async () => {

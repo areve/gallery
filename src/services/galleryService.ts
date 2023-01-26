@@ -1,6 +1,6 @@
 import type { GalleryItem } from "@/interfaces/GalleryItem";
 import type { GalleryItemDataUrl } from "@/interfaces/GalleryItemDataUrl";
-import { clone, findErrorMessage, loadImage } from "@/views/EditorView-utils";
+import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import { ref } from "vue";
 import galleryApi from "./galleryApi";
 

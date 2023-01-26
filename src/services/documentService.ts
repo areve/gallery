@@ -1,7 +1,7 @@
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import type { Rect } from "@/interfaces/Rect";
-import { rectanglesIntersect } from "@/views/EditorView-utils";
-import { cloneContext, createContext, autoCropImage} from '@/views/EditorView/canvas';
+import { rectanglesIntersect } from "@/lib/utils";
+import { cloneContext, createContext, autoCropImage} from '@/lib/canvas';
 import { ref, type Ref } from "vue";
 
 const dragOrigin = ref<DragOrigin | null>(null)
