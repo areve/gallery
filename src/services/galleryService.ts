@@ -14,7 +14,7 @@ export async function loadGallery() {
 }
 
 export async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
-    const itemToSave = clone(item) 
+    const itemToSave = clone(item)
     itemToSave.status = 'waiting'
     updateGalleryItem(itemToSave)
     const result = await galleryApi.saveGalleryItem(item)
@@ -39,9 +39,24 @@ export async function loadGalleryItem(item: Artwork) {
 }
 
 export function updateGalleryItem(updatedItem: Artwork) {
+
+    let aaa: any
     if (galleryItems.value.find(item => item.filename === updatedItem.filename)) {
-        galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
+        aaa = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
     } else {
-        galleryItems.value = [updatedItem, ...galleryItems.value]
+        aaa = [updatedItem, ...galleryItems.value]
     }
+
+    aaa = aaa.sort((a : any, b: any) => safeDate(b.modified).getTime() - safeDate(a.modified).getTime())
+    galleryItems.value = [...aaa]
+}
+
+function safeDate(value: Date | string | null):Date  {
+    if (!value) return new Date(0)
+    if (typeof value === 'string') {
+        console.log('date is string', value) // TODO if logging here there's a date as string error somewhere
+        return new Date(value)
+    }
+    
+    return value
 }

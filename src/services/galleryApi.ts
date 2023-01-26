@@ -1,11 +1,11 @@
-import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage } from "@/interfaces/Artwork"
+import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage, ArtworkWithDatesAsIso } from "@/interfaces/Artwork"
 import { clone, findErrorMessage, loadImage } from "@/lib/utils"
-import axios from "axios"
+import axios, { Axios, type AxiosResponse } from "axios"
 
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
-  let response
+  let response: AxiosResponse<ArtworkWithDatesAsIso>
   try {
-    response = await axios.post('/api/editor/saveImage', {
+    response = await axios.post<ArtworkWithDatesAsIso>('/api/editor/saveImage', {
       image: (item as ArtworkInMemory).dataUrl || (item as ArtworkOnCanvas).context.canvas.toDataURL(),
       filename: item.filename,
       metadata: item.metadata
@@ -21,28 +21,33 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
     return result
   }
 
-  return response.data as Artwork
+  return Object.assign(clone(response.data), {
+    modified: new Date(response.data.modified)
+  })
 }
 
-async function getGallery() {
-  let response
+async function getGallery(): Promise<Artwork[]> {
+  let response: AxiosResponse<ArtworkWithDatesAsIso[]>
   try {
-    response = await axios.get('/api/gallery/')
+    response = await axios.get<ArtworkWithDatesAsIso[]>('/api/gallery/')
   } catch (e) {
     console.error(e)
     return [] as Artwork[]
   }
 
-  return response.data as Artwork[]
+  return response.data.map(x => Object.assign(clone(x), {
+    modified: new Date(x.modified)
+  }))
 }
 
 async function getGalleryItem(filename: string): Promise<ArtworkImage> {
   const imagePromise = loadImage(`/downloads/${filename}`)
-  const artworkResponsePromise = axios.get<Artwork>(`/api/gallery/${filename}`)
+  const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(`/api/gallery/${filename}`)
   const [image, artworkResponse] = await Promise.all([imagePromise, artworkResponsePromise])
   const artwork = artworkResponse.data
-  const result = clone(artwork) as ArtworkImage
+  const result = clone(artwork) as any as ArtworkImage
   result.image = image
+  result.modified = new Date(result.modified)
   return result;
 }
 

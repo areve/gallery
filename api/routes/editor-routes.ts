@@ -1,5 +1,5 @@
 import express from 'express'
-import fs from 'fs'
+import fs, { lstatSync } from 'fs'
 import { setMetadata } from '../lib/png-metadata'
 import bodyParser from 'body-parser'
 import { config as c, EditorRoutesConfig } from '../config'
@@ -18,12 +18,13 @@ editorRoutes.post("/saveImage", async (req, res) => {
   const pngData = req.body.image.replace('data:image/png;base64,', '')
   const filename = sanitize(req.body.filename)
   fs.writeFileSync(`${config.downloadsDir}/${filename}`, pngData, 'base64')
-  
+  const stat = lstatSync(`${config.downloadsDir}/${filename}`)
   if (config.debug) console.debug('metadata', metadata)
   await setMetadata(`${config.downloadsDir}/${filename}`, metadata)
 
   res.json({
     filename,
+    modified: stat.mtime, // TODO this modified date may not be right and there's others too, it needs to be iso, not epoch
     metadata,
   })
 })

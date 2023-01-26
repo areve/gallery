@@ -56,18 +56,18 @@ import Gallery from '@/components/Gallery.vue'
 import ToolPanel from '@/components/ToolPanel.vue'
 
 import { computed, onMounted, ref, watch } from 'vue';
-import { clone, mostRecentPrompt, rectanglesIntersect } from '@/lib/utils';
+import { clone, mostRecentPrompt } from '@/lib/utils';
 import { shotgunEffect } from '@/lib/effects';
 import { scaleImage } from '@/lib/draw';
-import { cloneContext, autoCropImage, createContextFromImage } from '@/lib/canvas';
+import { cloneContext, createContextFromImage } from '@/lib/canvas';
 
 import { onApplyEffect, onAction } from '@/services/appActions'
 import { useKeyboardHandler } from '@/services/keyboardHandler';
-import { deleteGalleryItem, loadGalleryItem, saveGalleryItem, selectedItem } from '@/services/galleryService';
+import { deleteGalleryItem, selectedItem, updateGalleryItem } from '@/services/galleryService';
 import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
-import { panel, toolSelected } from '@/services/appState';
+import { panel } from '@/services/appState';
 import artworkService from '@/services/artworkService'
 import type { Artwork } from '@/interfaces/Artwork'
 import { mouseUp, mouseDown } from '@/services/mouseService'
@@ -143,7 +143,8 @@ async function deleteImage(deleteFilename: string) {
 }
 
 async function saveArtwork() {
-  artworkService.save()
+  const savedArtwork = await artworkService.save()
+  updateGalleryItem(savedArtwork)
   saveState()
 }
 

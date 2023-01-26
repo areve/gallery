@@ -10,6 +10,13 @@ export interface Artwork {
   modified: Date
 }
 
+export interface ArtworkWithDatesAsIso {
+  status: ArtworkStatus,
+  filename: string
+  metadata: ArtworkMetadata,
+  modified: string
+}
+
 export interface ArtworkInMemory extends Artwork {
   dataUrl: string
 }
