@@ -1,5 +1,3 @@
-import { ref } from "vue";
-
 import { useKeypress } from 'vue3-keypress'
 import { action, applyEffect } from "./appActions";
 import { toolSelected } from "./appState";

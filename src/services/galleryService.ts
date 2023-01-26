@@ -1,5 +1,5 @@
 import type { Artwork, ArtworkOnCanvas, ArtworkInMemory } from "@/interfaces/Artwork";
-import { clone, findErrorMessage, loadImage } from "@/lib/utils";
+import { clone } from "@/lib/utils";
 import { ref } from "vue";
 import galleryApi from "./galleryApi";
 

@@ -2,7 +2,7 @@ import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
 import { extendMetadata, getDatestamp } from "@/lib/utils"
 import { createContext } from "@/lib/canvas"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
-import type { Artwork, ArtworkOnCanvas, ArtworkError } from "@/interfaces/Artwork"
+import type { ArtworkOnCanvas } from "@/interfaces/Artwork"
 
 interface Layer {
     context: CanvasRenderingContext2D, 
