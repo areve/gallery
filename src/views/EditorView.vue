@@ -6,7 +6,7 @@
         <textarea type="text" id="prompt" v-model="prompt"></textarea>
       </section>
       <section class="tool-panel">
-        <h3>Document Settings</h3>
+        <h3>Artwork Settings</h3>
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
         <textarea class="metadata" v-model="metadataAsJson" v-if="showMetadata"></textarea>
         <input type="text" v-model="artworkService.artwork.value.filename" />
@@ -31,7 +31,7 @@
         <button type="button" @click="outpaintImage()">Outpaint</button>
       </section>
       <ToolPanel />
-      <Document />
+      <Artwork />
 
       <span class="status-bar">
         <span>canvas:{{ artworkService.artwork.value.bounds.width }}x{{
@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import Document from '@/components/Document.vue'
+import Artwork from '@/components/Artwork.vue'
 import AppSettings from '@/components/AppSettings.vue'
 import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
@@ -59,7 +59,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { clone, mostRecentPrompt, rectanglesIntersect } from '@/lib/utils';
 import { shotgunEffect } from '@/lib/effects';
 import { scaleImage } from '@/lib/draw';
-import { cloneContext, createContext, autoCropImage, createContextFromImage } from '@/lib/canvas';
+import { cloneContext, autoCropImage, createContextFromImage } from '@/lib/canvas';
 
 import { onApplyEffect, onSelectTool, onAction } from '@/services/appActions'
 import { useKeyboardHandler } from '@/services/keyboardHandler';
@@ -97,7 +97,7 @@ const metadataAsJson = computed({
 })
 
 watch(onAction, action => {
-  if (action.action === 'save') saveDocument()
+  if (action.action === 'save') saveArtwork()
   if (action.action === 'reset') reset()
   if (action.action === 'auto-crop') artworkService.autoCrop()
   if (action.action === 'show-settings') panel.value.settings.visible = true
@@ -144,7 +144,7 @@ async function deleteImage(deleteFilename: string) {
   deleteGalleryItem(deleteFilename)
 }
 
-async function saveDocument() {
+async function saveArtwork() {
   artworkService.save()
   saveState()
 }
@@ -181,7 +181,7 @@ async function outpaintImage() {
     artworkService.artwork.value.frame.height !== artworkService.artwork.value.bounds.height
 
   const compositionData = compositionRequired ? {
-    documentContext: cloneContext(artworkService.artwork.value.mainContext),
+    context: cloneContext(artworkService.artwork.value.mainContext),
     frame: clone(artworkService.artwork.value.frame)
   } : null
 
@@ -194,8 +194,8 @@ async function outpaintImage() {
   if (compositionData && outpaintResult) {
     await compositionService.flatten({
       metadata: artworkService.artwork.value.metadata,
-      width: compositionData.documentContext.canvas.width,
-      height: compositionData.documentContext.canvas.height,
+      width: compositionData.context.canvas.width,
+      height: compositionData.context.canvas.height,
       layers: [
         {
           context: createContextFromImage(await galleryApi.getGalleryItem(outpaintResult.filename)),
@@ -204,7 +204,7 @@ async function outpaintImage() {
           width: compositionData.frame.width,
           height: compositionData.frame.height
         },
-        createLayer(compositionData.documentContext)
+        createLayer(compositionData.context)
       ]
     })
   }
