@@ -42,9 +42,6 @@ export function epochToDate(epoch: number) {
   return createdDate
 }
 
-export function clone<T>(value: T) {
-  return JSON.parse(JSON.stringify(value)) as T
-}
 
 export function getReverseHistory(item: Artwork) {
   return clone([...item.metadata.history].reverse())
@@ -66,4 +63,12 @@ export function rectanglesIntersect(a: Rect, b: Rect) {
   const isAbove = a.y > b.y + b.height
   const isBelow = a.y + a.height < b.y
   return !(isLeft || isRight || isAbove || isBelow)
+}
+
+export function last<T>(array: T[]) {
+  return array[array.length - 1]
+}
+
+export function clone<T>(value: T) {
+  return JSON.parse(JSON.stringify(value)) as T
 }

@@ -1,7 +1,7 @@
 import type { Artwork, ArtworkError, ArtworkInMemory } from "@/interfaces/Artwork";
 import type { ImageResult, ImageResultError, ImageResultReady, OpenAiResponse } from "@/interfaces/OpenAiResponse";
 import axios from "axios";
-import { clone, epochToDate, extendMetadata, findErrorMessage } from "../lib/utils";
+import { clone, epochToDate, extendMetadata, findErrorMessage, last } from "../lib/utils";
 
 export async function openAiGenerateImage(command: { prompt: string }, openApiKey: string): Promise<ImageResult> {
    let response
@@ -30,7 +30,7 @@ export async function openAiGenerateImage(command: { prompt: string }, openApiKe
    const openAiImage = (response.data as OpenAiResponse).data[0]
    return <ImageResultReady>{
       status: 'ready',
-      created: epochToDate(response.data.created).toISOString(),
+      created: epochToDate(response.data.created),
       dataUrl: `data:image/png;base64,${openAiImage.b64_json}`
    }
 }
@@ -65,12 +65,12 @@ export async function openAiEditImage(command: { image: Blob, mask: Blob, prompt
          })
    } catch (e) {
       result.status = 'error'
-      result.metadata.history[result.metadata.history.length - 1].error = findErrorMessage(e)
+      last(result.metadata.history).error = findErrorMessage(e)
       return result
    }
 
    result.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-   result.metadata.history[result.metadata.history.length - 1].created = epochToDate(response.data.created).toISOString()
+   last(result.metadata.history).created = epochToDate(response.data.created).toISOString()
 
    return result
 }
@@ -101,12 +101,12 @@ export async function openAiImageVariation(command: { image: Blob }, item: Artwo
          })
    } catch (e) {
       result.status = 'error'
-      result.metadata.history[result.metadata.history.length - 1].error = findErrorMessage(e)
+      last(result.metadata.history).error = findErrorMessage(e)
       return result
    }
 
    result.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-   result.metadata.history[result.metadata.history.length - 1].created = epochToDate(response.data.created).toISOString()
+   last(result.metadata.history).created = epochToDate(response.data.created).toISOString()
 
    return result
 

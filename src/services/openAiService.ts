@@ -1,10 +1,10 @@
-import { extendMetadata, getDatestamp } from "@/lib/utils"
+import { clone, extendMetadata, getDatestamp, last } from "@/lib/utils"
 import { imageCountEmptyPixels } from "@/lib/canvas"
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/services/openAiApi"
 import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
-import type { Artwork, ArtworkInMemory } from "@/interfaces/Artwork"
+import type { Artwork, ArtworkError, ArtworkInMemory } from "@/interfaces/Artwork"
 
 const openApiKey = ref<string>('')
 
@@ -24,9 +24,8 @@ interface VariationOptions {
 
 async function generate({ prompt }: GenerateOptions) {
     const filename = `generation-${getDatestamp()}.png`
-    const item: ArtworkInMemory = {
+    const item: Artwork = {
         filename,
-        dataUrl: null!, // TODO null!
         status: 'waiting',
         modified: new Date(),
         metadata: {
@@ -44,18 +43,20 @@ async function generate({ prompt }: GenerateOptions) {
         { prompt },
         openApiKey.value)
     if (imageResult.status === 'error') {
-        item.metadata.history[item.metadata.history.length - 1].error = imageResult.error
-        item.status === imageResult.status
-        updateGalleryItem(item)
-        return item
+        const errorResult = clone(item) as ArtworkError
+        last(errorResult.metadata.history).error = imageResult.error
+        errorResult.status === imageResult.status
+        updateGalleryItem(errorResult)
+        return errorResult            
     }
 
-    item.metadata.history[item.metadata.history.length - 1].created = imageResult.created
-    item.dataUrl = imageResult.dataUrl
-    const updatedItem = await saveGalleryItem(item)
+    const result = clone(item) as ArtworkInMemory
+    last(result.metadata.history).created = imageResult.created.toISOString()
+    result.dataUrl = imageResult.dataUrl
+    const updatedItem = await saveGalleryItem(result)
 
-    updateGalleryItem(item)
-    return item
+    updateGalleryItem(updatedItem)
+    return updatedItem
 }
 
 async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
@@ -91,6 +92,7 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
     updateGalleryItem(updatedItem)
     return updatedItem
 }
+
 async function variation({ image, metadata }: VariationOptions) {
     const imageBlob = (await new Promise<Blob | null>(resolve => image.canvas.toBlob(resolve)))!
     const filename = `variation-${getDatestamp()}.png`

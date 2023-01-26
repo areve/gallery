@@ -16,7 +16,7 @@ export interface ImageResultError {
 }
 
 export interface ImageResultReady {
-  created: string;
+  created: Date;
   dataUrl: string;
   status: 'ready';
 }
