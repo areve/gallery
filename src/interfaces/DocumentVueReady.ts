@@ -1,6 +1,5 @@
-import { Ref } from "vue";
-import { Rect } from "./Rect";
-
+import type { Ref } from "vue";
+import type { Rect } from "./Rect";
 
 export interface DocumentVueReady {
   documentContext: CanvasRenderingContext2D;
@@ -10,3 +9,5 @@ export interface DocumentVueReady {
   mouseUp: Function; // TODO better type
   drawOverlay: Function;
 }
+
+

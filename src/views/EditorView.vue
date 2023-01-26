@@ -15,13 +15,13 @@
       <AppSettings />
       <section class="tool-panel">
         <h3>Scale</h3>
-        <button type="button" @click="scaleImage(documentService.documentContext.value, scaleImageBy)">Scale image</button>
+        <button type="button" @click="scaleImage(artworkService.artwork.value.documentContext, scaleImageBy)">Scale image</button>
         <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
-        <button type="button" @click="documentService.scale(0.5)">Shrink</button>
-        <button type="button" @click="documentService.scale(2)">Grow</button>
-        <button type="button" @click="documentService.growFrame(-512)">Shrink frame</button>
-        <button type="button" @click="documentService.growFrame(512)">Grow frame</button>
+        <button type="button" @click="artworkService.scale(0.5)">Shrink</button>
+        <button type="button" @click="artworkService.scale(2)">Grow</button>
+        <button type="button" @click="artworkService.growFrame(-512)">Shrink frame</button>
+        <button type="button" @click="artworkService.growFrame(512)">Grow frame</button>
       </section>
       <section class="tool-panel">
         <h3>OpenAI</h3>
@@ -33,8 +33,8 @@
       <Document />
 
       <span class="status-bar">
-        <span>canvas:{{ documentService.bounds.value.width }}x{{ documentService.bounds.value.height }}</span>
-        <span>frame:{{ documentService.frame.value.width }}x{{ documentService.frame.value.height }}</span>
+        <span>canvas:{{ artworkService.artwork.value.bounds.width }}x{{ artworkService.artwork.value.bounds.height }}</span>
+        <span>frame:{{ artworkService.artwork.value.frame.width }}x{{ artworkService.artwork.value.frame.height }}</span>
       </span>
     </main>
     <aside class="side-panel">
@@ -63,7 +63,7 @@ import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
 import { panel, toolSelected } from '@/services/appState';
-import documentService from '@/services/documentService'
+import artworkService from '@/services/artworkService'
 import type { GalleryItem } from '@/interfaces/GalleryItem'
 import type { GalleryMetadata } from '@/interfaces/GalleryMetadata'
 
@@ -96,12 +96,12 @@ const metadataAsJson = computed({
 watch(onAction, action => {
   if (action.action === 'save') saveDocument()
   if (action.action === 'reset') reset()
-  if (action.action === 'auto-crop') documentService.autoCrop()
+  if (action.action === 'auto-crop') artworkService.autoCrop()
   if (action.action === 'show-settings') panel.value.settings.visible = true
 })
 
 watch(onApplyEffect, action => {
-  if (action.type === 'shotgun') shotgunEffect(documentService.documentContext.value)
+  if (action.type === 'shotgun') shotgunEffect(artworkService.artwork.value.documentContext)
 })
 watch(onSelectTool, action => toolSelected.value = action.tool)
 
@@ -126,22 +126,22 @@ function saveState() {
 }
 
 function reset() {
-  documentService.resetDocument();
+  artworkService.resetDocument();
   metadata.value = { history: [] }
   prompt.value = ''
   filename.value = ''
-  documentService.resetFrame()
+  artworkService.resetFrame()
 }
 
 
 async function galleryItemSelected(item: GalleryItem) {
   const image = await loadGalleryItem(item)
 
-  documentService.bounds.value.width = image.width
-  documentService.bounds.value.height = image.height
-  documentService.resetFrame()
+  artworkService.artwork.value.bounds.width = image.width
+  artworkService.artwork.value.bounds.height = image.height
+  artworkService.resetFrame()
 
-  documentService.documentContext.value.drawImage(image, 0, 0)
+  artworkService.artwork.value.documentContext.drawImage(image, 0, 0)
   prompt.value = mostRecentPrompt(item)
   filename.value = item.filename
   metadata.value = clone(item.metadata)
@@ -154,7 +154,7 @@ async function deleteImage(deleteFilename: string) {
 
 async function saveDocument() {
   const newItem: GalleryItem = {
-    dataUrl: documentService.documentContext.value.canvas.toDataURL('image/png'),
+    dataUrl: artworkService.artwork.value.documentContext.canvas.toDataURL('image/png'),
     status: 'loading',
     filename: filename.value,
     metadata: metadata.value
@@ -175,7 +175,7 @@ async function generateImage() {
 
 async function variationImage() {
   await openAiService.variation({
-    image: documentService.createContextFromFrame(1024, 1024),
+    image: artworkService.createContextFromFrame(1024, 1024),
     metadata: metadata.value
   })
 }
@@ -185,27 +185,27 @@ async function outpaintImage() {
   if (outpaintImage_saveBeforeOutpaint) {
     await compositionService.flatten({
       metadata: metadata.value,
-      width: documentService.documentContext.value.canvas.width,
-      height: documentService.documentContext.value.canvas.height,
+      width: artworkService.artwork.value.documentContext.canvas.width,
+      height: artworkService.artwork.value.documentContext.canvas.height,
       layers: [
-        createLayer(documentService.documentContext.value)
+        createLayer(artworkService.artwork.value.documentContext)
       ]
     })
   }
 
-  const compositionRequired = documentService.frame.value.height !== 1024 ||
-  documentService.frame.value.width !== 1024 ||
-  documentService.frame.value.width !== documentService.bounds.value.width ||
-  documentService.frame.value.height !== documentService.bounds.value.height
+  const compositionRequired = artworkService.artwork.value.frame.height !== 1024 ||
+  artworkService.artwork.value.frame.width !== 1024 ||
+  artworkService.artwork.value.frame.width !== artworkService.artwork.value.bounds.width ||
+  artworkService.artwork.value.frame.height !== artworkService.artwork.value.bounds.height
 
   const compositionData = compositionRequired ? {
-    documentContext: cloneContext(documentService.documentContext.value),
-    frame: clone(documentService.frame.value)
+    documentContext: cloneContext(artworkService.artwork.value.documentContext),
+    frame: clone(artworkService.artwork.value.frame)
   } : null
 
   const outpaintResult = await openAiService.outpaint({
     prompt: prompt.value,
-    image: documentService.createContextFromFrame(1024, 1024),
+    image: artworkService.createContextFromFrame(1024, 1024),
     metadata: metadata.value
   })
 
@@ -230,7 +230,7 @@ async function outpaintImage() {
 
 
 function mouseUp(mouse: MouseEvent) {
-  documentService.mouseUp(mouse)
+  artworkService.mouseUp(mouse)
 }
 
 </script>
