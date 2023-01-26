@@ -16,6 +16,7 @@ import artworkService from '@/services/artworkService'
 import { onMounted, ref, watchSyncEffect } from 'vue';
 import { clearCircle } from '@/lib/draw';
 import { dragOrigin } from '@/services/mouseService';
+import type { DragOrigin } from '@/interfaces/DragOrigin';
 
 const canvas = ref<HTMLCanvasElement>(undefined!)
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!)
@@ -39,7 +40,6 @@ watchSyncEffect(() => {
   void (artworkService.artwork.value.frame)
   artworkService.drawOverlay()
 })
-
 
 // TODO may be able to move this  to the mouse service?
 function mouseDown(mouse: MouseEvent) {
