@@ -11,7 +11,8 @@ const dragOrigin = ref<DragOrigin | null>(null)
 const artwork = ref<ArtworkActive>({
     status: 'ready',
     filename: '',
-    metadata: { history: [], modified: new Date() },
+    modified: new Date(),
+    metadata: { history: [] },
     frame: {
         x: 0,
         y: 0,
@@ -56,8 +57,9 @@ function resetArtwork() {
     artwork.value.bounds.width = 1024
     artwork.value.bounds.height = 1024
     artwork.value.context.clearRect(0, 0, artwork.value.context.canvas.width, artwork.value.context.canvas.height)
-    artwork.value.metadata = { history: [], modified: new Date() }
+    artwork.value.metadata = { history: [] }
     artwork.value.filename = ''
+    artwork.value.modified = new Date()
     resetFrame()
     drawOverlay()
 }

@@ -6,7 +6,8 @@ type ArtworkStatus = 'ready' | 'waiting' | 'error' | 'deleted'
 export interface Artwork {
   status: ArtworkStatus,
   filename: string
-  metadata: ArtworkMetadata
+  metadata: ArtworkMetadata,
+  modified: Date
 }
 
 export interface ArtworkInMemory extends Artwork {

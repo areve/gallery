@@ -28,15 +28,14 @@ async function generate({ prompt }: GenerateOptions) {
         filename,
         dataUrl: null!, // TODO null!
         status: 'waiting',
-        //TODO add created/modified back here not in metadata
+        modified: new Date(),
         metadata: {
             history: [{
                 method: 'generation',
                 prompt,
                 filename,
                 version: 'OpenAI'
-            }],
-            modified: new Date()
+            }]
         }
     }
 
@@ -74,6 +73,7 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
     const filename = `outpaint-${getDatestamp()}.png`
     const item: Artwork = {
         filename,
+        modified: new Date(),
         status: 'waiting',
         metadata
     }
@@ -96,6 +96,7 @@ async function variation({ image, metadata }: VariationOptions) {
     const filename = `variation-${getDatestamp()}.png`
     const item: Artwork = {
         filename,
+        modified: new Date(),
         status: 'waiting',
         metadata: metadata
     }

@@ -13,6 +13,7 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   } catch (e) {
     const result: ArtworkError = {
       status: 'error',
+      modified: new Date(),
       filename: item.filename,
       metadata: item.metadata,
       error: findErrorMessage(e)
@@ -44,7 +45,8 @@ async function deleteGalleryItem(filename: string) {
   const result: ArtworkDeleted = {
     status: 'deleted',
     filename,
-    metadata: { history: [], modified: new Date() }
+    modified: new Date(),
+    metadata: { history: [] }
   }
   try {
     await axios.post('/api/editor/deleteImage', {
@@ -53,6 +55,7 @@ async function deleteGalleryItem(filename: string) {
   } catch (e) {
     const error: ArtworkError = {
       status: 'error',
+      modified: new Date(),
       error: findErrorMessage(e),
       filename,
       metadata: result.metadata

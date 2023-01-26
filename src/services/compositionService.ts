@@ -33,6 +33,7 @@ async function flatten({ metadata, width, height, layers }: FlattenOptions) {
     const filename = `composition-${getDatestamp()}.png`
     const item: ArtworkOnCanvas = {
         filename,
+        modified: new Date(),
         context,
         status: 'ready',
         metadata: extendMetadata(metadata, {

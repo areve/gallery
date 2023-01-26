@@ -17,21 +17,20 @@ galleryRoutes.get("/", async (req, res) => {
   dir.forEach(filename => {
     const metadata = tryReadMetadata(`${downloads}/${filename}`)
     const stat = lstatSync(`${downloads}/${filename}`)
-    metadata.modified = stat.mtime
     if (metadata) list.push({
       filename,
+      modified: stat.mtime,
       metadata,
       status: 'ready',
     })
   })
-  list.sort((a, b) => (b.metadata.modified?.getTime() || 0) - (a.metadata.modified?.getTime() || 0))
+  list.sort((a, b) => (b.modified?.getTime() || 0) - (a.modified?.getTime() || 0))
   res.json(list)
 })
 
 function tryReadMetadata(filePath): ArtworkMetadata {
   let result: ArtworkMetadata = {
-    history: [],
-    modified: new Date()
+    history: []
   }
 
   try {
