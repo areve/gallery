@@ -106,7 +106,7 @@ function createContextFromFrame(width: number, height: number) {
 }
 
 function growFrame(by: number) {
-    // TODO getting stuck at 512 was frustrating for me
+    // TODO getting stuck at 512 was frustrating for me once
     if (artwork.value.frame.width <= 512 && by < 1) return
     if (artwork.value.frame.width >= 5120 && by > 1) return
     artwork.value.frame.x -= by / 2

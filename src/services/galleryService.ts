@@ -5,7 +5,7 @@ import galleryApi from "./galleryApi";
 
 const id = () => Math.random()
 
-// TODO reanme or remove this
+// TODO reanme or remove this, it'd be better as a state
 interface GalleryItemSelected { id: number, item: Artwork }
 
 export const galleryItems = ref<Artwork[]>([])

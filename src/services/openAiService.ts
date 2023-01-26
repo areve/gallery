@@ -28,18 +28,15 @@ async function generate({ prompt }: GenerateOptions) {
         filename,
         status: 'waiting',
         metadata: {
-            history: [{
-                method: 'generation',
-                filename,
-                prompt,
-                version: 'OpenAI'
-            }],
+            history: [],
             modified: new Date()
         }
     }
 
     updateGalleryItem(item)
-    const generatedImage = await openAiGenerateImage(item, openApiKey.value)
+    const generatedImage = await openAiGenerateImage(
+        { prompt },
+        item, openApiKey.value)
     if (generatedImage.status === 'error') {
         updateGalleryItem(generatedImage)
         return generatedImage
@@ -66,18 +63,13 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
     const item: Artwork = {
         filename,
         status: 'waiting',
-        metadata: extendMetadata(metadata, {
-            method: 'edit',
-            prompt,
-            image: imageBlob,
-            mask: imageBlob,
-            filename,
-            version: 'OpenAI'
-        })
+        metadata
     }
 
     updateGalleryItem(item)
-    const generatedImage = await openAiEditImage(item, openApiKey.value)
+    const generatedImage = await openAiEditImage(
+        { image: imageBlob, mask: imageBlob, prompt },
+        item, openApiKey.value)
     if (generatedImage.status === 'error') {
         updateGalleryItem(generatedImage)
         return generatedImage
@@ -93,16 +85,13 @@ async function variation({ image, metadata }: VariationOptions) {
     const item: Artwork = {
         filename,
         status: 'waiting',
-        metadata: extendMetadata(metadata, {
-            method: 'variation',
-            image: imageBlob, // TODO does this get saved into files as metadata! no but it's by accident
-            filename,
-            version: 'OpenAI'
-        })
+        metadata: metadata
     }
 
     updateGalleryItem(item)
-    const generatedImage = await openAiImageVariation(item, openApiKey.value)
+    const generatedImage = await openAiImageVariation(
+        { image: imageBlob },
+        item, openApiKey.value)
     if (generatedImage.status === 'error') {
         updateGalleryItem(generatedImage)
         return generatedImage

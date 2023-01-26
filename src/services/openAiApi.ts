@@ -1,14 +1,17 @@
 import type { Artwork, ArtworkError, ArtworkInMemory } from "@/interfaces/Artwork";
-import type { HistoryItemEdit } from "@/interfaces/HistoryItemEdit";
-import type { HistoryItemGeneration } from "@/interfaces/HistoryItemGeneration";
 import type { OpenAiResponse } from "@/interfaces/OpenAiResponse";
 import axios from "axios";
-import { clone, epochToDate, findErrorMessage } from "../lib/utils";
+import { clone, epochToDate, extendMetadata, findErrorMessage } from "../lib/utils";
 
-export async function openAiGenerateImage(item: Artwork, openApiKey: string) {
-   const result = clone(item) as ArtworkInMemory // TODO using as is dangerous
-
-   const command = item.metadata.history[0] as HistoryItemGeneration
+// TODO this is doing more than just comms with the API and it shouldn't
+export async function openAiGenerateImage(command: { prompt: string }, item: Artwork, openApiKey: string) {
+   const result = clone(item) as ArtworkInMemory
+   result.metadata = extendMetadata(result.metadata, {
+      method: 'generation',
+      prompt: command.prompt,
+      filename: item.filename,
+      version: 'OpenAI'
+   })
    let response
    try {
       response = await axios.post(
@@ -27,22 +30,25 @@ export async function openAiGenerateImage(item: Artwork, openApiKey: string) {
          })
    } catch (e) {
       result.status = 'error'
-      result.metadata.history[0].error = findErrorMessage(e)
+      result.metadata.history[result.metadata.history.length - 1].error = findErrorMessage(e)
       return result as any as ArtworkError
    }
 
    const openAiImage = (response.data as OpenAiResponse).data[0]
    result.dataUrl = `data:image/png;base64,${openAiImage.b64_json}`
-   result.metadata.history[0].created = epochToDate(response.data.created).toISOString()
+   result.metadata.history[result.metadata.history.length - 1].created = epochToDate(response.data.created).toISOString()
 
    return result
 }
 
-export async function openAiEditImage(item: Artwork, openApiKey: string) {
+export async function openAiEditImage(command: { image: Blob, mask: Blob, prompt: string }, item: Artwork, openApiKey: string) {
    const result = clone(item) as ArtworkInMemory
-
-
-   const command = item.metadata.history[item.metadata.history.length - 1] as HistoryItemEdit
+   result.metadata = extendMetadata(result.metadata, {
+      method: 'edit',
+      prompt: command.prompt,
+      filename: item.filename,
+      version: 'OpenAI'
+   })
 
    const formData = new FormData();
    formData.append('image', command.image)
@@ -65,52 +71,51 @@ export async function openAiEditImage(item: Artwork, openApiKey: string) {
          })
    } catch (e) {
       result.status = 'error'
-      result.metadata.history[0].error = findErrorMessage(e)
+      result.metadata.history[result.metadata.history.length - 1].error = findErrorMessage(e)
       return result
    }
 
    result.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-   result.metadata.history[0].created = epochToDate(response.data.created).toISOString()
+   result.metadata.history[result.metadata.history.length - 1].created = epochToDate(response.data.created).toISOString()
 
    return result
 }
 
-export async function openAiImageVariation(item: Artwork, openApiKey: string) {
-
+export async function openAiImageVariation(command: { image: Blob }, item: Artwork, openApiKey: string) {
    const result = clone(item) as ArtworkInMemory
+   result.metadata = extendMetadata(result.metadata, {
+      method: 'variation',
+      filename: item.filename,
+      version: 'OpenAI'
+   })
+   const formData = new FormData();
+   formData.append('image', command.image)
+   formData.append('n', "1")
+   formData.append('size', "1024x1024")
+   formData.append('response_format', "b64_json")
 
-
-   // TODO this is such a dumb way of passing the image!
-   const command = item.metadata.history[item.metadata.history.length - 1] as HistoryItemEdit
-
-      const formData = new FormData();
-      formData.append('image', command.image)
-      formData.append('n', "1")
-      formData.append('size', "1024x1024")
-      formData.append('response_format', "b64_json")
-
-      let response
-      try {
-        response = await axios.post(
-          `${getBaseUrl(openApiKey)}/images/variations`,
-          formData,
-          {
+   let response
+   try {
+      response = await axios.post(
+         `${getBaseUrl(openApiKey)}/images/variations`,
+         formData,
+         {
             headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${openApiKey}`
+               "Content-Type": "multipart/form-data",
+               Authorization: `Bearer ${openApiKey}`
             }
-          })
-      } catch (e) {
-         result.status = 'error'
-         result.metadata.history[0].error = findErrorMessage(e)
-         return result   
-      }
-      
-      result.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
-      result.metadata.history[0].created = epochToDate(response.data.created).toISOString()
-   
+         })
+   } catch (e) {
+      result.status = 'error'
+      result.metadata.history[result.metadata.history.length - 1].error = findErrorMessage(e)
       return result
-   
+   }
+
+   result.dataUrl = `data:image/png;base64,${response.data.data[0].b64_json}`
+   result.metadata.history[result.metadata.history.length - 1].created = epochToDate(response.data.created).toISOString()
+
+   return result
+
 }
 
 function getBaseUrl(openApiKey: string | null) {

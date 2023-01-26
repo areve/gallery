@@ -73,13 +73,13 @@ import type { Artwork } from '@/interfaces/Artwork'
 
 useKeyboardHandler()
 
-// TODO make it possible to select multiple images and delete them
-// TODO make it possible to have currently selected image
-// TODO tidy up the controls somehow
-// TODO add drag drop image 
-// TODO add copy paste selection 
-// TODO pan zoom and drag canvas
-// TODO add gallery folders
+// IDEA make it possible to select multiple images and delete them
+// IDEA make it possible to have currently selected image
+// IDEA tidy up the controls somehow
+// IDEA add drag drop image 
+// IDEA add copy paste selection 
+// IDEA pan zoom and drag canvas
+// IDEA add gallery folders
 
 const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
