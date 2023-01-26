@@ -44,7 +44,7 @@ async function deleteGalleryItem(filename: string) {
   const result: ArtworkDeleted = {
     status: 'deleted',
     filename,
-    metadata: { history: [] }
+    metadata: { history: [], modified: new Date() }
   }
   try {
     await axios.post('/api/editor/deleteImage', {

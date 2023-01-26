@@ -1,4 +1,4 @@
-import type { GalleryMetadata } from "@/interfaces/GalleryMetadata"
+import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
 import { extendMetadata, getDatestamp } from "@/lib/utils"
 import { createContext } from "@/lib/canvas"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
@@ -13,7 +13,7 @@ interface Layer {
 }
 
 interface FlattenOptions {
-    metadata: GalleryMetadata,
+    metadata: ArtworkMetadata,
     width: number,
     height: number,
     layers: Layer[]

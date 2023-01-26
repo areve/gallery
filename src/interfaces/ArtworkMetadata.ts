@@ -1,6 +1,7 @@
 import type { HistoryItem } from "./HistoryItem";
 
 
-export interface GalleryMetadata {
+export interface ArtworkMetadata {
+  modified: Date;
   history: HistoryItem[];
 }

@@ -1,4 +1,4 @@
-import type { GalleryMetadata } from "./GalleryMetadata";
+import type { ArtworkMetadata } from "./ArtworkMetadata";
 import type { Rect } from "./Rect";
 
 export type Artwork =
@@ -14,7 +14,7 @@ type ArtworkStatus = 'file' | 'active' | 'loading' | 'waiting' | 'displayed' | '
 export interface ArtworkBase {
   status: ArtworkStatus,
   filename: string
-  metadata: GalleryMetadata // TODO rename to ArtworkMetadata?, and include modified time in here
+  metadata: ArtworkMetadata
 }
 
 export interface ArtworkFile extends ArtworkBase {

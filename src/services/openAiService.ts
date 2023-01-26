@@ -3,7 +3,7 @@ import { imageCountEmptyPixels } from "@/lib/canvas"
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/services/openAiApi"
 import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
-import type { GalleryMetadata } from "@/interfaces/GalleryMetadata"
+import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
 import type { ArtworkBase, ArtworkWaiting } from "@/interfaces/Artwork"
 
 const openApiKey = ref<string>('')
@@ -15,11 +15,11 @@ interface GenerateOptions {
 interface OutpaintOptions {
     prompt: string,
     image: CanvasRenderingContext2D,
-    metadata: GalleryMetadata
+    metadata: ArtworkMetadata
 }
 interface VariationOptions {
     image: CanvasRenderingContext2D,
-    metadata: GalleryMetadata
+    metadata: ArtworkMetadata
 }
 
 async function generate({ prompt }: GenerateOptions) {
@@ -33,7 +33,8 @@ async function generate({ prompt }: GenerateOptions) {
                 filename,
                 prompt,
                 version: 'OpenAI'
-            }]
+            }],
+            modified: new Date()
         }
     }
 

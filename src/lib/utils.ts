@@ -1,9 +1,9 @@
 import type { Artwork, ArtworkBase, ArtworkError } from "@/interfaces/Artwork"
-import type { GalleryMetadata } from "@/interfaces/GalleryMetadata"
+import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
 import type { HistoryItem } from "@/interfaces/HistoryItem"
 import type { Rect } from "@/interfaces/Rect"
 
-export function extendMetadata(metadata: GalleryMetadata, historyItem: HistoryItem) {
+export function extendMetadata(metadata: ArtworkMetadata, historyItem: HistoryItem) {
   const result = JSON.parse(JSON.stringify(metadata))
   result.history = Array.isArray(result.history) ? result.history : [result.history]
   result.history.push(historyItem)
