@@ -1,4 +1,4 @@
-import type { Tools } from "@/interfaces/Tools";
+import type { Tool } from "@/interfaces/Tool";
 import { ref } from "vue";
 
 export const panel = ref({
@@ -7,6 +7,6 @@ export const panel = ref({
     }
 });
 
-export const toolSelected = ref<Tools>('drag')
+export const toolSelected = ref<Tool>('drag')
 export const penSize = ref<number>(300)
 export const snapSize = ref<number>(128)

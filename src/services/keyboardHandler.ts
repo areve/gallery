@@ -1,7 +1,8 @@
 import { ref } from "vue";
 
 import { useKeypress } from 'vue3-keypress'
-import { action, applyEffect, selectTool } from "./appActions";
+import { action, applyEffect } from "./appActions";
+import { toolSelected } from "./appState";
 
 const keyCodes = {
   "e": 69,
@@ -44,19 +45,19 @@ export function useKeyboardHandler() {
       {
         keyCode: keyCodes["1"],
         modifiers: ["ctrlKey"],
-        success: () => selectTool('pen'),
+        success: () => toolSelected.value = 'pen',
         preventDefault: true,
       },
       {
         keyCode: keyCodes["2"],
         modifiers: ["ctrlKey"],
-        success: () => selectTool('drag'),
+        success: () => toolSelected.value = 'drag',
         preventDefault: true,
       },
       {
         keyCode: keyCodes["3"],
         modifiers: ["ctrlKey"],
-        success: () => selectTool('drag-frame'),
+        success: () => toolSelected.value = 'drag-frame',
         preventDefault: true,
       },
     ],

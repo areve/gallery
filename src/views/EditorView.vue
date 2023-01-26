@@ -61,7 +61,7 @@ import { shotgunEffect } from '@/lib/effects';
 import { scaleImage } from '@/lib/draw';
 import { cloneContext, autoCropImage, createContextFromImage } from '@/lib/canvas';
 
-import { onApplyEffect, onSelectTool, onAction } from '@/services/appActions'
+import { onApplyEffect, onAction } from '@/services/appActions'
 import { useKeyboardHandler } from '@/services/keyboardHandler';
 import { deleteGalleryItem, loadGalleryItem, saveGalleryItem, selectedItem } from '@/services/galleryService';
 import openAiService from '@/services/openAiService';
@@ -105,7 +105,6 @@ watch(onAction, action => {
 watch(onApplyEffect, action => {
   if (action.type === 'shotgun') shotgunEffect(artworkService.artwork.value.context)
 })
-watch(onSelectTool, action => toolSelected.value = action.tool)
 
 watch(selectedItem, artwork => artwork && galleryItemSelected(artwork))
 

@@ -1,4 +1,4 @@
-import type { Tools } from "@/interfaces/Tools";
+import type { Tool } from "@/interfaces/Tool";
 import { ref } from "vue";
 
 
@@ -17,7 +17,7 @@ export interface ApplyEffect extends AppActionBase {
     type: EffectType
 } 
 export interface SelectTool extends AppActionBase {
-    tool: Tools
+    tool: Tool
 } 
 
 const id = () => Math.random()
@@ -33,12 +33,4 @@ export const applyEffect = (type: EffectType) => {
     }
 }
 
-// TODO this could just be a state rather than an event
-export const onSelectTool = ref<SelectTool>(undefined!)
-export const selectTool = (tool: Tools) => {
-    onSelectTool.value = {
-        id: id(),
-        tool
-    }
-}
 
