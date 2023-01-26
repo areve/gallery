@@ -1,9 +1,11 @@
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import type { Rect } from "@/interfaces/Rect";
-import { rectanglesIntersect } from "@/lib/utils";
+import { clone, rectanglesIntersect } from "@/lib/utils";
 import { cloneContext, createContext, autoCropImage } from '@/lib/canvas';
 import { ref, type Ref } from "vue";
 import type { Artwork } from "@/interfaces/Artwork";
+import type { GalleryItem } from "@/interfaces/GalleryItem";
+import { loadGalleryItem, saveGalleryItem } from "./galleryService";
 
 const dragOrigin = ref<DragOrigin | null>(null)
 
@@ -49,11 +51,13 @@ function drawOverlay() {
     artwork.value.overlayContext.clearRect(artwork.value.frame.x, artwork.value.frame.y, artwork.value.frame.width, artwork.value.frame.height)
 }
 
-function resetDocument() {
+function resetArtwork() {
     if (!artwork.value.documentContext?.canvas) return
     artwork.value.bounds.width = 1024
     artwork.value.bounds.height = 1024
     artwork.value.documentContext.clearRect(0, 0, artwork.value.documentContext.canvas.width, artwork.value.documentContext.canvas.height)
+    artwork.value.metadata = { history: [] }
+    artwork.value.filename = ''
     resetFrame()
     drawOverlay()
 }
@@ -120,6 +124,31 @@ async function autoCrop() {
     artwork.value.documentContext.drawImage(cropped.canvas, 0, 0)
 }
 
+// TODO how and GalleryItem and related?
+async function load(item: GalleryItem) {
+    const image = await loadGalleryItem(item)
+    artwork.value.bounds.width = image.width
+    artwork.value.bounds.height = image.height
+    resetFrame()
+    artwork.value.documentContext.drawImage(image, 0, 0)
+    artwork.value.filename = item.filename
+    artwork.value.metadata = clone(item.metadata)
+}
+
+async function save() {
+    const newItem: GalleryItem = {
+        dataUrl: artwork.value.documentContext.canvas.toDataURL('image/png'),
+        status: 'loading',
+        filename: artwork.value.filename,
+        metadata: artwork.value.metadata
+    }
+
+    const item = await saveGalleryItem(newItem)
+
+    artwork.value.filename = item.filename
+    artwork.value.metadata = item.metadata
+}
+
 export default {
     resetFrame,
     createContextFromFrame,
@@ -128,7 +157,9 @@ export default {
     artwork,
     mouseUp,
     scale,
-    resetDocument,
+    resetArtwork,
     dragOrigin,
-    drawOverlay
+    drawOverlay,
+    load,
+    save
 }

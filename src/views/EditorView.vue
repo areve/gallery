@@ -15,7 +15,8 @@
       <AppSettings />
       <section class="tool-panel">
         <h3>Scale</h3>
-        <button type="button" @click="scaleImage(artworkService.artwork.value.documentContext, scaleImageBy)">Scale image</button>
+        <button type="button" @click="scaleImage(artworkService.artwork.value.documentContext, scaleImageBy)">Scale
+          image</button>
         <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
         <button type="button" @click="artworkService.scale(0.5)">Shrink</button>
@@ -33,8 +34,12 @@
       <Document />
 
       <span class="status-bar">
-        <span>canvas:{{ artworkService.artwork.value.bounds.width }}x{{ artworkService.artwork.value.bounds.height }}</span>
-        <span>frame:{{ artworkService.artwork.value.frame.width }}x{{ artworkService.artwork.value.frame.height }}</span>
+        <span>canvas:{{ artworkService.artwork.value.bounds.width }}x{{
+          artworkService.artwork.value.bounds.height
+        }}</span>
+        <span>frame:{{ artworkService.artwork.value.frame.width }}x{{
+          artworkService.artwork.value.frame.height
+        }}</span>
       </span>
     </main>
     <aside class="side-panel">
@@ -124,25 +129,14 @@ function saveState() {
 }
 
 function reset() {
-  artworkService.resetDocument();
-  artworkService.artwork.value.metadata = { history: [] }
+  // TODO plenty more to reset?
   prompt.value = ''
-  artworkService.artwork.value.filename = ''
-  artworkService.resetFrame()
+  artworkService.resetArtwork();
 }
 
-
 async function galleryItemSelected(item: GalleryItem) {
-  const image = await loadGalleryItem(item)
-
-  artworkService.artwork.value.bounds.width = image.width
-  artworkService.artwork.value.bounds.height = image.height
-  artworkService.resetFrame()
-
-  artworkService.artwork.value.documentContext.drawImage(image, 0, 0)
+  artworkService.load(item)
   prompt.value = mostRecentPrompt(item)
-  artworkService.artwork.value.filename = item.filename
-  artworkService.artwork.value.metadata = clone(item.metadata)
   saveState()
 }
 
@@ -151,17 +145,7 @@ async function deleteImage(deleteFilename: string) {
 }
 
 async function saveDocument() {
-  const newItem: GalleryItem = {
-    dataUrl: artworkService.artwork.value.documentContext.canvas.toDataURL('image/png'),
-    status: 'loading',
-    filename: artworkService.artwork.value.filename,
-    metadata: artworkService.artwork.value.metadata
-  }
-
-  const item = await saveGalleryItem(newItem)
-
-  artworkService.artwork.value.filename = item.filename
-  artworkService.artwork.value.metadata = item.metadata
+  artworkService.save()
   saveState()
 }
 
@@ -192,9 +176,9 @@ async function outpaintImage() {
   }
 
   const compositionRequired = artworkService.artwork.value.frame.height !== 1024 ||
-  artworkService.artwork.value.frame.width !== 1024 ||
-  artworkService.artwork.value.frame.width !== artworkService.artwork.value.bounds.width ||
-  artworkService.artwork.value.frame.height !== artworkService.artwork.value.bounds.height
+    artworkService.artwork.value.frame.width !== 1024 ||
+    artworkService.artwork.value.frame.width !== artworkService.artwork.value.bounds.width ||
+    artworkService.artwork.value.frame.height !== artworkService.artwork.value.bounds.height
 
   const compositionData = compositionRequired ? {
     documentContext: cloneContext(artworkService.artwork.value.documentContext),
@@ -227,6 +211,7 @@ async function outpaintImage() {
 }
 
 
+// TODO some mouse service?
 function mouseUp(mouse: MouseEvent) {
   artworkService.mouseUp(mouse)
 }
