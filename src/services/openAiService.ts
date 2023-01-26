@@ -4,7 +4,7 @@ import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/se
 import { ref } from "vue"
 import { saveGalleryItem, updateGalleryItem } from "./galleryService"
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
-import type { ArtworkBase, ArtworkWaiting } from "@/interfaces/Artwork"
+import type { Artwork, ArtworkWaiting } from "@/interfaces/Artwork"
 
 const openApiKey = ref<string>('')
 
@@ -24,7 +24,7 @@ interface VariationOptions {
 
 async function generate({ prompt }: GenerateOptions) {
     const filename = `generation-${getDatestamp()}.png`
-    const item: ArtworkBase = {
+    const item: Artwork = {
         filename,
         status: 'loading',
         metadata: {

@@ -1,4 +1,4 @@
-import type { Artwork, ArtworkBase, ArtworkDisplayed, ArtworkExportable, ArtworkFile, ArtworkInMemory } from "@/interfaces/Artwork";
+import type { Artwork, ArtworkDisplayed, ArtworkExportable, ArtworkFile, ArtworkInMemory } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import { ref } from "vue";
 import galleryApi from "./galleryApi";
@@ -7,7 +7,7 @@ const id = () => Math.random()
 
 interface GalleryItemSelected { id: number, item: ArtworkFile }
 
-export const galleryItems = ref<ArtworkBase[]>([])
+export const galleryItems = ref<Artwork[]>([])
 export const onSelected = ref<GalleryItemSelected>(undefined!)
 export const selectItem = (item: ArtworkFile) => onSelected.value = { id: id(), item }
 
@@ -41,7 +41,7 @@ export async function loadGalleryItem(item: ArtworkFile) {
     return await galleryApi.getGalleryItem(item.filename)
 }
 
-export function updateGalleryItem(updatedItem: ArtworkBase) {
+export function updateGalleryItem(updatedItem: Artwork) {
     if (galleryItems.value.find(item => item.filename === updatedItem.filename)) {
         galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
     } else {

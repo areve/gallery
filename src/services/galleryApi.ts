@@ -1,4 +1,4 @@
-import type { Artwork, ArtworkDeleted, ArtworkDisplayed, ArtworkError, ArtworkExportable, ArtworkFile, ArtworkInMemory } from "@/interfaces/Artwork"
+import type { ArtworkDeleted, ArtworkDisplayed, ArtworkError, ArtworkExportable, ArtworkFile, ArtworkInMemory } from "@/interfaces/Artwork"
 import { clone, findErrorMessage, loadImage } from "@/lib/utils"
 import axios from "axios"
 

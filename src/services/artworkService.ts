@@ -3,7 +3,7 @@ import type { Rect } from "@/interfaces/Rect";
 import { clone, rectanglesIntersect } from "@/lib/utils";
 import { cloneContext, createContext, autoCropImage } from '@/lib/canvas';
 import { ref, type Ref } from "vue";
-import type { Artwork, ArtworkActive, ArtworkDisplayed, ArtworkFile } from "@/interfaces/Artwork";
+import type { ArtworkActive, ArtworkDisplayed, ArtworkFile } from "@/interfaces/Artwork";
 import { loadGalleryItem, saveGalleryItem } from "./galleryService";
 
 const dragOrigin = ref<DragOrigin | null>(null)

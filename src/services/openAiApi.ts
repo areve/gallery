@@ -1,11 +1,11 @@
-import type { ArtworkBase, ArtworkError, ArtworkInMemory } from "@/interfaces/Artwork";
+import type { Artwork, ArtworkError, ArtworkInMemory } from "@/interfaces/Artwork";
 import type { HistoryItemEdit } from "@/interfaces/HistoryItemEdit";
 import type { HistoryItemGeneration } from "@/interfaces/HistoryItemGeneration";
 import type { OpenAiResponse } from "@/interfaces/OpenAiResponse";
 import axios from "axios";
 import { clone, epochToDate, findErrorMessage } from "../lib/utils";
 
-export async function openAiGenerateImage(item: ArtworkBase, openApiKey: string) {
+export async function openAiGenerateImage(item: Artwork, openApiKey: string) {
    const result = clone(item) as ArtworkInMemory // TODO using as is dangerous
 
    const command = item.metadata.history[0] as HistoryItemGeneration
@@ -38,7 +38,7 @@ export async function openAiGenerateImage(item: ArtworkBase, openApiKey: string)
    return result
 }
 
-export async function openAiEditImage(item: ArtworkBase, openApiKey: string) {
+export async function openAiEditImage(item: Artwork, openApiKey: string) {
    const result = clone(item) as ArtworkInMemory
 
 
@@ -75,7 +75,7 @@ export async function openAiEditImage(item: ArtworkBase, openApiKey: string) {
    return result
 }
 
-export async function openAiImageVariation(item: ArtworkBase, openApiKey: string) {
+export async function openAiImageVariation(item: Artwork, openApiKey: string) {
 
    const result = clone(item) as ArtworkInMemory
 
