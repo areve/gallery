@@ -28,6 +28,29 @@ galleryRoutes.get("/", async (req, res) => {
   res.json(list)
 })
 
+galleryRoutes.get("/:filename", async (req, res) => {
+  const filename = req.params.filename
+  let stat
+  try {
+
+    stat = lstatSync(`${downloads}/${filename}`)
+  } catch(e) {
+    console.debug(`filename not found: ${filename}`)
+  }
+  if (!stat) return res.status(404)
+
+  const metadata = tryReadMetadata(`${downloads}/${filename}`)
+
+  const artwork: Artwork = {
+    filename,
+    modified: stat.mtime,
+    metadata,
+    status: 'ready',
+  }
+
+  res.json(artwork)
+})
+
 function tryReadMetadata(filePath): ArtworkMetadata {
   let result: ArtworkMetadata = {
     history: []

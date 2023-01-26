@@ -1,12 +1,8 @@
-import type { DragOrigin } from "@/interfaces/DragOrigin";
-import type { Rect } from "@/interfaces/Rect";
 import { clone, rectanglesIntersect } from "@/lib/utils";
 import { cloneContext, createContext, autoCropImage } from '@/lib/canvas';
-import { ref, watch, watchEffect, type Ref } from "vue";
-import type { Artwork, ArtworkActive, ArtworkOnCanvas } from "@/interfaces/Artwork";
+import { ref } from "vue";
+import type { Artwork, ArtworkActive } from "@/interfaces/Artwork";
 import { loadGalleryItem, saveGalleryItem } from "./galleryService";
-
-const dragOrigin = ref<DragOrigin | null>(null)
 
 const artwork = ref<ArtworkActive>({
     status: 'ready',
@@ -27,7 +23,7 @@ const artwork = ref<ArtworkActive>({
         height: 1024,
     },
     context: undefined!,
-    overlayContext: undefined!
+    overlayContext: undefined! // TODO I wonder if this should really be in the artworkService
 })
 
 function resetFrame() {
@@ -103,7 +99,6 @@ function createContextFromFrame(width: number, height: number) {
 }
 
 function growFrame(by: number) {
-    // TODO getting stuck at 512 was frustrating for me once
     if (artwork.value.frame.width <= 512 && by < 1) return
     if (artwork.value.frame.width >= 5120 && by > 1) return
     artwork.value.frame.x -= by / 2
@@ -122,19 +117,18 @@ async function autoCrop() {
 }
 
 async function load(item: Artwork) {
-    const image = await loadGalleryItem(item)
-    artwork.value.bounds.width = image.width
-    artwork.value.bounds.height = image.height
+    const artworkImage = await loadGalleryItem(item)
+    artwork.value.bounds.width = artworkImage.image.width
+    artwork.value.bounds.height = artworkImage.image.height
     resetFrame()
-    artwork.value.context.drawImage(image, 0, 0)
-    artwork.value.filename = item.filename
-    artwork.value.metadata = clone(item.metadata)
+    artwork.value.context.drawImage(artworkImage.image, 0, 0)
+    artwork.value.filename = artworkImage.filename
+    artwork.value.metadata = clone(artworkImage.metadata)
+    artwork.value.modified = artworkImage.modified
 }
 
 async function save() {
-
     const item = await saveGalleryItem(artwork.value)
-
     artwork.value.filename = item.filename
     artwork.value.metadata = item.metadata
 }

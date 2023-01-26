@@ -25,6 +25,9 @@ export function loadImage(dataUrl: string): Promise<HTMLImageElement> {
     tempImage.onload = () => {
       resolve(tempImage)
     }
+    tempImage.onerror = (e) => {
+      reject(e)
+    }
     tempImage.src = dataUrl
   })
 }

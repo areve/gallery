@@ -128,7 +128,6 @@ function saveState() {
 }
 
 function reset() {
-  // TODO plenty more to reset?
   prompt.value = ''
   artworkService.resetArtwork();
 }
@@ -191,13 +190,15 @@ async function outpaintImage() {
   })
 
   if (compositionData && outpaintResult) {
+    const artwork = await galleryApi.getGalleryItem(outpaintResult.filename)
+    
     await compositionService.flatten({
-      metadata: artworkService.artwork.value.metadata,
-      width: compositionData.context.canvas.width,
-      height: compositionData.context.canvas.height,
+      metadata: artwork.metadata,
+      width: artwork.image.width,
+      height: artwork.image.height,
       layers: [
         {
-          context: createContextFromImage(await galleryApi.getGalleryItem(outpaintResult.filename)),
+          context: createContextFromImage(artwork.image),
           x: compositionData.frame.x,
           y: compositionData.frame.y,
           width: compositionData.frame.width,

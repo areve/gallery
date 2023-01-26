@@ -1,4 +1,4 @@
-import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork } from "@/interfaces/Artwork"
+import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage } from "@/interfaces/Artwork"
 import { clone, findErrorMessage, loadImage } from "@/lib/utils"
 import axios from "axios"
 
@@ -36,9 +36,14 @@ async function getGallery() {
   return response.data as Artwork[]
 }
 
-async function getGalleryItem(filename: string) {
-  // TODO could be better perhaps if this returned a Artwork
-  return await loadImage(`/downloads/${filename}`)
+async function getGalleryItem(filename: string): Promise<ArtworkImage> {
+  const imagePromise = loadImage(`/downloads/${filename}`)
+  const artworkResponsePromise = axios.get<Artwork>(`/api/gallery/${filename}`)
+  const [image, artworkResponse] = await Promise.all([imagePromise, artworkResponsePromise])
+  const artwork = artworkResponse.data
+  const result = clone(artwork) as ArtworkImage
+  result.image = image
+  return result;
 }
 
 async function deleteGalleryItem(filename: string) {

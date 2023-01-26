@@ -24,6 +24,10 @@ export interface ArtworkOnCanvas extends Artwork {
   context: CanvasRenderingContext2D
 }
 
+export interface ArtworkImage extends Artwork {
+  image: HTMLImageElement
+}
+
 export interface ArtworkError extends Artwork {
   status: 'error'
   error: string
