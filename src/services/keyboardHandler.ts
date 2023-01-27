@@ -10,6 +10,7 @@ const keyCodes = {
   "1": 49,
   "2": 50,
   "3": 51,
+  "4": 52,
 }
 
 export function useKeyboardHandler() {
@@ -43,7 +44,7 @@ export function useKeyboardHandler() {
       {
         keyCode: keyCodes["1"],
         modifiers: ["ctrlKey"],
-        success: () => toolSelected.value = 'pen',
+        success: () => toolSelected.value = 'eraser',
         preventDefault: true,
       },
       {
@@ -56,6 +57,12 @@ export function useKeyboardHandler() {
         keyCode: keyCodes["3"],
         modifiers: ["ctrlKey"],
         success: () => toolSelected.value = 'drag-frame',
+        preventDefault: true,
+      },
+      {
+        keyCode: keyCodes["4"],
+        modifiers: ["ctrlKey"],
+        success: () => toolSelected.value = 'pencil',
         preventDefault: true,
       },
     ],

@@ -7,6 +7,7 @@ export const panel = ref({
     }
 });
 
-export const toolSelected = ref<Tool>('drag')
-export const penSize = ref<number>(300)
+export const toolSelected = ref<Tool>('pencil')
+export const eraserSize = ref<number>(300)
 export const snapSize = ref<number>(128)
+export const pencilColor = ref<string>('#00ff00')

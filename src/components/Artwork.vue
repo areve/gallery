@@ -11,7 +11,7 @@
 
 <script  lang="ts" setup>
 
-import { penSize, snapSize, toolSelected } from '@/services/appState';
+import { eraserSize, pencilColor, snapSize, toolSelected } from '@/services/appState';
 import artworkService from '@/services/artworkService'
 import { onMounted, ref, watchSyncEffect } from 'vue';
 import { clearCircle } from '@/lib/draw';
@@ -21,6 +21,9 @@ import type { DragOrigin } from '@/interfaces/DragOrigin';
 const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!)
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!)
+let pencilLastPoint: { x: number, y: number} | null = null
+
+
 onMounted(async () => {
   artworkService.artwork.value.context = canvas.value.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
   artworkService.artwork.value.overlayContext = overlayCanvas.value.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
@@ -45,6 +48,7 @@ watchSyncEffect(() => {
 watchSyncEffect(() => {
   if (globalDragOrigin.value) return
   dragOrigin.value = null
+  pencilLastPoint = null
 })
 
 function mouseDown(mouse: MouseEvent) {
@@ -64,16 +68,32 @@ function mouseMove(mouse: MouseEvent) {
   const snapDx = Math.floor(dx / snapSize.value) * snapSize.value
   const snapDy = Math.floor(dy / snapSize.value) * snapSize.value
 
-  if (toolSelected.value === 'pen') {
+  if (toolSelected.value === 'eraser') {
     const x = mouse.offsetX / artworkService.artwork.value.context.canvas.offsetWidth * artworkService.artwork.value.context.canvas.width
     const y = mouse.offsetY / artworkService.artwork.value.context.canvas.offsetHeight * artworkService.artwork.value.context.canvas.height
-    clearCircle(artworkService.artwork.value.context, x, y, penSize.value / 2)
+    clearCircle(artworkService.artwork.value.context, x, y, eraserSize.value / 2)
   } else if (toolSelected.value === 'drag') {
     artworkService.artwork.value.context.clearRect(0, 0, artworkService.artwork.value.bounds.width, artworkService.artwork.value.bounds.height)
     artworkService.artwork.value.context.putImageData(dragOrigin.value.data, snapDx, snapDy)
   } else if (toolSelected.value === 'drag-frame') {
     artworkService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx
     artworkService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy
+  } else if (toolSelected.value === 'pencil') {
+    const x = mouse.offsetX / artworkService.artwork.value.context.canvas.offsetWidth * artworkService.artwork.value.context.canvas.width
+    const y = mouse.offsetY / artworkService.artwork.value.context.canvas.offsetHeight * artworkService.artwork.value.context.canvas.height
+
+    const radius = 10
+    const context = artworkService.artwork.value.context
+    const ctx = context
+    context.strokeStyle = pencilColor.value
+    context.lineCap = 'round'
+    context.lineWidth = radius * 2
+    
+    ctx.beginPath();
+    ctx.moveTo(pencilLastPoint?.x || x, pencilLastPoint?.y || y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    pencilLastPoint = {x, y}
   }
 }
 </script>
