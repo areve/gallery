@@ -41,7 +41,7 @@ async function getGallery(): Promise<Artwork[]> {
 }
 
 async function getGalleryItem(filename: string): Promise<ArtworkImage> {
-  const imagePromise = loadImage(`/downloads/${filename}`)
+  const imagePromise = loadImage(`/downloads/${filename}?${new Date().toISOString()}`)
   const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(`/api/gallery/${filename}`)
   const [image, artworkResponse] = await Promise.all([imagePromise, artworkResponsePromise])
   const artwork = artworkResponse.data

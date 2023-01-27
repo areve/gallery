@@ -7,7 +7,7 @@
             mostRecentError(item)
           }}</button>
           <button v-else type="button" @click="selectItem(item)" class="gallery-button"><img
-              :src="(item as any).dataUrl || '/downloads/' + item.filename" /></button>
+              :src="(item as any).dataUrl || '/downloads/' + item.filename + '?' + item.modified.toISOString()" /></button>
         </li>
       </ul>
 </template>

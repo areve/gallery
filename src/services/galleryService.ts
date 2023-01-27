@@ -39,16 +39,11 @@ export async function loadGalleryItem(item: Artwork) {
 }
 
 export function updateGalleryItem(updatedItem: Artwork) {
-
-    let aaa: any
     if (galleryItems.value.find(item => item.filename === updatedItem.filename)) {
-        aaa = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
+        galleryItems.value = galleryItems.value.map(item => item.filename === updatedItem.filename ? updatedItem : item)
     } else {
-        aaa = [updatedItem, ...galleryItems.value]
+        galleryItems.value = [updatedItem, ...galleryItems.value]
     }
-
-    aaa = aaa.sort((a : any, b: any) => safeDate(b.modified).getTime() - safeDate(a.modified).getTime())
-    galleryItems.value = [...aaa]
 }
 
 function safeDate(value: Date | string | null):Date  {

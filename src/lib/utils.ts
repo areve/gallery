@@ -52,7 +52,7 @@ export function getReverseHistory(item: Artwork) {
 
 export function mostRecentPrompt(item: Artwork): string {
   const history = getReverseHistory(item)
-  return (history.filter((item: any) => 'prompt' in item)[0] as any).prompt || ''
+  return (history.filter((item: any) => 'prompt' in item)[0] as any)?.prompt || ''
 }
 
 export function mostRecentError(item: Artwork | ArtworkError): string {

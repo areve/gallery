@@ -2,7 +2,7 @@ import { clone, rectanglesIntersect } from "@/lib/utils";
 import { cloneContext, createContext, autoCropImage } from '@/lib/canvas';
 import { ref } from "vue";
 import type { Artwork, ArtworkActive } from "@/interfaces/Artwork";
-import { loadGalleryItem, saveGalleryItem } from "./galleryService";
+import { loadGalleryItem, saveGalleryItem, updateGalleryItem } from "./galleryService";
 
 const artwork = ref<ArtworkActive>({
     status: 'ready',
@@ -120,6 +120,8 @@ async function load(item: Artwork) {
     const artworkImage = await loadGalleryItem(item)
     artwork.value.bounds.width = artworkImage.image.width
     artwork.value.bounds.height = artworkImage.image.height
+    artwork.value.context.clearRect(0, 0, artwork.value.context.canvas.width, artwork.value.context.canvas.height)
+    
     resetFrame()
     artwork.value.context.drawImage(artworkImage.image, 0, 0)
     artwork.value.filename = artworkImage.filename
@@ -131,7 +133,7 @@ async function save() {
     const item = await saveGalleryItem(artwork.value)
     artwork.value.filename = item.filename
     artwork.value.metadata = item.metadata
-    
+    updateGalleryItem(item)
     return item
 }
 
