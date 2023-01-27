@@ -1,5 +1,5 @@
 <template>
-  <div class="layout" @mouseup="mouseUp" @mousedown="mouseDown">
+  <div class="layout" @mouseup="mouseUp" @mousedown="mouseDown"  @touchend="mouseUp" @touchstart="mouseDown">
     <main class="main">
       <Menu></Menu>
       <section class="prompt-panel">

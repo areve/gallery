@@ -2,8 +2,10 @@
   <div class="artwork-panel">
     <div class="artwork"
       :style="{ 'aspect-ratio': artworkService.artwork.value.bounds.width + ' / ' + artworkService.artwork.value.bounds.height }">
-      <canvas ref="canvas" class="edit-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
-      <canvas ref="overlayCanvas" class="overlay-canvas" @mousedown="mouseDown" @mousemove="mouseMove"></canvas>
+      <canvas ref="canvas" class="edit-canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
+        @mousemove="mouseMove"></canvas>
+      <canvas ref="overlayCanvas" class="overlay-canvas" @touchstart="mouseDown" @mousedown="mouseDown"
+        @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
     </div>
   </div>
 
@@ -21,7 +23,7 @@ import type { DragOrigin } from '@/interfaces/DragOrigin';
 const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!)
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!)
-let pencilLastPoint: { x: number, y: number} | null = null
+let pencilLastPoint: { x: number, y: number } | null = null
 
 
 onMounted(async () => {
@@ -51,26 +53,48 @@ watchSyncEffect(() => {
   pencilLastPoint = null
 })
 
-function mouseDown(mouse: MouseEvent) {
+function normalizeTouch(event: TouchEvent | MouseEvent) {
+  event.preventDefault()
+  if ((event as MouseEvent).offsetX) {
+    return {
+      offsetX: (event as MouseEvent).offsetX,
+      offsetY: (event as MouseEvent).offsetY
+    }
+  }
+  const rect = (event.target as any).getBoundingClientRect()
+  const offsetX = ((event as TouchEvent).touches[0].clientX - window.pageXOffset - rect.left) 
+  const offsetY = ((event as TouchEvent).touches[0].clientY - window.pageYOffset - rect.top)
+  return {
+    offsetX,
+    offsetY
+  }
+}
+function mouseDown(event: MouseEvent | TouchEvent) {
+  const x = normalizeTouch(event).offsetX
+  const y = normalizeTouch(event).offsetY
+  
   dragOrigin.value = {
-    x: mouse.offsetX,
-    y: mouse.offsetY,
+    x,
+    y,
     data: artworkService.artwork.value.context.getImageData(0, 0, artworkService.artwork.value.bounds.width, artworkService.artwork.value.bounds.height),
     frame: { ...artworkService.artwork.value.frame }
   }
 }
 
-function mouseMove(mouse: MouseEvent) {
+function mouseMove(event: MouseEvent | TouchEvent) {
   if (!dragOrigin.value) return
+  const x1 = normalizeTouch(event).offsetX
+  const y1 = normalizeTouch(event).offsetY
+  
 
-  const dx = (mouse.offsetX - dragOrigin.value.x) / artworkService.artwork.value.context.canvas.offsetWidth * artworkService.artwork.value.context.canvas.width
-  const dy = (mouse.offsetY - dragOrigin.value.y) / artworkService.artwork.value.context.canvas.offsetHeight * artworkService.artwork.value.context.canvas.height
+  const dx = (x1 - dragOrigin.value.x) / artworkService.artwork.value.context.canvas.offsetWidth * artworkService.artwork.value.context.canvas.width
+  const dy = (y1 - dragOrigin.value.y) / artworkService.artwork.value.context.canvas.offsetHeight * artworkService.artwork.value.context.canvas.height
   const snapDx = Math.floor(dx / snapSize.value) * snapSize.value
   const snapDy = Math.floor(dy / snapSize.value) * snapSize.value
 
   if (toolSelected.value === 'eraser') {
-    const x = mouse.offsetX / artworkService.artwork.value.context.canvas.offsetWidth * artworkService.artwork.value.context.canvas.width
-    const y = mouse.offsetY / artworkService.artwork.value.context.canvas.offsetHeight * artworkService.artwork.value.context.canvas.height
+    const x = x1 / artworkService.artwork.value.context.canvas.offsetWidth * artworkService.artwork.value.context.canvas.width
+    const y = y1 / artworkService.artwork.value.context.canvas.offsetHeight * artworkService.artwork.value.context.canvas.height
     clearCircle(artworkService.artwork.value.context, x, y, eraserSize.value / 2)
   } else if (toolSelected.value === 'drag') {
     artworkService.artwork.value.context.clearRect(0, 0, artworkService.artwork.value.bounds.width, artworkService.artwork.value.bounds.height)
@@ -79,8 +103,8 @@ function mouseMove(mouse: MouseEvent) {
     artworkService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx
     artworkService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy
   } else if (toolSelected.value === 'pencil') {
-    const x = mouse.offsetX / artworkService.artwork.value.context.canvas.offsetWidth * artworkService.artwork.value.context.canvas.width
-    const y = mouse.offsetY / artworkService.artwork.value.context.canvas.offsetHeight * artworkService.artwork.value.context.canvas.height
+    const x = x1 / artworkService.artwork.value.context.canvas.offsetWidth * artworkService.artwork.value.context.canvas.width
+    const y = y1 / artworkService.artwork.value.context.canvas.offsetHeight * artworkService.artwork.value.context.canvas.height
 
     const radius = 10
     const context = artworkService.artwork.value.context
@@ -88,12 +112,12 @@ function mouseMove(mouse: MouseEvent) {
     context.strokeStyle = pencilColor.value
     context.lineCap = 'round'
     context.lineWidth = radius * 2
-    
+
     ctx.beginPath();
     ctx.moveTo(pencilLastPoint?.x || x, pencilLastPoint?.y || y);
     ctx.lineTo(x, y);
     ctx.stroke();
-    pencilLastPoint = {x, y}
+    pencilLastPoint = { x, y }
   }
 }
 </script>
