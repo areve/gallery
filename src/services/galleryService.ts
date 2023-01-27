@@ -54,7 +54,7 @@ export function updateGalleryItem(updatedItem: Artwork) {
 function safeDate(value: Date | string | null):Date  {
     if (!value) return new Date(0)
     if (typeof value === 'string') {
-        console.log('date is string', value) // TODO if logging here there's a date as string error somewhere
+        console.warn('date is string', value)
         return new Date(value)
     }
     

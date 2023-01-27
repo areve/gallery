@@ -24,7 +24,7 @@ editorRoutes.post("/saveImage", async (req, res) => {
 
   res.json({
     filename,
-    modified: stat.mtime, // TODO this modified date may not be right and there's others too, it needs to be iso, not epoch
+    modified: new Date(stat.mtime), 
     metadata,
   })
 })
