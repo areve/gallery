@@ -73,5 +73,6 @@ export function last<T>(array: T[]) {
 }
 
 export function clone<T>(value: T) {
+  // TODO I think this causes Dates to be come iso strings... perhaps get a better version off npm
   return JSON.parse(JSON.stringify(value)) as T
 }

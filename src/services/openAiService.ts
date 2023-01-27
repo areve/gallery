@@ -102,7 +102,10 @@ async function handleImageResult(imageResult: ImageResultError | ImageResultRead
     if (imageResult.status === 'error') {
         const errorResult = clone(item) as ArtworkError
         last(errorResult.metadata.history).error = imageResult.error
-        errorResult.status === imageResult.status
+        errorResult.status = imageResult.status
+        
+        errorResult.modified = new Date(errorResult.modified)
+        console.log('got error', errorResult)
         updateGalleryItem(errorResult)
         return errorResult
     }
@@ -110,6 +113,7 @@ async function handleImageResult(imageResult: ImageResultError | ImageResultRead
     const result = clone(item) as ArtworkInMemory
     last(result.metadata.history).created = imageResult.created.toISOString()
     result.dataUrl = imageResult.dataUrl
+    result.modified = new Date(result.modified)
     const updatedItem = await saveGalleryItem(result)
 
     updateGalleryItem(updatedItem)

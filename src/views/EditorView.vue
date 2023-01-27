@@ -81,6 +81,7 @@ useKeyboardHandler()
 // IDEA add copy paste selection 
 // IDEA pan zoom and drag canvas
 // IDEA add gallery folders
+// IDEA get all the interface hidden and make a good pencil drawing tool
 
 const prompt = ref<string>('')
 const showMetadata = ref<boolean>(false)
