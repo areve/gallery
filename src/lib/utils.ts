@@ -2,6 +2,9 @@ import type { Artwork, ArtworkError } from "@/interfaces/Artwork"
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata"
 import type { HistoryItem } from "@/interfaces/HistoryItem"
 import type { Rect } from "@/interfaces/Rect"
+import { cloneDeep } from "lodash";
+
+
 
 export function extendMetadata(metadata: ArtworkMetadata, historyItem: HistoryItem) {
   const result = JSON.parse(JSON.stringify(metadata))
@@ -73,6 +76,5 @@ export function last<T>(array: T[]) {
 }
 
 export function clone<T>(value: T) {
-  // TODO I think this causes Dates to be come iso strings... perhaps get a better version off npm
-  return JSON.parse(JSON.stringify(value)) as T
+  return cloneDeep(value)
 }
