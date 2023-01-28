@@ -1,54 +1,63 @@
 <template>
+  <div class="gallery-panel" :hidden="!galleryPanelVisible">
 
-  <ul class="gallery" :hidden="!galleryPanelVisible">
-    <li v-for="item in galleryItems" class="gallery-item">
-      <button v-if="item.status === 'waiting'" type="button" class="loading-button">{{ mostRecentPrompt(item) }}<div
-          class="spinner"></div></button>
-      <button v-else-if="item.status === 'error'" type="button" class="error-button">{{
-        mostRecentError(item)
-      }}</button>
-      <button v-else type="button" @click="selectItem(item)" class="gallery-button"><img
-          :src="(item as any).dataUrl || '/downloads/' + item.filename + '?' + item.modified.toISOString()" /></button>
-    </li>
-  </ul>
+    <ul class="gallery">
+      <li v-for="item in galleryItems" class="gallery-item" :class="{
+        'selected': selectedItem?.filename === item.filename
+      }">
+        <button v-if="item.status === 'waiting'" type="button" class="gallery-button loading">
+          <div class="spinner"></div>
+          <div class="button-text">{{ mostRecentPrompt(item) }}</div>
+        </button>
+        <button v-else-if="item.status === 'error'" @click="dismissError(item)" type="button" class="gallery-button error">
+          <div class="button-text">{{ mostRecentError(item) }}</div>
+        </button>
+        <button v-else type="button" @click="selectItem(item)" class="gallery-button">
+          <img :src="(item as any).dataUrl || '/downloads/' + item.filename + '?' + item.modified.toISOString()" />
+        </button>
+      </li>
+    </ul>
+  </div>
+
 </template>
 
 <script  lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { mostRecentError, mostRecentPrompt } from '@/lib/utils'
-import { galleryItems, loadGallery, selectedItem } from '@/services/galleryService';
+import { deleteGalleryItem, galleryItems, loadGallery, selectedItem } from '@/services/galleryService';
 import type { Artwork } from '@/interfaces/Artwork';
 import { galleryPanelVisible } from '@/services/editorAppState';
-
 
 onMounted(async () => {
   await loadGallery()
 })
 
+function dismissError(item: Artwork) {
+  deleteGalleryItem(item.filename)
+}
+
 function selectItem(item: Artwork) {
   selectedItem.value = item
 }
+
 </script>
 
 <style scoped>
 .spinner {
   position: absolute;
-  left: 50%;
-  padding-top: calc(50% - 60px);
-  width: 80px;
-  height: 80px;
-  margin-left: -40px;
-  margin-top: -40px;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .spinner:after {
   content: " ";
   display: block;
-  width: 64px;
-  height: 64px;
-  margin: 8px;
+  width: 80%;
+  height: 80%;
+  margin: 10%;
   border-radius: 50%;
-  border: 6px solid #fff;
+  border: 0.8em solid #fff;
   border-color: #fff transparent #fff transparent;
   animation: spinner 1.2s linear infinite;
 }
@@ -63,48 +72,53 @@ function selectItem(item: Artwork) {
   }
 }
 
-.gallery {
+.gallery-panel {
   list-style: none;
   padding-left: 0;
   display: block;
 }
 
+* {
+  --gallery-item-width: 100px;
+  --gallery-item-selected-border-width: 3px;
+}
+
 .gallery-item {
-  margin: 2px;
-  width: 100px;
-  height: 100px;
+  margin: 3px;
+  width: var(--gallery-item-width);
+  height: var(--gallery-item-width);
   display: inline-block;
 }
-
-.loading-button {
-  width: 100px;
-  height: 100px;
-  color: #666;
-  line-height: 1.2em;
-  vertical-align: top;
-}
-
-.loading-button .spinner {
-  margin-top: -70px
-}
-
-.error-button {
-  width: 100px;
-  height: 100px;
-  color: red;
-  line-height: 1.2em;
-  vertical-align: top;
+.gallery-item.selected {
+  box-shadow: 0 0 8px 4px #07f7;
 }
 
 .gallery-button {
-  width: 100px;
-  height: 100px;
-  padding: 2px;
-  vertical-align: top;
+  width: 100%;
+  height: 100%;
+  line-height: 1.2em;
+  padding: 0;
+  border-width: 0;
+  border-radius: 0;
+}
+
+.gallery-button.loading {
+  color: #666;
+}
+
+.gallery-button.error {
+  color: red;
+}
+
+.button-text {
+  width: 100%;
+  height: 100%;
+  padding: 0.2em;
   overflow: hidden;
 }
 
 .gallery-button img {
   max-height: 100%;
+  max-width: 100%;
 }
 </style>

@@ -24,13 +24,17 @@ export async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
 
 export async function deleteGalleryItem(deleteFilename: string) {
     const itemToDelete = clone(galleryItems.value.filter(i => i.filename === deleteFilename)[0])
-    itemToDelete.status = 'waiting'
-    updateGalleryItem(itemToDelete)
-    const result = await galleryApi.deleteGalleryItem(deleteFilename)
-    if (result.status === 'error') {
-        updateGalleryItem(result)
+    if (itemToDelete.status === 'error') {
+        galleryItems.value = galleryItems.value.filter(i => i.filename !== itemToDelete.filename)
     } else {
-        galleryItems.value = galleryItems.value.filter(i => i.filename !== result.filename)
+        itemToDelete.status = 'waiting'
+        updateGalleryItem(itemToDelete)
+        const result = await galleryApi.deleteGalleryItem(deleteFilename)
+        if (result.status === 'error') {
+            updateGalleryItem(result)
+        } else {
+            galleryItems.value = galleryItems.value.filter(i => i.filename !== result.filename)
+        }
     }
 }
 
