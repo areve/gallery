@@ -1,6 +1,12 @@
 <template>
-  <div class="gallery-panel" :hidden="!galleryPanelVisible">
-
+  <div class="gallery-panel" :class="{
+    'gallery-tools-visible': true
+  }" :hidden="!galleryPanelVisible">
+    <div class="tools">
+      <button type="button" :disabled="!selectedItem" @click="deleteSelected()">Delete</button>
+      <button type="button" :disabled="!selectedItem"
+        @click="artworkSettingsPanelsVisible = !artworkSettingsPanelsVisible">Settings</button>
+    </div>
     <ul class="gallery">
       <li v-for="item in galleryItems" class="gallery-item" :class="{
         'selected': selectedItem?.filename === item.filename
@@ -9,7 +15,8 @@
           <div class="spinner"></div>
           <div class="button-text">{{ mostRecentPrompt(item) }}</div>
         </button>
-        <button v-else-if="item.status === 'error'" @click="deleteGalleryItem(item)" type="button" class="gallery-button error">
+        <button v-else-if="item.status === 'error'" @click="deleteGalleryItem(item)" type="button"
+          class="gallery-button error">
           <div class="button-text">{{ mostRecentError(item) }}</div>
         </button>
         <button v-else type="button" @click="selectItem(item)" class="gallery-button">
@@ -26,16 +33,25 @@ import { onMounted, ref } from 'vue';
 import { mostRecentError, mostRecentPrompt } from '@/lib/utils'
 import { deleteGalleryItem, galleryItems, loadGallery, selectedItem } from '@/services/galleryService';
 import type { Artwork } from '@/interfaces/Artwork';
-import { galleryPanelVisible } from '@/services/editorAppState';
+import { artworkSettingsPanelsVisible, galleryPanelVisible } from '@/services/editorAppState';
 
 onMounted(async () => {
   await loadGallery()
 })
 
+async function deleteSelected() {
+  if (!selectedItem.value) return
+  await deleteGalleryItem(selectedItem.value)
+  selectedItem.value = null
+}
 
 
 function selectItem(item: Artwork) {
-  selectedItem.value = item
+  if (selectedItem.value === item) {
+    selectedItem.value = null
+  } else {
+    selectedItem.value = item
+  }
 }
 
 </script>
@@ -71,8 +87,15 @@ function selectItem(item: Artwork) {
 }
 
 .gallery-panel {
-
+  padding: 0.4em;
+  background-color: #333;
 }
+
+.gallery-tools-visible .gallery {
+  margin-top: 3em;
+}
+
+
 .gallery {
   text-align: center;
   list-style: none;
@@ -91,6 +114,7 @@ function selectItem(item: Artwork) {
   height: var(--gallery-item-width);
   display: inline-block;
 }
+
 .gallery-item.selected {
   box-shadow: 0 0 8px 4px #fff7;
 }
@@ -123,5 +147,18 @@ function selectItem(item: Artwork) {
 .gallery-button img {
   max-height: 100%;
   max-width: 100%;
+}
+
+
+
+.tools {
+  display: none;
+  position: fixed;
+  top: 0;
+  padding: 0.5em;
+}
+
+.gallery-tools-visible .tools {
+  display: block;
 }
 </style>

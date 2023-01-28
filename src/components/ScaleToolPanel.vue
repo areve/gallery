@@ -1,5 +1,5 @@
 <template>
-         <section class="tool-panel" :hidden="!formPanelsVisible">
+         <section class="tool-panel" :hidden="!scalePanelsVisible">
           <h3>Scale</h3>
           <button type="button" @click="scaleImage(artboardService.artwork.value.context, scaleImageBy)">Scale
             image</button>
@@ -15,7 +15,7 @@
 
 <script  lang="ts" setup>import { scaleImage } from '@/lib/draw';
 import artboardService from '@/services/artboardService';
-import { formPanelsVisible, scaleImageBy } from '@/services/editorAppState';
+import { scalePanelsVisible, scaleImageBy } from '@/services/editorAppState';
 
 
 </script>

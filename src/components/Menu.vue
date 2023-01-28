@@ -18,8 +18,13 @@
         <label title="Toggle Drop-down" class="drop-icon" for="view-menu">▾</label>
         <input type="checkbox" id="view-menu">
         <ul class="sub-menu">
+          
+          
+          
           <li class="menu-item" @click="galleryPanelVisible = !galleryPanelVisible" role="button">Gallery</li>
-          <li class="menu-item" @click="formPanelsVisible = !formPanelsVisible" role="button">Form</li>
+          <li class="menu-item" @click="openAiPanelsVisible = !openAiPanelsVisible" role="button">OpenAI</li>
+          <li class="menu-item" @click="artworkSettingsPanelsVisible = !artworkSettingsPanelsVisible" role="button">Artwork Settings</li>
+          <li class="menu-item" @click="scalePanelsVisible = !scalePanelsVisible" role="button">Scale</li>
           <li class="menu-item" @click="statusBarVisible = !statusBarVisible" role="button">Status</li>
           <li class="menu-item" @click="toolbarVisible = !toolbarVisible" role="button">Toolbar</li>
           <li class="menu-item" @click="menuVisible = !menuVisible" role="button">Menu (Ctrl+M)</li>
@@ -48,7 +53,7 @@
 <script  lang="ts" setup>
 
 import { action, applyEffect } from '@/services/appActions'
-import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible, menuVisible } from '@/services/editorAppState';
+import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSettingsPanelsVisible, scalePanelsVisible, toolbarVisible, menuVisible } from '@/services/editorAppState';
 
 </script>
 

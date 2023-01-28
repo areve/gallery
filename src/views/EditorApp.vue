@@ -3,12 +3,10 @@
     <main class="main">
       <Menu></Menu>
       <Artboard />
-      <div :hidden="!formPanelsVisible">
-        <ArtworkSettingsPanel />
-        <AppSettings />
-        <ScaleToolPanel />
-        <OpenAiPanel />
-      </div>
+      <ArtworkSettingsPanel />
+      <AppSettings />
+      <ScaleToolPanel />
+      <OpenAiPanel />
       <ToolPanel />
       <StatusBar />
     </main>
@@ -38,7 +36,7 @@ import { settingsPanelVisible, prompt } from '@/services/editorAppState';
 import artboardService from '@/services/artboardService'
 import type { Artwork } from '@/interfaces/Artwork'
 import { mouseUp, mouseDown } from '@/services/mouseService'
-import { galleryPanelVisible, formPanelsVisible } from '@/services/editorAppState';
+import { galleryPanelVisible } from '@/services/editorAppState';
 import StatusBar from '@/components/StatusBar.vue'
 import ScaleToolPanel from '@/components/ScaleToolPanel.vue'
 
@@ -108,8 +106,5 @@ async function saveArtwork() {
   max-width: 30%;
   overflow-y: scroll;
   overflow-x: hidden;
-  padding: 0.4em;
-  background-color: #333;
 }
-
 </style>

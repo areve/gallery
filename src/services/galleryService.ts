@@ -5,7 +5,7 @@ import galleryApi from "./galleryApi";
 
 const id = () => Math.random()
 
-export const selectedItem = ref<Artwork>()
+export const selectedItem = ref<Artwork | null>(null)
 
 export const galleryItems = ref<Artwork[]>([])
 

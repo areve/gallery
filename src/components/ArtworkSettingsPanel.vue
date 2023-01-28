@@ -1,8 +1,7 @@
 <template>
-  <section class="tool-panel" :hidden="!formPanelsVisible">
+  <section class="tool-panel" :hidden="!artworkSettingsPanelsVisible">
     <h3>Artwork Settings</h3>
-    <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
-    <textarea class="metadata" v-model="metadataAsJson" :hidden="!showMetadata"></textarea>
+    <textarea class="metadata" v-model="metadataAsJson"></textarea>
     <input type="text" v-model="artboardService.artwork.value.filename" />
     <button type="button" @click="deleteGalleryItem(artboardService.artwork.value)">Delete</button>
   </section>
@@ -11,7 +10,7 @@
 <script  lang="ts" setup>
 
 import artboardService from '@/services/artboardService';
-import { formPanelsVisible, showMetadata } from '@/services/editorAppState';
+import { artworkSettingsPanelsVisible } from '@/services/editorAppState';
 import { deleteGalleryItem } from '@/services/galleryService';
 import { computed } from 'vue';
 

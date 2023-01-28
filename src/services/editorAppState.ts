@@ -18,13 +18,14 @@ const editorAppState = {
     settingsPanelVisible: ref<boolean>(false),
     galleryPanelVisible: ref<boolean>(true),
     statusBarVisible: ref<boolean>(true),
-    formPanelsVisible: ref<boolean>(true),
+    openAiPanelsVisible: ref<boolean>(true),
+    artworkSettingsPanelsVisible: ref<boolean>(true),
+    scalePanelsVisible: ref<boolean>(true),
     toolbarVisible: ref<boolean>(true),
     menuVisible: ref<boolean>(true),
 
     // TODO perhaps these should go to panelState objects?
     prompt: ref<string>(''),
-    showMetadata: ref<boolean>(false),
     scaleImageBy: ref<number>(0.5),
 }
 
@@ -38,11 +39,12 @@ function resetState() {
     settingsPanelVisible.value = false
     galleryPanelVisible.value = true
     statusBarVisible.value = true
-    formPanelsVisible.value = true
+    openAiPanelsVisible.value = true
+    artworkSettingsPanelsVisible.value = true
+    scalePanelsVisible.value = true
     toolbarVisible.value = true
     menuVisible.value = true
     prompt.value = ''
-    showMetadata.value = false
     scaleImageBy.value = 0.5
 }
 
@@ -53,11 +55,12 @@ export const pencilColor = editorAppState.pencilColor
 export const settingsPanelVisible = editorAppState.settingsPanelVisible
 export const galleryPanelVisible = editorAppState.galleryPanelVisible
 export const statusBarVisible = editorAppState.statusBarVisible
-export const formPanelsVisible = editorAppState.formPanelsVisible
+export const openAiPanelsVisible = editorAppState.openAiPanelsVisible
+export const artworkSettingsPanelsVisible = editorAppState.artworkSettingsPanelsVisible
+export const scalePanelsVisible = editorAppState.scalePanelsVisible
 export const toolbarVisible = editorAppState.toolbarVisible
 export const menuVisible = editorAppState.menuVisible
 export const prompt = editorAppState.prompt
-export const showMetadata = editorAppState.showMetadata
 export const scaleImageBy = editorAppState.scaleImageBy
 
 let loaded = false

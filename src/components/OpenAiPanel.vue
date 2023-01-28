@@ -1,11 +1,11 @@
 <template>
-    <section class="tool-panel">
-        <h3>OpenAI</h3>
-        <button type="button" @click="generateImage()">Generate</button>
-        <button type="button" @click="variationImage()">Variation</button>
-        <button type="button" @click="outpaintImage()">Outpaint</button>
-        <textarea type="text" id="prompt" class="prompt" v-model="prompt"></textarea>
-    </section>
+  <section class="tool-panel" :hidden="!openAiPanelsVisible">
+    <h3>OpenAI</h3>
+    <button type="button" @click="generateImage()">Generate</button>
+    <button type="button" @click="variationImage()">Variation</button>
+    <button type="button" @click="outpaintImage()">Outpaint</button>
+    <textarea type="text" id="prompt" class="prompt" v-model="prompt"></textarea>
+  </section>
 </template>
 
 <script  lang="ts" setup>
@@ -13,86 +13,87 @@
 import { cloneContext, createContextFromImage } from '@/lib/canvas';
 import artboardService from '@/services/artboardService';
 import compositionService, { createLayer } from '@/services/compositionService';
-import { prompt } from '@/services/editorAppState';
+import { openAiPanelsVisible, prompt } from '@/services/editorAppState';
 import galleryApi from '@/services/galleryApi';
 import openAiService from '@/services/openAiService';
 import { clone } from 'lodash';
 
+
 async function generateImage() {
-    await openAiService.generate({
-        prompt: prompt.value,
-    })
+  await openAiService.generate({
+    prompt: prompt.value,
+  })
 }
 
 async function variationImage() {
-    await openAiService.variation({
-        image: artboardService.createContextFromFrame(1024, 1024),
-        metadata: artboardService.artwork.value.metadata
-    })
+  await openAiService.variation({
+    image: artboardService.createContextFromFrame(1024, 1024),
+    metadata: artboardService.artwork.value.metadata
+  })
 }
 
 async function outpaintImage() {
-    const outpaintImage_saveBeforeOutpaint = false
-    if (outpaintImage_saveBeforeOutpaint) {
-        await compositionService.flatten({
-            metadata: artboardService.artwork.value.metadata,
-            width: artboardService.artwork.value.context.canvas.width,
-            height: artboardService.artwork.value.context.canvas.height,
-            layers: [
-                createLayer(artboardService.artwork.value.context)
-            ]
-        })
-    }
-
-    const compositionRequired = artboardService.artwork.value.frame.height !== 1024 ||
-        artboardService.artwork.value.frame.width !== 1024 ||
-        artboardService.artwork.value.frame.width !== artboardService.artwork.value.bounds.width ||
-        artboardService.artwork.value.frame.height !== artboardService.artwork.value.bounds.height
-
-    const compositionData = compositionRequired ? {
-        context: cloneContext(artboardService.artwork.value.context),
-        frame: clone(artboardService.artwork.value.frame)
-    } : null
-
-    const outpaintResult = await openAiService.outpaint({
-        prompt: prompt.value,
-        image: artboardService.createContextFromFrame(1024, 1024),
-        metadata: artboardService.artwork.value.metadata
+  const outpaintImage_saveBeforeOutpaint = false
+  if (outpaintImage_saveBeforeOutpaint) {
+    await compositionService.flatten({
+      metadata: artboardService.artwork.value.metadata,
+      width: artboardService.artwork.value.context.canvas.width,
+      height: artboardService.artwork.value.context.canvas.height,
+      layers: [
+        createLayer(artboardService.artwork.value.context)
+      ]
     })
+  }
 
-    if (compositionData && outpaintResult) {
-        const artwork = await galleryApi.getGalleryItem(outpaintResult.filename)
+  const compositionRequired = artboardService.artwork.value.frame.height !== 1024 ||
+    artboardService.artwork.value.frame.width !== 1024 ||
+    artboardService.artwork.value.frame.width !== artboardService.artwork.value.bounds.width ||
+    artboardService.artwork.value.frame.height !== artboardService.artwork.value.bounds.height
 
-        await compositionService.flatten({
-            metadata: artwork.metadata,
-            width: artwork.image.width,
-            height: artwork.image.height,
-            layers: [
-                {
-                    context: createContextFromImage(artwork.image),
-                    x: compositionData.frame.x,
-                    y: compositionData.frame.y,
-                    width: compositionData.frame.width,
-                    height: compositionData.frame.height
-                },
-                createLayer(compositionData.context)
-            ]
-        })
-    }
+  const compositionData = compositionRequired ? {
+    context: cloneContext(artboardService.artwork.value.context),
+    frame: clone(artboardService.artwork.value.frame)
+  } : null
+
+  const outpaintResult = await openAiService.outpaint({
+    prompt: prompt.value,
+    image: artboardService.createContextFromFrame(1024, 1024),
+    metadata: artboardService.artwork.value.metadata
+  })
+
+  if (compositionData && outpaintResult) {
+    const artwork = await galleryApi.getGalleryItem(outpaintResult.filename)
+
+    await compositionService.flatten({
+      metadata: artwork.metadata,
+      width: artwork.image.width,
+      height: artwork.image.height,
+      layers: [
+        {
+          context: createContextFromImage(artwork.image),
+          x: compositionData.frame.x,
+          y: compositionData.frame.y,
+          width: compositionData.frame.width,
+          height: compositionData.frame.height
+        },
+        createLayer(compositionData.context)
+      ]
+    })
+  }
 }
 </script>
 
 <style scoped>
 .prompt-panel {
-    padding: 0.4em;
-    grid-area: document;
-    overflow: hidden;
-    position: relative;
+  padding: 0.4em;
+  grid-area: document;
+  overflow: hidden;
+  position: relative;
 }
 
 .prompt {
-    resize: none;
-    width: 100%;
-    height: 3.2em;
+  resize: none;
+  width: 100%;
+  height: 3.2em;
 }
 </style>
