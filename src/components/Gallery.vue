@@ -1,15 +1,15 @@
 <template>
-<ul class="gallery">
-        <li v-for="item in galleryItems" class="gallery-item">
-          <button v-if="item.status === 'waiting'" type="button" class="loading-button">{{ mostRecentPrompt(item) }}<div
-              class="spinner"></div></button>
-          <button v-else-if="item.status === 'error'" type="button" class="error-button">{{
-            mostRecentError(item)
-          }}</button>
-          <button v-else type="button" @click="selectItem(item)" class="gallery-button"><img
-              :src="(item as any).dataUrl || '/downloads/' + item.filename + '?' + item.modified.toISOString()" /></button>
-        </li>
-      </ul>
+  <ul class="gallery">
+    <li v-for="item in galleryItems" class="gallery-item">
+      <button v-if="item.status === 'waiting'" type="button" class="loading-button">{{ mostRecentPrompt(item) }}<div
+          class="spinner"></div></button>
+      <button v-else-if="item.status === 'error'" type="button" class="error-button">{{
+        mostRecentError(item)
+      }}</button>
+      <button v-else type="button" @click="selectItem(item)" class="gallery-button"><img
+          :src="(item as any).dataUrl || '/downloads/' + item.filename + '?' + item.modified.toISOString()" /></button>
+    </li>
+  </ul>
 </template>
 
 <script  lang="ts" setup>
@@ -22,13 +22,12 @@ onMounted(async () => {
   await loadGallery()
 })
 
-function selectItem(item: Artwork){
+function selectItem(item: Artwork) {
   selectedItem.value = item
 }
 </script>
 
 <style scoped>
-
 .spinner {
   position: absolute;
   left: 50%;
@@ -101,6 +100,7 @@ function selectItem(item: Artwork){
   vertical-align: top;
   overflow: hidden;
 }
+
 .gallery-button img {
   max-height: 100%;
 }

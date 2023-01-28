@@ -124,7 +124,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 
 <style scoped>
 .artwork-panel {
-  grid-area: controls;
+  flex: 1 0;
   overflow: hidden;
   margin: 0.4em;
 }

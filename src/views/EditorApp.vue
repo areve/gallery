@@ -4,39 +4,37 @@
   }" @mouseup="mouseUp" @mousedown="mouseDown" @touchend="mouseUp" @touchstart="mouseDown">
     <main class="main">
       <Menu></Menu>
-      <div :hidden="!formPanelsVisible">
-        <section class="prompt-panel">
-          <textarea type="text" id="prompt" v-model="prompt"></textarea>
-        </section>
-        <section class="tool-panel">
-          <h3>Artwork Settings</h3>
-          <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
-          <textarea class="metadata" v-model="metadataAsJson" :hidden="!showMetadata"></textarea>
-          <input type="text" v-model="artworkService.artwork.value.filename" />
-          <button type="button" @click="deleteImage(artworkService.artwork.value.filename)">Delete</button>
-        </section>
-        <AppSettings />
-        <section class="tool-panel">
-          <h3>Scale</h3>
-          <button type="button" @click="scaleImage(artworkService.artwork.value.context, scaleImageBy)">Scale
-            image</button>
-          <label for="scaleBy">by</label>
-          <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
-          <button type="button" @click="artworkService.scale(0.5)">Shrink</button>
-          <button type="button" @click="artworkService.scale(2)">Grow</button>
-          <button type="button" @click="artworkService.growFrame(-512)">Shrink frame</button>
-          <button type="button" @click="artworkService.growFrame(512)">Grow frame</button>
-        </section>
-        <section class="tool-panel">
-          <h3>OpenAI</h3>
-          <button type="button" @click="generateImage()">Generate</button>
-          <button type="button" @click="variationImage()">Variation</button>
-          <button type="button" @click="outpaintImage()">Outpaint</button>
-        </section>
-      </div>
-      <ToolPanel />
       <ArtworkVue />
-
+      <section class="prompt-panel" :hidden="!formPanelsVisible">
+        <textarea type="text" id="prompt" v-model="prompt"></textarea>
+      </section>
+      <section class="tool-panel" :hidden="!formPanelsVisible">
+        <h3>Artwork Settings</h3>
+        <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
+        <textarea class="metadata" v-model="metadataAsJson" :hidden="!showMetadata"></textarea>
+        <input type="text" v-model="artworkService.artwork.value.filename" />
+        <button type="button" @click="deleteImage(artworkService.artwork.value.filename)">Delete</button>
+      </section>
+      <AppSettings />
+      <section class="tool-panel" :hidden="!formPanelsVisible">
+        <h3>Scale</h3>
+        <button type="button" @click="scaleImage(artworkService.artwork.value.context, scaleImageBy)">Scale
+          image</button>
+        <label for="scaleBy">by</label>
+        <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
+        <button type="button" @click="artworkService.scale(0.5)">Shrink</button>
+        <button type="button" @click="artworkService.scale(2)">Grow</button>
+        <button type="button" @click="artworkService.growFrame(-512)">Shrink frame</button>
+        <button type="button" @click="artworkService.growFrame(512)">Grow frame</button>
+      </section>
+      <section class="tool-panel" :hidden="!formPanelsVisible">
+        <h3>OpenAI</h3>
+        <button type="button" @click="generateImage()">Generate</button>
+        <button type="button" @click="variationImage()">Variation</button>
+        <button type="button" @click="outpaintImage()">Outpaint</button>
+      </section>
+      
+        <ToolPanel />
       <span class="status-bar" :hidden="!statusBarVisible">
         <span>canvas:{{ artworkService.artwork.value.bounds.width }}x{{
           artworkService.artwork.value.bounds.height
@@ -46,7 +44,7 @@
         }}</span>
       </span>
     </main>
-    <aside class="side-panel" >
+    <aside class="side-panel">
       <Gallery :hidden="!galleryPanelVisible" />
     </aside>
   </div>
@@ -210,32 +208,39 @@ async function outpaintImage() {
 }
 
 .main {
-  grid-area: main;
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  /* grid-area: main; */
+  /* display: grid;
   grid-template-columns: 100%;
   grid-template-rows: min-content auto min-content;
   grid-template-areas:
     "menu"
+    "artboard"
     "controls"
-    "document"
-  ;
+  ;*/
   height: 100%;
   background-color: #ccc7;
 }
 
+.side-panel {
+  grid-area: sidebar;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 0.4em;
+  background-color: #ccc7;
+}
+
+/* 
 .prompt-panel {
   padding: 0.4em;
   grid-area: document;
   overflow: hidden;
   position: relative;
 }
+*/
 
-.side-panel {
-  grid-area: sidebar;
-  overflow-y: scroll;
-  padding: 0.4em;
-  background-color: #ccc7;
-}
+/*
 
 #prompt {
   resize: none;
@@ -254,5 +259,5 @@ async function outpaintImage() {
 
 .tool-panel h3 {
   display: none;
-}
+} */
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div :hidden="!toolbarVisible">
+  <div :hidden="!toolbarVisible" class="tool-panel">
     <section class="tool-panel">
       <h3>Tool</h3>
       <button type="button" @click="toolSelected = 'eraser'"
