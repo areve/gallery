@@ -10,20 +10,20 @@
         <h3>Artwork Settings</h3>
         <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
         <textarea class="metadata" v-model="metadataAsJson" :hidden="!showMetadata"></textarea>
-        <input type="text" v-model="artworkService.artwork.value.filename" />
-        <button type="button" @click="deleteImage(artworkService.artwork.value.filename)">Delete</button>
+        <input type="text" v-model="artboardService.artwork.value.filename" />
+        <button type="button" @click="deleteImage(artboardService.artwork.value.filename)">Delete</button>
       </section>
       <AppSettings />
       <section class="tool-panel" :hidden="!formPanelsVisible">
         <h3>Scale</h3>
-        <button type="button" @click="scaleImage(artworkService.artwork.value.context, scaleImageBy)">Scale
+        <button type="button" @click="scaleImage(artboardService.artwork.value.context, scaleImageBy)">Scale
           image</button>
         <label for="scaleBy">by</label>
         <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
-        <button type="button" @click="artworkService.scale(0.5)">Shrink</button>
-        <button type="button" @click="artworkService.scale(2)">Grow</button>
-        <button type="button" @click="artworkService.growFrame(-512)">Shrink frame</button>
-        <button type="button" @click="artworkService.growFrame(512)">Grow frame</button>
+        <button type="button" @click="artboardService.scale(0.5)">Shrink</button>
+        <button type="button" @click="artboardService.scale(2)">Grow</button>
+        <button type="button" @click="artboardService.growFrame(-512)">Shrink frame</button>
+        <button type="button" @click="artboardService.growFrame(512)">Grow frame</button>
       </section>
       <section class="tool-panel" :hidden="!formPanelsVisible">
         <h3>OpenAI</h3>
@@ -34,11 +34,11 @@
       
         <ToolPanel />
       <span class="status-bar" :hidden="!statusBarVisible">
-        <span>canvas:{{ artworkService.artwork.value.bounds.width }}x{{
-          artworkService.artwork.value.bounds.height
+        <span>canvas:{{ artboardService.artwork.value.bounds.width }}x{{
+          artboardService.artwork.value.bounds.height
         }}</span>
-        <span>frame:{{ artworkService.artwork.value.frame.width }}x{{
-          artworkService.artwork.value.frame.height
+        <span>frame:{{ artboardService.artwork.value.frame.width }}x{{
+          artboardService.artwork.value.frame.height
         }}</span>
       </span>
     </main>
@@ -68,7 +68,7 @@ import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
 import { settingsPanelVisible, prompt, scaleImageBy, showMetadata } from '@/services/editorAppState';
-import artworkService from '@/services/artworkService'
+import artboardService from '@/services/artboardService'
 import type { Artwork } from '@/interfaces/Artwork'
 import { mouseUp, mouseDown } from '@/services/mouseService'
 import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible } from '@/services/editorAppState';
@@ -88,7 +88,7 @@ useKeyboardHandler()
 
 const metadataAsJson = computed({
   get: () => {
-    return JSON.stringify(artworkService.artwork.value.metadata)
+    return JSON.stringify(artboardService.artwork.value.metadata)
   },
   set: (value: string) => {
     throw ('unimplemented yet')
@@ -99,22 +99,22 @@ const metadataAsJson = computed({
 watch(onAction, action => {
   if (action.action === 'save') saveArtwork()
   if (action.action === 'reset') reset()
-  if (action.action === 'auto-crop') artworkService.autoCrop()
+  if (action.action === 'auto-crop') artboardService.autoCrop()
   if (action.action === 'show-settings') settingsPanelVisible.value = true
 })
 
 watch(onApplyEffect, action => {
-  if (action.type === 'shotgun') shotgunEffect(artworkService.artwork.value.context)
+  if (action.type === 'shotgun') shotgunEffect(artboardService.artwork.value.context)
 })
 
 watch(selectedItem, artwork => artwork && galleryItemSelected(artwork))
 
 function reset() {
-  artworkService.resetArtwork();
+  artboardService.resetArtwork();
 }
 
 async function galleryItemSelected(item: Artwork) {
-  artworkService.load(item)
+  artboardService.load(item)
   prompt.value = mostRecentPrompt(item)
 }
 
@@ -123,7 +123,7 @@ async function deleteImage(deleteFilename: string) {
 }
 
 async function saveArtwork() {
-  const savedArtwork = await artworkService.save()
+  const savedArtwork = await artboardService.save()
   updateGalleryItem(savedArtwork)
 }
 
@@ -135,8 +135,8 @@ async function generateImage() {
 
 async function variationImage() {
   await openAiService.variation({
-    image: artworkService.createContextFromFrame(1024, 1024),
-    metadata: artworkService.artwork.value.metadata
+    image: artboardService.createContextFromFrame(1024, 1024),
+    metadata: artboardService.artwork.value.metadata
   })
 }
 
@@ -144,29 +144,29 @@ async function outpaintImage() {
   const outpaintImage_saveBeforeOutpaint = false
   if (outpaintImage_saveBeforeOutpaint) {
     await compositionService.flatten({
-      metadata: artworkService.artwork.value.metadata,
-      width: artworkService.artwork.value.context.canvas.width,
-      height: artworkService.artwork.value.context.canvas.height,
+      metadata: artboardService.artwork.value.metadata,
+      width: artboardService.artwork.value.context.canvas.width,
+      height: artboardService.artwork.value.context.canvas.height,
       layers: [
-        createLayer(artworkService.artwork.value.context)
+        createLayer(artboardService.artwork.value.context)
       ]
     })
   }
 
-  const compositionRequired = artworkService.artwork.value.frame.height !== 1024 ||
-    artworkService.artwork.value.frame.width !== 1024 ||
-    artworkService.artwork.value.frame.width !== artworkService.artwork.value.bounds.width ||
-    artworkService.artwork.value.frame.height !== artworkService.artwork.value.bounds.height
+  const compositionRequired = artboardService.artwork.value.frame.height !== 1024 ||
+    artboardService.artwork.value.frame.width !== 1024 ||
+    artboardService.artwork.value.frame.width !== artboardService.artwork.value.bounds.width ||
+    artboardService.artwork.value.frame.height !== artboardService.artwork.value.bounds.height
 
   const compositionData = compositionRequired ? {
-    context: cloneContext(artworkService.artwork.value.context),
-    frame: clone(artworkService.artwork.value.frame)
+    context: cloneContext(artboardService.artwork.value.context),
+    frame: clone(artboardService.artwork.value.frame)
   } : null
 
   const outpaintResult = await openAiService.outpaint({
     prompt: prompt.value,
-    image: artworkService.createContextFromFrame(1024, 1024),
-    metadata: artworkService.artwork.value.metadata
+    image: artboardService.createContextFromFrame(1024, 1024),
+    metadata: artboardService.artwork.value.metadata
   })
 
   if (compositionData && outpaintResult) {

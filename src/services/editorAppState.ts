@@ -1,7 +1,7 @@
 import type { Tool } from "@/interfaces/Tool";
 import { ref, watch, watchPostEffect, type Ref } from "vue";
 import { onAction } from "./appActions";
-import artworkService from "./artworkService";
+import artboardService from "./artboardService";
 import openAiService from "./openAiService";
 
 
@@ -72,7 +72,7 @@ loadState()
 function loadState() {
     console.log('loadState')
     openAiService.openApiKey.value = window.localStorage.getItem('openApiKey') || ''
-    artworkService.artwork.value.filename = window.localStorage.getItem('filename') || ''
+    artboardService.artwork.value.filename = window.localStorage.getItem('filename') || ''
     deserializeStateCollection(editorAppState, window.localStorage.getItem('editorAppState') || '{}')
     loaded = true
 }
@@ -83,8 +83,8 @@ watch(onAction, action => {
 
 function saveState() {
     // TODO perhaps bring these in in a better way?
-    window.localStorage.setItem('metadata', JSON.stringify(artworkService.artwork.value.metadata))
-    window.localStorage.setItem('filename', artworkService.artwork.value.filename)
+    window.localStorage.setItem('metadata', JSON.stringify(artboardService.artwork.value.metadata))
+    window.localStorage.setItem('filename', artboardService.artwork.value.filename)
     window.localStorage.setItem('editorAppState', serializeStateCollection(editorAppState))
     console.log('saveState')
 }

@@ -23,7 +23,7 @@ const artwork = ref<ArtworkActive>({
         height: 1024,
     },
     context: undefined!,
-    overlayContext: undefined! // I wonder if this should really be in the artworkService, perhaps OK if it was an artboard service that could hold an artwork
+    overlayContext: undefined! 
 })
 
 function resetFrame() {
