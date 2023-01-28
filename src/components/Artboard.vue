@@ -131,55 +131,28 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   /* TODO maybe nicer without */
   position: relative;
   height: 100%;
-  background-color: yellow;
   display: flex;
   flex-direction: row;
-  /* align-items: stretch;  */
-  /* vertical-align: middle; */
 }
 
 .artboard-wrap {
-  /* flex: 1 0; */
-  background-color: yellow;
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-  /* text-align: center; */
-  /* margin-top: 100%; */
-  /* display: table-cell; */
-  /* vertical-align: bottom; */
-  /* display: flex; */
- 
 }
 
-/* .artboard-wrap::after {
-  content: 'aaa';
-  display: block;
-  background-color: green;
-  flex: 1 0;
-} */
-
-
-
 .artboard {
-  /* flex: 0 0; */
-  /* display: inline-block; */
   position: relative;
-  /* flex: 1 0; */
-  /* bottom: 30px; */
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
 
-  margin-top: auto;
-  margin-bottom: auto;
-  /* flex: 1 0; */
   max-width: 100%;
   max-height: 100%;
-  /* left: 50%; */
-  /* top: 50%; */
-  /* margin-top: -50%; */
-  /* transform: translate(-50%, -50%); */
   aspect-ratio: 1024 / 1024;
+
   background-color: #f7f7f7;
   background-image:
     linear-gradient(45deg, #ddd 25%, transparent 25%),
