@@ -73,6 +73,10 @@ function selectItem(item: Artwork) {
 }
 
 .gallery-panel {
+
+}
+.gallery {
+  text-align: center;
   list-style: none;
   padding-left: 0;
   display: block;
@@ -90,7 +94,7 @@ function selectItem(item: Artwork) {
   display: inline-block;
 }
 .gallery-item.selected {
-  box-shadow: 0 0 8px 4px #07f7;
+  box-shadow: 0 0 8px 4px #fff7;
 }
 
 .gallery-button {
@@ -100,6 +104,7 @@ function selectItem(item: Artwork) {
   padding: 0;
   border-width: 0;
   border-radius: 0;
+  background-color: transparent;
 }
 
 .gallery-button.loading {

@@ -1,3 +1,4 @@
+import EditorApp from "@/views/EditorApp.vue";
 import { createRouter, createWebHashHistory } from "vue-router";
 
 const router = createRouter({
@@ -6,7 +7,7 @@ const router = createRouter({
     {
       path: "/",
       name: "editor",
-      component: () => import("../views/EditorApp.vue"),
+      component: EditorApp,
     },
   ],
 });
