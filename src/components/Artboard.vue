@@ -3,7 +3,7 @@
     <div class="artboard-wrap">
       <div class="artboard"
         :style="{ 'aspect-ratio': artboardService.artwork.value.bounds.width + ' / ' + artboardService.artwork.value.bounds.height }">
-        <canvas ref="canvas" class="edit-canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
+        <canvas ref="canvas" class="canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
           @mousemove="mouseMove"></canvas>
         <canvas ref="overlayCanvas" class="overlay-canvas" @touchstart="mouseDown" @mousedown="mouseDown"
           @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
@@ -164,15 +164,16 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   background-repeat: repeat;
 }
 
-.edit-canvas {
-  position: absolute;
-  max-width: 100%;
-  max-height: 100%;
+.canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .overlay-canvas {
   position: absolute;
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
 }
+
 </style>
