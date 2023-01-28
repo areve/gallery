@@ -1,10 +1,11 @@
 import { useKeypress } from 'vue3-keypress'
 import { action, applyEffect } from "./appActions";
-import { toolSelected } from "./editorAppState";
+import { menuVisible, toolSelected } from "./editorAppState";
 
 const keyCodes = {
   "e": 69,
   "g": 71,
+  "m": 77,
   "r": 82,
   "s": 83,
   "1": 49,
@@ -17,6 +18,12 @@ export function useKeyboardHandler() {
   useKeypress({
     keyEvent: "keyup",
     keyBinds: [
+      {
+        keyCode: keyCodes.m,
+        modifiers: ["ctrlKey"],
+        success: () => menuVisible.value = !menuVisible.value,
+        preventDefault: true,
+      },
       {
         keyCode: keyCodes.s,
         modifiers: ["ctrlKey"],
@@ -74,6 +81,12 @@ export function useKeyboardHandler() {
     keyBinds: [
       {
         keyCode: keyCodes.s, // disable default behaviour
+        modifiers: ["ctrlKey"],
+        success: () => null,
+        preventDefault: true,
+      },
+      {
+        keyCode: keyCodes.m, // disable default behaviour
         modifiers: ["ctrlKey"],
         success: () => null,
         preventDefault: true,

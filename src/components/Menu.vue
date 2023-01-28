@@ -1,5 +1,5 @@
 <template>
-  <nav id="menu">
+  <nav id="menu" :hidden="!menuVisible">
     <label for="toggle-menu"  class="toggle-menu">Menu <span class="drop-icon">▾</span></label>
     <input type="checkbox" id="toggle-menu">
     <ul class="main-menu">
@@ -22,6 +22,7 @@
           <li class="menu-item" @click="formPanelsVisible = !formPanelsVisible" role="button">Form</li>
           <li class="menu-item" @click="statusBarVisible = !statusBarVisible" role="button">Status</li>
           <li class="menu-item" @click="toolbarVisible = !toolbarVisible" role="button">Toolbar</li>
+          <li class="menu-item" @click="menuVisible = !menuVisible" role="button">Menu (Ctrl+M)</li>
         </ul>
       </li>
       <li class="menu-item">Image
@@ -47,7 +48,7 @@
 <script  lang="ts" setup>
 
 import { action, applyEffect } from '@/services/appActions'
-import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible } from '@/services/editorAppState';
+import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible, menuVisible } from '@/services/editorAppState';
 
 </script>
 

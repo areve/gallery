@@ -20,6 +20,7 @@ const editorAppState = {
     statusBarVisible: ref<boolean>(true),
     formPanelsVisible: ref<boolean>(true),
     toolbarVisible: ref<boolean>(true),
+    menuVisible: ref<boolean>(true),
 
     // TODO perhaps these should go to panelState objects?
     prompt: ref<string>(''),
@@ -30,16 +31,17 @@ const editorAppState = {
 
 function resetState() {
     console.log('resetState')
-    toolSelected.value = 'pencil',
-        eraserSize.value = 300,
-        snapSize.value = 128,
-        pencilColor.value = '#00ff00',
-        settingsPanelVisible.value = false,
-        galleryPanelVisible.value = true,
-        statusBarVisible.value = true,
-        formPanelsVisible.value = true,
-        toolbarVisible.value = true,
-        prompt.value = ''
+    toolSelected.value = 'pencil'
+    eraserSize.value = 300
+    snapSize.value = 128
+    pencilColor.value = '#00ff00'
+    settingsPanelVisible.value = false
+    galleryPanelVisible.value = true
+    statusBarVisible.value = true
+    formPanelsVisible.value = true
+    toolbarVisible.value = true
+    menuVisible.value = true
+    prompt.value = ''
     showMetadata.value = false
     scaleImageBy.value = 0.5
 }
@@ -53,6 +55,7 @@ export const galleryPanelVisible = editorAppState.galleryPanelVisible
 export const statusBarVisible = editorAppState.statusBarVisible
 export const formPanelsVisible = editorAppState.formPanelsVisible
 export const toolbarVisible = editorAppState.toolbarVisible
+export const menuVisible = editorAppState.menuVisible
 export const prompt = editorAppState.prompt
 export const showMetadata = editorAppState.showMetadata
 export const scaleImageBy = editorAppState.scaleImageBy
