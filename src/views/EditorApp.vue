@@ -71,7 +71,7 @@ import { deleteGalleryItem, selectedItem, updateGalleryItem } from '@/services/g
 import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
-import { loadState, settingsPanelVisible, prompt, resetState, saveState, scaleImageBy, showMetadata } from '@/services/editorAppState';
+import { settingsPanelVisible, prompt, scaleImageBy, showMetadata } from '@/services/editorAppState';
 import artworkService from '@/services/artworkService'
 import type { Artwork } from '@/interfaces/Artwork'
 import { mouseUp, mouseDown } from '@/services/mouseService'
@@ -113,20 +113,13 @@ watch(onApplyEffect, action => {
 
 watch(selectedItem, artwork => artwork && galleryItemSelected(artwork))
 
-onMounted(async () => {
-  await loadState()
-})
-
-
 function reset() {
-  resetState()
   artworkService.resetArtwork();
 }
 
 async function galleryItemSelected(item: Artwork) {
   artworkService.load(item)
   prompt.value = mostRecentPrompt(item)
-  saveState()
 }
 
 async function deleteImage(deleteFilename: string) {
@@ -136,7 +129,6 @@ async function deleteImage(deleteFilename: string) {
 async function saveArtwork() {
   const savedArtwork = await artworkService.save()
   updateGalleryItem(savedArtwork)
-  saveState()
 }
 
 async function generateImage() {

@@ -1,5 +1,6 @@
 import type { Tool } from "@/interfaces/Tool";
-import { ref, type Ref } from "vue";
+import { ref, watch, watchPostEffect, type Ref } from "vue";
+import { onAction } from "./appActions";
 import artworkService from "./artworkService";
 import openAiService from "./openAiService";
 
@@ -26,17 +27,19 @@ const editorAppState = {
     scaleImageBy: ref<number>(0.5),
 }
 
-export function resetState() {
+
+function resetState() {
+    console.log('resetState')
     toolSelected.value = 'pencil',
-    eraserSize.value = 300,
-    snapSize.value = 128,
-    pencilColor.value = '#00ff00',
-    settingsPanelVisible.value = false,
-    galleryPanelVisible.value = true,
-    statusBarVisible.value = true,
-    formPanelsVisible.value = true,
-    toolbarVisible.value = true,
-    prompt.value = ''
+        eraserSize.value = 300,
+        snapSize.value = 128,
+        pencilColor.value = '#00ff00',
+        settingsPanelVisible.value = false,
+        galleryPanelVisible.value = true,
+        statusBarVisible.value = true,
+        formPanelsVisible.value = true,
+        toolbarVisible.value = true,
+        prompt.value = ''
     showMetadata.value = false
     scaleImageBy.value = 0.5
 }
@@ -54,18 +57,36 @@ export const prompt = editorAppState.prompt
 export const showMetadata = editorAppState.showMetadata
 export const scaleImageBy = editorAppState.scaleImageBy
 
-export function loadState() {
+let loaded = false
+watchPostEffect(() => {
+    if (!loaded) return
+    const collection: StateCollection = editorAppState
+    Object.keys(collection).forEach(key => {
+        void (collection[key].value)
+    })
+
+    saveState()
+})
+
+loadState()
+function loadState() {
+    console.log('loadState')
     openAiService.openApiKey.value = window.localStorage.getItem('openApiKey') || ''
     artworkService.artwork.value.filename = window.localStorage.getItem('filename') || ''
     deserializeStateCollection(editorAppState, window.localStorage.getItem('editorAppState') || '{}')
+    loaded = true
 }
 
-export function saveState() {
+watch(onAction, action => {
+    if (action.action === 'reset') resetState()
+})
+
+function saveState() {
     // TODO perhaps bring these in in a better way?
     window.localStorage.setItem('metadata', JSON.stringify(artworkService.artwork.value.metadata))
     window.localStorage.setItem('filename', artworkService.artwork.value.filename)
-
     window.localStorage.setItem('editorAppState', serializeStateCollection(editorAppState))
+    console.log('saveState')
 }
 
 function serializeStateCollection(collection: StateCollection) {
@@ -79,6 +100,6 @@ function serializeStateCollection(collection: StateCollection) {
 function deserializeStateCollection(collection: StateCollection, value: string) {
     const source: SerailizedStateCollection = JSON.parse(value)
     Object.keys(collection).forEach(key => {
-        if (source[key] !== undefined) collection[key].value = source[key]        
+        if (source[key] !== undefined) collection[key].value = source[key]
     })
 }
