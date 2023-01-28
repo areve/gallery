@@ -1,5 +1,6 @@
 <template>
-  <ul class="gallery">
+
+  <ul class="gallery" :hidden="!galleryPanelVisible">
     <li v-for="item in galleryItems" class="gallery-item">
       <button v-if="item.status === 'waiting'" type="button" class="loading-button">{{ mostRecentPrompt(item) }}<div
           class="spinner"></div></button>
@@ -17,6 +18,8 @@ import { onMounted, ref } from 'vue';
 import { mostRecentError, mostRecentPrompt } from '@/lib/utils'
 import { galleryItems, loadGallery, selectedItem } from '@/services/galleryService';
 import type { Artwork } from '@/interfaces/Artwork';
+import { galleryPanelVisible } from '@/services/editorAppState';
+
 
 onMounted(async () => {
   await loadGallery()

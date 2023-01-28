@@ -127,6 +127,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   flex: 1 0;
   overflow: hidden;
   margin: 0.4em;
+  background-color: red;
 }
 
 .artwork {

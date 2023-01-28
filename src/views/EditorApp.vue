@@ -1,7 +1,5 @@
 <template>
-  <div class="layout" :class="{
-    'side-panel-closed': !galleryPanelVisible
-  }" @mouseup="mouseUp" @mousedown="mouseDown" @touchend="mouseUp" @touchstart="mouseDown">
+  <div class="layout" @mouseup="mouseUp" @mousedown="mouseDown" @touchend="mouseUp" @touchstart="mouseDown">
     <main class="main">
       <Menu></Menu>
       <ArtworkVue />
@@ -44,8 +42,8 @@
         }}</span>
       </span>
     </main>
-    <aside class="side-panel">
-      <Gallery :hidden="!galleryPanelVisible" />
+    <aside class="side-panel" :hidden="!galleryPanelVisible">
+      <Gallery />
     </aside>
   </div>
 </template>
@@ -196,10 +194,11 @@ async function outpaintImage() {
 
 <style scoped>
 .layout {
-  display: grid;
-  grid-template-columns: 70% 30%;
-  grid-template-rows: 100%;
-  grid-template-areas: "main sidebar";
+  display: flex;
+  flex-direction: row;
+  /* grid-template-columns: 70% 30%; */
+  /* grid-template-rows: 100%; */
+  /* grid-template-areas: "main sidebar"; */
   height: 100%;
 }
 
@@ -210,6 +209,8 @@ async function outpaintImage() {
 .main {
   display: flex;
   flex-direction: column;
+  flex: 1 0;
+  width: 70%;
   /* grid-area: main; */
   /* display: grid;
   grid-template-columns: 100%;
@@ -224,7 +225,9 @@ async function outpaintImage() {
 }
 
 .side-panel {
-  grid-area: sidebar;
+  /* grid-area: sidebar; */
+  flex: 1 0;
+  max-width: 30%;
   overflow-y: scroll;
   overflow-x: hidden;
   padding: 0.4em;

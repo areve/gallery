@@ -14,7 +14,11 @@ import { RouterLink, RouterView } from "vue-router";
   </div>
 </template>
 
-<style scoped>
+<style>
+
+*[hidden] {
+    display: none !important;
+}
 
 .router-wrapper {
   height: 100%;
