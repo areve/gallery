@@ -9,7 +9,7 @@
           <div class="spinner"></div>
           <div class="button-text">{{ mostRecentPrompt(item) }}</div>
         </button>
-        <button v-else-if="item.status === 'error'" @click="dismissError(item)" type="button" class="gallery-button error">
+        <button v-else-if="item.status === 'error'" @click="deleteGalleryItem(item)" type="button" class="gallery-button error">
           <div class="button-text">{{ mostRecentError(item) }}</div>
         </button>
         <button v-else type="button" @click="selectItem(item)" class="gallery-button">
@@ -32,9 +32,7 @@ onMounted(async () => {
   await loadGallery()
 })
 
-function dismissError(item: Artwork) {
-  deleteGalleryItem(item.filename)
-}
+
 
 function selectItem(item: Artwork) {
   selectedItem.value = item

@@ -1,6 +1,6 @@
 <template>
   <nav id="menu" :hidden="!menuVisible">
-    <label for="toggle-menu"  class="toggle-menu">Menu <span class="drop-icon">▾</span></label>
+    <label for="toggle-menu" class="toggle-menu">Menu <span class="drop-icon">▾</span></label>
     <input type="checkbox" id="toggle-menu">
     <ul class="main-menu">
       <li class="menu-item">File
@@ -141,7 +141,7 @@ import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisibl
 }
 
 #menu .menu-item {
-  transition: all .125s ease-in-out; 
+  transition: all .125s ease-in-out;
   -webkit-transition: all .125s ease-in-out;
 }
 
@@ -167,7 +167,8 @@ import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisibl
   position: absolute;
   right: 1.5em;
   top: 1.25em;
-  display: none; /* TODO maybe remove */
+  display: none;
+  /* TODO maybe remove */
 }
 
 #menu label.drop-icon,
@@ -179,16 +180,19 @@ import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisibl
   background-color: rgba(0, 0, 0, .125);
   text-shadow: 0 0 0 transparent;
   color: rgba(255, 255, 255, .75);
-  display: none; /* TODO maybe remove */
+  display: none;
+  /* TODO maybe remove */
 }
 
 #menu .drop-icon {
   line-height: 1;
-  display: none; /* TODO maybe remove */
+  display: none;
+  /* TODO maybe remove */
 }
 
 
-@media only screen and (min-width: 1em) { /* TODO 52em is better for a breakpoint */
+@media only screen and (min-width: 1em) {
+  /* TODO 52em is better for a breakpoint */
 
   .toggle-menu,
   #menu .menu-item {
@@ -207,7 +211,8 @@ import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisibl
 
   #menu ul span.drop-icon {
     display: inline-block;
-    display: none; /* TODO maybe remove */
+    display: none;
+    /* TODO maybe remove */
   }
 
   #menu li {

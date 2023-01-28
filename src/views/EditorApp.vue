@@ -3,38 +3,16 @@
     <main class="main">
       <Menu></Menu>
       <Artboard />
+
       <div :hidden="!formPanelsVisible">
-        <section class="tool-panel" :hidden="!formPanelsVisible">
-          <h3>Artwork Settings</h3>
-          <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
-          <textarea class="metadata" v-model="metadataAsJson" :hidden="!showMetadata"></textarea>
-          <input type="text" v-model="artboardService.artwork.value.filename" />
-          <button type="button" @click="deleteImage(artboardService.artwork.value.filename)">Delete</button>
-        </section>
+        <ArtworkSettingsPanel />
         <AppSettings />
-        <section class="tool-panel" :hidden="!formPanelsVisible">
-          <h3>Scale</h3>
-          <button type="button" @click="scaleImage(artboardService.artwork.value.context, scaleImageBy)">Scale
-            image</button>
-          <label for="scaleBy">by</label>
-          <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
-          <button type="button" @click="artboardService.scale(0.5)">Shrink</button>
-          <button type="button" @click="artboardService.scale(2)">Grow</button>
-          <button type="button" @click="artboardService.growFrame(-512)">Shrink frame</button>
-          <button type="button" @click="artboardService.growFrame(512)">Grow frame</button>
-        </section>
+        <ScaleToolPanel />
         <OpenAiPanel />
       </div>
 
       <ToolPanel />
-      <span class="status-bar" :hidden="!statusBarVisible">
-        <span>canvas:{{ artboardService.artwork.value.bounds.width }}x{{
-          artboardService.artwork.value.bounds.height
-        }}</span>
-        <span>frame:{{ artboardService.artwork.value.frame.width }}x{{
-          artboardService.artwork.value.frame.height
-        }}</span>
-      </span>
+      <StatusBar />
     </main>
     <aside class="side-panel" :hidden="!galleryPanelVisible">
       <Gallery />
@@ -43,6 +21,7 @@
 </template>
 
 <script lang="ts" setup>
+import ArtworkSettingsPanel from '@/components/ArtworkSettingsPanel.vue'
 import OpenAiPanel from '@/components/OpenAiPanel.vue'
 import Artboard from '@/components/Artboard.vue'
 import AppSettings from '@/components/AppSettings.vue'
@@ -50,23 +29,20 @@ import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
 import ToolPanel from '@/components/ToolPanel.vue'
 
-import { computed, onMounted, watch } from 'vue';
-import { clone, mostRecentPrompt } from '@/lib/utils';
+import { watch } from 'vue';
+import { mostRecentPrompt } from '@/lib/utils';
 import { shotgunEffect } from '@/lib/effects';
-import { scaleImage } from '@/lib/draw';
-import { cloneContext, createContextFromImage } from '@/lib/canvas';
 
 import { onApplyEffect, onAction } from '@/services/appActions'
 import { useKeyboardHandler } from '@/services/keyboardHandler';
-import { deleteGalleryItem, selectedItem, updateGalleryItem } from '@/services/galleryService';
-import openAiService from '@/services/openAiService';
-import compositionService, { createLayer } from '@/services/compositionService';
-import galleryApi from '@/services/galleryApi';
-import { settingsPanelVisible, prompt, scaleImageBy, showMetadata } from '@/services/editorAppState';
+import { selectedItem, updateGalleryItem } from '@/services/galleryService';
+import { settingsPanelVisible, prompt } from '@/services/editorAppState';
 import artboardService from '@/services/artboardService'
 import type { Artwork } from '@/interfaces/Artwork'
 import { mouseUp, mouseDown } from '@/services/mouseService'
-import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible } from '@/services/editorAppState';
+import { galleryPanelVisible, formPanelsVisible } from '@/services/editorAppState';
+import StatusBar from '@/components/StatusBar.vue'
+import ScaleToolPanel from '@/components/ScaleToolPanel.vue'
 
 useKeyboardHandler()
 
@@ -79,17 +55,6 @@ useKeyboardHandler()
 // IDEA add gallery folders
 // IDEA get all the interface hidden and make a good pencil drawing tool
 // IDEA make errors easier to dismiss and view details of
-
-
-const metadataAsJson = computed({
-  get: () => {
-    return JSON.stringify(artboardService.artwork.value.metadata)
-  },
-  set: (value: string) => {
-    throw ('unimplemented yet')
-    return JSON.parse(value)
-  }
-})
 
 watch(onAction, action => {
   if (action.action === 'save') saveArtwork()
@@ -113,15 +78,10 @@ async function galleryItemSelected(item: Artwork) {
   prompt.value = mostRecentPrompt(item)
 }
 
-async function deleteImage(deleteFilename: string) {
-  deleteGalleryItem(deleteFilename)
-}
-
 async function saveArtwork() {
   const savedArtwork = await artboardService.save()
   updateGalleryItem(savedArtwork)
 }
-
 
 </script>
 
