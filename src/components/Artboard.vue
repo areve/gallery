@@ -127,15 +127,15 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 <style scoped>
 .artboard-panel {
   flex: 1 0;
-  margin: 0.4em;
-  /* TODO maybe nicer without */
   position: relative;
   height: 100%;
   display: flex;
   flex-direction: row;
+  background-color: black;
 }
 
 .artboard-wrap {
+  margin: 0.4em;
   position: absolute;
   top: 0;
   bottom: 0;
