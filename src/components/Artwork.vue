@@ -13,7 +13,7 @@
 
 <script  lang="ts" setup>
 
-import { eraserSize, pencilColor, snapSize, toolSelected } from '@/services/appState';
+import { eraserSize, pencilColor, snapSize, toolSelected } from '@/services/editorAppState';
 import artworkService from '@/services/artworkService'
 import { onMounted, ref, watchSyncEffect } from 'vue';
 import { clearCircle } from '@/lib/draw';

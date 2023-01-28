@@ -47,7 +47,7 @@
 <script  lang="ts" setup>
 
 import { action, applyEffect } from '@/services/appActions'
-import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible } from '@/services/appState';
+import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible } from '@/services/editorAppState';
 
 </script>
 

@@ -69,11 +69,11 @@ import { deleteGalleryItem, selectedItem, updateGalleryItem } from '@/services/g
 import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
-import { panel } from '@/services/appState';
+import { panel } from '@/services/editorAppState';
 import artworkService from '@/services/artworkService'
 import type { Artwork } from '@/interfaces/Artwork'
 import { mouseUp, mouseDown } from '@/services/mouseService'
-import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible } from '@/services/appState';
+import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible } from '@/services/editorAppState';
 
 useKeyboardHandler()
 

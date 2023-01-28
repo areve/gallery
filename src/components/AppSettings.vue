@@ -10,7 +10,7 @@
 <script  lang="ts" setup>
 
 import openAiService from '@/services/openAiService';
-import { panel } from '@/services/appState';
+import { panel } from '@/services/editorAppState';
 import { watch } from 'vue';
 
 watch(panel.value, () => {

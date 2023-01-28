@@ -26,7 +26,7 @@
 </template>
 
 <script  lang="ts" setup>
-import { eraserSize, snapSize, toolSelected,pencilColor } from '@/services/appState';
+import { eraserSize, snapSize, toolSelected,pencilColor } from '@/services/editorAppState';
 
 </script>
 

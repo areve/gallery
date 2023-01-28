@@ -1,6 +1,6 @@
 import { useKeypress } from 'vue3-keypress'
 import { action, applyEffect } from "./appActions";
-import { toolSelected } from "./appState";
+import { toolSelected } from "./editorAppState";
 
 const keyCodes = {
   "e": 69,
