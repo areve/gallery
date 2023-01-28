@@ -1,15 +1,17 @@
 <template>
-  <div class="layout" @mouseup="mouseUp" @mousedown="mouseDown" @touchend="mouseUp" @touchstart="mouseDown">
+  <div class="layout" :class="{
+    'side-panel-closed': !galleryPanelVisible
+  }" @mouseup="mouseUp" @mousedown="mouseDown" @touchend="mouseUp" @touchstart="mouseDown">
     <main class="main">
       <Menu></Menu>
-      <div v-if="formPanelsVisible">
+      <div :hidden="!formPanelsVisible">
         <section class="prompt-panel">
           <textarea type="text" id="prompt" v-model="prompt"></textarea>
         </section>
         <section class="tool-panel">
           <h3>Artwork Settings</h3>
           <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
-          <textarea class="metadata" v-model="metadataAsJson" v-if="showMetadata"></textarea>
+          <textarea class="metadata" v-model="metadataAsJson" :hidden="!showMetadata"></textarea>
           <input type="text" v-model="artworkService.artwork.value.filename" />
           <button type="button" @click="deleteImage(artworkService.artwork.value.filename)">Delete</button>
         </section>
@@ -32,10 +34,10 @@
           <button type="button" @click="outpaintImage()">Outpaint</button>
         </section>
       </div>
-      <ToolPanel v-if="toolbarVisible"/>
+      <ToolPanel />
       <ArtworkVue />
 
-      <span class="status-bar" v-if="statusBarVisible">
+      <span class="status-bar" :hidden="!statusBarVisible">
         <span>canvas:{{ artworkService.artwork.value.bounds.width }}x{{
           artworkService.artwork.value.bounds.height
         }}</span>
@@ -44,8 +46,8 @@
         }}</span>
       </span>
     </main>
-    <aside class="side-panel" v-if="galleryPanelVisible">
-      <Gallery />
+    <aside class="side-panel" >
+      <Gallery :hidden="!galleryPanelVisible" />
     </aside>
   </div>
 </template>
@@ -57,7 +59,7 @@ import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
 import ToolPanel from '@/components/ToolPanel.vue'
 
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { clone, mostRecentPrompt } from '@/lib/utils';
 import { shotgunEffect } from '@/lib/effects';
 import { scaleImage } from '@/lib/draw';
@@ -69,7 +71,7 @@ import { deleteGalleryItem, selectedItem, updateGalleryItem } from '@/services/g
 import openAiService from '@/services/openAiService';
 import compositionService, { createLayer } from '@/services/compositionService';
 import galleryApi from '@/services/galleryApi';
-import { panel } from '@/services/editorAppState';
+import { loadState, settingsPanelVisible, prompt, resetState, saveState, scaleImageBy, showMetadata } from '@/services/editorAppState';
 import artworkService from '@/services/artworkService'
 import type { Artwork } from '@/interfaces/Artwork'
 import { mouseUp, mouseDown } from '@/services/mouseService'
@@ -87,9 +89,6 @@ useKeyboardHandler()
 // IDEA get all the interface hidden and make a good pencil drawing tool
 // IDEA make errors easier to dismiss and view details of
 
-const prompt = ref<string>('')
-const showMetadata = ref<boolean>(false)
-const scaleImageBy = ref<number>(0.5)
 
 const metadataAsJson = computed({
   get: () => {
@@ -105,7 +104,7 @@ watch(onAction, action => {
   if (action.action === 'save') saveArtwork()
   if (action.action === 'reset') reset()
   if (action.action === 'auto-crop') artworkService.autoCrop()
-  if (action.action === 'show-settings') panel.value.settings.visible = true
+  if (action.action === 'show-settings') settingsPanelVisible.value = true
 })
 
 watch(onApplyEffect, action => {
@@ -118,22 +117,9 @@ onMounted(async () => {
   await loadState()
 })
 
-function loadState() {
-  openAiService.openApiKey.value = window.localStorage.getItem('openApiKey') || ''
-  reset()
-  artworkService.artwork.value.metadata = JSON.parse(window.localStorage.getItem('metadata') || '')
-  prompt.value = window.localStorage.getItem('prompt') || ''
-  artworkService.artwork.value.filename = window.localStorage.getItem('filename') || ''
-}
-
-function saveState() {
-  window.localStorage.setItem('metadata', JSON.stringify(artworkService.artwork.value.metadata))
-  window.localStorage.setItem('prompt', prompt.value)
-  window.localStorage.setItem('filename', artworkService.artwork.value.filename)
-}
 
 function reset() {
-  prompt.value = ''
+  resetState()
   artworkService.resetArtwork();
 }
 
@@ -225,6 +211,10 @@ async function outpaintImage() {
   grid-template-rows: 100%;
   grid-template-areas: "main sidebar";
   height: 100%;
+}
+
+.layout.side-panel-closed {
+  grid-template-columns: 100%;
 }
 
 .main {
