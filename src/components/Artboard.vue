@@ -1,6 +1,6 @@
 <template>
-  <div class="artwork-panel">
-    <div class="artwork"
+  <div class="artboard-panel">
+    <div class="artboard"
       :style="{ 'aspect-ratio': artworkService.artwork.value.bounds.width + ' / ' + artworkService.artwork.value.bounds.height }">
       <canvas ref="canvas" class="edit-canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
         @mousemove="mouseMove"></canvas>
@@ -123,20 +123,20 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 </script>
 
 <style scoped>
-.artwork-panel {
+.artboard-panel {
   flex: 1 0;
-  overflow: hidden;
-  margin: 0.4em;
-  background-color: red;
+  margin: 0.4em; /* TODO maybe nicer without */
+  position: relative;
 }
 
-.artwork {
+.artboard {
   position: relative;
-  top: calc((100% - min(100%, 70vw)) / 2);
+  max-width: 100%;
+  max-height: 100%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   aspect-ratio: 1024 / 1024;
-  max-width: calc(min(100%, 70vw));
-  max-height: calc(min(100%, 70vw));
-  margin: auto;
   background-color: #f7f7f7;
   background-image:
     linear-gradient(45deg, #ddd 25%, transparent 25%),
