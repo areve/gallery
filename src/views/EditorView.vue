@@ -1,39 +1,41 @@
 <template>
-  <div class="layout" @mouseup="mouseUp" @mousedown="mouseDown"  @touchend="mouseUp" @touchstart="mouseDown">
+  <div class="layout" @mouseup="mouseUp" @mousedown="mouseDown" @touchend="mouseUp" @touchstart="mouseDown">
     <main class="main">
       <Menu></Menu>
-      <section class="prompt-panel">
-        <textarea type="text" id="prompt" v-model="prompt"></textarea>
-      </section>
-      <section class="tool-panel">
-        <h3>Artwork Settings</h3>
-        <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
-        <textarea class="metadata" v-model="metadataAsJson" v-if="showMetadata"></textarea>
-        <input type="text" v-model="artworkService.artwork.value.filename" />
-        <button type="button" @click="deleteImage(artworkService.artwork.value.filename)">Delete</button>
-      </section>
-      <AppSettings />
-      <section class="tool-panel">
-        <h3>Scale</h3>
-        <button type="button" @click="scaleImage(artworkService.artwork.value.context, scaleImageBy)">Scale
-          image</button>
-        <label for="scaleBy">by</label>
-        <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
-        <button type="button" @click="artworkService.scale(0.5)">Shrink</button>
-        <button type="button" @click="artworkService.scale(2)">Grow</button>
-        <button type="button" @click="artworkService.growFrame(-512)">Shrink frame</button>
-        <button type="button" @click="artworkService.growFrame(512)">Grow frame</button>
-      </section>
-      <section class="tool-panel">
-        <h3>OpenAI</h3>
-        <button type="button" @click="generateImage()">Generate</button>
-        <button type="button" @click="variationImage()">Variation</button>
-        <button type="button" @click="outpaintImage()">Outpaint</button>
-      </section>
-      <ToolPanel />
+      <div v-if="formPanelsVisible">
+        <section class="prompt-panel">
+          <textarea type="text" id="prompt" v-model="prompt"></textarea>
+        </section>
+        <section class="tool-panel">
+          <h3>Artwork Settings</h3>
+          <button type="button" @click="showMetadata = !showMetadata">Toggle Metadata</button>
+          <textarea class="metadata" v-model="metadataAsJson" v-if="showMetadata"></textarea>
+          <input type="text" v-model="artworkService.artwork.value.filename" />
+          <button type="button" @click="deleteImage(artworkService.artwork.value.filename)">Delete</button>
+        </section>
+        <AppSettings />
+        <section class="tool-panel">
+          <h3>Scale</h3>
+          <button type="button" @click="scaleImage(artworkService.artwork.value.context, scaleImageBy)">Scale
+            image</button>
+          <label for="scaleBy">by</label>
+          <input type="number" id="scaleBy" v-model="scaleImageBy" step="0.00001" min="0" />
+          <button type="button" @click="artworkService.scale(0.5)">Shrink</button>
+          <button type="button" @click="artworkService.scale(2)">Grow</button>
+          <button type="button" @click="artworkService.growFrame(-512)">Shrink frame</button>
+          <button type="button" @click="artworkService.growFrame(512)">Grow frame</button>
+        </section>
+        <section class="tool-panel">
+          <h3>OpenAI</h3>
+          <button type="button" @click="generateImage()">Generate</button>
+          <button type="button" @click="variationImage()">Variation</button>
+          <button type="button" @click="outpaintImage()">Outpaint</button>
+        </section>
+      </div>
+      <ToolPanel v-if="toolbarVisible"/>
       <ArtworkVue />
 
-      <span class="status-bar">
+      <span class="status-bar" v-if="statusBarVisible">
         <span>canvas:{{ artworkService.artwork.value.bounds.width }}x{{
           artworkService.artwork.value.bounds.height
         }}</span>
@@ -42,7 +44,7 @@
         }}</span>
       </span>
     </main>
-    <aside class="side-panel">
+    <aside class="side-panel" v-if="galleryPanelVisible">
       <Gallery />
     </aside>
   </div>
@@ -71,6 +73,7 @@ import { panel } from '@/services/appState';
 import artworkService from '@/services/artworkService'
 import type { Artwork } from '@/interfaces/Artwork'
 import { mouseUp, mouseDown } from '@/services/mouseService'
+import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible } from '@/services/appState';
 
 useKeyboardHandler()
 
@@ -194,7 +197,7 @@ async function outpaintImage() {
 
   if (compositionData && outpaintResult) {
     const artwork = await galleryApi.getGalleryItem(outpaintResult.filename)
-    
+
     await compositionService.flatten({
       metadata: artwork.metadata,
       width: artwork.image.width,

@@ -1,36 +1,43 @@
 <template>
   <nav id="menu">
-    <label for="tm" id="toggle-menu">Menu <span class="drop-icon">▾</span></label>
-    <input type="checkbox" id="tm">
+    <label for="toggle-menu"  class="toggle-menu">Menu <span class="drop-icon">▾</span></label>
+    <input type="checkbox" id="toggle-menu">
     <ul class="main-menu">
       <li class="menu-item">File
         <span class="drop-icon">▾</span>
-        <label title="Toggle Drop-down" class="drop-icon" for="sm1">▾</label>
-
-        <input type="checkbox" id="sm1">
+        <label title="Toggle Drop-down" class="drop-icon" for="file-menu">▾</label>
+        <input type="checkbox" id="file-menu">
         <ul class="sub-menu">
           <li class="menu-item" @click="action('save')" role="button">Save</li>
           <li class="menu-item" @click="action('reset')" role="button">Reset</li>
           <li class="menu-item" @click="action('show-settings')" role="button">Settings</li>
         </ul>
       </li>
+      <li class="menu-item">View
+        <span class="drop-icon">▾</span>
+        <label title="Toggle Drop-down" class="drop-icon" for="view-menu">▾</label>
+        <input type="checkbox" id="view-menu">
+        <ul class="sub-menu">
+          <li class="menu-item" @click="galleryPanelVisible = !galleryPanelVisible" role="button">Gallery</li>
+          <li class="menu-item" @click="formPanelsVisible = !formPanelsVisible" role="button">Form</li>
+          <li class="menu-item" @click="statusBarVisible = !statusBarVisible" role="button">Status</li>
+          <li class="menu-item" @click="toolbarVisible = !toolbarVisible" role="button">Toolbar</li>
+        </ul>
+      </li>
       <li class="menu-item">Image
         <span class="drop-icon">▾</span>
-        <label title="Toggle Drop-down" class="drop-icon" for="sm3">▾</label>
-
-        <input type="checkbox" id="sm3">
+        <label title="Toggle Drop-down" class="drop-icon" for="image-menu">▾</label>
+        <input type="checkbox" id="image-menu">
         <ul class="sub-menu">
           <li class="menu-item" @click="action('auto-crop')" role="button">Auto-crop</li>
           <li class="menu-item">Effect
             <span class="drop-icon">▾</span>
-            <label title="Toggle Drop-down" class="drop-icon" for="more2">▾</label>
-
-            <input type="checkbox" id="more2">
+            <label title="Toggle Drop-down" class="drop-icon" for="image-effects-menu">▾</label>
+            <input type="checkbox" id="image-effects-menu">
             <ul class="sub-menu">
               <li class="menu-item" @click="applyEffect('shotgun')" role="button">Shotgun effect</li>
             </ul>
           </li>
-
         </ul>
       </li>
     </ul>
@@ -40,7 +47,7 @@
 <script  lang="ts" setup>
 
 import { action, applyEffect } from '@/services/appActions'
-
+import { galleryPanelVisible, statusBarVisible, formPanelsVisible, toolbarVisible } from '@/services/appState';
 
 </script>
 
@@ -78,7 +85,7 @@ import { action, applyEffect } from '@/services/appActions'
   display: none;
 }
 
-#tm:checked+.main-menu {
+.toggle-menu:checked+.main-menu {
   display: block;
 }
 
@@ -88,14 +95,14 @@ import { action, applyEffect } from '@/services/appActions'
 }
 
 #menu li,
-#toggle-menu,
+.toggle-menu,
 #menu .sub-menu {
   border-style: solid;
   border-color: rgba(0, 0, 0, .05);
 }
 
 #menu li,
-#toggle-menu {
+.toggle-menu {
   border-width: 0 0 1px;
 }
 
@@ -111,7 +118,7 @@ import { action, applyEffect } from '@/services/appActions'
 }
 
 #menu li,
-#toggle-menu,
+.toggle-menu,
 #menu button {
   position: relative;
   display: block;
@@ -120,14 +127,14 @@ import { action, applyEffect } from '@/services/appActions'
 }
 
 #menu,
-#toggle-menu {
+.toggle-menu {
   background-color: #000;
   color: #fff;
   padding: 0.2em;
 
 }
 
-#toggle-menu,
+.toggle-menu,
 #menu .menu-item {
   padding: 1em 1.5em;
 }
@@ -154,7 +161,7 @@ import { action, applyEffect } from '@/services/appActions'
   color: #444;
 }
 
-#toggle-menu .drop-icon,
+.toggle-menu .drop-icon,
 #menu li label.drop-icon {
   position: absolute;
   right: 1.5em;
@@ -163,7 +170,7 @@ import { action, applyEffect } from '@/services/appActions'
 }
 
 #menu label.drop-icon,
-#toggle-menu span.drop-icon {
+.toggle-menu span.drop-icon {
   border-radius: 50%;
   width: 1em;
   height: 1em;
@@ -182,7 +189,7 @@ import { action, applyEffect } from '@/services/appActions'
 
 @media only screen and (min-width: 1em) { /* TODO 52em is better for a breakpoint */
 
-  #toggle-menu,
+  .toggle-menu,
   #menu .menu-item {
     padding: 0.2em 1em;
   }
@@ -192,7 +199,7 @@ import { action, applyEffect } from '@/services/appActions'
     display: block;
   }
 
-  #toggle-menu,
+  .toggle-menu,
   #menu label.drop-icon {
     display: none;
   }
