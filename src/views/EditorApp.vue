@@ -3,14 +3,12 @@
     <main class="main">
       <Menu></Menu>
       <Artboard />
-
       <div :hidden="!formPanelsVisible">
         <ArtworkSettingsPanel />
         <AppSettings />
         <ScaleToolPanel />
         <OpenAiPanel />
       </div>
-
       <ToolPanel />
       <StatusBar />
     </main>
@@ -89,9 +87,6 @@ async function saveArtwork() {
 .layout {
   display: flex;
   flex-direction: row;
-  /* grid-template-columns: 70% 30%; */
-  /* grid-template-rows: 100%; */
-  /* grid-template-areas: "main sidebar"; */
   height: 100%;
 }
 
@@ -104,21 +99,11 @@ async function saveArtwork() {
   flex-direction: column;
   flex: 1 0;
   width: 70%;
-  /* grid-area: main; */
-  /* display: grid;
-  grid-template-columns: 100%;
-  grid-template-rows: min-content auto min-content;
-  grid-template-areas:
-    "menu"
-    "artboard"
-    "controls"
-  ;*/
   height: 100%;
   background-color: #ccc7;
 }
 
 .side-panel {
-  /* grid-area: sidebar; */
   flex: 1 0;
   max-width: 30%;
   overflow-y: scroll;
@@ -127,17 +112,4 @@ async function saveArtwork() {
   background-color: #333;
 }
 
-/* 
-.metadata {
-  width: 100%;
-  height: 9.6em;
-}
-
-.tool-panel {
-  margin: 0.4em;
-}
-
-.tool-panel h3 {
-  display: none;
-} */
 </style>

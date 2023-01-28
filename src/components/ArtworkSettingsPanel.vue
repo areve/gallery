@@ -16,8 +16,14 @@ import { deleteGalleryItem } from '@/services/galleryService';
 import { computed } from 'vue';
 
 const metadataAsJson = computed(() => JSON.stringify(artboardService.artwork.value.metadata))
+
 </script>
 
 <style scoped>
 
+.metadata {
+  width: 100%;
+  height: 9.6em;
+  resize: none;
+}
 </style>
