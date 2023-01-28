@@ -1,12 +1,16 @@
 <template>
   <div class="artboard-panel">
-    <div class="artboard"
-      :style="{ 'aspect-ratio': artboardService.artwork.value.bounds.width + ' / ' + artboardService.artwork.value.bounds.height }">
-      <canvas ref="canvas" class="edit-canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
-        @mousemove="mouseMove"></canvas>
-      <canvas ref="overlayCanvas" class="overlay-canvas" @touchstart="mouseDown" @mousedown="mouseDown"
-        @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
+    <div class="artboard-before">asdad</div>
+    <div class="artboard-wrap">
+      <div class="artboard"
+        :style="{ 'aspect-ratio': artboardService.artwork.value.bounds.width + ' / ' + artboardService.artwork.value.bounds.height }">
+        <canvas ref="canvas" class="edit-canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
+          @mousemove="mouseMove"></canvas>
+        <canvas ref="overlayCanvas" class="overlay-canvas" @touchstart="mouseDown" @mousedown="mouseDown"
+          @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
+      </div>
     </div>
+    <div class="artboard-after">aaaa</div>
   </div>
 
 </template>
@@ -62,7 +66,7 @@ function normalizeTouch(event: TouchEvent | MouseEvent) {
     }
   }
   const rect = (event.target as any).getBoundingClientRect()
-  const offsetX = ((event as TouchEvent).touches[0].clientX - window.pageXOffset - rect.left) 
+  const offsetX = ((event as TouchEvent).touches[0].clientX - window.pageXOffset - rect.left)
   const offsetY = ((event as TouchEvent).touches[0].clientY - window.pageYOffset - rect.top)
   return {
     offsetX,
@@ -72,7 +76,7 @@ function normalizeTouch(event: TouchEvent | MouseEvent) {
 function mouseDown(event: MouseEvent | TouchEvent) {
   const x = normalizeTouch(event).offsetX
   const y = normalizeTouch(event).offsetY
-  
+
   dragOrigin.value = {
     x,
     y,
@@ -85,7 +89,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   if (!dragOrigin.value) return
   const x1 = normalizeTouch(event).offsetX
   const y1 = normalizeTouch(event).offsetY
-  
+
 
   const dx = (x1 - dragOrigin.value.x) / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
   const dy = (y1 - dragOrigin.value.y) / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
@@ -125,17 +129,74 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 <style scoped>
 .artboard-panel {
   flex: 1 0;
-  margin: 0.4em; /* TODO maybe nicer without */
+  margin: 0.4em;
+  /* TODO maybe nicer without */
   position: relative;
+  height: 100%;
+  background-color: yellow;
+  display: flex;
+  flex-direction: column;
+  /* align-items: stretch;  */
+  /* vertical-align: middle; */
 }
 
+
+/* .artboard-wrap::before {
+  content: 'aaa';
+  display: block;
+  background-color: green;
+  flex: 1 0;
+} */
+.artboard-before,
+.artboard-after {
+  flex: 1 0;
+  background-color: red;
+  display: none;
+}
+
+.artboard-wrap::before {
+  content: '';
+  background-color: pink;
+  display: block;
+
+}
+
+.artboard-wrap {
+  /* flex: 2 0; */
+  background-color: yellow;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  /* text-align: center; */
+  /* margin-top: 100%; */
+  /* display: table-cell; */
+  /* vertical-align: bottom; */
+}
+
+/* .artboard-wrap::after {
+  content: 'aaa';
+  display: block;
+  background-color: green;
+  flex: 1 0;
+} */
+
+
 .artboard {
+  /* display: none; */
   position: relative;
+  /* flex: 1 0; */
+  /* bottom: 30px; */
+
+  margin: auto;
+  /* flex: 1 0; */
   max-width: 100%;
   max-height: 100%;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  /* left: 50%; */
+  /* top: 50%; */
+  /* margin-top: -50%; */
+  /* transform: translate(-50%, -50%); */
   aspect-ratio: 1024 / 1024;
   background-color: #f7f7f7;
   background-image:
