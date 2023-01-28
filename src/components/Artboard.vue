@@ -150,7 +150,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   /* margin-top: 100%; */
   /* display: table-cell; */
   /* vertical-align: bottom; */
-  display: flex;
+  /* display: flex; */
  
 }
 
@@ -162,9 +162,10 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 } */
 
 
+
 .artboard {
-  flex: 1 0;
-  display: inline-block;
+  /* flex: 0 0; */
+  /* display: inline-block; */
   position: relative;
   /* flex: 1 0; */
   /* bottom: 30px; */
