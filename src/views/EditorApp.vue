@@ -2,7 +2,7 @@
   <div class="layout" @mouseup="mouseUp" @mousedown="mouseDown" @touchend="mouseUp" @touchstart="mouseDown">
     <main class="main">
       <Menu></Menu>
-      <ArtworkVue />
+      <Artboard />
       <section class="prompt-panel" :hidden="!formPanelsVisible">
         <textarea type="text" id="prompt" v-model="prompt"></textarea>
       </section>
@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import ArtworkVue from '@/components/Artwork.vue'
+import Artboard from '@/components/Artboard.vue'
 import AppSettings from '@/components/AppSettings.vue'
 import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
