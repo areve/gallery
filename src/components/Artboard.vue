@@ -1,6 +1,5 @@
 <template>
   <div class="artboard-panel">
-    <div class="artboard-before">asdad</div>
     <div class="artboard-wrap">
       <div class="artboard"
         :style="{ 'aspect-ratio': artboardService.artwork.value.bounds.width + ' / ' + artboardService.artwork.value.bounds.height }">
@@ -10,7 +9,6 @@
           @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
       </div>
     </div>
-    <div class="artboard-after">aaaa</div>
   </div>
 
 </template>
@@ -135,34 +133,13 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   height: 100%;
   background-color: yellow;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   /* align-items: stretch;  */
   /* vertical-align: middle; */
 }
 
-
-/* .artboard-wrap::before {
-  content: 'aaa';
-  display: block;
-  background-color: green;
-  flex: 1 0;
-} */
-.artboard-before,
-.artboard-after {
-  flex: 1 0;
-  background-color: red;
-  display: none;
-}
-
-.artboard-wrap::before {
-  content: '';
-  background-color: pink;
-  display: block;
-
-}
-
 .artboard-wrap {
-  /* flex: 2 0; */
+  /* flex: 1 0; */
   background-color: yellow;
   position: absolute;
   top: 0;
@@ -173,6 +150,8 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   /* margin-top: 100%; */
   /* display: table-cell; */
   /* vertical-align: bottom; */
+  display: flex;
+ 
 }
 
 /* .artboard-wrap::after {
@@ -184,12 +163,14 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 
 
 .artboard {
-  /* display: none; */
+  flex: 1 0;
+  display: inline-block;
   position: relative;
   /* flex: 1 0; */
   /* bottom: 30px; */
 
-  margin: auto;
+  margin-top: auto;
+  margin-bottom: auto;
   /* flex: 1 0; */
   max-width: 100%;
   max-height: 100%;
@@ -211,13 +192,13 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 
 .edit-canvas {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .overlay-canvas {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
 </style>
