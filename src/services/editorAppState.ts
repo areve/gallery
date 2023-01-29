@@ -22,6 +22,7 @@ const editorAppState = {
     artworkSettingsPanelsVisible: ref<boolean>(true),
     scalePanelsVisible: ref<boolean>(true),
     toolbarVisible: ref<boolean>(true),
+    pencilPanelVisible: ref<boolean>(true),
     menuVisible: ref<boolean>(true),
 
     // TODO perhaps these should go to panelState objects?
@@ -43,6 +44,7 @@ function resetState() {
     artworkSettingsPanelsVisible.value = true
     scalePanelsVisible.value = true
     toolbarVisible.value = true
+    pencilPanelVisible.value = true
     menuVisible.value = true
     prompt.value = ''
     scaleImageBy.value = 0.5
@@ -59,6 +61,7 @@ export const openAiPanelsVisible = editorAppState.openAiPanelsVisible
 export const artworkSettingsPanelsVisible = editorAppState.artworkSettingsPanelsVisible
 export const scalePanelsVisible = editorAppState.scalePanelsVisible
 export const toolbarVisible = editorAppState.toolbarVisible
+export const pencilPanelVisible = editorAppState.pencilPanelVisible
 export const menuVisible = editorAppState.menuVisible
 export const prompt = editorAppState.prompt
 export const scaleImageBy = editorAppState.scaleImageBy

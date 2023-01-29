@@ -8,6 +8,7 @@
       <ScaleToolPanel />
       <OpenAiPanel />
       <ToolPanel />
+      <PencilPanel />
       <StatusBar />
     </main>
     <aside class="side-panel" :hidden="!galleryPanelVisible">
@@ -24,6 +25,7 @@ import AppSettings from '@/components/AppSettings.vue'
 import Menu from '@/components/Menu.vue'
 import Gallery from '@/components/Gallery.vue'
 import ToolPanel from '@/components/ToolPanel.vue'
+import PencilPanel from '@/components/PencilPanel.vue'
 
 import { watch } from 'vue';
 import { mostRecentPrompt } from '@/lib/utils';
@@ -39,6 +41,7 @@ import { mouseUp, mouseDown } from '@/services/mouseService'
 import { galleryPanelVisible } from '@/services/editorAppState';
 import StatusBar from '@/components/StatusBar.vue'
 import ScaleToolPanel from '@/components/ScaleToolPanel.vue'
+import type PencilPanelVue from '@/components/PencilPanel.vue'
 
 useKeyboardHandler()
 

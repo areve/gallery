@@ -28,6 +28,7 @@
           <li class="menu-item" @click="statusBarVisible = !statusBarVisible" role="button">Status</li>
           <li class="menu-item" @click="toolbarVisible = !toolbarVisible" role="button">Toolbar</li>
           <li class="menu-item" @click="menuVisible = !menuVisible" role="button">Menu (Ctrl+M)</li>
+          <li class="menu-item" @click="pencilPanelVisible = !pencilPanelVisible" role="button">Pencils</li>
         </ul>
       </li>
       <li class="menu-item">Image
@@ -53,7 +54,7 @@
 <script  lang="ts" setup>
 
 import { action, applyEffect } from '@/services/appActions'
-import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSettingsPanelsVisible, scalePanelsVisible, toolbarVisible, menuVisible } from '@/services/editorAppState';
+import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSettingsPanelsVisible, scalePanelsVisible, toolbarVisible, menuVisible, pencilPanelVisible } from '@/services/editorAppState';
 
 </script>
 
