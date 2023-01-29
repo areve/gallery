@@ -1,31 +1,18 @@
 <template>
   <div :hidden="!pencilPanelVisible" class="pencil-panel">
-    <div class="pencil red">
-      <img src="@/assets/pencil.png" class="pencil-tip"  >
-      <img src="@/assets/pencil.png" class="pencil-wood"  >
-      <img src="@/assets/pencil.png" class="pencil-body"  >
-    </div>
-    <div class="pencil green">
-      <img src="@/assets/pencil.png" class="pencil-tip"  >
-      <img src="@/assets/pencil.png" class="pencil-wood"  >
-      <img src="@/assets/pencil.png" class="pencil-body"  >
-    </div>
-    <div class="pencil blue">
-      <img src="@/assets/pencil.png" class="pencil-tip"  >
-      <img src="@/assets/pencil.png" class="pencil-wood"  >
-      <img src="@/assets/pencil.png" class="pencil-body"  >
-    </div>
+
+    <div class="pencil red"></div>
+    <div class="pencil green"></div>
+    <div class="pencil blue"></div>
   </div>
 </template>
 
 <script  lang="ts" setup>
 import { pencilPanelVisible } from '@/services/editorAppState';
 
-
 </script>
 
 <style scoped>
-
 * {
   --pencil-image-width: 128px;
   --pencil-image-height: 720px;
@@ -36,47 +23,58 @@ import { pencilPanelVisible } from '@/services/editorAppState';
   --body-size: 0.706;
   --wood-size: calc(1 - var(--body-size) - var(--tip-size))
 }
-.pencil-tip {
-  display: block;
-  width: var(--pencil-width);
-  height: calc(var(--tip-size) * var(--pencil-image-height) * var(--scale-factor)); 
-  object-fit: cover; 
-  object-position: 0 0;
-}
 
-.pencil-wood {
-  display: block;
-  width: var(--pencil-width);
-  height: calc(var(--wood-size) * var(--pencil-image-height) * var(--scale-factor)); 
-  object-fit: cover; 
-  object-position: 0 calc(0px - var(--tip-size) * var(--pencil-image-height) * var(--scale-factor));
-}
-
-.pencil-body {
-  display: block;
-  width: var(--pencil-width);
-  height: calc(var(--body-size) * var(--pencil-image-height) * var(--scale-factor)); 
-  object-fit: cover; 
-  object-position: 0 calc(0px - var(--wood-size) * var(--pencil-image-height) * var(--scale-factor) - var(--tip-size) * var(--pencil-image-height) * var(--scale-factor));
+.pencil-panel {
+  position: fixed;
+  bottom: 0;
 }
 
 .pencil {
-  display: inline-block
+  position: relative;
+  width: calc(var(--pencil-image-width) * var(--scale-factor)); 
+  height: calc(var(--pencil-image-height) * var(--scale-factor)); 
+  display: inline-block;
+  background-image: url('@/assets/pencil.png');
+  background-size: var(--pencil-width);  
 }
 
-.pencil.blue .pencil-tip ,
-.pencil.blue .pencil-body { 
-  filter: hue-rotate(190deg); 
+.pencil::before {
+  position: absolute;
+  content: '';
+  display: block;
+  background-image: url('@/assets/pencil.png');
+  width: calc(var(--pencil-image-width) * var(--scale-factor));
+  height: calc(var(--tip-size) * var(--pencil-image-height) * var(--scale-factor));
+  background-image: url('@/assets/pencil.png');
+  background-size: var(--pencil-width);
+  background-position: 0px 0px;
+}
+
+.pencil::after {
+  position: absolute;
+  content: '';
+  display: block;
+  width: calc(var(--pencil-image-width) * var(--scale-factor));
+  height: calc(var(--body-size) * var(--pencil-image-height) * var(--scale-factor));
+  top: calc((var(--tip-size) + var(--wood-size)) * var(--pencil-image-height) * var(--scale-factor));
+  background-image: url('@/assets/pencil.png');
+  background-size: var(--pencil-width);
+  background-position: 0px calc(0px - (var(--tip-size) + var(--wood-size)) * var(--pencil-image-height) * var(--scale-factor));
 }
 
 
-.pencil.red .pencil-tip ,
-.pencil.red .pencil-body { 
-  filter: hue-rotate(325deg); 
+.pencil.blue::before,
+.pencil.blue::after {
+  filter: hue-rotate(190deg);
 }
 
-.pencil.green .pencil-tip ,
-.pencil.green .pencil-body { 
-  filter: hue-rotate(100deg); 
+.pencil.red::before,
+.pencil.red::after {
+  filter: hue-rotate(325deg);
+}
+
+.pencil.green::before,
+.pencil.green::after {
+  filter: hue-rotate(100deg);
 }
 </style>
