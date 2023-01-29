@@ -1,18 +1,29 @@
 <template>
   <div :hidden="!pencilPanelVisible" class="pencil-panel">
-    <div class="pencil red"></div>
-    <div class="pencil orange"></div>
-    <div class="pencil yellow"></div>
-    <div class="pencil green selected"></div>
-    <div class="pencil blue"></div>
-    <div class="pencil purple"></div>
-    <div class="pencil black"></div>
-    <div class="pencil white"></div>
+    <div class="pencil red" @click="pencilColor = '#ff0000', selectedPencil = 'red'"
+      :class="{ 'selected': selectedPencil === 'red' }"></div>
+    <div class="pencil orange" @click="pencilColor = 'orange', selectedPencil = 'orange'"
+      :class="{ 'selected': selectedPencil === 'orange' }"></div>
+    <div class="pencil yellow" @click="pencilColor = 'yellow', selectedPencil = 'yellow'"
+      :class="{ 'selected': selectedPencil === 'yellow' }"></div>
+    <div class="pencil green" @click="pencilColor = 'green', selectedPencil = 'green'"
+      :class="{ 'selected': selectedPencil === 'green' }"></div>
+    <div class="pencil blue" @click="pencilColor = 'blue', selectedPencil = 'blue'"
+      :class="{ 'selected': selectedPencil === 'blue' }"></div>
+    <div class="pencil purple" @click="pencilColor = 'purple', selectedPencil = 'purple'"
+      :class="{ 'selected': selectedPencil === 'purple' }"></div>
+    <div class="pencil black" @click="pencilColor = 'black', selectedPencil = 'black'"
+      :class="{ 'selected': selectedPencil === 'black' }"></div>
+    <div class="pencil white" @click="pencilColor = 'white', selectedPencil = 'white'"
+      :class="{ 'selected': selectedPencil === 'white' }"></div>
   </div>
 </template>
 
 <script  lang="ts" setup>
-import { pencilPanelVisible } from '@/services/editorAppState';
+import { pencilColor, pencilPanelVisible } from '@/services/editorAppState';
+import { ref } from 'vue';
+
+const selectedPencil = ref<string>('red')
 
 </script>
 
@@ -37,18 +48,20 @@ import { pencilPanelVisible } from '@/services/editorAppState';
 
 .pencil {
   position: relative;
-  width: calc(var(--pencil-image-width-px) * var(--scale-factor)); 
-  height: calc(var(--pencil-image-height-px) * var(--scale-factor)); 
+  width: calc(var(--pencil-image-width-px) * var(--scale-factor));
+  height: calc(var(--pencil-image-height-px) * var(--scale-factor));
   display: inline-block;
   background-image: url('@/assets/pencil.png');
-  background-size: var(--pencil-width-px); 
+  background-size: var(--pencil-width-px);
   filter: drop-shadow(0px 2px 8px #000c);
   top: calc(120px);
+  cursor: pointer;
 }
 
 .selected {
   top: calc(105px);
 }
+
 .pencil::before {
   position: absolute;
   content: '';
@@ -76,66 +89,42 @@ import { pencilPanelVisible } from '@/services/editorAppState';
 
 .pencil.red::before,
 .pencil.red::after {
-  filter: hue-rotate(325deg)
-    brightness(80%)
-    saturate(100%)
-    contrast(200%);
+  filter: hue-rotate(325deg) brightness(80%) saturate(100%) contrast(200%);
 }
 
 .pencil.orange::before,
 .pencil.orange::after {
-  filter: hue-rotate(0deg)
-    brightness(100%)
-    saturate(100%)
-    contrast(120%);
+  filter: hue-rotate(10deg) brightness(100%) saturate(100%) contrast(120%);
 }
 
 .pencil.yellow::before,
 .pencil.yellow::after {
-  filter: hue-rotate(35deg)
-    brightness(120%)
-    saturate(120%)
-    contrast(100%);
+  filter: hue-rotate(35deg) brightness(140%) saturate(120%) contrast(100%);
 }
 
 .pencil.green::before,
 .pencil.green::after {
   filter:
-    hue-rotate(100deg)
-    brightness(90%)
-    saturate(100%)
-    contrast(180%);
+    hue-rotate(100deg) brightness(70%) saturate(100%) contrast(200%);
 }
 
 .pencil.blue::before,
 .pencil.blue::after {
-  filter: hue-rotate(190deg) 
-    brightness(80%)
-    saturate(100%)
-    contrast(200%);
+  filter: hue-rotate(190deg) brightness(63%) saturate(100%) contrast(200%);
 }
+
 .pencil.purple::before,
 .pencil.purple::after {
-  filter: hue-rotate(240deg) 
-    brightness(90%)
-    saturate(100%)
-    contrast(150%);
+  filter: hue-rotate(260deg) brightness(60%) saturate(100%) contrast(200%);
 }
 
 .pencil.black::before,
 .pencil.black::after {
-  filter: hue-rotate(0deg) 
-    brightness(50%)
-    saturate(0%)
-    contrast(180%);
+  filter: hue-rotate(0deg) brightness(50%) saturate(0%) contrast(180%);
 }
 
 .pencil.white::before,
 .pencil.white::after {
-  filter: hue-rotate(0deg) 
-    brightness(120%)
-    saturate(0%)
-    contrast(180%);
+  filter: hue-rotate(0deg) brightness(120%) saturate(0%) contrast(180%);
 }
-
 </style>
