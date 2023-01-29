@@ -3,9 +3,8 @@
     'gallery-tools-visible': true
   }" :hidden="!galleryPanelVisible">
     <div class="tools">
-      <button type="button" :disabled="!selectedItem" @click="deleteSelected()">Delete</button>
-      <button type="button" :disabled="!selectedItem"
-        @click="artworkSettingsPanelsVisible = !artworkSettingsPanelsVisible">Settings</button>
+      <button class="icon-button" type="button" :disabled="!selectedItem" @click="deleteSelected()"><i class="fas fa-trash"></i> <span class="text">Delete</span></button>
+      <button class="icon-button" type="button" @click="artworkSettingsPanelsVisible = !artworkSettingsPanelsVisible"><i class="fa-solid fa-gear"></i> <span class="text">Settings</span></button>
     </div>
     <ul class="gallery">
       <li v-for="item in galleryItems" class="gallery-item" :class="{
@@ -89,6 +88,7 @@ function selectItem(item: Artwork) {
 .gallery-panel {
   padding: 0.4em;
   background-color: #333;
+  position: relative;
 }
 
 .gallery-tools-visible .gallery {
@@ -154,11 +154,23 @@ function selectItem(item: Artwork) {
 .tools {
   display: none;
   position: fixed;
+  right: 0;
   top: 0;
   padding: 0.5em;
+  margin-right: 2em;
+  z-index: 10;
 }
 
 .gallery-tools-visible .tools {
   display: block;
+  text-align: right;
+}
+
+.icon-button .text {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  top: -10000px;
 }
 </style>

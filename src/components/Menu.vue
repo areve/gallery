@@ -113,7 +113,7 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
 }
 
 #menu .sub-menu {
-  background-color: #000;
+  background-color: #171717;
 
   border-width: 1px 1px 0;
   margin: 0 1em;
