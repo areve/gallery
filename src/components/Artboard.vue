@@ -17,7 +17,7 @@
 
 import { eraserSize, pencilColor, snapSize, toolSelected } from '@/services/editorAppState';
 import { onMounted, ref, watchSyncEffect } from 'vue';
-import { clearCircle } from '@/lib/draw';
+import { clearCircle, drawCircle } from '@/lib/draw';
 import { globalDragOrigin } from '@/services/mouseService';
 import type { DragOrigin } from '@/interfaces/DragOrigin';
 import artboardService from '@/services/artboardService';
@@ -107,18 +107,8 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   } else if (toolSelected.value === 'pencil') {
     const x = x1 / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const y = y1 / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
-
-    const radius = 2
-    const context = artboardService.artwork.value.context
-    const ctx = context
-    context.strokeStyle = pencilColor.value
-    context.lineCap = 'round'
-    context.lineWidth = radius * 2
-
-    ctx.beginPath();
-    ctx.moveTo(pencilLastPoint?.x || x, pencilLastPoint?.y || y);
-    ctx.lineTo(x, y);
-    ctx.stroke();
+    const radius = 20
+    drawCircle(artboardService.artwork.value.context, x, y, radius, pencilColor.value, pencilLastPoint)
     pencilLastPoint = { x, y }
   }
 }
