@@ -108,7 +108,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     const x = x1 / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const y = y1 / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
 
-    const radius = 10
+    const radius = 2
     const context = artboardService.artwork.value.context
     const ctx = context
     context.strokeStyle = pencilColor.value
