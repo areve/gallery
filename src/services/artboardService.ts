@@ -43,11 +43,16 @@ function drawOverlay() {
     artwork.value.overlayContext.clearRect(artwork.value.frame.x, artwork.value.frame.y, artwork.value.frame.width, artwork.value.frame.height)
 }
 
-function resetArtwork() {
+export function resetArtwork() {
     if (!artwork.value.context) return
     artwork.value.bounds.width = 1024
     artwork.value.bounds.height = 1024
     artwork.value.context.clearRect(0, 0, artwork.value.context.canvas.width, artwork.value.context.canvas.height)
+
+    // TODO this just whilst I'm working with pencils
+    artwork.value.context.fillStyle = '#ffffffff'
+    artwork.value.context.fillRect(0, 0, artwork.value.bounds.width, artwork.value.bounds.height)
+
     artwork.value.metadata = { history: [] }
     artwork.value.filename = ''
     artwork.value.modified = new Date()

@@ -20,7 +20,7 @@ import { onMounted, ref, watchSyncEffect } from 'vue';
 import { clearCircle, drawCircle } from '@/lib/draw';
 import { globalDragOrigin } from '@/services/mouseService';
 import type { DragOrigin } from '@/interfaces/DragOrigin';
-import artboardService from '@/services/artboardService';
+import artboardService, { resetArtwork } from '@/services/artboardService';
 
 const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!)
@@ -31,6 +31,7 @@ let pencilLastPoint: { x: number, y: number } | null = null
 onMounted(async () => {
   artboardService.artwork.value.context = canvas.value.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
   artboardService.artwork.value.overlayContext = overlayCanvas.value.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D
+  resetArtwork()
 })
 
 watchSyncEffect(() => {
@@ -107,7 +108,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   } else if (toolSelected.value === 'pencil') {
     const x = x1 / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const y = y1 / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
-    const radius = 20
+    const radius = 100
     drawCircle(artboardService.artwork.value.context, x, y, radius, pencilColor.value, pencilLastPoint)
     pencilLastPoint = { x, y }
   }
