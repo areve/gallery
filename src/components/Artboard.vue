@@ -132,6 +132,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   display: flex;
   flex-direction: row;
   background-color: black;
+  
 }
 
 .artboard-wrap {

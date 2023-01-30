@@ -42,8 +42,10 @@ const selectedPencil = ref<string>('red')
 }
 
 .pencil-panel {
-  position: fixed;
+  position: absolute;
   bottom: 0;
+  height: 0;
+  background-color: red;
 }
 
 .pencil {
@@ -54,12 +56,12 @@ const selectedPencil = ref<string>('red')
   background-image: url('@/assets/pencil.png');
   background-size: var(--pencil-width-px);
   filter: drop-shadow(0px 2px 8px #000c);
-  top: calc(120px);
+  top: -60px;
   cursor: pointer;
 }
 
 .selected {
-  top: calc(105px);
+  top: -85px;
 }
 
 .pencil::before {
