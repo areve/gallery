@@ -17,7 +17,7 @@
 
 import { eraserSize, pencilColor, snapSize, toolSelected } from '@/services/editorAppState';
 import { onMounted, ref, watchSyncEffect } from 'vue';
-import { clearCircle, drawCircle } from '@/lib/draw';
+import { clearCircle, drawPencil } from '@/lib/draw';
 import { globalDragOrigin } from '@/services/mouseService';
 import type { DragOrigin } from '@/interfaces/DragOrigin';
 import artboardService, { resetArtwork } from '@/services/artboardService';
@@ -57,6 +57,7 @@ watchSyncEffect(() => {
 })
 
 function normalizeTouch(event: TouchEvent | MouseEvent) {
+  console.log((event as TouchEvent).touches[0].radiusX, (event as TouchEvent).touches[0])
   event.preventDefault()
   if ((event as MouseEvent).offsetX) {
     return {
@@ -108,8 +109,8 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   } else if (toolSelected.value === 'pencil') {
     const x = x1 / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const y = y1 / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
-    const radius = 100
-    drawCircle(artboardService.artwork.value.context, x, y, radius, pencilColor.value, pencilLastPoint)
+    const radius = 5
+    drawPencil(artboardService.artwork.value.context, x, y, radius, pencilColor.value, pencilLastPoint)
     pencilLastPoint = { x, y }
   }
 }
