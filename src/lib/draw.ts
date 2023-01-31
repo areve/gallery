@@ -45,10 +45,6 @@ function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from:
   const brushHeight = brushWidth
   const brush: Uint8ClampedArray = new Uint8ClampedArray(brushWidth * brushHeight * 4);
 
-  let c = Color(color).rotate(180).rgb()
-  
-  let { r, g, b, a } = c.object()
-  console.log({ r, g, b, a })
 
   for (let y = 0; y < brushHeight; y++) {
     for (let x = 0; x < brushWidth; x++) {
@@ -60,12 +56,12 @@ function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from:
       const dx = x - radius
       const dy = y - radius
       const d = Math.sqrt(dy * dy + dx * dx)
-      const val = 1 - d / radius
+      const val = d / radius
 
-      brush[rN] = 255 - r * val
-      brush[gN] = 255 - g * val
-      brush[bN] = 255 - b * val
-      brush[aN] = 255
+      brush[rN] = val * 255
+      brush[gN] = val * 255
+      brush[bN] = val * 255
+      brush[aN] = val * 255
     }
   }
   const minX = Math.max(0, Math.min(Math.floor(from.x), Math.floor(to.x)) - radius)
@@ -80,11 +76,14 @@ function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from:
   for (let i = 0; i < d; i++) {
     const x = Math.floor(to.x + i / d * dx)
     const y = Math.floor(to.y + i / d * dy)
-    copyBrush(pix, width, height, brush, brushWidth, brushHeight, x, y)
+    copyBrush(pix, width, height, brush, brushWidth, brushHeight, x, y, color)
   }
 }
 
-function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush: Uint8ClampedArray, brushWidth: number, brushHeight: number, x: number, y: number) {
+function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush: Uint8ClampedArray, brushWidth: number, brushHeight: number, x: number, y: number, color: string) {
+  let c = Color(color)
+  let { r, g, b, a } = c.object()
+
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
       const rN = (bY * brushWidth + bX) * 4
@@ -97,12 +96,17 @@ function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush:
       const obN = orN + 2
       const oaN = orN + 3
 
-      pix[orN] = Math.min(pix[orN], brush[rN])
-      pix[ogN] = Math.min(pix[ogN], brush[gN])
-      pix[obN] = Math.min(pix[obN], brush[bN])
+      pix[orN] = mix(pix[orN], r, brush[aN])
+      pix[ogN] = mix(pix[ogN], g, brush[aN])
+      pix[obN] = mix(pix[obN], b, brush[aN])
       pix[oaN] = 255
     }
   }
+}
+function mix(a: number, b: number, n: number) {
+  //  return a * brush / 255 + b * (255 - brush) / 255
+  // return 255 / 2
+  return n / 255 * a + (255 - n) / 255 * b
 }
 
 function sprayLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: string) {
