@@ -131,7 +131,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   } else if (toolSelected.value === 'pencil') {
     const artworkX = x / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const artworkY = y / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
-    const radius = 5
+    const radius = 25
     drawPencil(artboardService.artwork.value.context, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint)
     pencilLastPoint = { x: artworkX, y: artworkY }
   }

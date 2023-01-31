@@ -31,13 +31,81 @@ export async function drawPencil(context: CanvasRenderingContext2D, x: number, y
   const imageData = context.getImageData(0, 0, w, h)
   const pix = imageData.data;
 
-  slowLine(pix, w, from, { x, y }, radius, color)
+  brushLine1(pix, w, h, from, { x, y }, radius, color)
+  // sprayLine1(pix, w, h, from, { x, y }, radius, color)
   // TODO this is a mega inefficient way of painting a blurry line, but kind of works
   context.putImageData(imageData, 0, 0)
 }
 
 interface Coord { x: number, y: number }
-function slowLine(pix: Uint8ClampedArray, width: number, from: Coord, to: Coord, radius: number, color: string) {
+
+function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: string) {
+
+  const brushWidth = radius * 2
+  const brushHeight = brushWidth
+  const brush: Uint8ClampedArray = new Uint8ClampedArray(brushWidth * brushHeight * 4);
+
+  let c = Color(color).rotate(180).rgb()
+  
+  let { r, g, b, a } = c.object()
+  console.log({ r, g, b, a })
+
+  for (let y = 0; y < brushHeight; y++) {
+    for (let x = 0; x < brushWidth; x++) {
+      const rN = (y * brushWidth + x) * 4
+      const gN = rN + 1
+      const bN = rN + 2
+      const aN = rN + 3
+
+      const dx = x - radius
+      const dy = y - radius
+      const d = Math.sqrt(dy * dy + dx * dx)
+      const val = 1 - d / radius
+
+      brush[rN] = 255 - r * val
+      brush[gN] = 255 - g * val
+      brush[bN] = 255 - b * val
+      brush[aN] = 255
+    }
+  }
+  const minX = Math.max(0, Math.min(Math.floor(from.x), Math.floor(to.x)) - radius)
+  const maxX = Math.min(width, Math.max(Math.floor(from.x), Math.floor(to.x)) + radius)
+  const minY = Math.max(0, Math.min(Math.floor(from.y), Math.floor(to.y)) - radius)
+  const maxY = Math.min(height, Math.max(Math.floor(from.y), Math.floor(to.y)) + radius)
+
+  const dx = from.x - to.x
+  const dy = from.y - to.y
+  const d = Math.sqrt(dy * dy + dx * dx)
+
+  for (let i = 0; i < d; i++) {
+    const x = Math.floor(to.x + i / d * dx)
+    const y = Math.floor(to.y + i / d * dy)
+    copyBrush(pix, width, height, brush, brushWidth, brushHeight, x, y)
+  }
+}
+
+function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush: Uint8ClampedArray, brushWidth: number, brushHeight: number, x: number, y: number) {
+  for (let bY = 0; bY < brushHeight; bY++) {
+    for (let bX = 0; bX < brushWidth; bX++) {
+      const rN = (bY * brushWidth + bX) * 4
+      const gN = rN + 1
+      const bN = rN + 2
+      const aN = rN + 3
+
+      const orN = (width * (y + bY - brushHeight / 2) + x + bX - brushWidth / 2) * 4
+      const ogN = orN + 1
+      const obN = orN + 2
+      const oaN = orN + 3
+
+      pix[orN] = Math.min(pix[orN], brush[rN])
+      pix[ogN] = Math.min(pix[ogN], brush[gN])
+      pix[obN] = Math.min(pix[obN], brush[bN])
+      pix[oaN] = 255
+    }
+  }
+}
+
+function sprayLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: string) {
   const c = Color(color)
   let { r, g, b, a } = c.object()
   const dx = to.x - from.x
