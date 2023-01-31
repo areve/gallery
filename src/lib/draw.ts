@@ -37,37 +37,39 @@ export async function drawPencil(context: CanvasRenderingContext2D, x: number, y
   context.putImageData(imageData, 0, 0)
 }
 
+// TODO this method of creating brush once works but is really messy
+let brush: Uint8ClampedArray | null = null;
+
 interface Coord { x: number, y: number }
 
 function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: string, force: number) {
 
   const brushWidth = radius * 2
   const brushHeight = brushWidth
-  const brush: Uint8ClampedArray = new Uint8ClampedArray(brushWidth * brushHeight * 4);
+  if (!brush) {
+
+    brush = new Uint8ClampedArray(brushWidth * brushHeight * 4);
 
 
-  for (let y = 0; y < brushHeight; y++) {
-    for (let x = 0; x < brushWidth; x++) {
-      const rN = (y * brushWidth + x) * 4
-      const gN = rN + 1
-      const bN = rN + 2
-      const aN = rN + 3
+    for (let y = 0; y < brushHeight; y++) {
+      for (let x = 0; x < brushWidth; x++) {
+        const rN = (y * brushWidth + x) * 4
+        const gN = rN + 1
+        const bN = rN + 2
+        const aN = rN + 3
 
-      const dx = x - radius
-      const dy = y - radius
-      const d = Math.sqrt(dy * dy + dx * dx)
-      const val = 1 - d / radius
-      const strength = force * force
-      brush[rN] = val * 255 * strength
-      brush[gN] = val * 255 * strength
-      brush[bN] = val * 255 * strength
-      brush[aN] = val * 255 * strength
+        const dx = x - radius
+        const dy = y - radius
+        const d = Math.sqrt(dy * dy + dx * dx)
+        const val = 1 - d / radius
+        brush[rN] = val * 255
+        brush[gN] = val * 255
+        brush[bN] = val * 255
+        brush[aN] = val * 255
+      }
     }
   }
-  const minX = Math.max(0, Math.min(Math.floor(from.x), Math.floor(to.x)) - radius)
-  const maxX = Math.min(width, Math.max(Math.floor(from.x), Math.floor(to.x)) + radius)
-  const minY = Math.max(0, Math.min(Math.floor(from.y), Math.floor(to.y)) - radius)
-  const maxY = Math.min(height, Math.max(Math.floor(from.y), Math.floor(to.y)) + radius)
+
 
   const dx = from.x - to.x
   const dy = from.y - to.y
@@ -76,11 +78,11 @@ function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from:
   for (let i = 0; i < d; i++) {
     const x = Math.floor(to.x + i / d * dx)
     const y = Math.floor(to.y + i / d * dy)
-    copyBrush(pix, width, height, brush, brushWidth, brushHeight, x, y, color)
+    copyBrush(pix, width, height, brush, brushWidth, brushHeight, x, y, color, force)
   }
 }
 
-function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush: Uint8ClampedArray, brushWidth: number, brushHeight: number, x: number, y: number, color: string) {
+function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush: Uint8ClampedArray, brushWidth: number, brushHeight: number, x: number, y: number, color: string, force: number) {
   let c = Color(color)
   let { r, g, b, a } = c.object()
 
@@ -96,13 +98,14 @@ function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush:
       const obN = orN + 2
       const oaN = orN + 3
 
-      pix[orN] = mix(pix[orN], r, brush[aN])
-      pix[ogN] = mix(pix[ogN], g, brush[aN])
-      pix[obN] = mix(pix[obN], b, brush[aN])
+      pix[orN] = mix(pix[orN], r, brush[aN] * force * force)
+      pix[ogN] = mix(pix[ogN], g, brush[aN] * force * force)
+      pix[obN] = mix(pix[obN], b, brush[aN] * force * force)
       pix[oaN] = 255
     }
   }
 }
+
 function mix(a: number, b: number, n: number) {
   //  return a * brush / 255 + b * (255 - brush) / 255
   // return 255 / 2
