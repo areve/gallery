@@ -23,7 +23,7 @@ export async function scaleImage(context: CanvasRenderingContext2D, by: number) 
     clone.canvas.height * by)
 }
 
-export async function drawPencil(context: CanvasRenderingContext2D, x: number, y: number, radius: number, color: string, from: { x: number, y: number } | null) {
+export async function drawPencil(context: CanvasRenderingContext2D, x: number, y: number, radius: number, color: string, from: { x: number, y: number } | null, force: number) {
   if (!from) return
 
   const w = context.canvas.width
@@ -31,7 +31,7 @@ export async function drawPencil(context: CanvasRenderingContext2D, x: number, y
   const imageData = context.getImageData(0, 0, w, h)
   const pix = imageData.data;
 
-  brushLine1(pix, w, h, from, { x, y }, radius, color)
+  brushLine1(pix, w, h, from, { x, y }, radius, color, force)
   // sprayLine1(pix, w, h, from, { x, y }, radius, color)
   // TODO this is a mega inefficient way of painting a blurry line, but kind of works
   context.putImageData(imageData, 0, 0)
@@ -39,7 +39,7 @@ export async function drawPencil(context: CanvasRenderingContext2D, x: number, y
 
 interface Coord { x: number, y: number }
 
-function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: string) {
+function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: string, force: number) {
 
   const brushWidth = radius * 2
   const brushHeight = brushWidth
@@ -56,12 +56,12 @@ function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from:
       const dx = x - radius
       const dy = y - radius
       const d = Math.sqrt(dy * dy + dx * dx)
-      const val = d / radius
-
-      brush[rN] = val * 255
-      brush[gN] = val * 255
-      brush[bN] = val * 255
-      brush[aN] = val * 255
+      const val = 1 - d / radius
+      const strength = force * force
+      brush[rN] = val * 255 * strength
+      brush[gN] = val * 255 * strength
+      brush[bN] = val * 255 * strength
+      brush[aN] = val * 255 * strength
     }
   }
   const minX = Math.max(0, Math.min(Math.floor(from.x), Math.floor(to.x)) - radius)
@@ -106,7 +106,7 @@ function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush:
 function mix(a: number, b: number, n: number) {
   //  return a * brush / 255 + b * (255 - brush) / 255
   // return 255 / 2
-  return n / 255 * a + (255 - n) / 255 * b
+  return (65025 - n * n) / 65025 * a + n * n / 65025 * b
 }
 
 function sprayLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: string) {

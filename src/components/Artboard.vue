@@ -111,7 +111,10 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   pointerEvents.forEach(pointerEvent => {
     pointerEvent.sourceEvent.preventDefault()
   })
-  const { x, y } = pointerEvents[0]
+  // the following line rejects palm presses on my laptop and responds to my pen only, may not work on all devices
+  const pointerEvent = pointerEvents.find(x => x.radiusX === 0.5)
+  if (!pointerEvent) return
+  const { x, y, force, radiusX } = pointerEvent 
 
   const dx = (x - dragOrigin.value.x) / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
   const dy = (y - dragOrigin.value.y) / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
@@ -129,10 +132,12 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx
     artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy
   } else if (toolSelected.value === 'pencil') {
+    if (radiusX != 0.5) return
     const artworkX = x / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const artworkY = y / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
-    const radius = 25
-    drawPencil(artboardService.artwork.value.context, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint)
+    const radius = 5
+    
+    drawPencil(artboardService.artwork.value.context, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint, force ?? 1)
     pencilLastPoint = { x: artworkX, y: artworkY }
   }
 }
