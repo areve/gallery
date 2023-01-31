@@ -56,26 +56,47 @@ watchSyncEffect(() => {
   pencilLastPoint = null
 })
 
-function normalizeTouch(event: TouchEvent | MouseEvent) {
-  console.log((event as TouchEvent).touches[0].radiusX, (event as TouchEvent).touches[0])
-  event.preventDefault()
-  if ((event as MouseEvent).offsetX) {
-    return {
-      offsetX: (event as MouseEvent).offsetX,
-      offsetY: (event as MouseEvent).offsetY
-    }
-  }
-  const rect = (event.target as any).getBoundingClientRect()
-  const offsetX = ((event as TouchEvent).touches[0].clientX - window.pageXOffset - rect.left)
-  const offsetY = ((event as TouchEvent).touches[0].clientY - window.pageYOffset - rect.top)
-  return {
-    offsetX,
-    offsetY
-  }
+interface PointerEvent {
+  readonly offsetX: number;
+  readonly offsetY: number;
+  readonly index?: number;
+  readonly sourceEvent: TouchEvent | MouseEvent
+  readonly force?: number
+  readonly radiusX?: number
+  readonly radiusY?: number
 }
+function toPointerEvents(event: TouchEvent | MouseEvent) {
+  const pointerEvents: PointerEvent[] = []
+  if ((event as TouchEvent).touches) {
+    const touchEvent = event as TouchEvent
+    for (let i = 0; i < touchEvent.touches.length; i++) {
+      const touch = touchEvent.touches[i]
+      const rect = (touch.target as any).getBoundingClientRect()
+      pointerEvents.push(<PointerEvent>{
+        offsetX: touch.clientX - window.pageXOffset - rect.left,
+        offsetY: touch.clientY - window.pageYOffset - rect.top,
+        index: i,
+        sourceEvent: event,
+        force: touch.force,
+        radiusX: touch.radiusX,
+        radiusY: touch.radiusY,
+      })
+    }
+  } else {
+    const mouseEvent: MouseEvent = event as MouseEvent
+    pointerEvents.push(<PointerEvent>{
+      offsetX: mouseEvent.offsetX,
+      offsetY: mouseEvent.offsetY,
+      index: 0,
+      sourceEvent: event
+    })
+  }
+  return pointerEvents
+}
+
 function mouseDown(event: MouseEvent | TouchEvent) {
-  const x = normalizeTouch(event).offsetX
-  const y = normalizeTouch(event).offsetY
+  const x = toPointerEvents(event)[0].offsetX
+  const y = toPointerEvents(event)[0].offsetY
 
   dragOrigin.value = {
     x,
@@ -87,9 +108,8 @@ function mouseDown(event: MouseEvent | TouchEvent) {
 
 function mouseMove(event: MouseEvent | TouchEvent) {
   if (!dragOrigin.value) return
-  const x1 = normalizeTouch(event).offsetX
-  const y1 = normalizeTouch(event).offsetY
-
+  const x1 = toPointerEvents(event)[0].offsetX
+  const y1 = toPointerEvents(event)[0].offsetY
 
   const dx = (x1 - dragOrigin.value.x) / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
   const dy = (y1 - dragOrigin.value.y) / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
@@ -124,7 +144,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   display: flex;
   flex-direction: row;
   background-color: black;
-  
+
 }
 
 .artboard-wrap {
@@ -168,5 +188,4 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   width: 100%;
   height: 100%;
 }
-
 </style>
