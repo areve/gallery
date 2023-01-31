@@ -112,7 +112,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     pointerEvent.sourceEvent.preventDefault()
   })
   // the following line rejects palm presses on my laptop and responds to my pen only, may not work on all devices
-  const pointerEvent = pointerEvents.find(x => x.radiusX === 0.5)
+  const pointerEvent = pointerEvents.find(x => x.radiusX === 0.5 || x.radiusX === undefined)
   if (!pointerEvent) return
   const { x, y, force, radiusX } = pointerEvent 
 
@@ -132,7 +132,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx
     artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy
   } else if (toolSelected.value === 'pencil') {
-    if (radiusX != 0.5) return
+    if (radiusX != 0.5 && radiusX !== undefined) return
     const artworkX = x / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const artworkY = y / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
     const radius = 30 // needs to be a integer, I like 3 - 30 is good for debugging colour mixing

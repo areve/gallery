@@ -98,18 +98,45 @@ function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush:
       const obN = orN + 2
       const oaN = orN + 3
 
-      pix[orN] = mix(pix[orN], r, brush[aN] * force * force)
-      pix[ogN] = mix(pix[ogN], g, brush[aN] * force * force)
-      pix[obN] = mix(pix[obN], b, brush[aN] * force * force)
+      const [oR, oG, oB] = mixv2([pix[orN], pix[ogN], pix[obN]], [r, g, b], brush[aN] * force * force)
+      pix[orN] = oR 
+      pix[ogN] = oG 
+      pix[obN] = oB 
       pix[oaN] = 255
     }
   }
 }
 
 function mix(a: number, b: number, n: number) {
-  //  return a * brush / 255 + b * (255 - brush) / 255
-  // return 255 / 2
   return (65025 - n * n) / 65025 * a + n * n / 65025 * b
+}
+
+// was really a little slow and only helped blue mix yellow to green a bit, a bit weird
+// function mixv2(a: [number, number, number], b: [number, number, number], n: number) {
+//   const aRyb = rgb2ryb(a)
+//   const bRyb = rgb2ryb(b)
+//   return ryb2rgb([
+//     mix(aRyb[0], bRyb[0], n),
+//     mix(aRyb[1], bRyb[1], n),
+//     mix(aRyb[2], bRyb[2], n),
+//   ])
+// }
+// was really slow and didn't help blue mix yellow to green
+// function mixv2(a: [number, number, number], b: [number, number, number], n: number) {
+//   const aLab = rgb2lab(a)
+//   const bLab = rgb2lab(b)
+//   return lab2rgb([
+//     mix(aLab[0], bLab[0], n),
+//     mix(aLab[1], bLab[1], n),
+//     mix(aLab[2], bLab[2], n),
+//   ])
+// }
+function mixv2(a: [number, number, number], b: [number, number, number], n: number) {
+  return [
+    mix(a[0], b[0], n),
+    mix(a[1], b[1], n),
+    mix(a[2], b[2], n),
+  ]
 }
 
 function sprayLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: string) {
