@@ -57,8 +57,8 @@ watchSyncEffect(() => {
 })
 
 interface PointerEvent {
-  readonly offsetX: number;
-  readonly offsetY: number;
+  readonly x: number;
+  readonly y: number;
   readonly index?: number;
   readonly sourceEvent: TouchEvent | MouseEvent
   readonly force?: number
@@ -73,8 +73,8 @@ function toPointerEvents(event: TouchEvent | MouseEvent) {
       const touch = touchEvent.touches[i]
       const rect = (touch.target as any).getBoundingClientRect()
       pointerEvents.push(<PointerEvent>{
-        offsetX: touch.clientX - window.pageXOffset - rect.left,
-        offsetY: touch.clientY - window.pageYOffset - rect.top,
+        x: touch.clientX - window.pageXOffset - rect.left,
+        y: touch.clientY - window.pageYOffset - rect.top,
         index: i,
         sourceEvent: event,
         force: touch.force,
@@ -85,8 +85,8 @@ function toPointerEvents(event: TouchEvent | MouseEvent) {
   } else {
     const mouseEvent: MouseEvent = event as MouseEvent
     pointerEvents.push(<PointerEvent>{
-      offsetX: mouseEvent.offsetX,
-      offsetY: mouseEvent.offsetY,
+      x: mouseEvent.offsetX,
+      y: mouseEvent.offsetY,
       index: 0,
       sourceEvent: event
     })
@@ -95,8 +95,7 @@ function toPointerEvents(event: TouchEvent | MouseEvent) {
 }
 
 function mouseDown(event: MouseEvent | TouchEvent) {
-  const x = toPointerEvents(event)[0].offsetX
-  const y = toPointerEvents(event)[0].offsetY
+  const { x, y } = toPointerEvents(event)[0]
 
   dragOrigin.value = {
     x,
@@ -108,18 +107,17 @@ function mouseDown(event: MouseEvent | TouchEvent) {
 
 function mouseMove(event: MouseEvent | TouchEvent) {
   if (!dragOrigin.value) return
-  const x1 = toPointerEvents(event)[0].offsetX
-  const y1 = toPointerEvents(event)[0].offsetY
+  const { x, y } = toPointerEvents(event)[0]
 
-  const dx = (x1 - dragOrigin.value.x) / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
-  const dy = (y1 - dragOrigin.value.y) / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
+  const dx = (x - dragOrigin.value.x) / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
+  const dy = (y - dragOrigin.value.y) / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
   const snapDx = Math.floor(dx / snapSize.value) * snapSize.value
   const snapDy = Math.floor(dy / snapSize.value) * snapSize.value
 
   if (toolSelected.value === 'eraser') {
-    const x = x1 / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
-    const y = y1 / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
-    clearCircle(artboardService.artwork.value.context, x, y, eraserSize.value / 2)
+    const artworkX = x / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
+    const artworkY = y / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
+    clearCircle(artboardService.artwork.value.context, artworkX, artworkY, eraserSize.value / 2)
   } else if (toolSelected.value === 'drag') {
     artboardService.artwork.value.context.clearRect(0, 0, artboardService.artwork.value.bounds.width, artboardService.artwork.value.bounds.height)
     artboardService.artwork.value.context.putImageData(dragOrigin.value.data, snapDx, snapDy)
@@ -127,11 +125,11 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx
     artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy
   } else if (toolSelected.value === 'pencil') {
-    const x = x1 / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
-    const y = y1 / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
+    const artworkX = x / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
+    const artworkY = y / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
     const radius = 5
-    drawPencil(artboardService.artwork.value.context, x, y, radius, pencilColor.value, pencilLastPoint)
-    pencilLastPoint = { x, y }
+    drawPencil(artboardService.artwork.value.context, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint)
+    pencilLastPoint = { x: artworkX, y: artworkY }
   }
 }
 </script>
