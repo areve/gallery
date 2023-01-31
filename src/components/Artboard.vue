@@ -107,7 +107,11 @@ function mouseDown(event: MouseEvent | TouchEvent) {
 
 function mouseMove(event: MouseEvent | TouchEvent) {
   if (!dragOrigin.value) return
-  const { x, y } = toPointerEvents(event)[0]
+  const pointerEvents = toPointerEvents(event)
+  pointerEvents.forEach(pointerEvent => {
+    pointerEvent.sourceEvent.preventDefault()
+  })
+  const { x, y } = pointerEvents[0]
 
   const dx = (x - dragOrigin.value.x) / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
   const dy = (y - dragOrigin.value.y) / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
