@@ -1,5 +1,6 @@
 import { cloneContext } from "./canvas";
 import { hsv2rgb, rgb2hsv, rgb2ryb, ryb2rgb, rgb2ryb_found } from "./color-convert";
+import { ryb2rgb_magic } from "./ryb";
 
 
 export function rgb2rybEffect(context: CanvasRenderingContext2D) {
@@ -46,7 +47,7 @@ export function ryb2rgbEffect(context: CanvasRenderingContext2D) {
 
     const last = w * h * 4
     for (let i = 0; i < last; i += 4) {
-        const [r, g, b] = ryb2rgb([pix[i], pix[i + 1], pix[i + 2]])
+        const [r, g, b] = ryb2rgb_magic([pix[i], pix[i + 1], pix[i + 2]])
         pix[i] = r
         pix[i + 1] = g
         pix[i + 2] = b

@@ -35,32 +35,38 @@ export async function drawPencil(context: CanvasRenderingContext2D, x: number, y
   const imageData = context.getImageData(0, 0, w, h)
   const pix = imageData.data;
 
-  // TODO to paint on RYB a permanent hidden RYB layer is needed, it's too slow to convert every time 
-  // (function () {
-  //   const last = w * h * 4
-  //   for (let i = 0; i < last; i += 4) {
-  //     const [r, g, b] = rgb2ryb_found([pix[i], pix[i + 1], pix[i + 2]])
-  //     pix[i] = r
-  //     pix[i + 1] = g
-  //     pix[i + 2] = b
-  //     pix[i + 3] = 255
-  //   }
-  // })();
 
-  brushLine1(pix, w, h, from, { x, y }, radius, color, force);
+  // TODO to paint on RYB a permanent hidden RYB layer is needed, it's too slow to convert every time 
+  (function () {
+    const last = w * h * 4
+    for (let i = 0; i < last; i += 4) {
+      const [r, g, b] = rgb2ryb_found([pix[i], pix[i + 1], pix[i + 2]])
+      pix[i] = r
+      pix[i + 1] = g
+      pix[i + 2] = b
+      pix[i + 3] = 255
+    }
+  })();
+
+  let c = Color(color)
+  let { r, g, b, a } = c.object()
+
+  const col = rgb2ryb_found([r, g, b]) as [number, number, number]
+
+  brushLine1(pix, w, h, from, { x, y }, radius, col, force);
   // sprayLine1(pix, w, h, from, { x, y }, radius, color)
 
-  
-  // (function () {
-  //   const last = w * h * 4
-  //   for (let i = 0; i < last; i += 4) {
-  //     const [r, g, b] = ryb2rgb_found([pix[i], pix[i + 1], pix[i + 2]])
-  //     pix[i] = r
-  //     pix[i + 1] = g
-  //     pix[i + 2] = b
-  //     pix[i + 3] = 255
-  //   }
-  // })();
+
+  (function () {
+    const last = w * h * 4
+    for (let i = 0; i < last; i += 4) {
+      const [r, g, b] = ryb2rgb_found([pix[i], pix[i + 1], pix[i + 2]])
+      pix[i] = r
+      pix[i + 1] = g
+      pix[i + 2] = b
+      pix[i + 3] = 255
+    }
+  })();
 
   context.putImageData(imageData, 0, 0)
   // ryb2rgbEffect(context)
@@ -71,7 +77,7 @@ let brush: Uint8ClampedArray | null = null;
 
 interface Coord { x: number, y: number }
 
-function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: string, force: number) {
+function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: [number, number, number], force: number) {
 
   const brushWidth = radius * 2
   const brushHeight = brushWidth
@@ -111,12 +117,10 @@ function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from:
   }
 }
 
-function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush: Uint8ClampedArray, brushWidth: number, brushHeight: number, x: number, y: number, color: string, force: number) {
-  let c = Color(color)
-  let { r: r1, g: g1, b: b1, a } = c.object()
+function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush: Uint8ClampedArray, brushWidth: number, brushHeight: number, x: number, y: number, color: [number, number, number], force: number) {
 
   // let [r, g, b] = rgb2ryb_found([r1, g1, b1])
-  let [r, g, b] = ([r1, g1, b1])
+  let [r, g, b] = color
 
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
@@ -161,18 +165,7 @@ function pMix(a: number, b: number, n: number) {
 //   ])
 // }
 // was really slow helped mix a bit yellow to green
-function mixv3(a: [number, number, number], b: [number, number, number], n: number) {
-  const aHsl = Color(a).hsl().color
-  const bHsl = Color(b).hsl().color
-  return Color.hsl(([
-    hMix(aHsl[0], bHsl[0], n),
-    pMix(aHsl[1], bHsl[1], n),
-    pMix(aHsl[2], bHsl[2], n),
-  ])).rgb().color
-}
 
-console.log(Color([255, 0, 0]).hsl().color)
-console.log(Color.hsl([0, 100, 50]).rgb().color)
 function mixv2(a: [number, number, number], b: [number, number, number], n: number) {
   return [
     mix(a[0], b[0], n),
