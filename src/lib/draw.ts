@@ -1,5 +1,7 @@
 import { cloneContext } from "./canvas";
 import Color from 'color';
+import { rgb2rgbEffect, rgb2rybEffect, ryb2rgbEffect } from "./effects-ryb2rgb";
+import { rgb2ryb, rgb2ryb_found, ryb2rgb, ryb2rgb_found } from "./color-convert";
 
 
 export function clearCircle(context: CanvasRenderingContext2D, x: number, y: number, radius: number) {
@@ -26,15 +28,41 @@ export async function scaleImage(context: CanvasRenderingContext2D, by: number) 
 export async function drawPencil(context: CanvasRenderingContext2D, x: number, y: number, radius: number, color: string, from: { x: number, y: number } | null, force: number) {
   if (!from) return
 
+  // rgb2rybEffect(context)
+
   const w = context.canvas.width
   const h = context.canvas.height
   const imageData = context.getImageData(0, 0, w, h)
   const pix = imageData.data;
 
-  brushLine1(pix, w, h, from, { x, y }, radius, color, force)
+  (function () {
+    const last = w * h * 4
+    for (let i = 0; i < last; i += 4) {
+      const [r, g, b] = rgb2ryb_found([pix[i], pix[i + 1], pix[i + 2]])
+      pix[i] = r
+      pix[i + 1] = g
+      pix[i + 2] = b
+      pix[i + 3] = 255
+    }
+  })();
+
+  brushLine1(pix, w, h, from, { x, y }, radius, color, force);
   // sprayLine1(pix, w, h, from, { x, y }, radius, color)
   // TODO this is a mega inefficient way of painting a blurry line, but kind of works
+
+  (function () {
+    const last = w * h * 4
+    for (let i = 0; i < last; i += 4) {
+      const [r, g, b] = ryb2rgb_found([pix[i], pix[i + 1], pix[i + 2]])
+      pix[i] = r
+      pix[i + 1] = g
+      pix[i + 2] = b
+      pix[i + 3] = 255
+    }
+  })();
+
   context.putImageData(imageData, 0, 0)
+  // ryb2rgbEffect(context)
 }
 
 // TODO this method of creating brush once works but is really messy
@@ -84,7 +112,9 @@ function brushLine1(pix: Uint8ClampedArray, width: number, height: number, from:
 
 function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush: Uint8ClampedArray, brushWidth: number, brushHeight: number, x: number, y: number, color: string, force: number) {
   let c = Color(color)
-  let { r, g, b, a } = c.object()
+  let { r: r1, g: g1, b: b1, a } = c.object()
+
+  let [r, g, b] = rgb2ryb_found([r1, g1, b1])
 
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
@@ -99,9 +129,9 @@ function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush:
       const oaN = orN + 3
 
       const [oR, oG, oB] = mixv2([pix[orN], pix[ogN], pix[obN]], [r, g, b], brush[aN] * force * force)
-      pix[orN] = oR 
-      pix[ogN] = oG 
-      pix[obN] = oB 
+      pix[orN] = oR
+      pix[ogN] = oG
+      pix[obN] = oB
       pix[oaN] = 255
     }
   }
@@ -139,7 +169,7 @@ function mixv3(a: [number, number, number], b: [number, number, number], n: numb
   ])).rgb().color
 }
 
-console.log(Color([255,0, 0]).hsl().color)
+console.log(Color([255, 0, 0]).hsl().color)
 console.log(Color.hsl([0, 100, 50]).rgb().color)
 function mixv2(a: [number, number, number], b: [number, number, number], n: number) {
   return [

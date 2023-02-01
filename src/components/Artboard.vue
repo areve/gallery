@@ -135,7 +135,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     if (radiusX != 0.5 && radiusX !== undefined) return
     const artworkX = x / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const artworkY = y / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
-    const radius = 3 // needs to be a integer, I like 3 - 30 is good for debugging colour mixing
+    const radius = 30 // needs to be a integer, I like 3 - 30 is good for debugging colour mixing
     
     drawPencil(artboardService.artwork.value.context, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint, force ?? 1)
     pencilLastPoint = { x: artworkX, y: artworkY }
