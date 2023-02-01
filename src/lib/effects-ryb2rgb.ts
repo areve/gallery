@@ -201,8 +201,8 @@ magic = [
 
 // http://www.deathbysoftware.com/colors/index.html
 function cubicInt(t: number, A: number, B: number) {
-    //return A + t * (B - A);
-    return A + (t * t * (3 - 2 * t)) * (B - A);
+    return A + t * (B - A);
+    // return A + (t * t * (3 - 2 * t)) * (B - A);
 
 }
 
@@ -289,102 +289,76 @@ function getB2(iR: number, iG: number, iB: number) {
 }
 
 
-function ryb2rgbZZ([iRed, iYellow, iBlue]: [number, number, number]) {
-    //-----------------------------------------------------------------------------------------
+function ryb2rgbZZ([red, yellow, blue]: [number, number, number]) {
+    const white = Math.min(red, yellow, blue);
 
-    // Remove the whiteness from the color.
-    var iWhite = Math.min(iRed, iYellow, iBlue);
+    red -= white;
+    yellow -= white;
+    blue -= white;
 
-    iRed -= iWhite;
-    iYellow -= iWhite;
-    iBlue -= iWhite;
+    const maxYellow = Math.max(red, yellow, blue);
+    let green = Math.min(yellow, blue);
 
-    var iMaxYellow = Math.max(iRed, iYellow, iBlue);
+    yellow -= green;
+    blue -= green;
 
-    // Get the green out of the yellow and blue
-    var iGreen = Math.min(iYellow, iBlue);
-
-    iYellow -= iGreen;
-    iBlue -= iGreen;
-
-    if (iBlue > 0 && iGreen > 0) {
-        iBlue *= 2.0;
-        iGreen *= 2.0;
+    if (blue > 0 && green > 0) {
+        blue *= 2.0;
+        green *= 2.0;
     }
 
-    // Redistribute the remaining yellow.
-    iRed += iYellow;
-    iGreen += iYellow;
+    red += yellow;
+    green += yellow;
 
-    // Normalize to values.
-    var iMaxGreen = Math.max(iRed, iGreen, iBlue);
+    const maxGreen = Math.max(red, green, blue);
 
-    if (iMaxGreen > 0) {
-        var iN = iMaxYellow / iMaxGreen;
-
-        iRed *= iN;
-        iGreen *= iN;
-        iBlue *= iN;
+    if (maxGreen > 0) {
+        const n = maxYellow / maxGreen;
+        red *= n;
+        green *= n;
+        blue *= n;
     }
 
-    // Add the white back in.
-    iRed += iWhite;
-    iGreen += iWhite;
-    iBlue += iWhite;
+    red += white;
+    green += white;
+    blue += white;
 
-    // Save the RGB
-    return [Math.floor(iRed), Math.floor(iGreen), Math.floor(iBlue)];
+    return [Math.floor(red), Math.floor(green), Math.floor(blue)];
 }
 
-function rgb2rybZZ([iRed, iGreen, iBlue]: [number, number, number]) {
-    //-----------------------------------------------------------------------------------------
-    // Validate the arguments.
+function rgb2rybZZ([red, green, blue]: [number, number, number]) {
+    const white = Math.min(red, green, blue);
 
-    //-----------------------------------------------------------------------------------------
-    // Save the RGB
+    red -= white;
+    green -= white;
+    blue -= white;
 
-    // Remove the white from the color
-    var iWhite = Math.min(iRed, iGreen, iBlue);
+    const maxGreen = Math.max(red, green, blue);
+    let yellow = Math.min(red, green);
 
-    iRed -= iWhite;
-    iGreen -= iWhite;
-    iBlue -= iWhite;
+    red -= yellow;
+    green -= yellow;
 
-    var iMaxGreen = Math.max(iRed, iGreen, iBlue);
-
-    // Get the yellow out of the red+green
-
-    var iYellow = Math.min(iRed, iGreen);
-
-    iRed -= iYellow;
-    iGreen -= iYellow;
-
-    // If this unfortunate conversion combines blue and green, then cut each in half to
-    // preserve the value's maximum range.
-    if (iBlue > 0 && iGreen > 0) {
-        iBlue /= 2;
-        iGreen /= 2;
+    if (blue > 0 && green > 0) {
+        blue /= 2;
+        green /= 2;
     }
 
-    // Redistribute the remaining green.
-    iYellow += iGreen;
-    iBlue += iGreen;
+    yellow += green;
+    blue += green;
 
-    // Normalize to values.
-    var iMaxYellow = Math.max(iRed, iYellow, iBlue);
+    const maxYellow = Math.max(red, yellow, blue);
 
-    if (iMaxYellow > 0) {
-        var iN = iMaxGreen / iMaxYellow;
-
-        iRed *= iN;
-        iYellow *= iN;
-        iBlue *= iN;
+    if (maxYellow > 0) {
+        const n = maxGreen / maxYellow;
+        red *= n;
+        yellow *= n;
+        blue *= n;
     }
 
-    // Add the white back in.
-    iRed += iWhite;
-    iYellow += iWhite;
-    iBlue += iWhite;
+    red += white;
+    yellow += white;
+    blue += white;
 
-    return [Math.floor(iRed), Math.floor(iYellow), Math.floor(iBlue)];
+    return [Math.floor(red), Math.floor(yellow), Math.floor(blue)];
 }
