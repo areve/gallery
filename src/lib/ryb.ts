@@ -82,10 +82,20 @@ var NULL_MAGIC_COLORS = [
     [1, 1, 1], // white
 ];
 
-var MAGIC_COLORS = NULL_MAGIC_COLORS
+var ANOTHER_MAGIC_COLORS = [
+    [0, 0, 0], // black
+    [1, 1, 0], // green -> yellow
+    [1, 0, 0], // red
+    [1, 0.5, 0], // yellow -> orange
+    [0, 0, 0.8], // blue
+    [0, 0.8, 0], // cyan -> green
+    [0.5, 0, 0.5], // magenta
+    [1, 1, 1], // white
+];
+
+var MAGIC_COLORS = ANOTHER_MAGIC_COLORS
 type Magic = typeof MAGIC_COLORS
 
-// var ryb2rgb = (function () {
 // see http://threekings.tk/mirror/ryb_TR.pdf
 function cubicInt(t: number, A: number, B: number) {
     // var weight = t * t * (3 - 2 * t);
