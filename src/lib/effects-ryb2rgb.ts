@@ -1,5 +1,5 @@
 import { cloneContext } from "./canvas";
-import { hsv2rgb, rgb2hsv, rgb2ryb, ryb2rgb } from "./color-convert";
+import { hsv2rgb, rgb2hsv, rgb2ryb, ryb2rgb, rgb2ryb_found } from "./color-convert";
 
 
 export function rgb2rybEffect(context: CanvasRenderingContext2D) {

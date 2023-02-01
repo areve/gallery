@@ -39,6 +39,20 @@ export function hsv2rgb([h, s, v]: [degrees, fraction, byte]): [byte, byte, byte
 export  function rgb2ryb(rgb: [number, number, number]): [number, number, number] {
     let [h, s, v] = rgb2hsv(rgb)
 
+    if (h > 0 && h < 60) {
+        h = h * 2
+    } else if (h >= 60 && h < 120) {
+        h = h + 60
+    } else if (h >= 120 && h < 240) {
+        h = (h - 120) / 2 - 180
+    }
+    return hsv2rgb([h, s, v])
+}
+
+
+export function ryb2rgb(ryb: [number, number, number]): [number, number, number] {
+    let [h, s, v] = rgb2hsv(ryb)
+
     if (h >= 0 && h < 120) {
         h = h / 2
     } else if (h >= 120 && h < 180) {
@@ -47,25 +61,13 @@ export  function rgb2ryb(rgb: [number, number, number]): [number, number, number
         h = (h - 180) * 2 + 120
     }
 
-    return hsv2rgb([h, s, v])
-}
 
-
-export function ryb2rgb(ryb: [number, number, number]): [number, number, number] {
-    let [h, s, v] = rgb2hsv(ryb)
-
-    if (h > 0 && h < 60) {
-        h = h * 2
-    } else if (h >= 60 && h < 120) {
-        h = h + 60
-    } else if (h >= 120 && h < 240) {
-        h = (h - 120) / 2 - 180
-    }
 
     return hsv2rgb([h, s, v])
 }
 
 // These are faster than mine but the colours aren't quite as good (maybe)
+// http://www.deathbysoftware.com/colors/index.html
 export function rgb2ryb_found([red, green, blue]: [number, number, number]) {
     const white = Math.min(red, green, blue);
 

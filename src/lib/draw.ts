@@ -35,31 +35,32 @@ export async function drawPencil(context: CanvasRenderingContext2D, x: number, y
   const imageData = context.getImageData(0, 0, w, h)
   const pix = imageData.data;
 
-  (function () {
-    const last = w * h * 4
-    for (let i = 0; i < last; i += 4) {
-      const [r, g, b] = rgb2ryb_found([pix[i], pix[i + 1], pix[i + 2]])
-      pix[i] = r
-      pix[i + 1] = g
-      pix[i + 2] = b
-      pix[i + 3] = 255
-    }
-  })();
+  // TODO to paint on RYB a permanent hidden RYB layer is needed, it's too slow to convert every time 
+  // (function () {
+  //   const last = w * h * 4
+  //   for (let i = 0; i < last; i += 4) {
+  //     const [r, g, b] = rgb2ryb_found([pix[i], pix[i + 1], pix[i + 2]])
+  //     pix[i] = r
+  //     pix[i + 1] = g
+  //     pix[i + 2] = b
+  //     pix[i + 3] = 255
+  //   }
+  // })();
 
   brushLine1(pix, w, h, from, { x, y }, radius, color, force);
   // sprayLine1(pix, w, h, from, { x, y }, radius, color)
-  // TODO this is a mega inefficient way of painting a blurry line, but kind of works
 
-  (function () {
-    const last = w * h * 4
-    for (let i = 0; i < last; i += 4) {
-      const [r, g, b] = ryb2rgb_found([pix[i], pix[i + 1], pix[i + 2]])
-      pix[i] = r
-      pix[i + 1] = g
-      pix[i + 2] = b
-      pix[i + 3] = 255
-    }
-  })();
+  
+  // (function () {
+  //   const last = w * h * 4
+  //   for (let i = 0; i < last; i += 4) {
+  //     const [r, g, b] = ryb2rgb_found([pix[i], pix[i + 1], pix[i + 2]])
+  //     pix[i] = r
+  //     pix[i + 1] = g
+  //     pix[i + 2] = b
+  //     pix[i + 3] = 255
+  //   }
+  // })();
 
   context.putImageData(imageData, 0, 0)
   // ryb2rgbEffect(context)
@@ -114,7 +115,8 @@ function copyBrush(pix: Uint8ClampedArray, width: number, height: number, brush:
   let c = Color(color)
   let { r: r1, g: g1, b: b1, a } = c.object()
 
-  let [r, g, b] = rgb2ryb_found([r1, g1, b1])
+  // let [r, g, b] = rgb2ryb_found([r1, g1, b1])
+  let [r, g, b] = ([r1, g1, b1])
 
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
