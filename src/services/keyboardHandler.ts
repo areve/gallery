@@ -34,6 +34,11 @@ const keyPressConfigs: any[] = [
     action: () => applyEffect('ryb2rgb'),
   },
   {
+    key: "/",
+    modifiers: ["ctrlKey"],
+    action: () => applyEffect('rgb2rgb'),
+  },
+  {
     key: "g",
     modifiers: ["ctrlKey"],
     action: () => galleryPanelVisible.value = !galleryPanelVisible.value,
@@ -99,6 +104,7 @@ const keyCodes: { [key: string]: number } = {
   "z": 90,
   "<": 188,
   ">": 190,
+  "/": 191,
 }
 
 function keyUpBinds(keyConfigs: any[]) {

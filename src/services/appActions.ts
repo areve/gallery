@@ -11,7 +11,7 @@ export interface AppAction extends AppActionBase {
     action: AppActionType
 }
 
-export type EffectType = 'shotgun' | 'ryb2rgb' | 'rgb2ryb'
+export type EffectType = 'shotgun' | 'ryb2rgb' | 'rgb2ryb' | 'rgb2rgb'
 
 export interface ApplyEffect extends AppActionBase {
     type: EffectType
