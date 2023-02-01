@@ -13,6 +13,7 @@ export function rgb2rybEffect(context: CanvasRenderingContext2D) {
         pix[i] = r
         pix[i + 1] = g
         pix[i + 2] = b
+        pix[i + 3] = 255
     }
 
     context.putImageData(imageData, 0, 0)
@@ -31,6 +32,7 @@ export function ryb2rgbEffect(context: CanvasRenderingContext2D) {
         pix[i] = r
         pix[i + 1] = g
         pix[i + 2] = b
+        pix[i + 3] = 255
     }
 
     context.putImageData(imageData, 0, 0)
@@ -93,44 +95,44 @@ function rgb2ryb(color: [number, number, number]) {
     var R = color[0] / 255;
     var G = color[1] / 255;
     var B = color[2] / 255;
-    var R1 = getR1(R, G, B);
-    var Y1 = getY1(R, G, B);
-    var B1 = getB1(R, G, B);
+    var R1 = getR0(R, G, B);
+    var Y1 = getY0(R, G, B);
+    var B1 = getB0(R, G, B);
     var ret = [R1, Y1, B1];
     return ret;
 }
 
 
 
-function getR1(iR: number, iG: number, iB: number) {
+function getR0(iR: number, iG: number, iB: number) {
     // TODO red 
     var x0 = cubicInt(iB, 0.0, 0.0); // blueish
     var x1 = cubicInt(iB, 0.0, 0.0); // greenish
-    var x2 = cubicInt(iB, 1.0, 0.5); // redish
-    var x3 = cubicInt(iB, 0.5, 0.0); // yellowish
+    var x2 = cubicInt(iB, 1.0, 1.0); // redish - magentaish
+    var x3 = cubicInt(iB, 1.0, 2.0); // yellowish - whiteish (2)
     var y0 = cubicInt(iG, x0, x1);
     var y1 = cubicInt(iG, x2, x3);
     return Math.ceil(255 * cubicInt(iR, y0, y1));
 }
 
-function getY1(iR: number, iG: number, iB: number) {
+function getY0(iR: number, iG: number, iB: number) {
     // TODO yellow
     var x0 = cubicInt(iB, 0.0, 0.0); // blueish
-    var x1 = cubicInt(iB, 1.0, 0.5); // greenish
+    var x1 = cubicInt(iB, 1.0, 1.0); // greenish - cyanish
     var x2 = cubicInt(iB, 0.0, 0.0); // redish
-    var x3 = cubicInt(iB, 0.5, 0.0); // yellowish
+    var x3 = cubicInt(iB, 1.0, 2.0); // yellowish - whiteish
     var y0 = cubicInt(iG, x0, x1);
     var y1 = cubicInt(iG, x2, x3);
     return Math.ceil(255 * cubicInt(iR, y0, y1));
 }
 
-function getB1(iR: number, iG: number, iB: number) {
+function getB0(iR: number, iG: number, iB: number) {
     // TODO blue
     // var x0 = cubicInt(iB, 0.0, 0.0);
-    var x0 = cubicInt(iB, 0.0, 1.0); // blueish
-    var x1 = cubicInt(iB, 0.0, 0.5); // greenish
-    var x2 = cubicInt(iB, 0.0, 0.5); // redish
-    var x3 = cubicInt(iB, 0.0, 0.0); // yellowish
+    var x0 = cubicInt(iB, 0.0, 1.0); // blackish? - blueish
+    var x1 = cubicInt(iB, 0.0, 1.0); // greenish
+    var x2 = cubicInt(iB, 0.0, 1.0); // redish
+    var x3 = cubicInt(iB, 0.0, 2.0); // yellowish - whiteish (2)
     var y0 = cubicInt(iG, x0, x1);
     var y1 = cubicInt(iG, x2, x3);
     return Math.ceil(255 * cubicInt(iR, y0, y1));
