@@ -43,6 +43,8 @@
             <input type="checkbox" id="image-effects-menu">
             <ul class="sub-menu">
               <li class="menu-item" @click="applyEffect('shotgun')" role="button">Shotgun effect</li>
+              <li class="menu-item" @click="applyEffect('ryb2rgb')" role="button">RYB > RGB</li>
+              <li class="menu-item" @click="applyEffect('rgb2ryb')" role="button">RGB > RYB</li>
             </ul>
           </li>
         </ul>

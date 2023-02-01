@@ -36,6 +36,7 @@ import PencilPanel from '@/components/PencilPanel.vue'
 import { watch } from 'vue';
 import { mostRecentPrompt } from '@/lib/utils';
 import { shotgunEffect } from '@/lib/effects';
+import { rgb2rybEffect, ryb2rgbEffect } from '@/lib/effects-ryb2rgb';
 
 import { onApplyEffect, onAction } from '@/services/appActions'
 import { useKeyboardHandler } from '@/services/keyboardHandler';
@@ -70,6 +71,8 @@ watch(onAction, action => {
 
 watch(onApplyEffect, action => {
   if (action.type === 'shotgun') shotgunEffect(artboardService.artwork.value.context)
+  if (action.type === 'ryb2rgb') ryb2rgbEffect(artboardService.artwork.value.context)
+  if (action.type === 'rgb2ryb') rgb2rybEffect(artboardService.artwork.value.context)
 })
 
 watch(selectedItem, artwork => artwork && galleryItemSelected(artwork))

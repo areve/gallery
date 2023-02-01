@@ -24,6 +24,16 @@ const keyPressConfigs: any[] = [
     action: () => applyEffect('shotgun'),
   },
   {
+    key: ">",
+    modifiers: ["ctrlKey"],
+    action: () => applyEffect('rgb2ryb'),
+  },
+  {
+    key: "<",
+    modifiers: ["ctrlKey"],
+    action: () => applyEffect('ryb2rgb'),
+  },
+  {
     key: "g",
     modifiers: ["ctrlKey"],
     action: () => galleryPanelVisible.value = !galleryPanelVisible.value,
@@ -87,6 +97,8 @@ const keyCodes: { [key: string]: number } = {
   "x": 88,
   "y": 89,
   "z": 90,
+  "<": 188,
+  ">": 190,
 }
 
 function keyUpBinds(keyConfigs: any[]) {

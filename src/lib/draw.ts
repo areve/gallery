@@ -111,7 +111,14 @@ function mix(a: number, b: number, n: number) {
   return (65025 - n * n) / 65025 * a + n * n / 65025 * b
 }
 
-// was really a little slow and only helped blue mix yellow to green a bit, a bit weird
+function hMix(a: number, b: number, n: number) {
+  return ((65025 - n * n) / 65025 * a + n * n / 65025 * b + 360) % 360
+}
+function pMix(a: number, b: number, n: number) {
+  return (65025 - n * n) / 65025 * a + n * n / 65025 * b
+}
+
+// I fouund a web script that was a little slow and only helped blue mix yellow to green a bit, a bit weird
 // function mixv2(a: [number, number, number], b: [number, number, number], n: number) {
 //   const aRyb = rgb2ryb(a)
 //   const bRyb = rgb2ryb(b)
@@ -121,16 +128,19 @@ function mix(a: number, b: number, n: number) {
 //     mix(aRyb[2], bRyb[2], n),
 //   ])
 // }
-// was really slow and didn't help blue mix yellow to green
-// function mixv2(a: [number, number, number], b: [number, number, number], n: number) {
-//   const aLab = rgb2lab(a)
-//   const bLab = rgb2lab(b)
-//   return lab2rgb([
-//     mix(aLab[0], bLab[0], n),
-//     mix(aLab[1], bLab[1], n),
-//     mix(aLab[2], bLab[2], n),
-//   ])
-// }
+// was really slow helped mix a bit yellow to green
+function mixv3(a: [number, number, number], b: [number, number, number], n: number) {
+  const aHsl = Color(a).hsl().color
+  const bHsl = Color(b).hsl().color
+  return Color.hsl(([
+    hMix(aHsl[0], bHsl[0], n),
+    pMix(aHsl[1], bHsl[1], n),
+    pMix(aHsl[2], bHsl[2], n),
+  ])).rgb().color
+}
+
+console.log(Color([255,0, 0]).hsl().color)
+console.log(Color.hsl([0, 100, 50]).rgb().color)
 function mixv2(a: [number, number, number], b: [number, number, number], n: number) {
   return [
     mix(a[0], b[0], n),
@@ -138,6 +148,7 @@ function mixv2(a: [number, number, number], b: [number, number, number], n: numb
     mix(a[2], b[2], n),
   ]
 }
+
 
 function sprayLine1(pix: Uint8ClampedArray, width: number, height: number, from: Coord, to: Coord, radius: number, color: string) {
   const c = Color(color)
