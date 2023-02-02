@@ -47,7 +47,7 @@ export function ryb2rgbEffect(context: CanvasRenderingContext2D) {
 
     const last = w * h * 4
     for (let i = 0; i < last; i += 4) {
-        const [r, g, b] = ryb2rgb_magic([pix[i], pix[i + 1], pix[i + 2]])
+        const [r, g, b] = ryb2rgb([pix[i], pix[i + 1], pix[i + 2]])
         pix[i] = r
         pix[i + 1] = g
         pix[i + 2] = b

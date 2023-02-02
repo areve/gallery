@@ -36,37 +36,38 @@ export async function drawPencil(context: CanvasRenderingContext2D, x: number, y
   const pix = imageData.data;
 
 
-  // TODO to paint on RYB a permanent hidden RYB layer is needed, it's too slow to convert every time 
-  (function () {
-    const last = w * h * 4
-    for (let i = 0; i < last; i += 4) {
-      const [r, g, b] = rgb2ryb_found([pix[i], pix[i + 1], pix[i + 2]])
-      pix[i] = r
-      pix[i + 1] = g
-      pix[i + 2] = b
-      pix[i + 3] = 255
-    }
-  })();
+  // TODO to paint on RYB a permanent hidden RYB layer is needed, it's too slow to convert every time, and its weird anyway
+  // (function () {
+  //   const last = w * h * 4
+  //   for (let i = 0; i < last; i += 4) {
+  //     const [r, g, b] = rgb2ryb([pix[i], pix[i + 1], pix[i + 2]])
+  //     pix[i] = r
+  //     pix[i + 1] = g
+  //     pix[i + 2] = b
+  //     pix[i + 3] = 255
+  //   }
+  // })();
 
   let c = Color(color)
   let { r, g, b, a } = c.object()
 
-  const col = rgb2ryb_found([r, g, b]) as [number, number, number]
+  // const col = rgb2ryb([r, g, b]) as [number, number, number]
+  const col = [r, g, b] as [number, number, number]
 
   brushLine1(pix, w, h, from, { x, y }, radius, col, force);
   // sprayLine1(pix, w, h, from, { x, y }, radius, color)
 
 
-  (function () {
-    const last = w * h * 4
-    for (let i = 0; i < last; i += 4) {
-      const [r, g, b] = ryb2rgb_found([pix[i], pix[i + 1], pix[i + 2]])
-      pix[i] = r
-      pix[i + 1] = g
-      pix[i + 2] = b
-      pix[i + 3] = 255
-    }
-  })();
+  // (function () {
+  //   const last = w * h * 4
+  //   for (let i = 0; i < last; i += 4) {
+  //     const [r, g, b] = ryb2rgb([pix[i], pix[i + 1], pix[i + 2]])
+  //     pix[i] = r
+  //     pix[i + 1] = g
+  //     pix[i + 2] = b
+  //     pix[i + 3] = 255
+  //   }
+  // })();
 
   context.putImageData(imageData, 0, 0)
   // ryb2rgbEffect(context)
