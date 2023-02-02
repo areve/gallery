@@ -93,7 +93,20 @@ var ANOTHER_MAGIC_COLORS = [
     [1, 1, 1], // white
 ];
 
-var MAGIC_COLORS = ANOTHER_MAGIC_COLORS
+var ANOTHER_MAGIC_COLORS2 = [
+    [0, 0, 0], // black
+    [1, 1, 0], // green
+    [1.2, 0, 0], // red
+    [1.4, 0.7, 0], // yellow
+    [0, 0, 1], // blue
+    [0, 0.7, 0], // cyan
+    [1.2, 0, 1.2], // magenta
+    [1.2, 1.2, 1.2], // white
+];
+
+// https://github.com/ProfJski/ArtColors has  fascinating colours
+
+var MAGIC_COLORS = MY_MAGIC_COLORS
 type Magic = typeof MAGIC_COLORS
 
 // see http://threekings.tk/mirror/ryb_TR.pdf
