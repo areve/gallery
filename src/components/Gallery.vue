@@ -1,58 +1,99 @@
 <template>
-  <div class="gallery-panel" :class="{
-    'gallery-tools-visible': true
-  }" :hidden="!galleryPanelVisible">
+  <div
+    class="gallery-panel"
+    :class="{
+      'gallery-tools-visible': true,
+    }"
+    :hidden="!galleryPanelVisible"
+  >
     <div class="tools">
-      <button class="icon-button" type="button" :disabled="!selectedItem" @click="deleteSelected()"><i class="fas fa-trash"></i> <span class="text">Delete</span></button>
-      <button class="icon-button" type="button" @click="artworkSettingsPanelsVisible = !artworkSettingsPanelsVisible"><i class="fa-solid fa-gear"></i> <span class="text">Settings</span></button>
+      <button
+        class="icon-button"
+        type="button"
+        :disabled="!selectedItem"
+        @click="deleteSelected()"
+      >
+        <i class="fas fa-trash"></i> <span class="text">Delete</span>
+      </button>
+      <button
+        class="icon-button"
+        type="button"
+        @click="artworkSettingsPanelsVisible = !artworkSettingsPanelsVisible"
+      >
+        <i class="fa-solid fa-gear"></i> <span class="text">Settings</span>
+      </button>
     </div>
     <ul class="gallery">
-      <li v-for="item in galleryItems" class="gallery-item" :class="{
-        'selected': selectedItem?.filename === item.filename
-      }">
-        <button v-if="item.status === 'waiting'" type="button" class="gallery-button loading">
+      <li
+        v-for="item in galleryItems"
+        class="gallery-item"
+        :class="{
+          selected: selectedItem?.filename === item.filename,
+        }"
+      >
+        <button
+          v-if="item.status === 'waiting'"
+          type="button"
+          class="gallery-button loading"
+        >
           <div class="spinner"></div>
           <div class="button-text">{{ mostRecentPrompt(item) }}</div>
         </button>
-        <button v-else-if="item.status === 'error'" @click="deleteGalleryItem(item)" type="button"
-          class="gallery-button error">
+        <button
+          v-else-if="item.status === 'error'"
+          @click="deleteGalleryItem(item)"
+          type="button"
+          class="gallery-button error"
+        >
           <div class="button-text">{{ mostRecentError(item) }}</div>
         </button>
-        <button v-else type="button" @click="selectItem(item)" class="gallery-button">
-          <img :src="(item as any).dataUrl || '/downloads/' + item.filename + '?' + item.modified.toISOString()" />
+        <button
+          v-else
+          type="button"
+          @click="selectItem(item)"
+          class="gallery-button"
+        >
+          <img
+            :src="(item as any).dataUrl || '/downloads/' + item.filename + '?' + item.modified.toISOString()"
+          />
         </button>
       </li>
     </ul>
   </div>
-
 </template>
 
-<script  lang="ts" setup>
-import { onMounted, ref } from 'vue';
-import { mostRecentError, mostRecentPrompt } from '@/lib/utils'
-import { deleteGalleryItem, galleryItems, loadGallery, selectedItem } from '@/services/galleryService';
-import type { Artwork } from '@/interfaces/Artwork';
-import { artworkSettingsPanelsVisible, galleryPanelVisible } from '@/services/editorAppState';
+<script lang="ts" setup>
+import { onMounted, ref } from "vue";
+import { mostRecentError, mostRecentPrompt } from "@/lib/utils";
+import {
+  deleteGalleryItem,
+  galleryItems,
+  loadGallery,
+  selectedItem,
+} from "@/services/galleryService";
+import type { Artwork } from "@/interfaces/Artwork";
+import {
+  artworkSettingsPanelsVisible,
+  galleryPanelVisible,
+} from "@/services/editorAppState";
 
 onMounted(async () => {
-  await loadGallery()
-})
+  await loadGallery();
+});
 
 async function deleteSelected() {
-  if (!selectedItem.value) return
-  await deleteGalleryItem(selectedItem.value)
-  selectedItem.value = null
+  if (!selectedItem.value) return;
+  await deleteGalleryItem(selectedItem.value);
+  selectedItem.value = null;
 }
-
 
 function selectItem(item: Artwork) {
   if (selectedItem.value === item) {
-    selectedItem.value = null
+    selectedItem.value = null;
   } else {
-    selectedItem.value = item
+    selectedItem.value = item;
   }
 }
-
 </script>
 
 <style scoped>
@@ -94,7 +135,6 @@ function selectItem(item: Artwork) {
 .gallery-tools-visible .gallery {
   margin-top: 3em;
 }
-
 
 .gallery {
   text-align: center;
@@ -148,8 +188,6 @@ function selectItem(item: Artwork) {
   max-height: 100%;
   max-width: 100%;
 }
-
-
 
 .tools {
   display: none;

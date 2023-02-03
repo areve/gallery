@@ -1,50 +1,138 @@
 <template>
   <nav id="menu" :hidden="!menuVisible">
-    <label for="toggle-menu" class="toggle-menu">Menu <span class="drop-icon">▾</span></label>
-    <input type="checkbox" id="toggle-menu">
+    <label for="toggle-menu" class="toggle-menu"
+      >Menu <span class="drop-icon">▾</span></label
+    >
+    <input type="checkbox" id="toggle-menu" />
     <ul class="main-menu">
-      <li class="menu-item">File
+      <li class="menu-item">
+        File
         <span class="drop-icon">▾</span>
-        <label title="Toggle Drop-down" class="drop-icon" for="file-menu">▾</label>
-        <input type="checkbox" id="file-menu">
+        <label title="Toggle Drop-down" class="drop-icon" for="file-menu"
+          >▾</label
+        >
+        <input type="checkbox" id="file-menu" />
         <ul class="sub-menu">
           <li class="menu-item" @click="action('save')" role="button">Save</li>
-          <li class="menu-item" @click="action('reset')" role="button">Reset</li>
-          <li class="menu-item" @click="action('show-settings')" role="button">Settings</li>
+          <li class="menu-item" @click="action('reset')" role="button">
+            Reset
+          </li>
+          <li class="menu-item" @click="action('show-settings')" role="button">
+            Settings
+          </li>
         </ul>
       </li>
-      <li class="menu-item">View
+      <li class="menu-item">
+        View
         <span class="drop-icon">▾</span>
-        <label title="Toggle Drop-down" class="drop-icon" for="view-menu">▾</label>
-        <input type="checkbox" id="view-menu">
+        <label title="Toggle Drop-down" class="drop-icon" for="view-menu"
+          >▾</label
+        >
+        <input type="checkbox" id="view-menu" />
         <ul class="sub-menu">
-          
-          
-          
-          <li class="menu-item" @click="galleryPanelVisible = !galleryPanelVisible" role="button">Gallery</li>
-          <li class="menu-item" @click="openAiPanelsVisible = !openAiPanelsVisible" role="button">OpenAI</li>
-          <li class="menu-item" @click="artworkSettingsPanelsVisible = !artworkSettingsPanelsVisible" role="button">Artwork Settings</li>
-          <li class="menu-item" @click="scalePanelsVisible = !scalePanelsVisible" role="button">Scale</li>
-          <li class="menu-item" @click="statusBarVisible = !statusBarVisible" role="button">Status</li>
-          <li class="menu-item" @click="toolbarVisible = !toolbarVisible" role="button">Toolbar</li>
-          <li class="menu-item" @click="menuVisible = !menuVisible" role="button">Menu (Ctrl+M)</li>
-          <li class="menu-item" @click="pencilPanelVisible = !pencilPanelVisible" role="button">Pencils</li>
+          <li
+            class="menu-item"
+            @click="galleryPanelVisible = !galleryPanelVisible"
+            role="button"
+          >
+            Gallery
+          </li>
+          <li
+            class="menu-item"
+            @click="openAiPanelsVisible = !openAiPanelsVisible"
+            role="button"
+          >
+            OpenAI
+          </li>
+          <li
+            class="menu-item"
+            @click="
+              artworkSettingsPanelsVisible = !artworkSettingsPanelsVisible
+            "
+            role="button"
+          >
+            Artwork Settings
+          </li>
+          <li
+            class="menu-item"
+            @click="scalePanelsVisible = !scalePanelsVisible"
+            role="button"
+          >
+            Scale
+          </li>
+          <li
+            class="menu-item"
+            @click="statusBarVisible = !statusBarVisible"
+            role="button"
+          >
+            Status
+          </li>
+          <li
+            class="menu-item"
+            @click="toolbarVisible = !toolbarVisible"
+            role="button"
+          >
+            Toolbar
+          </li>
+          <li
+            class="menu-item"
+            @click="menuVisible = !menuVisible"
+            role="button"
+          >
+            Menu (Ctrl+M)
+          </li>
+          <li
+            class="menu-item"
+            @click="pencilPanelVisible = !pencilPanelVisible"
+            role="button"
+          >
+            Pencils
+          </li>
         </ul>
       </li>
-      <li class="menu-item">Image
+      <li class="menu-item">
+        Image
         <span class="drop-icon">▾</span>
-        <label title="Toggle Drop-down" class="drop-icon" for="image-menu">▾</label>
-        <input type="checkbox" id="image-menu">
+        <label title="Toggle Drop-down" class="drop-icon" for="image-menu"
+          >▾</label
+        >
+        <input type="checkbox" id="image-menu" />
         <ul class="sub-menu">
-          <li class="menu-item" @click="action('auto-crop')" role="button">Auto-crop</li>
-          <li class="menu-item">Effect
+          <li class="menu-item" @click="action('auto-crop')" role="button">
+            Auto-crop
+          </li>
+          <li class="menu-item">
+            Effect
             <span class="drop-icon">▾</span>
-            <label title="Toggle Drop-down" class="drop-icon" for="image-effects-menu">▾</label>
-            <input type="checkbox" id="image-effects-menu">
+            <label
+              title="Toggle Drop-down"
+              class="drop-icon"
+              for="image-effects-menu"
+              >▾</label
+            >
+            <input type="checkbox" id="image-effects-menu" />
             <ul class="sub-menu">
-              <li class="menu-item" @click="applyEffect('shotgun')" role="button">Shotgun effect</li>
-              <li class="menu-item" @click="applyEffect('ryb2rgb')" role="button">RYB > RGB</li>
-              <li class="menu-item" @click="applyEffect('rgb2ryb')" role="button">RGB > RYB</li>
+              <li
+                class="menu-item"
+                @click="applyEffect('shotgun')"
+                role="button"
+              >
+                Shotgun effect
+              </li>
+              <li
+                class="menu-item"
+                @click="applyEffect('ryb2rgb')"
+                role="button"
+              >
+                RYB > RGB
+              </li>
+              <li
+                class="menu-item"
+                @click="applyEffect('rgb2ryb')"
+                role="button"
+              >
+                RGB > RYB
+              </li>
             </ul>
           </li>
         </ul>
@@ -53,11 +141,18 @@
   </nav>
 </template>
 
-<script  lang="ts" setup>
-
-import { action, applyEffect } from '@/services/appActions'
-import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSettingsPanelsVisible, scalePanelsVisible, toolbarVisible, menuVisible, pencilPanelVisible } from '@/services/editorAppState';
-
+<script lang="ts" setup>
+import { action, applyEffect } from "@/services/appActions";
+import {
+  galleryPanelVisible,
+  statusBarVisible,
+  openAiPanelsVisible,
+  artworkSettingsPanelsVisible,
+  scalePanelsVisible,
+  toolbarVisible,
+  menuVisible,
+  pencilPanelVisible,
+} from "@/services/editorAppState";
 </script>
 
 <style scoped>
@@ -80,7 +175,6 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
   flex-direction: row;
 }
 
-
 .menu-item[role="button"] {
   cursor: pointer;
 }
@@ -94,7 +188,7 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
   display: none;
 }
 
-.toggle-menu:checked+.main-menu {
+.toggle-menu:checked + .main-menu {
   display: block;
 }
 
@@ -107,7 +201,7 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
 .toggle-menu,
 #menu .sub-menu {
   border-style: solid;
-  border-color: rgba(0, 0, 0, .05);
+  border-color: rgba(0, 0, 0, 0.05);
 }
 
 #menu li,
@@ -140,7 +234,6 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
   background-color: #000;
   color: #fff;
   padding: 0.2em;
-
 }
 
 .toggle-menu,
@@ -149,8 +242,8 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
 }
 
 #menu .menu-item {
-  transition: all .125s ease-in-out;
-  -webkit-transition: all .125s ease-in-out;
+  transition: all 0.125s ease-in-out;
+  -webkit-transition: all 0.125s ease-in-out;
 }
 
 #menu .menu-item:hover {
@@ -162,7 +255,7 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
   display: none;
 }
 
-#menu input[type="checkbox"]:checked+.sub-menu {
+#menu input[type="checkbox"]:checked + .sub-menu {
   display: block;
 }
 
@@ -185,9 +278,9 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
   width: 1em;
   height: 1em;
   text-align: center;
-  background-color: rgba(0, 0, 0, .125);
+  background-color: rgba(0, 0, 0, 0.125);
   text-shadow: 0 0 0 transparent;
-  color: rgba(255, 255, 255, .75);
+  color: rgba(255, 255, 255, 0.75);
   display: none;
   /* TODO maybe remove */
 }
@@ -198,7 +291,6 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
   /* TODO maybe remove */
 }
 
-
 @media only screen and (min-width: 1em) {
   /* TODO 52em is better for a breakpoint */
 
@@ -206,7 +298,6 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
   #menu .menu-item {
     padding: 0.2em 1em;
   }
-
 
   #menu .main-menu {
     display: block;
@@ -243,7 +334,7 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
   }
 
   #menu .sub-menu,
-  #menu input[type="checkbox"]:checked+.sub-menu {
+  #menu input[type="checkbox"]:checked + .sub-menu {
     display: none;
   }
 
@@ -256,7 +347,7 @@ import { galleryPanelVisible, statusBarVisible, openAiPanelsVisible, artworkSett
     left: 100%;
   }
 
-  #menu li:hover>input[type="checkbox"]+.sub-menu {
+  #menu li:hover > input[type="checkbox"] + .sub-menu {
     display: block;
   }
 }

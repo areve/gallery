@@ -1,78 +1,100 @@
-import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage, ArtworkWithDatesAsIso } from "@/interfaces/Artwork"
-import { clone, findErrorMessage, loadImage } from "@/lib/utils"
-import axios, { Axios, type AxiosResponse } from "axios"
+import type {
+  ArtworkDeleted,
+  ArtworkOnCanvas,
+  ArtworkError,
+  ArtworkInMemory,
+  Artwork,
+  ArtworkImage,
+  ArtworkWithDatesAsIso,
+} from "@/interfaces/Artwork";
+import { clone, findErrorMessage, loadImage } from "@/lib/utils";
+import axios, { Axios, type AxiosResponse } from "axios";
 
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
-  let response: AxiosResponse<ArtworkWithDatesAsIso>
+  let response: AxiosResponse<ArtworkWithDatesAsIso>;
   try {
-    response = await axios.post<ArtworkWithDatesAsIso>('/api/editor/saveImage', {
-      image: (item as ArtworkInMemory).dataUrl || (item as ArtworkOnCanvas).context.canvas.toDataURL(),
-      filename: item.filename,
-      metadata: item.metadata
-    })
+    response = await axios.post<ArtworkWithDatesAsIso>(
+      "/api/editor/saveImage",
+      {
+        image:
+          (item as ArtworkInMemory).dataUrl ||
+          (item as ArtworkOnCanvas).context.canvas.toDataURL(),
+        filename: item.filename,
+        metadata: item.metadata,
+      }
+    );
   } catch (e) {
     const result: ArtworkError = {
-      status: 'error',
+      status: "error",
       modified: new Date(),
       filename: item.filename,
       metadata: item.metadata,
-      error: findErrorMessage(e)
-    }
-    return result
+      error: findErrorMessage(e),
+    };
+    return result;
   }
 
   return Object.assign(clone(response.data), {
-    modified: new Date(response.data.modified)
-  })
+    modified: new Date(response.data.modified),
+  });
 }
 
 async function getGallery(): Promise<Artwork[]> {
-  let response: AxiosResponse<ArtworkWithDatesAsIso[]>
+  let response: AxiosResponse<ArtworkWithDatesAsIso[]>;
   try {
-    response = await axios.get<ArtworkWithDatesAsIso[]>('/api/gallery/')
+    response = await axios.get<ArtworkWithDatesAsIso[]>("/api/gallery/");
   } catch (e) {
-    console.error(e)
-    return [] as Artwork[]
+    console.error(e);
+    return [] as Artwork[];
   }
 
-  return response.data.map(x => Object.assign(clone(x), {
-    modified: new Date(x.modified)
-  }))
+  return response.data.map((x) =>
+    Object.assign(clone(x), {
+      modified: new Date(x.modified),
+    })
+  );
 }
 
 async function getGalleryItem(filename: string): Promise<ArtworkImage> {
-  const imagePromise = loadImage(`/downloads/${filename}?${new Date().toISOString()}`)
-  const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(`/api/gallery/${filename}`)
-  const [image, artworkResponse] = await Promise.all([imagePromise, artworkResponsePromise])
-  const artwork = artworkResponse.data
-  const result = clone(artwork) as any as ArtworkImage
-  result.image = image
-  result.modified = new Date(result.modified)
+  const imagePromise = loadImage(
+    `/downloads/${filename}?${new Date().toISOString()}`
+  );
+  const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(
+    `/api/gallery/${filename}`
+  );
+  const [image, artworkResponse] = await Promise.all([
+    imagePromise,
+    artworkResponsePromise,
+  ]);
+  const artwork = artworkResponse.data;
+  const result = clone(artwork) as any as ArtworkImage;
+  result.image = image;
+  result.modified = new Date(result.modified);
   return result;
 }
 
 async function deleteGalleryItem(filename: string) {
   const result: ArtworkDeleted = {
-    status: 'deleted',
+    status: "deleted",
     filename,
     modified: new Date(),
-    metadata: { history: [] }
-  }
+    metadata: { history: [] },
+  };
   try {
-    await axios.post('/api/editor/deleteImage', {
-      filename
-    })
+    await axios.post("/api/editor/deleteImage", {
+      filename,
+    });
   } catch (e) {
     const error: ArtworkError = {
-      status: 'error',
+      status: "error",
       modified: new Date(),
       error: findErrorMessage(e),
       filename,
-      metadata: result.metadata
-    }
-    return error
+      metadata: result.metadata,
+    };
+    return error;
   }
-  return result
+  return result;
 }
 
 export default {
@@ -80,4 +102,4 @@ export default {
   getGallery,
   getGalleryItem,
   deleteGalleryItem,
-}
+};

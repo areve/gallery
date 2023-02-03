@@ -3,20 +3,19 @@ export interface OpenAiImage {
 }
 
 export interface OpenAiResponse {
-  created: number,
+  created: number;
   data: OpenAiImage[];
 }
 
-
-export type ImageResult = ImageResultReady | ImageResultError
+export type ImageResult = ImageResultReady | ImageResultError;
 
 export interface ImageResultError {
   error: string;
-  status:  'error';
+  status: "error";
 }
 
 export interface ImageResultReady {
   created: Date;
   dataUrl: string;
-  status: 'ready';
+  status: "ready";
 }

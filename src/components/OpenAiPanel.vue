@@ -4,65 +4,71 @@
     <button type="button" @click="generateImage()">Generate</button>
     <button type="button" @click="variationImage()">Variation</button>
     <button type="button" @click="outpaintImage()">Outpaint</button>
-    <textarea type="text" id="prompt" class="prompt" v-model="prompt"></textarea>
+    <textarea
+      type="text"
+      id="prompt"
+      class="prompt"
+      v-model="prompt"
+    ></textarea>
   </section>
 </template>
 
-<script  lang="ts" setup>
-
-import { cloneContext, createContextFromImage } from '@/lib/canvas';
-import artboardService from '@/services/artboardService';
-import compositionService, { createLayer } from '@/services/compositionService';
-import { openAiPanelsVisible, prompt } from '@/services/editorAppState';
-import galleryApi from '@/services/galleryApi';
-import openAiService from '@/services/openAiService';
-import { clone } from 'lodash';
-
+<script lang="ts" setup>
+import { cloneContext, createContextFromImage } from "@/lib/canvas";
+import artboardService from "@/services/artboardService";
+import compositionService, { createLayer } from "@/services/compositionService";
+import { openAiPanelsVisible, prompt } from "@/services/editorAppState";
+import galleryApi from "@/services/galleryApi";
+import openAiService from "@/services/openAiService";
+import { clone } from "lodash";
 
 async function generateImage() {
   await openAiService.generate({
     prompt: prompt.value,
-  })
+  });
 }
 
 async function variationImage() {
   await openAiService.variation({
     image: artboardService.createContextFromFrame(1024, 1024),
-    metadata: artboardService.artwork.value.metadata
-  })
+    metadata: artboardService.artwork.value.metadata,
+  });
 }
 
 async function outpaintImage() {
-  const outpaintImage_saveBeforeOutpaint = false
+  const outpaintImage_saveBeforeOutpaint = false;
   if (outpaintImage_saveBeforeOutpaint) {
     await compositionService.flatten({
       metadata: artboardService.artwork.value.metadata,
       width: artboardService.artwork.value.context.canvas.width,
       height: artboardService.artwork.value.context.canvas.height,
-      layers: [
-        createLayer(artboardService.artwork.value.context)
-      ]
-    })
+      layers: [createLayer(artboardService.artwork.value.context)],
+    });
   }
 
-  const compositionRequired = artboardService.artwork.value.frame.height !== 1024 ||
+  const compositionRequired =
+    artboardService.artwork.value.frame.height !== 1024 ||
     artboardService.artwork.value.frame.width !== 1024 ||
-    artboardService.artwork.value.frame.width !== artboardService.artwork.value.bounds.width ||
-    artboardService.artwork.value.frame.height !== artboardService.artwork.value.bounds.height
+    artboardService.artwork.value.frame.width !==
+      artboardService.artwork.value.bounds.width ||
+    artboardService.artwork.value.frame.height !==
+      artboardService.artwork.value.bounds.height;
 
-  const compositionData = compositionRequired ? {
-    context: cloneContext(artboardService.artwork.value.context),
-    frame: clone(artboardService.artwork.value.frame)
-  } : null
+  const compositionData = compositionRequired
+    ? {
+        context: cloneContext(artboardService.artwork.value.context),
+        frame: clone(artboardService.artwork.value.frame),
+      }
+    : null;
 
   const outpaintResult = await openAiService.outpaint({
     prompt: prompt.value,
     image: artboardService.createContextFromFrame(1024, 1024),
-    metadata: artboardService.artwork.value.metadata
-  })
+    metadata: artboardService.artwork.value.metadata,
+  });
 
   if (compositionData && outpaintResult) {
-    const artwork = await galleryApi.getGalleryItem(outpaintResult.filename)
+    const artwork = await galleryApi.getGalleryItem(outpaintResult.filename);
 
     await compositionService.flatten({
       metadata: artwork.metadata,
@@ -74,11 +80,11 @@ async function outpaintImage() {
           x: compositionData.frame.x,
           y: compositionData.frame.y,
           width: compositionData.frame.width,
-          height: compositionData.frame.height
+          height: compositionData.frame.height,
         },
-        createLayer(compositionData.context)
-      ]
-    })
+        createLayer(compositionData.context),
+      ],
+    });
   }
 }
 </script>

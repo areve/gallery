@@ -1,2 +1,1 @@
-
-export type Tool = 'eraser' | 'drag' | 'drag-frame' | 'pencil';
+export type Tool = "eraser" | "drag" | "drag-frame" | "pencil";

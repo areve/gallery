@@ -15,9 +15,8 @@ import { RouterLink, RouterView } from "vue-router";
 </template>
 
 <style>
-
 *[hidden] {
-    display: none !important;
+  display: none !important;
 }
 
 .router-wrapper {

@@ -12,10 +12,10 @@ export interface EditorRoutesConfig {
   deletedDir: PathLike;
 }
 
-export const config: (OpenaiRoutesConfig & EditorRoutesConfig) = {
-  downloadsDir: './public/downloads',
-  deletedDir: './public/deleted',
+export const config: OpenaiRoutesConfig & EditorRoutesConfig = {
+  downloadsDir: "./public/downloads",
+  deletedDir: "./public/deleted",
   debug: true,
-  tempDir: './public/temp',
-  mocks: './public/mocks',
-} 
+  tempDir: "./public/temp",
+  mocks: "./public/mocks",
+};

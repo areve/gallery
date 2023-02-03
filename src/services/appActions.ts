@@ -1,37 +1,34 @@
 import type { Tool } from "@/interfaces/Tool";
 import { ref } from "vue";
 
-
-export type AppActionType = 'save'| 'reset'| 'auto-crop' | 'show-settings'
+export type AppActionType = "save" | "reset" | "auto-crop" | "show-settings";
 export interface AppActionBase {
-    id: number
+  id: number;
 }
 
 export interface AppAction extends AppActionBase {
-    action: AppActionType
+  action: AppActionType;
 }
 
-export type EffectType = 'shotgun' | 'ryb2rgb' | 'rgb2ryb' | 'rgb2rgb'
+export type EffectType = "shotgun" | "ryb2rgb" | "rgb2ryb" | "rgb2rgb";
 
 export interface ApplyEffect extends AppActionBase {
-    type: EffectType
-} 
+  type: EffectType;
+}
 export interface SelectTool extends AppActionBase {
-    tool: Tool
-} 
-
-const id = () => Math.random()
-
-export const onAction = ref<AppAction>(undefined!)
-export const action = (action: AppActionType) => onAction.value = { id: id(), action }
-
-
-export const onApplyEffect = ref<ApplyEffect>(undefined!)
-export const applyEffect = (type: EffectType) => {
-    onApplyEffect.value = {
-        id: id(),
-        type
-    }
+  tool: Tool;
 }
 
+const id = () => Math.random();
 
+export const onAction = ref<AppAction>(undefined!);
+export const action = (action: AppActionType) =>
+  (onAction.value = { id: id(), action });
+
+export const onApplyEffect = ref<ApplyEffect>(undefined!);
+export const applyEffect = (type: EffectType) => {
+  onApplyEffect.value = {
+    id: id(),
+    type,
+  };
+};

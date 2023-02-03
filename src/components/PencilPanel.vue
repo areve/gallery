@@ -1,30 +1,53 @@
 <template>
   <div :hidden="!pencilPanelVisible" class="pencil-panel">
-    <div class="pencil red" @click="pencilColor = '#ff0000', selectedPencil = 'red'"
-      :class="{ 'selected': selectedPencil === 'red' }"></div>
-    <div class="pencil orange" @click="pencilColor = 'orange', selectedPencil = 'orange'"
-      :class="{ 'selected': selectedPencil === 'orange' }"></div>
-    <div class="pencil yellow" @click="pencilColor = 'yellow', selectedPencil = 'yellow'"
-      :class="{ 'selected': selectedPencil === 'yellow' }"></div>
-    <div class="pencil green" @click="pencilColor = 'green', selectedPencil = 'green'"
-      :class="{ 'selected': selectedPencil === 'green' }"></div>
-    <div class="pencil blue" @click="pencilColor = 'blue', selectedPencil = 'blue'"
-      :class="{ 'selected': selectedPencil === 'blue' }"></div>
-    <div class="pencil purple" @click="pencilColor = 'purple', selectedPencil = 'purple'"
-      :class="{ 'selected': selectedPencil === 'purple' }"></div>
-    <div class="pencil black" @click="pencilColor = 'black', selectedPencil = 'black'"
-      :class="{ 'selected': selectedPencil === 'black' }"></div>
-    <div class="pencil white" @click="pencilColor = 'white', selectedPencil = 'white'"
-      :class="{ 'selected': selectedPencil === 'white' }"></div>
+    <div
+      class="pencil red"
+      @click="(pencilColor = '#ff0000'), (selectedPencil = 'red')"
+      :class="{ selected: selectedPencil === 'red' }"
+    ></div>
+    <div
+      class="pencil orange"
+      @click="(pencilColor = 'orange'), (selectedPencil = 'orange')"
+      :class="{ selected: selectedPencil === 'orange' }"
+    ></div>
+    <div
+      class="pencil yellow"
+      @click="(pencilColor = 'yellow'), (selectedPencil = 'yellow')"
+      :class="{ selected: selectedPencil === 'yellow' }"
+    ></div>
+    <div
+      class="pencil green"
+      @click="(pencilColor = 'green'), (selectedPencil = 'green')"
+      :class="{ selected: selectedPencil === 'green' }"
+    ></div>
+    <div
+      class="pencil blue"
+      @click="(pencilColor = 'blue'), (selectedPencil = 'blue')"
+      :class="{ selected: selectedPencil === 'blue' }"
+    ></div>
+    <div
+      class="pencil purple"
+      @click="(pencilColor = 'purple'), (selectedPencil = 'purple')"
+      :class="{ selected: selectedPencil === 'purple' }"
+    ></div>
+    <div
+      class="pencil black"
+      @click="(pencilColor = 'black'), (selectedPencil = 'black')"
+      :class="{ selected: selectedPencil === 'black' }"
+    ></div>
+    <div
+      class="pencil white"
+      @click="(pencilColor = 'white'), (selectedPencil = 'white')"
+      :class="{ selected: selectedPencil === 'white' }"
+    ></div>
   </div>
 </template>
 
-<script  lang="ts" setup>
-import { pencilColor, pencilPanelVisible } from '@/services/editorAppState';
-import { ref } from 'vue';
+<script lang="ts" setup>
+import { pencilColor, pencilPanelVisible } from "@/services/editorAppState";
+import { ref } from "vue";
 
-const selectedPencil = ref<string>('red')
-
+const selectedPencil = ref<string>("red");
 </script>
 
 <style scoped>
@@ -38,7 +61,7 @@ const selectedPencil = ref<string>('red')
 
   --tip-size: 0.147;
   --body-size: 0.706;
-  --wood-size: calc(1 - var(--body-size) - var(--tip-size))
+  --wood-size: calc(1 - var(--body-size) - var(--tip-size));
 }
 
 .pencil-panel {
@@ -53,7 +76,7 @@ const selectedPencil = ref<string>('red')
   width: calc(var(--pencil-image-width-px) * var(--scale-factor));
   height: calc(var(--pencil-image-height-px) * var(--scale-factor));
   display: inline-block;
-  background-image: url('@/assets/pencil.png');
+  background-image: url("@/assets/pencil.png");
   background-size: var(--pencil-width-px);
   filter: drop-shadow(0px 2px 8px #000c);
   top: -60px;
@@ -66,28 +89,38 @@ const selectedPencil = ref<string>('red')
 
 .pencil::before {
   position: absolute;
-  content: '';
+  content: "";
   display: block;
-  background-image: url('@/assets/pencil.png');
+  background-image: url("@/assets/pencil.png");
   width: calc(var(--pencil-image-width-px) * var(--scale-factor));
-  height: calc(var(--tip-size) * var(--pencil-image-height-px) * var(--scale-factor));
-  background-image: url('@/assets/pencil.png');
+  height: calc(
+    var(--tip-size) * var(--pencil-image-height-px) * var(--scale-factor)
+  );
+  background-image: url("@/assets/pencil.png");
   background-size: var(--pencil-width-px);
   background-position: 0px 0px;
 }
 
 .pencil::after {
   position: absolute;
-  content: '';
+  content: "";
   display: block;
   width: calc(var(--pencil-image-width-px) * var(--scale-factor));
-  height: calc(var(--body-size) * var(--pencil-image-height-px) * var(--scale-factor));
-  top: calc((var(--tip-size) + var(--wood-size)) * var(--pencil-image-height-px) * var(--scale-factor));
-  background-image: url('@/assets/pencil.png');
+  height: calc(
+    var(--body-size) * var(--pencil-image-height-px) * var(--scale-factor)
+  );
+  top: calc(
+    (var(--tip-size) + var(--wood-size)) * var(--pencil-image-height-px) *
+      var(--scale-factor)
+  );
+  background-image: url("@/assets/pencil.png");
   background-size: var(--pencil-width-px);
-  background-position: 0px calc(0px - (var(--tip-size) + var(--wood-size)) * var(--pencil-image-height-px) * var(--scale-factor));
+  background-position: 0px
+    calc(
+      0px - (var(--tip-size) + var(--wood-size)) * var(--pencil-image-height-px) *
+        var(--scale-factor)
+    );
 }
-
 
 .pencil.red::before,
 .pencil.red::after {
@@ -106,8 +139,7 @@ const selectedPencil = ref<string>('red')
 
 .pencil.green::before,
 .pencil.green::after {
-  filter:
-    hue-rotate(100deg) brightness(70%) saturate(100%) contrast(200%);
+  filter: hue-rotate(100deg) brightness(70%) saturate(100%) contrast(200%);
 }
 
 .pencil.blue::before,

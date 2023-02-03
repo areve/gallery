@@ -1,24 +1,24 @@
 import type { ArtworkMetadata } from "./ArtworkMetadata";
 import type { Rect } from "./Rect";
 
-type ArtworkStatus = 'ready' | 'waiting' | 'error' | 'deleted' 
+type ArtworkStatus = "ready" | "waiting" | "error" | "deleted";
 
 export interface Artwork {
-  status: ArtworkStatus,
-  filename: string
-  metadata: ArtworkMetadata,
-  modified: Date
+  status: ArtworkStatus;
+  filename: string;
+  metadata: ArtworkMetadata;
+  modified: Date;
 }
 
 export interface ArtworkWithDatesAsIso {
-  status: ArtworkStatus,
-  filename: string
-  metadata: ArtworkMetadata,
-  modified: string
+  status: ArtworkStatus;
+  filename: string;
+  metadata: ArtworkMetadata;
+  modified: string;
 }
 
 export interface ArtworkInMemory extends Artwork {
-  dataUrl: string
+  dataUrl: string;
 }
 
 export interface ArtworkActive extends Artwork, ArtworkOnCanvas {
@@ -28,18 +28,18 @@ export interface ArtworkActive extends Artwork, ArtworkOnCanvas {
 }
 
 export interface ArtworkOnCanvas extends Artwork {
-  context: CanvasRenderingContext2D
+  context: CanvasRenderingContext2D;
 }
 
 export interface ArtworkImage extends Artwork {
-  image: HTMLImageElement
+  image: HTMLImageElement;
 }
 
 export interface ArtworkError extends Artwork {
-  status: 'error'
-  error: string
+  status: "error";
+  error: string;
 }
 
 export interface ArtworkDeleted extends Artwork {
-  status: 'deleted'
+  status: "deleted";
 }

@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import mix from 'vite-plugin-mix'
+import mix from "vite-plugin-mix";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -15,11 +15,13 @@ export default defineConfig(({ command }) => {
       },
     }),
     ,
-  ]
-  if (command !== 'build') {
-    plugins.push(mix({
-      handler: './api/api.ts',
-    }))
+  ];
+  if (command !== "build") {
+    plugins.push(
+      mix({
+        handler: "./api/api.ts",
+      })
+    );
   }
   return {
     plugins,
@@ -28,5 +30,5 @@ export default defineConfig(({ command }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
-  }
+  };
 });
