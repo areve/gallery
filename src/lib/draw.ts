@@ -38,7 +38,7 @@ export async function drawPencil(
   radius: number,
   color: string,
   from: { x: number; y: number } | null,
-  force: number
+  weight: number
 ) {
   if (!from) return;
 
@@ -52,7 +52,7 @@ export async function drawPencil(
 
   const col = [r, g, b, a] as [number, number, number, number];
 
-  brushLine1(pix, w, h, from, { x, y }, radius, col, force);
+  brushLine1(pix, w, h, from, { x, y }, radius, col, weight);
   context.putImageData(imageData, 0, 0);
 }
 
@@ -72,7 +72,7 @@ function brushLine1(
   to: Coord,
   radius: number,
   color: [number, number, number, number],
-  force: number
+  weight: number
 ) {
   const brushWidth = radius * 2;
   const brushHeight = brushWidth;
@@ -105,7 +105,7 @@ function brushLine1(
   for (let i = 0; i < d; i++) {
     const x = Math.floor(to.x + (i / d) * dx);
     const y = Math.floor(to.y + (i / d) * dy);
-    copyBrush(
+    applyBrush(
       pix,
       width,
       height,
@@ -115,12 +115,12 @@ function brushLine1(
       x,
       y,
       color,
-      force
+      weight
     );
   }
 }
 
-function copyBrush(
+function applyBrush(
   pix: Uint8ClampedArray,
   width: number,
   height: number,
@@ -130,7 +130,7 @@ function copyBrush(
   x: number,
   y: number,
   color: [number, number, number, number],
-  force: number
+  weight: number
 ) {
   const [r, g, b, a] = color;
 
@@ -144,10 +144,10 @@ function copyBrush(
       const obN = orN + 2;
       const oaN = orN + 3;
 
-      const [oR, oG, oB, oA] = mixv2(
+      const [oR, oG, oB, oA] = mixRgbaPixel(
         [pix[orN], pix[ogN], pix[obN], pix[oaN]],
         [r, g, b, a],
-        brush[aN] * force * force
+        brush[aN] * weight / 255
       );
       pix[orN] = oR;
       pix[ogN] = oG;
@@ -157,16 +157,21 @@ function copyBrush(
   }
 }
 
-function mixv2(
+function mixRgbaPixel(
   a: [number, number, number, number],
   b: [number, number, number, number],
-  n: number
+  weight: number
 ): [number, number, number, number] {
-  return [mix(a[0], b[0], n), mix(a[1], b[1], n), mix(a[2], b[2], n), 255];
+  return [
+    mixMonoPixel(a[0], b[0], weight),
+    mixMonoPixel(a[1], b[1], weight),
+    mixMonoPixel(a[2], b[2], weight),
+    255
+  ];
 }
 
-function mix(a: number, b: number, n: number) {
-  return ((65025 - n * n) / 65025) * a + ((n * n) / 65025) * b;
+function mixMonoPixel(a: number, b: number, weight: number) {
+  return (1 - weight) * a + weight * b;
 }
 
 export async function drawCircle(

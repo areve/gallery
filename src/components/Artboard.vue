@@ -137,7 +137,11 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     const artworkY = y / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
     const radius = 5 // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
     
-    drawPencil(artboardService.artwork.value.context, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint, force ?? 0.5)
+let weight = force ?? 0.5
+  weight = weight * weight
+  console.log(weight)
+//    (weight * weight) / 65025
+    drawPencil(artboardService.artwork.value.context, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint, weight)
     pencilLastPoint = { x: artworkX, y: artworkY }
   }
 }
