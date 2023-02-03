@@ -149,6 +149,7 @@ function applyBrush(
         [r, g, b, a],
         brush[aN] * weight / 255
       );
+
       pix[orN] = oR;
       pix[ogN] = oG;
       pix[obN] = oB;
@@ -158,14 +159,14 @@ function applyBrush(
 }
 
 function mixRgbaPixel(
-  a: [number, number, number, number],
-  b: [number, number, number, number],
+  pixel: [number, number, number, number],
+  color: [number, number, number, number],
   weight: number
 ): [number, number, number, number] {
   return [
-    mixMonoPixel(a[0], b[0], weight),
-    mixMonoPixel(a[1], b[1], weight),
-    mixMonoPixel(a[2], b[2], weight),
+    mixMonoPixel(pixel[0], color[0], weight),
+    mixMonoPixel(pixel[1], color[1], weight),
+    mixMonoPixel(pixel[2], color[2], weight),
     255
   ];
 }
