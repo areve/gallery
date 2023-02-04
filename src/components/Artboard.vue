@@ -112,6 +112,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     pointerEvent.sourceEvent.preventDefault()
   })
   // the following line rejects palm presses on my laptop and responds to my pen only, may not work on all devices
+  // TODO but it doesn't work if the window is zoomed because the radiusX changes
   const pointerEvent = pointerEvents.find(x => x.radiusX === 0.5 || x.radiusX === undefined)
   if (!pointerEvent) return
   const { x, y, force, radiusX } = pointerEvent 
@@ -135,11 +136,11 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     if (radiusX != 0.5 && radiusX !== undefined) return
     const artworkX = x / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const artworkY = y / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
-    const radius = 5 // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
+    const radius = 50 // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
     
 let weight = force ?? 0.5
-  weight = weight * weight
-  console.log(weight)
+  weight = weight * weight* weight
+  // console.log(weight)
 //    (weight * weight) / 65025
     drawPencil(artboardService.artwork.value.context, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint, weight)
     pencilLastPoint = { x: artworkX, y: artworkY }

@@ -49,8 +49,7 @@ export async function drawPencil(
 
   const c = Color(color);
   const { r, g, b, a } = c.object();
-
-  const col = [r, g, b, a] as [number, number, number, number];
+  const col = [r, g, b, a === undefined ? 255 : a] as [number, number, number, number];
 
   brushLine1(pix, w, h, from, { x, y }, radius, col, weight);
   context.putImageData(imageData, 0, 0);
@@ -90,9 +89,9 @@ function brushLine1(
         const dy = y - radius;
         const d = Math.sqrt(dy * dy + dx * dx);
         const val = 1 - d / radius;
-        brush[rN] = val * 255;
-        brush[gN] = val * 255;
-        brush[bN] = val * 255;
+        brush[rN] = 255;
+        brush[gN] = 255;
+        brush[bN] = 255;
         brush[aN] = val * 255;
       }
     }
@@ -136,7 +135,10 @@ function applyBrush(
 
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
-      const aN = (bY * brushWidth + bX) * 4 + 3;
+      const rN = (bY * brushWidth + bX) * 4;
+      const gN = rN + 1;
+      const bN = rN + 2;
+      const aN = rN + 3;
 
       const orN =
         (width * (y + bY - brushHeight / 2) + x + bX - brushWidth / 2) * 4;
@@ -144,10 +146,17 @@ function applyBrush(
       const obN = orN + 2;
       const oaN = orN + 3;
 
-      const [oR, oG, oB, oA] = mixRgbaPixel(
+      const brushPixel: [number, number, number, number] = [
+        brush[rN] * color[0] / 255,
+        brush[gN] * color[1] / 255,
+        brush[bN] * color[2] / 255,
+        brush[aN] * color[3] / 255 * weight //weight squared, why here?
+
+      ]
+
+      const [oR, oG, oB, oA] = pixelMix(
         [pix[orN], pix[ogN], pix[obN], pix[oaN]],
-        [r, g, b, a],
-        brush[aN] * weight / 255
+        brushPixel
       );
 
       pix[orN] = oR;
@@ -158,21 +167,41 @@ function applyBrush(
   }
 }
 
-function mixRgbaPixel(
+function pixelAdd(
   pixel: [number, number, number, number],
-  color: [number, number, number, number],
-  weight: number
+  color: [number, number, number, number]
 ): [number, number, number, number] {
   return [
-    mixMonoPixel(pixel[0], color[0], weight),
-    mixMonoPixel(pixel[1], color[1], weight),
-    mixMonoPixel(pixel[2], color[2], weight),
-    255
+    pixel[0] + (color[3] / 255) * color[0],
+    pixel[1] + (color[3] / 255) * color[1],
+    pixel[2] + (color[3] / 255) * color[2],
+    pixel[3] + color[3]
   ];
 }
 
-function mixMonoPixel(a: number, b: number, weight: number) {
-  return (1 - weight) * a + weight * b;
+function pixelSub(
+  pixel: [number, number, number, number],
+  color: [number, number, number, number]
+): [number, number, number, number] {
+  return [
+    pixel[0] - (color[3] / 255)* color[0],
+    pixel[1] - (color[3] / 255)* color[1],
+    pixel[2] - (color[3] / 255)* color[2],
+    pixel[3] + color[3]
+  ];
+}
+
+function pixelMix(
+  pixel: [number, number, number, number],
+  color: [number, number, number, number]
+): [number, number, number, number] {
+  const weight = (color[3] / 255)
+  return [
+    ((1 - weight) * pixel[0] + weight * color[0]) ,
+    ((1 - weight) * pixel[1] + weight * color[1]) ,
+    ((1 - weight) * pixel[2] + weight * color[2]) ,
+    pixel[3] + color[3]
+  ];
 }
 
 export async function drawCircle(
