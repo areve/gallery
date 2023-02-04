@@ -139,9 +139,11 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     const radius = 50 // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
     
 let weight = force ?? 0.5
-  weight = weight * weight* weight
-  // console.log(weight)
-//    (weight * weight) / 65025
+  weight = weight * weight
+    // TODO Artboard needs to maintain a floating point array of pixels
+    // * it will be x * y RGBA [1.0, 1.0, 1.0, 1.0] (later or RYBA HSVA option?)
+    // * the float array may get converted to the canvas at any frequency or on demand
+    // TODO the pencil/brush needs to be passed in to this drawPencil/Brush method
     drawPencil(artboardService.artwork.value.context, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint, weight)
     pencilLastPoint = { x: artworkX, y: artworkY }
   }
