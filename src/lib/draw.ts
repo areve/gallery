@@ -1,5 +1,6 @@
 import { cloneContext } from "./canvas";
 import Color from "color";
+import type { ArtworkOnCanvas } from "@/interfaces/Artwork";
 
 export function clearCircle(
   context: CanvasRenderingContext2D,
@@ -32,7 +33,7 @@ export async function scaleImage(
 }
 
 export async function drawPencil(
-  context: CanvasRenderingContext2D,
+  artwork: ArtworkOnCanvas,
   x: number,
   y: number,
   radius: number,
@@ -42,17 +43,17 @@ export async function drawPencil(
 ) {
   if (!from) return;
 
-  const w = context.canvas.width;
-  const h = context.canvas.height;
-  const imageData = context.getImageData(0, 0, w, h);
-  const pix = imageData.data;
+  const w = artwork.context.canvas.width;
+  const h = artwork.context.canvas.height;
+  // const imageData = artwork.context.getImageData(0, 0, w, h);
+  // const pix = imageData.data;
 
   const c = Color(color);
   const { r, g, b, a } = c.object();
   const col = [r, g, b, a === undefined ? 255 : a] as [number, number, number, number];
 
-  brushLine1(pix, w, h, from, { x, y }, radius, col, weight);
-  context.putImageData(imageData, 0, 0);
+  brushLine1(artwork.data, w, h, from, { x, y }, radius, col, weight);
+  // artwork.context.putImageData(imageData, 0, 0);
 }
 
 // TODO this method of creating brush once works but is really messy
@@ -64,7 +65,7 @@ interface Coord {
 }
 
 function brushLine1(
-  pix: Uint8ClampedArray,
+  pix: Float32Array,
   width: number,
   height: number,
   from: Coord,
@@ -120,7 +121,7 @@ function brushLine1(
 }
 
 function applyBrush(
-  pix: Uint8ClampedArray,
+  pix: Float32Array,
   width: number,
   height: number,
   brush: Uint8ClampedArray,
@@ -155,14 +156,14 @@ function applyBrush(
       ]
 
       const [oR, oG, oB, oA] = pixelMix(
-        [pix[orN], pix[ogN], pix[obN], pix[oaN]],
+        [pix[orN] * 255, pix[ogN]* 255, pix[obN]* 255, pix[oaN]* 255],
         brushPixel
       );
 
-      pix[orN] = oR;
-      pix[ogN] = oG;
-      pix[obN] = oB;
-      pix[oaN] = oA;
+      pix[orN] = oR / 255;
+      pix[ogN] = oG / 255;
+      pix[obN] = oB / 255;
+      pix[oaN] = oA / 255;
     }
   }
 }

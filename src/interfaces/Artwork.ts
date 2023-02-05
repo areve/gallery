@@ -29,6 +29,7 @@ export interface ArtworkActive extends Artwork, ArtworkOnCanvas {
 
 export interface ArtworkOnCanvas extends Artwork {
   context: CanvasRenderingContext2D;
+  data: Float32Array
 }
 
 export interface ArtworkImage extends Artwork {

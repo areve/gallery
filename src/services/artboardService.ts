@@ -28,6 +28,7 @@ const artwork = ref<ArtworkActive>({
   },
   context: undefined!,
   overlayContext: undefined!,
+  data: undefined!
 });
 
 function resetFrame() {
@@ -61,10 +62,32 @@ function drawOverlay() {
   );
 }
 
+export function render() {
+  if (!artwork.value.context) return
+  const context = artwork.value.context
+  const data = artwork.value.data
+  const w = context.canvas.width;
+  const h = context.canvas.height;
+  const imageData = context.getImageData(0, 0, w, h);
+  const pix = imageData.data;
+
+  const channels = 4
+  const max = w * h * channels;
+  for (let i = 0; i < max; i += channels) {
+    pix[i] = Math.floor(data[i] * 255) 
+    pix[i + 1] = Math.floor(data[i + 1] * 255)
+    pix[i + 2] = Math.floor(data[i + 2] * 255)
+    pix[i + 3] = Math.floor(data[i + 3] * 255)
+  }
+
+  context.putImageData(imageData, 0, 0);
+}
+
 export function resetArtwork() {
   if (!artwork.value.context) return;
-  artwork.value.bounds.width = 1024;
-  artwork.value.bounds.height = 1024;
+  const [width, height, channels] = [1024, 1024, 4]
+  artwork.value.bounds.width = width;
+  artwork.value.bounds.height = height;
   artwork.value.context.clearRect(
     0,
     0,
@@ -72,15 +95,8 @@ export function resetArtwork() {
     artwork.value.context.canvas.height
   );
 
-  // TODO this just whilst I'm working with pencils
-  artwork.value.context.fillStyle = "#ffffffff";
-  artwork.value.context.fillRect(
-    0,
-    0,
-    artwork.value.bounds.width,
-    artwork.value.bounds.height
-  );
-
+  artwork.value.data = new Float32Array(width * height * channels)
+  
   artwork.value.metadata = { history: [] };
   artwork.value.filename = "";
   artwork.value.modified = new Date();
@@ -205,4 +221,5 @@ export default {
   drawOverlay,
   load,
   save,
+  render
 };
