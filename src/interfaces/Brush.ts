@@ -1,5 +1,7 @@
-export interface Brush {
-    rgbaData: Float32Array
-    height: number
-    width: number
+import type { RgbaLayer } from "./RgbaLayer"
+
+export interface Brush extends RgbaLayer {
+
 }
+
+

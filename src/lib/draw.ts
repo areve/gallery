@@ -2,37 +2,7 @@ import { cloneContext } from "./canvas";
 import Color from "color";
 import type { ArtworkOnCanvas } from "@/interfaces/Artwork";
 import type { Brush } from "@/interfaces/Brush";
-
-export function makeBrush(radius: number) {
-  const width = radius * 2;
-  const height = width;
-  const channels = 4
-
-  const rgbaData = new Float32Array(width * height * channels)
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      const rN = (y * width + x) * 4;
-      const gN = rN + 1;
-      const bN = rN + 2;
-      const aN = rN + 3;
-
-      const dx = x - radius;
-      const dy = y - radius;
-      const d = Math.sqrt(dy * dy + dx * dx);
-      const val = 1 - d / radius;
-      rgbaData[rN] = 1;
-      rgbaData[gN] = 1;
-      rgbaData[bN] = 1;
-      rgbaData[aN] = val;
-    }
-  }
-
-  return <Brush>{
-    rgbaData,
-    width,
-    height
-  }
-}
+import type { RgbaLayer } from "@/interfaces/RgbaLayer";
 
 export function clearCircle(
   context: CanvasRenderingContext2D,
@@ -65,7 +35,7 @@ export async function scaleImage(
 }
 
 export async function drawPencil(
-  artwork: ArtworkOnCanvas,
+  rgbaLayer: RgbaLayer,
   x: number,
   y: number,
   brush: Brush,
@@ -75,17 +45,12 @@ export async function drawPencil(
 ) {
   if (!from) return;
 
-  const w = artwork.context.canvas.width;
-  const h = artwork.context.canvas.height;
-  // const imageData = artwork.context.getImageData(0, 0, w, h);
-  // const pix = imageData.data;
 
   const c = Color(color);
   const { r, g, b, a } = c.object();
-  const col = [r, g, b, a === undefined ? 1 : a] as [number, number, number, number];
+  const col = [r / 255, g / 255, b / 255, a === undefined ? 1 : a / 255] as [number, number, number, number];
 
-  brushLine1(artwork.rgbaData, w, h, from, { x, y }, brush, col, weight);
-  // artwork.context.putImageData(imageData, 0, 0);
+  brushLine1(rgbaLayer, from, { x, y }, brush, col, weight);
 }
 
 interface Coord {
@@ -94,9 +59,7 @@ interface Coord {
 }
 
 function brushLine1(
-  pix: Float32Array,
-  width: number,
-  height: number,
+  rgbaLayer: RgbaLayer,
   from: Coord,
   to: Coord,
   brush: Brush,
@@ -112,9 +75,7 @@ function brushLine1(
     const x = Math.floor(to.x + (i / d) * dx);
     const y = Math.floor(to.y + (i / d) * dy);
     applyBrush(
-      pix,
-      width,
-      height,
+      rgbaLayer,
       brush,
       x,
       y,
@@ -125,9 +86,7 @@ function brushLine1(
 }
 
 function applyBrush(
-  pix: Float32Array,
-  width: number,
-  height: number,
+  rgbaLayer: RgbaLayer,
   brush: Brush,
   x: number,
   y: number,
@@ -136,7 +95,9 @@ function applyBrush(
 ) {
   const brushHeight = brush.height
   const brushWidth = brush.width
-  const rgbaData = brush.rgbaData
+  const rgbaData = brush.data
+  const width = rgbaLayer.width
+  const data = rgbaLayer.data
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
       const rN = (bY * brushWidth + bX) * 4;
@@ -159,14 +120,14 @@ function applyBrush(
       ]
 
       const [oR, oG, oB, oA] = pixelMix(
-        [pix[orN], pix[ogN], pix[obN], pix[oaN]],
+        [data[orN], data[ogN], data[obN], data[oaN]],
         brushPixel
       );
 
-      pix[orN] = oR;
-      pix[ogN] = oG;
-      pix[obN] = oB;
-      pix[oaN] = oA;
+      data[orN] = oR;
+      data[ogN] = oG;
+      data[obN] = oB;
+      data[oaN] = oA;
     }
   }
 }

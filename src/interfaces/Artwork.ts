@@ -1,5 +1,6 @@
 import type { ArtworkMetadata } from "./ArtworkMetadata";
 import type { Rect } from "./Rect";
+import type { RgbaLayer } from "./RgbaLayer";
 
 type ArtworkStatus = "ready" | "waiting" | "error" | "deleted";
 
@@ -29,7 +30,7 @@ export interface ArtworkActive extends Artwork, ArtworkOnCanvas {
 
 export interface ArtworkOnCanvas extends Artwork {
   context: CanvasRenderingContext2D;
-  rgbaData: Float32Array
+  rgbaLayer: RgbaLayer    
 }
 
 export interface ArtworkImage extends Artwork {

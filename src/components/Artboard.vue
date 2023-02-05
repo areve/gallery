@@ -17,10 +17,11 @@
 
 import { eraserSize, pencilColor, snapSize, toolSelected } from '@/services/editorAppState';
 import { onMounted, ref, watchSyncEffect } from 'vue';
-import { clearCircle, drawPencil, makeBrush } from '@/lib/draw';
+import { clearCircle, drawPencil } from '@/lib/draw';
 import { globalDragOrigin } from '@/services/mouseService';
 import type { DragOrigin } from '@/interfaces/DragOrigin';
 import artboardService, { resetArtwork } from '@/services/artboardService';
+import { makeBrush } from '@/lib/brush';
 
 const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!)
@@ -147,7 +148,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     // * it will be x * y RGBA [1.0, 1.0, 1.0, 1.0] (later or RYBA HSVA option?)
     // * the float array may get converted to the canvas at any frequency or on demand
     // TODO the pencil/brush needs to be passed in to this drawPencil/Brush method
-    drawPencil(artboardService.artwork.value, artworkX, artworkY, brush, pencilColor.value, pencilLastPoint, weight)
+    drawPencil(artboardService.artwork.value.rgbaLayer, artworkX, artworkY, brush, pencilColor.value, pencilLastPoint, weight)
   
     pencilLastPoint = { x: artworkX, y: artworkY }
   }
