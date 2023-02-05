@@ -28,7 +28,7 @@ const artwork = ref<ArtworkActive>({
   },
   context: undefined!,
   overlayContext: undefined!,
-  data: undefined!
+  rgbaData: undefined!
 });
 
 function resetFrame() {
@@ -65,7 +65,7 @@ function drawOverlay() {
 export function render() {
   if (!artwork.value.context) return
   const context = artwork.value.context
-  const data = artwork.value.data
+  const data = artwork.value.rgbaData
   const w = context.canvas.width;
   const h = context.canvas.height;
   const imageData = context.getImageData(0, 0, w, h);
@@ -95,7 +95,7 @@ export function resetArtwork() {
     artwork.value.context.canvas.height
   );
 
-  artwork.value.data = new Float32Array(width * height * channels)
+  artwork.value.rgbaData = new Float32Array(width * height * channels)
   
   artwork.value.metadata = { history: [] };
   artwork.value.filename = "";

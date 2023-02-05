@@ -1,6 +1,38 @@
 import { cloneContext } from "./canvas";
 import Color from "color";
 import type { ArtworkOnCanvas } from "@/interfaces/Artwork";
+import type { Brush } from "@/interfaces/Brush";
+
+export function makeBrush(radius: number) {
+  const width = radius * 2;
+  const height = width;
+  const channels = 4
+
+  const rgbaData = new Float32Array(width * height * channels)
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const rN = (y * width + x) * 4;
+      const gN = rN + 1;
+      const bN = rN + 2;
+      const aN = rN + 3;
+
+      const dx = x - radius;
+      const dy = y - radius;
+      const d = Math.sqrt(dy * dy + dx * dx);
+      const val = 1 - d / radius;
+      rgbaData[rN] = 1;
+      rgbaData[gN] = 1;
+      rgbaData[bN] = 1;
+      rgbaData[aN] = val;
+    }
+  }
+
+  return <Brush>{
+    rgbaData,
+    width,
+    height
+  }
+}
 
 export function clearCircle(
   context: CanvasRenderingContext2D,
@@ -36,7 +68,7 @@ export async function drawPencil(
   artwork: ArtworkOnCanvas,
   x: number,
   y: number,
-  radius: number,
+  brush: Brush,
   color: string,
   from: { x: number; y: number } | null,
   weight: number
@@ -50,14 +82,11 @@ export async function drawPencil(
 
   const c = Color(color);
   const { r, g, b, a } = c.object();
-  const col = [r, g, b, a === undefined ? 255 : a] as [number, number, number, number];
+  const col = [r, g, b, a === undefined ? 1 : a] as [number, number, number, number];
 
-  brushLine1(artwork.data, w, h, from, { x, y }, radius, col, weight);
+  brushLine1(artwork.rgbaData, w, h, from, { x, y }, brush, col, weight);
   // artwork.context.putImageData(imageData, 0, 0);
 }
-
-// TODO this method of creating brush once works but is really messy
-let brush: Uint8ClampedArray | null = null;
 
 interface Coord {
   x: number;
@@ -70,33 +99,10 @@ function brushLine1(
   height: number,
   from: Coord,
   to: Coord,
-  radius: number,
+  brush: Brush,
   color: [number, number, number, number],
   weight: number
 ) {
-  const brushWidth = radius * 2;
-  const brushHeight = brushWidth;
-  if (!brush) {
-    brush = new Uint8ClampedArray(brushWidth * brushHeight * 4);
-
-    for (let y = 0; y < brushHeight; y++) {
-      for (let x = 0; x < brushWidth; x++) {
-        const rN = (y * brushWidth + x) * 4;
-        const gN = rN + 1;
-        const bN = rN + 2;
-        const aN = rN + 3;
-
-        const dx = x - radius;
-        const dy = y - radius;
-        const d = Math.sqrt(dy * dy + dx * dx);
-        const val = 1 - d / radius;
-        brush[rN] = 255;
-        brush[gN] = 255;
-        brush[bN] = 255;
-        brush[aN] = val * 255;
-      }
-    }
-  }
 
   const dx = from.x - to.x;
   const dy = from.y - to.y;
@@ -110,8 +116,6 @@ function brushLine1(
       width,
       height,
       brush,
-      brushWidth,
-      brushHeight,
       x,
       y,
       color,
@@ -124,16 +128,15 @@ function applyBrush(
   pix: Float32Array,
   width: number,
   height: number,
-  brush: Uint8ClampedArray,
-  brushWidth: number,
-  brushHeight: number,
+  brush: Brush,
   x: number,
   y: number,
   color: [number, number, number, number],
   weight: number
 ) {
-  const [r, g, b, a] = color;
-
+  const brushHeight = brush.height
+  const brushWidth = brush.width
+  const rgbaData = brush.rgbaData
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
       const rN = (bY * brushWidth + bX) * 4;
@@ -148,22 +151,22 @@ function applyBrush(
       const oaN = orN + 3;
 
       const brushPixel: [number, number, number, number] = [
-        brush[rN] * color[0] / 255,
-        brush[gN] * color[1] / 255,
-        brush[bN] * color[2] / 255,
-        brush[aN] * color[3] / 255 * weight //weight squared, why here?
+        rgbaData[rN] * color[0],
+        rgbaData[gN] * color[1],
+        rgbaData[bN] * color[2],
+        rgbaData[aN] * color[3] * weight //weight squared, why here?
 
       ]
 
       const [oR, oG, oB, oA] = pixelMix(
-        [pix[orN] * 255, pix[ogN]* 255, pix[obN]* 255, pix[oaN]* 255],
+        [pix[orN], pix[ogN], pix[obN], pix[oaN]],
         brushPixel
       );
 
-      pix[orN] = oR / 255;
-      pix[ogN] = oG / 255;
-      pix[obN] = oB / 255;
-      pix[oaN] = oA / 255;
+      pix[orN] = oR;
+      pix[ogN] = oG;
+      pix[obN] = oB;
+      pix[oaN] = oA;
     }
   }
 }
@@ -185,9 +188,9 @@ function pixelSub(
   color: [number, number, number, number]
 ): [number, number, number, number] {
   return [
-    pixel[0] - (color[3] / 255)* color[0],
-    pixel[1] - (color[3] / 255)* color[1],
-    pixel[2] - (color[3] / 255)* color[2],
+    pixel[0] - (color[3] / 255) * color[0],
+    pixel[1] - (color[3] / 255) * color[1],
+    pixel[2] - (color[3] / 255) * color[2],
     pixel[3] + color[3]
   ];
 }
@@ -196,11 +199,12 @@ function pixelMix(
   pixel: [number, number, number, number],
   color: [number, number, number, number]
 ): [number, number, number, number] {
-  const weight = (color[3] / 255)
+  // return [1, 1, 1, 1]
+  const weight = (color[3])
   return [
-    ((1 - weight) * pixel[0] + weight * color[0]) ,
-    ((1 - weight) * pixel[1] + weight * color[1]) ,
-    ((1 - weight) * pixel[2] + weight * color[2]) ,
+    ((1 - weight) * pixel[0] + weight * color[0]),
+    ((1 - weight) * pixel[1] + weight * color[1]),
+    ((1 - weight) * pixel[2] + weight * color[2]),
     pixel[3] + color[3]
   ];
 }

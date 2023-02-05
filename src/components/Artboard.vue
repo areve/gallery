@@ -17,7 +17,7 @@
 
 import { eraserSize, pencilColor, snapSize, toolSelected } from '@/services/editorAppState';
 import { onMounted, ref, watchSyncEffect } from 'vue';
-import { clearCircle, drawPencil } from '@/lib/draw';
+import { clearCircle, drawPencil, makeBrush } from '@/lib/draw';
 import { globalDragOrigin } from '@/services/mouseService';
 import type { DragOrigin } from '@/interfaces/DragOrigin';
 import artboardService, { resetArtwork } from '@/services/artboardService';
@@ -105,6 +105,10 @@ function mouseDown(event: MouseEvent | TouchEvent) {
   }
 }
 
+const radius = 50 // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
+
+const brush = makeBrush(radius)
+
 function mouseMove(event: MouseEvent | TouchEvent) {
   if (!dragOrigin.value) return
   const pointerEvents = toPointerEvents(event)
@@ -136,48 +140,24 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     if (radiusX != 0.5 && radiusX !== undefined) return
     const artworkX = x / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const artworkY = y / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
-    const radius = 50 // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
-
-    // 1021.7395143487859 
-    // 36.16777041942605 1024 152230
-    // 37/
-
+    
     let weight = force ?? 0.5
     weight = weight * weight
     // TODO Artboard needs to maintain a floating point array of pixels
     // * it will be x * y RGBA [1.0, 1.0, 1.0, 1.0] (later or RYBA HSVA option?)
     // * the float array may get converted to the canvas at any frequency or on demand
     // TODO the pencil/brush needs to be passed in to this drawPencil/Brush method
-    drawPencil(artboardService.artwork.value, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint, weight)
-    // drawPencil(artboardService.artwork.value.context, artworkX, artworkY, radius, pencilColor.value, pencilLastPoint, weight)
-    const data = artboardService.artwork.value.data
-    const w = artboardService.artwork.value.bounds.width
-    const channels = 4
-    // const n = Math.floor(4096)
-    // // for (let i = 0; i < 4096 * 512; i ++) {
-    //   //data[n] = 1  
-    // // }
-    // data[n] = 1
-    // data[n + 1] = 1
-    // data[n + 2] = 1
-    // data[n + 3] = 1
-    const n2 = (Math.floor(artworkY) * w + Math.floor(artworkX)) * 4
-    // console.log(n2, Math.floor(artworkX), Math.floor(artworkY ), x, y, event)
-    data[n2] = 1
-    data[n2 + 1] = 1
-    data[n2 + 2] = 1
-    data[n2 + 3] = 1
-    // data[(artworkY * w + artworkX) * channels + 1 + i] = 1
-    // data[(artworkY * w + artworkX) * channels + 2 + i] = 1
-    // data[(artworkY * w + artworkX) * channels + 3 + i] = 1
-
+    drawPencil(artboardService.artwork.value, artworkX, artworkY, brush, pencilColor.value, pencilLastPoint, weight)
+  
     pencilLastPoint = { x: artworkX, y: artworkY }
   }
 }
+
+
 const render = () => {
   // console.log('tick')
   artboardService.render()
-  setTimeout(render, 100)
+  setTimeout(render, 50)
 }
 render()
 </script>
