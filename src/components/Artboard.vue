@@ -106,7 +106,7 @@ function mouseDown(event: MouseEvent | TouchEvent) {
   }
 }
 
-const radius = 50 // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
+const radius = 25 // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
 
 const brush = makeBrush(radius)
 
@@ -152,7 +152,6 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 
 
 const render = () => {
-  // console.log('tick')
   artboardService.render()
   setTimeout(render, 50)
 }

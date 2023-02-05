@@ -65,6 +65,10 @@ function drawOverlay() {
 export function render() {
   if (!artwork.value.context) return
   const context = artwork.value.context
+  if (artwork.value.modified === artwork.value.rgbaLayer.modified) return
+  console.log(artwork.value.rgbaLayer.modified)
+  artwork.value.modified = artwork.value.rgbaLayer.modified
+  
   const data = artwork.value.rgbaLayer.data
   const w = context.canvas.width;
   const h = context.canvas.height;
@@ -74,7 +78,7 @@ export function render() {
   const channels = 4
   const max = w * h * channels;
   for (let i = 0; i < max; i += channels) {
-    pix[i] = Math.floor(data[i] * 255) 
+    pix[i] = Math.floor(data[i] * 255)
     pix[i + 1] = Math.floor(data[i + 1] * 255)
     pix[i + 2] = Math.floor(data[i + 2] * 255)
     pix[i + 3] = Math.floor(data[i + 3] * 255)
@@ -98,9 +102,10 @@ export function resetArtwork() {
   artwork.value.rgbaLayer = {
     height,
     width,
-    data: new Float32Array(width * height * channels)
+    data: new Float32Array(width * height * channels),
+    modified: new Date()
   }
-  
+
   artwork.value.metadata = { history: [] };
   artwork.value.filename = "";
   artwork.value.modified = new Date();

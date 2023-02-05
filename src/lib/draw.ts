@@ -50,6 +50,7 @@ export async function drawPencil(
   const col = [r / 255, g / 255, b / 255, a === undefined ? 1 : a / 255] as [number, number, number, number];
 
   brushLine1(rgbaLayer, from, { x, y }, brush, col, weight);
+  rgbaLayer.modified = new Date()
 }
 
 interface Coord {
