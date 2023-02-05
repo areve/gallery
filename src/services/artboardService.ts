@@ -66,9 +66,8 @@ export function render() {
   if (!artwork.value.context) return
   const context = artwork.value.context
   if (artwork.value.modified === artwork.value.rgbaLayer.modified) return
-  console.log(artwork.value.rgbaLayer.modified)
   artwork.value.modified = artwork.value.rgbaLayer.modified
-  
+
   const data = artwork.value.rgbaLayer.data
   const w = context.canvas.width;
   const h = context.canvas.height;
@@ -87,6 +86,30 @@ export function render() {
   context.putImageData(imageData, 0, 0);
 }
 
+function resetRgbaLayer() {
+  const channels = 4
+  const height = artwork.value.context.canvas.height
+  const width = artwork.value.context.canvas.width
+  artwork.value.rgbaLayer = {
+    height,
+    width,
+    data: new Float32Array(width * height * channels),
+    modified: new Date()
+  }
+
+  const imageData = artwork.value.context.getImageData(0, 0, width, height);
+  const pix = imageData.data;
+
+  const data = artwork.value.rgbaLayer.data
+  const max = width * height * channels;
+  for (let i = 0; i < max; i += channels) {
+    data[i] = pix[i] / 255
+    data[i + 1] = pix[i + 1] / 255
+    data[i + 2] = pix[i + 2] / 255
+    data[i + 3] = pix[i + 3] / 255
+  }
+}
+
 export function resetArtwork() {
   if (!artwork.value.context) return;
   const [width, height, channels] = [1024, 1024, 4]
@@ -99,12 +122,7 @@ export function resetArtwork() {
     artwork.value.context.canvas.height
   );
 
-  artwork.value.rgbaLayer = {
-    height,
-    width,
-    data: new Float32Array(width * height * channels),
-    modified: new Date()
-  }
+  resetRgbaLayer()
 
   artwork.value.metadata = { history: [] };
   artwork.value.filename = "";
@@ -205,10 +223,13 @@ async function load(item: Artwork) {
   );
 
   resetFrame();
+
   artwork.value.context.drawImage(artworkImage.image, 0, 0);
   artwork.value.filename = artworkImage.filename;
   artwork.value.metadata = clone(artworkImage.metadata);
   artwork.value.modified = new Date(artworkImage.modified);
+  resetRgbaLayer()
+
 }
 
 async function save() {
