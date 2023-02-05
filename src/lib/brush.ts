@@ -16,7 +16,7 @@ export function makeBrush(radius: number) {
       const dx = x - radius;
       const dy = y - radius;
       const d = Math.sqrt(dy * dy + dx * dx);
-      const val = 1 - d / radius;
+      const val = Math.max(0, (1 - d / radius))
       rgbaData[rN] = 1;
       rgbaData[gN] = 1;
       rgbaData[bN] = 1;

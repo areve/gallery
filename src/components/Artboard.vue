@@ -144,10 +144,6 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     
     let weight = force ?? 0.5
     weight = weight * weight
-    // TODO Artboard needs to maintain a floating point array of pixels
-    // * it will be x * y RGBA [1.0, 1.0, 1.0, 1.0] (later or RYBA HSVA option?)
-    // * the float array may get converted to the canvas at any frequency or on demand
-    // TODO the pencil/brush needs to be passed in to this drawPencil/Brush method
     drawPencil(artboardService.artwork.value.rgbaLayer, artworkX, artworkY, brush, pencilColor.value, pencilLastPoint, weight)
   
     pencilLastPoint = { x: artworkX, y: artworkY }

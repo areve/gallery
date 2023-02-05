@@ -44,8 +44,7 @@ export async function drawPencil(
   weight: number
 ) {
   if (!from) return;
-
-
+  
   const c = Color(color);
   const { r, g, b, a } = c.object();
   const col = [r / 255, g / 255, b / 255, a === undefined ? 1 : a / 255] as [number, number, number, number];
@@ -116,7 +115,6 @@ function applyBrush(
         rgbaData[gN] * color[1],
         rgbaData[bN] * color[2],
         rgbaData[aN] * color[3] * weight //weight squared, why here?
-
       ]
 
       const [oR, oG, oB, oA] = pixelMix(
@@ -160,8 +158,7 @@ function pixelMix(
   pixel: [number, number, number, number],
   color: [number, number, number, number]
 ): [number, number, number, number] {
-  // return [1, 1, 1, 1]
-  const weight = (color[3])
+  const weight = color[3]
   return [
     ((1 - weight) * pixel[0] + weight * color[0]),
     ((1 - weight) * pixel[1] + weight * color[1]),
