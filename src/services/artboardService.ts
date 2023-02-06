@@ -161,8 +161,8 @@ async function scale(by: number) {
     artwork.value.frame.x += dx;
     artwork.value.frame.y += dy;
   } else {
-    artwork.value.frame.width += clone.canvas.width;
-    artwork.value.frame.height += clone.canvas.height;
+    artwork.value.frame.width = artwork.value.bounds.width;
+    artwork.value.frame.height = artwork.value.bounds.height;
   }
 
   if (
