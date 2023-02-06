@@ -179,7 +179,7 @@ async function scale(by: number) {
 }
 
 function createContextFromFrame(width: number, height: number) {
-  const image = createContext(width, 1024);
+  const image = createContext(width, height);
   image.drawImage(
     artwork.value.context.canvas,
     artwork.value.frame.x,
