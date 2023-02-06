@@ -57,7 +57,6 @@ import { mouseUp, mouseDown } from "@/services/mouseService";
 import { galleryPanelVisible } from "@/services/editorAppState";
 import StatusBar from "@/components/StatusBar.vue";
 import ScaleToolPanel from "@/components/ScaleToolPanel.vue";
-import type PencilPanelVue from "@/components/PencilPanel.vue";
 
 useKeyboardHandler();
 

@@ -176,6 +176,7 @@ async function scale(by: number) {
     resetFrame();
   }
   drawOverlay();
+  resetRgbaLayer()
 }
 
 function createContextFromFrame(width: number, height: number) {
@@ -209,6 +210,7 @@ async function autoCrop() {
   artwork.value.bounds.width = cropped.canvas.width;
   artwork.value.bounds.height = cropped.canvas.height;
   artwork.value.context.drawImage(cropped.canvas, 0, 0);
+  resetRgbaLayer()
 }
 
 async function load(item: Artwork) {
