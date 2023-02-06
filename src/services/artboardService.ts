@@ -240,6 +240,24 @@ async function save() {
   return item;
 }
 
+async function scaleImage(
+  by: number
+) {
+  const context = artwork.value.context
+  const clone = cloneContext(artwork.value.context);
+  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
+  context.drawImage(
+    clone.canvas,
+    (context.canvas.width - clone.canvas.width * by) / 2,
+    (context.canvas.height - clone.canvas.height * by) / 2,
+    clone.canvas.width * by,
+    clone.canvas.height * by
+  );
+
+  resetRgbaLayer()
+}
+
 export default {
   resetFrame,
   createContextFromFrame,
@@ -251,5 +269,7 @@ export default {
   drawOverlay,
   load,
   save,
-  render
+  render,
+  scaleImage,
+  resetRgbaLayer
 };

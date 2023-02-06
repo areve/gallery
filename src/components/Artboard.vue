@@ -131,9 +131,11 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     const artworkX = x / artboardService.artwork.value.context.canvas.offsetWidth * artboardService.artwork.value.context.canvas.width
     const artworkY = y / artboardService.artwork.value.context.canvas.offsetHeight * artboardService.artwork.value.context.canvas.height
     clearCircle(artboardService.artwork.value.context, artworkX, artworkY, eraserSize.value / 2)
+    artboardService.resetRgbaLayer()
   } else if (toolSelected.value === 'drag') {
     artboardService.artwork.value.context.clearRect(0, 0, artboardService.artwork.value.bounds.width, artboardService.artwork.value.bounds.height)
     artboardService.artwork.value.context.putImageData(dragOrigin.value.data, snapDx, snapDy)
+    artboardService.resetRgbaLayer()
   } else if (toolSelected.value === 'drag-frame') {
     artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx
     artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy

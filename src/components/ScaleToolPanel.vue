@@ -3,7 +3,7 @@
     <h3>Scale</h3>
     <button
       type="button"
-      @click="scaleImage(artboardService.artwork.value.context, scaleImageBy)"
+      @click="artboardService.scaleImage(scaleImageBy)"
     >
       Scale image
     </button>
@@ -27,7 +27,6 @@
 </template>
 
 <script lang="ts" setup>
-import { scaleImage } from "@/lib/draw";
 import artboardService from "@/services/artboardService";
 import { scalePanelsVisible, scaleImageBy } from "@/services/editorAppState";
 </script>
