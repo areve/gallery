@@ -4,12 +4,7 @@
     <button type="button" @click="generateImage()">Generate</button>
     <button type="button" @click="variationImage()">Variation</button>
     <button type="button" @click="outpaintImage()">Outpaint</button>
-    <textarea
-      type="text"
-      id="prompt"
-      class="prompt"
-      v-model="prompt"
-    ></textarea>
+    <textarea type="text" id="prompt" class="prompt" v-model="prompt"></textarea>
   </section>
 </template>
 
@@ -50,15 +45,15 @@ async function outpaintImage() {
     artboardService.artwork.value.frame.height !== 1024 ||
     artboardService.artwork.value.frame.width !== 1024 ||
     artboardService.artwork.value.frame.width !==
-      artboardService.artwork.value.bounds.width ||
+    artboardService.artwork.value.bounds.width ||
     artboardService.artwork.value.frame.height !==
-      artboardService.artwork.value.bounds.height;
+    artboardService.artwork.value.bounds.height;
 
   const compositionData = compositionRequired
     ? {
-        context: cloneContext(artboardService.artwork.value.context),
-        frame: clone(artboardService.artwork.value.frame),
-      }
+      context: cloneContext(artboardService.artwork.value.context),
+      frame: clone(artboardService.artwork.value.frame),
+    }
     : null;
 
   const outpaintResult = await openAiService.outpaint({
@@ -72,8 +67,8 @@ async function outpaintImage() {
 
     await compositionService.flatten({
       metadata: artwork.metadata,
-      width: artwork.image.width,
-      height: artwork.image.height,
+      width: compositionData.context.canvas.width,
+      height: compositionData.context.canvas.height,
       layers: [
         {
           context: createContextFromImage(artwork.image),
