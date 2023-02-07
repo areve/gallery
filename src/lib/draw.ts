@@ -1,6 +1,4 @@
-import { cloneContext } from "./canvas";
 import Color from "color";
-import type { ArtworkOnCanvas } from "@/interfaces/Artwork";
 import type { Brush } from "@/interfaces/Brush";
 import type { RgbaLayer } from "@/interfaces/RgbaLayer";
 
