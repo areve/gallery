@@ -1,31 +1,16 @@
 <template>
   <div class="artboard-panel">
     <div class="artboard-wrap">
-      <div
-        class="artboard"
-        :style="{
-          'aspect-ratio':
-            artboardService.artwork.value.bounds.width +
-            ' / ' +
-            artboardService.artwork.value.bounds.height,
-        }"
-      >
-        <canvas
-          ref="canvas"
-          class="canvas"
-          @touchstart="mouseDown"
-          @mousedown="mouseDown"
-          @touchmove="mouseMove"
-          @mousemove="mouseMove"
-        ></canvas>
-        <canvas
-          ref="overlayCanvas"
-          class="overlay-canvas"
-          @touchstart="mouseDown"
-          @mousedown="mouseDown"
-          @touchmove="mouseMove"
-          @mousemove="mouseMove"
-        ></canvas>
+      <div class="artboard" :style="{
+        'aspect-ratio':
+          artboardService.artwork.value.bounds.width +
+          ' / ' +
+          artboardService.artwork.value.bounds.height,
+      }">
+        <canvas ref="canvas" class="canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
+          @mousemove="mouseMove"></canvas>
+        <canvas ref="overlayCanvas" class="overlay-canvas" @touchstart="mouseDown" @mousedown="mouseDown"
+          @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
       </div>
     </div>
   </div>
@@ -39,11 +24,10 @@ import {
   toolSelected,
 } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
-import { drawPencil } from "@/lib/rgba-draw";
 import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
-import { makeBrush } from "@/lib/brush";
+import { brushLine, makeBrush } from "@/lib/rgba-brush";
 import { clearCircle } from "@/lib/canvas-draw";
 
 const dragOrigin = ref<DragOrigin | null>();
@@ -174,14 +158,16 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 
     let weight = force ?? 0.5;
     weight = weight * weight;
-    drawPencil(
+    brushLine(
       artboardService.artwork.value.rgbaLayer,
-      artworkX,
-      artworkY,
+      {
+        x: artworkX,
+        y: artworkY,
+      },
+      pencilLastPoint,
       brush,
       pencilColor.value,
-      pencilLastPoint,
-      weight
+      weight,
     );
 
     pencilLastPoint = { x: artworkX, y: artworkY };
