@@ -40,7 +40,7 @@ import {
 } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
 import { clearCircle, drawPencil } from "@/lib/draw";
-import { globalDragOrigin } from "@/services/mouseService";
+import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { makeBrush } from "@/lib/brush";
@@ -87,46 +87,6 @@ watchSyncEffect(() => {
   pencilLastPoint = null;
 });
 
-interface PointerEvent {
-  readonly x: number;
-  readonly y: number;
-  readonly index?: number;
-  readonly sourceEvent: TouchEvent | MouseEvent;
-  readonly force?: number;
-  readonly radiusX?: number;
-  readonly radiusY?: number;
-}
-function toPointerEvents(event: TouchEvent | MouseEvent) {
-  const pointerEvents: PointerEvent[] = [];
-  if ((event as TouchEvent).touches) {
-    const touchEvent = event as TouchEvent;
-    for (let i = 0; i < touchEvent.touches.length; i++) {
-      const touch = touchEvent.touches[i];
-      const rect = (touch.target as any).getBoundingClientRect();
-      const pointerEvent: PointerEvent = {
-        x: touch.clientX - window.pageXOffset - rect.left,
-        y: touch.clientY - window.pageYOffset - rect.top,
-        index: i,
-        sourceEvent: event,
-        force: touch.force,
-        radiusX: touch.radiusX,
-        radiusY: touch.radiusY,
-      };
-      pointerEvents.push(pointerEvent);
-    }
-  } else {
-    const mouseEvent: MouseEvent = event as MouseEvent;
-    const pointerEvent: PointerEvent = {
-      x: mouseEvent.offsetX,
-      y: mouseEvent.offsetY,
-      index: 0,
-      sourceEvent: event,
-    };
-    pointerEvents.push(pointerEvent);
-  }
-  return pointerEvents;
-}
-
 function mouseDown(event: MouseEvent | TouchEvent) {
   const { x, y } = toPointerEvents(event)[0];
 
@@ -143,7 +103,7 @@ function mouseDown(event: MouseEvent | TouchEvent) {
   };
 }
 
-const radius = 25; // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
+const radius = 5; // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
 
 const brush = makeBrush(radius);
 

@@ -29,10 +29,10 @@
 <script lang="ts" setup>
 import ArtworkSettingsPanel from "@/components/ArtworkSettingsPanel.vue";
 import OpenAiPanel from "@/components/OpenAiPanel.vue";
-import Artboard from "@/components/Artboard.vue";
+import Artboard from "@/components/ArtboardPanel.vue";
 import AppSettings from "@/components/AppSettings.vue";
-import Menu from "@/components/Menu.vue";
-import Gallery from "@/components/Gallery.vue";
+import Menu from "@/components/TopMenu.vue";
+import Gallery from "@/components/GalleryPanel.vue";
 import ToolPanel from "@/components/ToolPanel.vue";
 import PencilPanel from "@/components/PencilPanel.vue";
 
