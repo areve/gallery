@@ -1,4 +1,4 @@
-import { Rect } from "./Rect";
+import type { Rect } from "./Rect";
 
 export interface DragOrigin {
   x: number;

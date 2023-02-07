@@ -16,8 +16,6 @@ export interface HistoryItemEdit {
   error?: string;
   prompt: string;
   filename: string;
-  // image: Blob;
-  // mask: Blob;
   version: "OpenAI";
   created?: string;
 }
