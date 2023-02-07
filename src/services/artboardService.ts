@@ -112,7 +112,7 @@ function resetRgbaLayer() {
 
 export function resetArtwork() {
   if (!artwork.value.context) return;
-  const [width, height, channels] = [1024, 1024, 4];
+  const [width, height] = [1024, 1024];
   artwork.value.bounds.width = width;
   artwork.value.bounds.height = height;
   artwork.value.context.clearRect(

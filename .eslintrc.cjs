@@ -14,8 +14,22 @@ module.exports = {
   },
   rules: {
     "no-sparse-arrays": "off",
-    "no-unused-vars": "warn",
-    "prefer-const": "warn",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "warn", // or "error"
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_",
+      },
+    ],
+    "prefer-const": [
+      "warn",
+      {
+        destructuring: "all",
+        ignoreReadBeforeAssign: false,
+      },
+    ],
     "vue/multi-word-component-names": "warn",
   },
 };
