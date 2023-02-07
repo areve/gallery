@@ -110,29 +110,29 @@ function applyBrush(
   }
 }
 
-function pixelAdd(
-  pixel: [number, number, number, number],
-  color: [number, number, number, number]
-): [number, number, number, number] {
-  return [
-    pixel[0] + (color[3] / 255) * color[0],
-    pixel[1] + (color[3] / 255) * color[1],
-    pixel[2] + (color[3] / 255) * color[2],
-    pixel[3] + color[3],
-  ];
-}
+// function pixelAdd(
+//   pixel: [number, number, number, number],
+//   color: [number, number, number, number]
+// ): [number, number, number, number] {
+//   return [
+//     pixel[0] + (color[3] / 255) * color[0],
+//     pixel[1] + (color[3] / 255) * color[1],
+//     pixel[2] + (color[3] / 255) * color[2],
+//     pixel[3] + color[3],
+//   ];
+// }
 
-function pixelSub(
-  pixel: [number, number, number, number],
-  color: [number, number, number, number]
-): [number, number, number, number] {
-  return [
-    pixel[0] - (color[3] / 255) * color[0],
-    pixel[1] - (color[3] / 255) * color[1],
-    pixel[2] - (color[3] / 255) * color[2],
-    pixel[3] + color[3],
-  ];
-}
+// function pixelSub(
+//   pixel: [number, number, number, number],
+//   color: [number, number, number, number]
+// ): [number, number, number, number] {
+//   return [
+//     pixel[0] - (color[3] / 255) * color[0],
+//     pixel[1] - (color[3] / 255) * color[1],
+//     pixel[2] - (color[3] / 255) * color[2],
+//     pixel[3] + color[3],
+//   ];
+// }
 
 function pixelMix(
   pixel: [number, number, number, number],
