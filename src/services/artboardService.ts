@@ -1,5 +1,5 @@
 import { clone, rectanglesIntersect } from "@/lib/utils";
-import { cloneContext, createContext, autoCropImage } from "@/lib/canvas";
+import { cloneContext, createContext, autoCropImage } from "@/lib/canvas-utils";
 import { ref } from "vue";
 import type { Artwork, ArtworkActive } from "@/interfaces/Artwork";
 import {

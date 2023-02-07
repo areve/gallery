@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import { cloneContext, createContextFromImage } from "@/lib/canvas";
+import { cloneContext, createContextFromImage } from "@/lib/canvas-utils";
 import artboardService from "@/services/artboardService";
 import compositionService, { createLayer } from "@/services/compositionService";
 import { openAiPanelsVisible, prompt } from "@/services/editorAppState";

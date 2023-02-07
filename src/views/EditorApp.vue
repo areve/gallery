@@ -37,13 +37,13 @@ import ToolPanel from "@/components/ToolPanel.vue";
 import PencilPanel from "@/components/PencilPanel.vue";
 
 import { watch } from "vue";
-import { mostRecentPrompt } from "@/lib/utils";
-import { shotgunEffect } from "@/lib/effects/effects-shotgun";
+import { mostRecentPrompt } from "@/lib/artwork-utils";
+import { shotgunEffect } from "@/lib/canvas-effects/canvas-effects-shotgun";
 import {
   rgb2rgbEffect,
   rgb2rybEffect,
   ryb2rgbEffect,
-} from "@/lib/effects/effects-ryb2rgb";
+} from "@/lib/canvas-effects/canvas-effects-ryb2rgb";
 
 import { onApplyEffect, onAction } from "@/services/appActions";
 import { useKeyboardHandler } from "@/services/keyboardHandler";

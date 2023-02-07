@@ -1,6 +1,4 @@
-
-
 export interface Coord {
-    x: number;
-    y: number;
+  x: number;
+  y: number;
 }

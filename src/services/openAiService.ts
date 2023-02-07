@@ -1,5 +1,6 @@
-import { clone, extendMetadata, getDatestamp, last } from "@/lib/utils";
-import { imageCountEmptyPixels } from "@/lib/canvas";
+import { clone, getDatestamp, last } from "@/lib/utils";
+import { extendMetadata } from "@/lib/artwork-utils";
+import { imageCountEmptyPixels } from "@/lib/canvas-utils";
 import {
   openAiEditImage,
   openAiGenerateImage,

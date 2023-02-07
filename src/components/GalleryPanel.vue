@@ -65,7 +65,7 @@
 
 <script lang="ts" setup>
 import { onMounted } from "vue";
-import { mostRecentError, mostRecentPrompt } from "@/lib/utils";
+import { mostRecentError, mostRecentPrompt } from "@/lib/artwork-utils";
 import {
   deleteGalleryItem,
   galleryItems,

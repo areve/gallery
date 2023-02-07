@@ -1,8 +1,6 @@
-import Color from "color";
 import type { Brush } from "@/interfaces/Brush";
-import type { RgbaLayer } from "@/interfaces/RgbaLayer";
+import type { RgbaColor, RgbaLayer } from "@/interfaces/RgbaLayer";
 import type { Coord } from "@/interfaces/Coord";
-
 
 export function makeBrush(radius: number) {
   const width = radius * 2;
@@ -35,36 +33,27 @@ export function makeBrush(radius: number) {
   };
 }
 
-export async function brushLine(
+export async function brushApply(
   rgbaLayer: RgbaLayer,
-  to: Coord,
   from: Coord | null,
+  to: Coord,
   brush: Brush,
-  color: string,
-  weight: number,
+  color: RgbaColor,
+  weight: number
 ) {
-  if (!from) return;
-
-  const c = Color(color);
-  const { r, g, b, a } = c.object();
-  const col = [r / 255, g / 255, b / 255, a === undefined ? 1 : a / 255] as [
-    number,
-    number,
-    number,
-    number
-  ];
-
-  brushLine1(rgbaLayer, from, to, brush, col, weight);
-  rgbaLayer.modified = new Date();
+  if (from) {
+    brushLine(rgbaLayer, from, to, brush, color, weight);
+  } else {
+    brushPoint(rgbaLayer, to, brush, color, weight);
+  }
 }
 
-
-function brushLine1(
+function brushLine(
   rgbaLayer: RgbaLayer,
   from: Coord,
   to: Coord,
   brush: Brush,
-  color: [number, number, number, number],
+  color: RgbaColor,
   weight: number
 ) {
   const dx = from.x - to.x;
@@ -74,60 +63,56 @@ function brushLine1(
   for (let i = 0; i < d; i++) {
     const x = Math.floor(to.x + (i / d) * dx);
     const y = Math.floor(to.y + (i / d) * dy);
-    applyBrush(rgbaLayer, brush, x, y, color, weight);
+    brushPoint(rgbaLayer, { x, y }, brush, color, weight);
   }
+
+  rgbaLayer.modified = new Date();
 }
 
-function applyBrush(
+function brushPoint(
   rgbaLayer: RgbaLayer,
+  to: Coord,
   brush: Brush,
-  x: number,
-  y: number,
-  color: [number, number, number, number],
+  color: RgbaColor,
   weight: number
 ) {
   const brushHeight = brush.height;
   const brushWidth = brush.width;
-  const rgbaData = brush.data;
+  const brushData = brush.data;
   const width = rgbaLayer.width;
   const data = rgbaLayer.data;
+  const { x, y } = to;
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
-      const rN = (bY * brushWidth + bX) * 4;
-      const gN = rN + 1;
-      const bN = rN + 2;
-      const aN = rN + 3;
+      const brushR = (bY * brushWidth + bX) * 4;
+      const [brushG, brushB, brushA] = [brushR + 1, brushR + 2, brushR + 3];
 
-      const orN =
+      const dataR =
         (width * (y + bY - brushHeight / 2) + x + bX - brushWidth / 2) * 4;
-      const ogN = orN + 1;
-      const obN = orN + 2;
-      const oaN = orN + 3;
+      const [dataG, dataB, dataA] = [dataR + 1, dataR + 2, dataR + 3];
 
-      const brushPixel: [number, number, number, number] = [
-        rgbaData[rN] * color[0],
-        rgbaData[gN] * color[1],
-        rgbaData[bN] * color[2],
-        rgbaData[aN] * color[3] * weight, //weight squared, why here?
-      ];
-
-      const [oR, oG, oB, oA] = pixelMix(
-        [data[orN], data[ogN], data[obN], data[oaN]],
-        brushPixel
+      const [r, g, b, a] = pixelMix(
+        [data[dataR], data[dataG], data[dataB], data[dataA]],
+        <RgbaColor>[
+          brushData[brushR] * color[0],
+          brushData[brushG] * color[1],
+          brushData[brushB] * color[2],
+          brushData[brushA] * color[3] * weight,
+        ]
       );
 
-      data[orN] = oR;
-      data[ogN] = oG;
-      data[obN] = oB;
-      data[oaN] = oA;
+      data[dataR] = r;
+      data[dataG] = g;
+      data[dataB] = b;
+      data[dataA] = a;
     }
   }
 }
 
 // function pixelAdd(
-//   pixel: [number, number, number, number],
-//   color: [number, number, number, number]
-// ): [number, number, number, number] {
+//   pixel: RgbaColor,
+//   color: RgbaColor
+// ): RgbaColor {
 //   return [
 //     pixel[0] + (color[3] / 255) * color[0],
 //     pixel[1] + (color[3] / 255) * color[1],
@@ -137,9 +122,9 @@ function applyBrush(
 // }
 
 // function pixelSub(
-//   pixel: [number, number, number, number],
-//   color: [number, number, number, number]
-// ): [number, number, number, number] {
+//   pixel: RgbaColor,
+//   color: RgbaColor
+// ): RgbaColor {
 //   return [
 //     pixel[0] - (color[3] / 255) * color[0],
 //     pixel[1] - (color[3] / 255) * color[1],
@@ -148,10 +133,7 @@ function applyBrush(
 //   ];
 // }
 
-function pixelMix(
-  pixel: [number, number, number, number],
-  color: [number, number, number, number]
-): [number, number, number, number] {
+function pixelMix(pixel: RgbaColor, color: RgbaColor): RgbaColor {
   const weight = color[3];
   return [
     (1 - weight) * pixel[0] + weight * color[0],

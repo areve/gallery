@@ -1,16 +1,31 @@
 <template>
   <div class="artboard-panel">
     <div class="artboard-wrap">
-      <div class="artboard" :style="{
-        'aspect-ratio':
-          artboardService.artwork.value.bounds.width +
-          ' / ' +
-          artboardService.artwork.value.bounds.height,
-      }">
-        <canvas ref="canvas" class="canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
-          @mousemove="mouseMove"></canvas>
-        <canvas ref="overlayCanvas" class="overlay-canvas" @touchstart="mouseDown" @mousedown="mouseDown"
-          @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
+      <div
+        class="artboard"
+        :style="{
+          'aspect-ratio':
+            artboardService.artwork.value.bounds.width +
+            ' / ' +
+            artboardService.artwork.value.bounds.height,
+        }"
+      >
+        <canvas
+          ref="canvas"
+          class="canvas"
+          @touchstart="mouseDown"
+          @mousedown="mouseDown"
+          @touchmove="mouseMove"
+          @mousemove="mouseMove"
+        ></canvas>
+        <canvas
+          ref="overlayCanvas"
+          class="overlay-canvas"
+          @touchstart="mouseDown"
+          @mousedown="mouseDown"
+          @touchmove="mouseMove"
+          @mousemove="mouseMove"
+        ></canvas>
       </div>
     </div>
   </div>
@@ -27,8 +42,10 @@ import { onMounted, ref, watchSyncEffect } from "vue";
 import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
-import { brushLine, makeBrush } from "@/lib/rgba-brush";
+import { brushApply, makeBrush } from "@/lib/rgba-brush";
 import { clearCircle } from "@/lib/canvas-draw";
+import Color from "color";
+import type { RgbaColor } from "@/interfaces/RgbaLayer";
 
 const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!);
@@ -158,16 +175,28 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 
     let weight = force ?? 0.5;
     weight = weight * weight;
-    brushLine(
+
+    const colorToRgbaColor = (value: string) => {
+      const color = Color(value);
+      const { r, g, b, a } = color.object();
+      return [
+        r / 255,
+        g / 255,
+        b / 255,
+        a === undefined ? 1 : a / 255,
+      ] as RgbaColor;
+    };
+
+    brushApply(
       artboardService.artwork.value.rgbaLayer,
+      pencilLastPoint,
       {
         x: artworkX,
         y: artworkY,
       },
-      pencilLastPoint,
       brush,
-      pencilColor.value,
-      weight,
+      colorToRgbaColor(pencilColor.value),
+      weight
     );
 
     pencilLastPoint = { x: artworkX, y: artworkY };
