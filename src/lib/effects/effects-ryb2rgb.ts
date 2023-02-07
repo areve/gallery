@@ -1,4 +1,4 @@
-import { rgb2ryb, ryb2rgb } from "./color-convert";
+import { rgb2ryb, ryb2rgb } from "../color-convert";
 
 export function rgb2rybEffect(context: CanvasRenderingContext2D) {
   const w = context.canvas.width;

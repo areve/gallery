@@ -39,11 +39,12 @@ import {
   toolSelected,
 } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
-import { clearCircle, drawPencil } from "@/lib/draw";
+import { drawPencil } from "@/lib/rgba-draw";
 import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { makeBrush } from "@/lib/brush";
+import { clearCircle } from "@/lib/canvas-draw";
 
 const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!);
