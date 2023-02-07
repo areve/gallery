@@ -22,7 +22,7 @@ export interface ArtworkInMemory extends Artwork {
   dataUrl: string;
 }
 
-export interface ArtworkActive extends Artwork, ArtworkOnCanvas {
+export interface ArtworkActive extends Artwork, ArtworkOnCanvas, ArtworkOnRgbaLayer {
   frame: Rect;
   bounds: Rect;
   overlayContext: CanvasRenderingContext2D;
@@ -30,6 +30,9 @@ export interface ArtworkActive extends Artwork, ArtworkOnCanvas {
 
 export interface ArtworkOnCanvas extends Artwork {
   context: CanvasRenderingContext2D;
+}
+
+export interface ArtworkOnRgbaLayer extends Artwork {
   rgbaLayer: RgbaLayer;
 }
 
