@@ -28,13 +28,18 @@ export async function drawPencil(
   weight: number
 ) {
   if (!from) return;
-  
+
   const c = Color(color);
   const { r, g, b, a } = c.object();
-  const col = [r / 255, g / 255, b / 255, a === undefined ? 1 : a / 255] as [number, number, number, number];
+  const col = [r / 255, g / 255, b / 255, a === undefined ? 1 : a / 255] as [
+    number,
+    number,
+    number,
+    number
+  ];
 
   brushLine1(rgbaLayer, from, { x, y }, brush, col, weight);
-  rgbaLayer.modified = new Date()
+  rgbaLayer.modified = new Date();
 }
 
 interface Coord {
@@ -50,7 +55,6 @@ function brushLine1(
   color: [number, number, number, number],
   weight: number
 ) {
-
   const dx = from.x - to.x;
   const dy = from.y - to.y;
   const d = Math.sqrt(dy * dy + dx * dx);
@@ -58,14 +62,7 @@ function brushLine1(
   for (let i = 0; i < d; i++) {
     const x = Math.floor(to.x + (i / d) * dx);
     const y = Math.floor(to.y + (i / d) * dy);
-    applyBrush(
-      rgbaLayer,
-      brush,
-      x,
-      y,
-      color,
-      weight
-    );
+    applyBrush(rgbaLayer, brush, x, y, color, weight);
   }
 }
 
@@ -77,11 +74,11 @@ function applyBrush(
   color: [number, number, number, number],
   weight: number
 ) {
-  const brushHeight = brush.height
-  const brushWidth = brush.width
-  const rgbaData = brush.data
-  const width = rgbaLayer.width
-  const data = rgbaLayer.data
+  const brushHeight = brush.height;
+  const brushWidth = brush.width;
+  const rgbaData = brush.data;
+  const width = rgbaLayer.width;
+  const data = rgbaLayer.data;
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
       const rN = (bY * brushWidth + bX) * 4;
@@ -99,8 +96,8 @@ function applyBrush(
         rgbaData[rN] * color[0],
         rgbaData[gN] * color[1],
         rgbaData[bN] * color[2],
-        rgbaData[aN] * color[3] * weight //weight squared, why here?
-      ]
+        rgbaData[aN] * color[3] * weight, //weight squared, why here?
+      ];
 
       const [oR, oG, oB, oA] = pixelMix(
         [data[orN], data[ogN], data[obN], data[oaN]],
@@ -123,7 +120,7 @@ function pixelAdd(
     pixel[0] + (color[3] / 255) * color[0],
     pixel[1] + (color[3] / 255) * color[1],
     pixel[2] + (color[3] / 255) * color[2],
-    pixel[3] + color[3]
+    pixel[3] + color[3],
   ];
 }
 
@@ -135,7 +132,7 @@ function pixelSub(
     pixel[0] - (color[3] / 255) * color[0],
     pixel[1] - (color[3] / 255) * color[1],
     pixel[2] - (color[3] / 255) * color[2],
-    pixel[3] + color[3]
+    pixel[3] + color[3],
   ];
 }
 
@@ -143,12 +140,12 @@ function pixelMix(
   pixel: [number, number, number, number],
   color: [number, number, number, number]
 ): [number, number, number, number] {
-  const weight = color[3]
+  const weight = color[3];
   return [
-    ((1 - weight) * pixel[0] + weight * color[0]),
-    ((1 - weight) * pixel[1] + weight * color[1]),
-    ((1 - weight) * pixel[2] + weight * color[2]),
-    pixel[3] + color[3]
+    (1 - weight) * pixel[0] + weight * color[0],
+    (1 - weight) * pixel[1] + weight * color[1],
+    (1 - weight) * pixel[2] + weight * color[2],
+    pixel[3] + color[3],
   ];
 }
 

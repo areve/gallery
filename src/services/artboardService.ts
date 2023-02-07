@@ -28,7 +28,7 @@ const artwork = ref<ArtworkActive>({
   },
   context: undefined!,
   overlayContext: undefined!,
-  rgbaLayer: undefined!
+  rgbaLayer: undefined!,
 });
 
 function resetFrame() {
@@ -63,56 +63,56 @@ function drawOverlay() {
 }
 
 export function render() {
-  if (!artwork.value.context) return
-  const context = artwork.value.context
-  if (artwork.value.modified === artwork.value.rgbaLayer.modified) return
-  artwork.value.modified = artwork.value.rgbaLayer.modified
+  if (!artwork.value.context) return;
+  const context = artwork.value.context;
+  if (artwork.value.modified === artwork.value.rgbaLayer.modified) return;
+  artwork.value.modified = artwork.value.rgbaLayer.modified;
 
-  const data = artwork.value.rgbaLayer.data
+  const data = artwork.value.rgbaLayer.data;
   const w = context.canvas.width;
   const h = context.canvas.height;
   const imageData = context.getImageData(0, 0, w, h);
   const pix = imageData.data;
 
-  const channels = 4
+  const channels = 4;
   const max = w * h * channels;
   for (let i = 0; i < max; i += channels) {
-    pix[i] = Math.floor(data[i] * 255)
-    pix[i + 1] = Math.floor(data[i + 1] * 255)
-    pix[i + 2] = Math.floor(data[i + 2] * 255)
-    pix[i + 3] = Math.floor(data[i + 3] * 255)
+    pix[i] = Math.floor(data[i] * 255);
+    pix[i + 1] = Math.floor(data[i + 1] * 255);
+    pix[i + 2] = Math.floor(data[i + 2] * 255);
+    pix[i + 3] = Math.floor(data[i + 3] * 255);
   }
 
   context.putImageData(imageData, 0, 0);
 }
 
 function resetRgbaLayer() {
-  const channels = 4
-  const height = artwork.value.context.canvas.height
-  const width = artwork.value.context.canvas.width
+  const channels = 4;
+  const height = artwork.value.context.canvas.height;
+  const width = artwork.value.context.canvas.width;
   artwork.value.rgbaLayer = {
     height,
     width,
     data: new Float32Array(width * height * channels),
-    modified: new Date()
-  }
+    modified: new Date(),
+  };
 
   const imageData = artwork.value.context.getImageData(0, 0, width, height);
   const pix = imageData.data;
 
-  const data = artwork.value.rgbaLayer.data
+  const data = artwork.value.rgbaLayer.data;
   const max = width * height * channels;
   for (let i = 0; i < max; i += channels) {
-    data[i] = pix[i] / 255
-    data[i + 1] = pix[i + 1] / 255
-    data[i + 2] = pix[i + 2] / 255
-    data[i + 3] = pix[i + 3] / 255
+    data[i] = pix[i] / 255;
+    data[i + 1] = pix[i + 1] / 255;
+    data[i + 2] = pix[i + 2] / 255;
+    data[i + 3] = pix[i + 3] / 255;
   }
 }
 
 export function resetArtwork() {
   if (!artwork.value.context) return;
-  const [width, height, channels] = [1024, 1024, 4]
+  const [width, height, channels] = [1024, 1024, 4];
   artwork.value.bounds.width = width;
   artwork.value.bounds.height = height;
   artwork.value.context.clearRect(
@@ -122,7 +122,7 @@ export function resetArtwork() {
     artwork.value.context.canvas.height
   );
 
-  resetRgbaLayer()
+  resetRgbaLayer();
 
   artwork.value.metadata = { history: [] };
   artwork.value.filename = "";
@@ -176,7 +176,7 @@ async function scale(by: number) {
     resetFrame();
   }
   drawOverlay();
-  resetRgbaLayer()
+  resetRgbaLayer();
 }
 
 function createContextFromFrame(width: number, height: number) {
@@ -210,7 +210,7 @@ async function autoCrop() {
   artwork.value.bounds.width = cropped.canvas.width;
   artwork.value.bounds.height = cropped.canvas.height;
   artwork.value.context.drawImage(cropped.canvas, 0, 0);
-  resetRgbaLayer()
+  resetRgbaLayer();
 }
 
 async function load(item: Artwork) {
@@ -230,8 +230,7 @@ async function load(item: Artwork) {
   artwork.value.filename = artworkImage.filename;
   artwork.value.metadata = clone(artworkImage.metadata);
   artwork.value.modified = new Date(artworkImage.modified);
-  resetRgbaLayer()
-
+  resetRgbaLayer();
 }
 
 async function save() {
@@ -242,10 +241,8 @@ async function save() {
   return item;
 }
 
-async function scaleImage(
-  by: number
-) {
-  const context = artwork.value.context
+async function scaleImage(by: number) {
+  const context = artwork.value.context;
   const clone = cloneContext(artwork.value.context);
   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
@@ -257,7 +254,7 @@ async function scaleImage(
     clone.canvas.height * by
   );
 
-  resetRgbaLayer()
+  resetRgbaLayer();
 }
 
 export default {
@@ -273,5 +270,5 @@ export default {
   save,
   render,
   scaleImage,
-  resetRgbaLayer
+  resetRgbaLayer,
 };

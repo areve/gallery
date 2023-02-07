@@ -25,7 +25,7 @@ export function findErrorMessage(error: any): string {
 }
 
 export function loadImage(dataUrl: string): Promise<HTMLImageElement> {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const tempImage = new Image();
     tempImage.onload = () => {
       resolve(tempImage);
@@ -40,7 +40,7 @@ export function loadImage(dataUrl: string): Promise<HTMLImageElement> {
 export function getDatestamp() {
   return new Date()
     .toISOString()
-    .replace(/[^\dTt\.]/g, "")
+    .replace(/[^\dTt.]/g, "")
     .replace(/\..*/g, "");
 }
 

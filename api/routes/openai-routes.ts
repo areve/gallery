@@ -300,6 +300,6 @@ function base64ToFile(filePath, data) {
 function getDatestamp() {
   return new Date()
     .toISOString()
-    .replace(/[^\dTt\.]/g, "")
+    .replace(/[^\dTt.]/g, "")
     .replace(/\..*/g, "");
 }

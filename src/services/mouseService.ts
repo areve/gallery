@@ -6,6 +6,6 @@ export function mouseDown(event: MouseEvent | TouchEvent) {
   globalDragOrigin.value = event;
 }
 
-export function mouseUp(event: MouseEvent | TouchEvent) {
+export function mouseUp(_event: MouseEvent | TouchEvent) {
   globalDragOrigin.value = null;
 }

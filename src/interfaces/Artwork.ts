@@ -30,7 +30,7 @@ export interface ArtworkActive extends Artwork, ArtworkOnCanvas {
 
 export interface ArtworkOnCanvas extends Artwork {
   context: CanvasRenderingContext2D;
-  rgbaLayer: RgbaLayer    
+  rgbaLayer: RgbaLayer;
 }
 
 export interface ArtworkImage extends Artwork {

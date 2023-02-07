@@ -60,6 +60,8 @@ function tryReadMetadata(filePath): ArtworkMetadata {
 
   try {
     result.history = readMetadata(filePath).history || [];
-  } catch (e) {}
+  } catch (e) {
+    result.history = [];
+  }
   return result;
 }

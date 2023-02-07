@@ -26,6 +26,7 @@
     <ul class="gallery">
       <li
         v-for="item in galleryItems"
+        :key="item.filename"
         class="gallery-item"
         :class="{
           selected: selectedItem?.filename === item.filename,
@@ -63,7 +64,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted } from "vue";
 import { mostRecentError, mostRecentPrompt } from "@/lib/utils";
 import {
   deleteGalleryItem,

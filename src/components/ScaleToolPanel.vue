@@ -1,10 +1,7 @@
 <template>
   <section class="tool-panel" :hidden="!scalePanelsVisible">
     <h3>Scale</h3>
-    <button
-      type="button"
-      @click="artboardService.scaleImage(scaleImageBy)"
-    >
+    <button type="button" @click="artboardService.scaleImage(scaleImageBy)">
       Scale image
     </button>
     <label for="scaleBy">by</label>

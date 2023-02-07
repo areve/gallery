@@ -12,4 +12,10 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "latest",
   },
+  rules: {
+    "no-sparse-arrays": "off",
+    "no-unused-vars": "warn",
+    "prefer-const": "warn",
+    "vue/multi-word-component-names": "warn",
+  },
 };

@@ -1,7 +1,3 @@
-import type { RgbaLayer } from "./RgbaLayer"
+import type { RgbaLayer } from "./RgbaLayer";
 
-export interface Brush extends RgbaLayer {
-
-}
-
-
+export interface Brush extends RgbaLayer {}

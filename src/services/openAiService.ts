@@ -29,6 +29,7 @@ interface OutpaintOptions {
   image: CanvasRenderingContext2D;
   metadata: ArtworkMetadata;
 }
+
 interface VariationOptions {
   image: CanvasRenderingContext2D;
   metadata: ArtworkMetadata;
