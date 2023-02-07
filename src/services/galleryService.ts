@@ -7,8 +7,6 @@ import { clone } from "@/lib/utils";
 import { ref } from "vue";
 import galleryApi from "./galleryApi";
 
-const id = () => Math.random();
-
 export const selectedItem = ref<Artwork | null>(null);
 
 export const galleryItems = ref<Artwork[]>([]);
@@ -62,14 +60,4 @@ export function updateGalleryItem(updatedItem: Artwork) {
   } else {
     galleryItems.value = [updatedItem, ...galleryItems.value];
   }
-}
-
-function safeDate(value: Date | string | null): Date {
-  if (!value) return new Date(0);
-  if (typeof value === "string") {
-    console.warn("date is string", value);
-    return new Date(value);
-  }
-
-  return value;
 }

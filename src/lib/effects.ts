@@ -1,5 +1,3 @@
-import { cloneContext } from "./canvas";
-
 export function shotgunEffect(context: CanvasRenderingContext2D) {
   for (let i = 0; i < 5000; i++) {
     const x = Math.random() * context.canvas.width;

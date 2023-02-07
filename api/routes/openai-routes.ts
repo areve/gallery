@@ -186,14 +186,6 @@ openaiRoutes.post("/createImageEdit", async (req, res) => {
       `create image edit from: ${config.tempDir}/${imageFilename}, mask ${config.tempDir}/${maskFilename},  prompt: ${prompt}`
     );
 
-  const request: CreateImageRequest = {
-    prompt,
-    n: 1,
-    size: "1024x1024",
-    response_format: "b64_json",
-    user: undefined,
-  };
-
   let data, datestamp;
   if (mockRequests) {
     data = JSON.parse(

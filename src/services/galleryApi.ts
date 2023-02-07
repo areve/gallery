@@ -8,7 +8,7 @@ import type {
   ArtworkWithDatesAsIso,
 } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
-import axios, { Axios, type AxiosResponse } from "axios";
+import axios, { type AxiosResponse } from "axios";
 
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   let response: AxiosResponse<ArtworkWithDatesAsIso>;
