@@ -19,7 +19,6 @@
     "express-http-proxy": "^1.6.3",
     "lodash": "^4.17.21",
     "openai": "^3.1.0",
-    "pinia": "^2.0.28",
     "png-metadata": "^1.0.2",
     "sanitize-filename": "^1.6.3",
     "uuid": "^9.0.0",

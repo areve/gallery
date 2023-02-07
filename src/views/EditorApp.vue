@@ -12,7 +12,6 @@
         <Artboard />
         <PencilPanel />
       </div>
-      <!-- <div class="below-artboard"> -->
 
       <ArtworkSettingsPanel />
       <AppSettings />
@@ -20,7 +19,6 @@
       <OpenAiPanel />
       <ToolPanel />
       <StatusBar />
-      <!-- </div> -->
     </main>
     <aside class="side-panel" :hidden="!galleryPanelVisible">
       <Gallery />
@@ -130,10 +128,6 @@ async function saveArtwork() {
   max-width: 30%;
   overflow-y: scroll;
   overflow-x: hidden;
-}
-
-.below-artboard {
-  background-color: #f0f7;
 }
 
 .artboard-wrap {
