@@ -3,51 +3,64 @@
     <div
       class="pencil red"
       @click="(pencilColor = '#ff0000'), (toolSelected = 'pencil')"
-      :class="{ selected: pencilColor === 'red' && toolSelected === 'pencil'}"
+      :class="{ selected: pencilColor === 'red' && toolSelected === 'pencil' }"
     ></div>
     <div
       class="pencil orange"
       @click="(pencilColor = 'orange'), (toolSelected = 'pencil')"
-      :class="{ selected: pencilColor === 'orange' && toolSelected === 'pencil'}"
+      :class="{
+        selected: pencilColor === 'orange' && toolSelected === 'pencil',
+      }"
     ></div>
     <div
       class="pencil yellow"
       @click="(pencilColor = 'yellow'), (toolSelected = 'pencil')"
-      :class="{ selected: pencilColor === 'yellow' && toolSelected === 'pencil'}"
+      :class="{
+        selected: pencilColor === 'yellow' && toolSelected === 'pencil',
+      }"
     ></div>
     <div
       class="pencil green"
       @click="(pencilColor = 'green'), (toolSelected = 'pencil')"
-      :class="{ selected: pencilColor === 'green' && toolSelected === 'pencil'}"
+      :class="{
+        selected: pencilColor === 'green' && toolSelected === 'pencil',
+      }"
     ></div>
     <div
       class="pencil blue"
       @click="(pencilColor = 'blue'), (toolSelected = 'pencil')"
-      :class="{ selected: pencilColor === 'blue' && toolSelected === 'pencil'}"
+      :class="{ selected: pencilColor === 'blue' && toolSelected === 'pencil' }"
     ></div>
     <div
       class="pencil purple"
       @click="(pencilColor = 'purple'), (toolSelected = 'pencil')"
-      :class="{ selected: pencilColor === 'purple' && toolSelected === 'pencil'}"
+      :class="{
+        selected: pencilColor === 'purple' && toolSelected === 'pencil',
+      }"
     ></div>
     <div
       class="pencil black"
       @click="(pencilColor = 'black'), (toolSelected = 'pencil')"
-      :class="{ selected: pencilColor === 'black' && toolSelected === 'pencil'}"
+      :class="{
+        selected: pencilColor === 'black' && toolSelected === 'pencil',
+      }"
     ></div>
     <div
       class="pencil white"
       @click="(pencilColor = 'white'), (toolSelected = 'pencil')"
-      :class="{ selected: pencilColor === 'white' && toolSelected === 'pencil'}"
+      :class="{
+        selected: pencilColor === 'white' && toolSelected === 'pencil',
+      }"
     ></div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { pencilColor, toolSelected, pencilPanelVisible } from "@/services/editorAppState";
-import { ref } from "vue";
-
-
+import {
+  pencilColor,
+  toolSelected,
+  pencilPanelVisible,
+} from "@/services/editorAppState";
 </script>
 
 <style scoped>
