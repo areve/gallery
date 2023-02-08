@@ -131,11 +131,12 @@ function brushPoint(
 // }
 
 function pixelMix(pixel: RgbaColor, color: RgbaColor): RgbaColor {
+  if (pixel[3] === 0) return color
   const weight = color[3];
   return [
     (1 - weight) * pixel[0] + weight * color[0],
     (1 - weight) * pixel[1] + weight * color[1],
     (1 - weight) * pixel[2] + weight * color[2],
-    pixel[3] + color[3],
+    Math.min(pixel[3] + color[3], 1),
   ];
 }
