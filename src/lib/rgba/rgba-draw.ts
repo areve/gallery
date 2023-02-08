@@ -7,10 +7,10 @@ export function clearCircle(
   radius: number
 ) {
   const width = rgbaLayer.width;
-  const minX = Math.floor(x - radius);
-  const minY = Math.floor(y - radius);
-  const maxX = Math.ceil(x + radius);
-  const maxY = Math.ceil(y + radius);
+  const minX = Math.max(0, Math.floor(x - radius));
+  const minY = Math.max(0, Math.floor(y - radius));
+  const maxX = Math.min(rgbaLayer.width, Math.ceil(x + radius));
+  const maxY = Math.min(rgbaLayer.height, Math.ceil(y + radius));
   const data = rgbaLayer.data;
   for (let dataY = minY; dataY < maxY; dataY++) {
     for (let dataX = minX; dataX < maxX; dataX++) {
