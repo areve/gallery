@@ -43,7 +43,7 @@ import {
   rgb2rgbEffect,
   rgb2rybEffect,
   ryb2rgbEffect,
-} from "@/lib/canvas-effects/canvas-effects-ryb2rgb";
+} from "@/lib/canvas-effects/rgba-effects-ryb2rgb";
 
 import { onApplyEffect, onAction } from "@/services/appActions";
 import { useKeyboardHandler } from "@/services/keyboardHandler";
@@ -79,11 +79,11 @@ watch(onApplyEffect, (action) => {
   if (action.type === "shotgun")
     shotgunEffect(artboardService.artwork.value.context);
   if (action.type === "ryb2rgb")
-    ryb2rgbEffect(artboardService.artwork.value.context);
+    ryb2rgbEffect(artboardService.artwork.value.rgbaLayer);
   if (action.type === "rgb2ryb")
-    rgb2rybEffect(artboardService.artwork.value.context);
+    rgb2rybEffect(artboardService.artwork.value.rgbaLayer);
   if (action.type === "rgb2rgb")
-    rgb2rgbEffect(artboardService.artwork.value.context);
+    rgb2rgbEffect(artboardService.artwork.value.rgbaLayer);
 });
 
 watch(selectedItem, (artwork) => artwork && galleryItemSelected(artwork));
