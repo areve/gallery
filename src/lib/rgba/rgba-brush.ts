@@ -90,7 +90,7 @@ function brushPoint(
 
       const [r, g, b, a] = pixelMix(
         [data[dataR], data[dataG], data[dataB], data[dataA]],
-        <RgbaColor>[
+        [
           brushData[brushR] * color[0],
           brushData[brushG] * color[1],
           brushData[brushB] * color[2],
