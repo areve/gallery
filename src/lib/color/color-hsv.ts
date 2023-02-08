@@ -2,7 +2,6 @@
 
 import type { HsvColor, RgbColor } from "@/interfaces/RgbaLayer";
 
-// TODO I'm going to want RgbColor to be 0-1 rather than 0-255
 export function rgb2hsv([r, g, b]: RgbColor): HsvColor {
   const v = Math.max(r, g, b),
     c = v - Math.min(r, g, b);
@@ -12,11 +11,11 @@ export function rgb2hsv([r, g, b]: RgbColor): HsvColor {
 }
 
 export function hsv2rgb([h, s, v]: HsvColor): RgbColor {
-  function fff(n: number) {
+  function h2c(n: number) {
     const k = (n + h / 60) % 6;
     return v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
   }
-  return [fff(5), fff(3), fff(1)];
+  return [h2c(5), h2c(3), h2c(1)];
 }
 
 // in: r,g,b in [0,1], out: h in [0,360) and s,l in [0,1]
