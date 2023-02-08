@@ -2,54 +2,54 @@
   <div :hidden="!pencilPanelVisible" class="pencil-panel">
     <div
       class="pencil red"
-      @click="(pencilColor = '#ff0000'), (toolSelected = 'pencil')"
-      :class="{ selected: pencilColor === 'red' && toolSelected === 'pencil' }"
+      @click="(brushColor = '#ff0000'), (toolSelected = 'pencil')"
+      :class="{ selected: brushColor === 'red' && toolSelected === 'pencil' }"
     ></div>
     <div
       class="pencil orange"
-      @click="(pencilColor = 'orange'), (toolSelected = 'pencil')"
+      @click="(brushColor = 'orange'), (toolSelected = 'pencil')"
       :class="{
-        selected: pencilColor === 'orange' && toolSelected === 'pencil',
+        selected: brushColor === 'orange' && toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil yellow"
-      @click="(pencilColor = 'yellow'), (toolSelected = 'pencil')"
+      @click="(brushColor = 'yellow'), (toolSelected = 'pencil')"
       :class="{
-        selected: pencilColor === 'yellow' && toolSelected === 'pencil',
+        selected: brushColor === 'yellow' && toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil green"
-      @click="(pencilColor = 'green'), (toolSelected = 'pencil')"
+      @click="(brushColor = 'green'), (toolSelected = 'pencil')"
       :class="{
-        selected: pencilColor === 'green' && toolSelected === 'pencil',
+        selected: brushColor === 'green' && toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil blue"
-      @click="(pencilColor = 'blue'), (toolSelected = 'pencil')"
-      :class="{ selected: pencilColor === 'blue' && toolSelected === 'pencil' }"
+      @click="(brushColor = 'blue'), (toolSelected = 'pencil')"
+      :class="{ selected: brushColor === 'blue' && toolSelected === 'pencil' }"
     ></div>
     <div
       class="pencil purple"
-      @click="(pencilColor = 'purple'), (toolSelected = 'pencil')"
+      @click="(brushColor = 'purple'), (toolSelected = 'pencil')"
       :class="{
-        selected: pencilColor === 'purple' && toolSelected === 'pencil',
+        selected: brushColor === 'purple' && toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil black"
-      @click="(pencilColor = 'black'), (toolSelected = 'pencil')"
+      @click="(brushColor = 'black'), (toolSelected = 'pencil')"
       :class="{
-        selected: pencilColor === 'black' && toolSelected === 'pencil',
+        selected: brushColor === 'black' && toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil white"
-      @click="(pencilColor = 'white'), (toolSelected = 'pencil')"
+      @click="(brushColor = 'white'), (toolSelected = 'pencil')"
       :class="{
-        selected: pencilColor === 'white' && toolSelected === 'pencil',
+        selected: brushColor === 'white' && toolSelected === 'pencil',
       }"
     ></div>
   </div>
@@ -57,7 +57,7 @@
 
 <script lang="ts" setup>
 import {
-  pencilColor,
+  brushColor,
   toolSelected,
   pencilPanelVisible,
 } from "@/services/editorAppState";

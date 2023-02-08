@@ -34,7 +34,7 @@
 <script lang="ts" setup>
 import {
   eraserSize,
-  pencilColor,
+  brushColor,
   snapSize,
   toolSelected,
 } from "@/services/editorAppState";
@@ -46,6 +46,7 @@ import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
 import Color from "color";
 import type { RgbaColor } from "@/interfaces/RgbaLayer";
+import { drag } from "@/services/brushService";
 
 const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!);
@@ -104,10 +105,6 @@ function mouseDown(event: MouseEvent | TouchEvent) {
     frame: { ...artboardService.artwork.value.frame },
   };
 }
-
-const radius = 5; // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
-
-const brush = makeBrush(radius);
 
 function mouseMove(event: MouseEvent | TouchEvent) {
   if (!dragOrigin.value) return;
@@ -173,31 +170,14 @@ function mouseMove(event: MouseEvent | TouchEvent) {
       (y / artboardService.artwork.value.context.canvas.offsetHeight) *
       artboardService.artwork.value.context.canvas.height;
 
-    let weight = force ?? 0.5;
-    weight = weight * weight;
-
-    const colorToRgbaColor = (value: string) => {
-      const color = Color(value);
-      const { r, g, b, a } = color.object();
-      return [
-        r / 255,
-        g / 255,
-        b / 255,
-        a === undefined ? 1 : a / 255,
-      ] as RgbaColor;
-    };
-
-    brushApply(
-      artboardService.artwork.value.rgbaLayer,
-      pencilLastPoint,
-      {
-        x: artworkX,
-        y: artworkY,
-      },
-      brush,
-      colorToRgbaColor(pencilColor.value),
-      weight
-    );
+    if (pencilLastPoint) 
+      drag(
+        artboardService.artwork.value.rgbaLayer,
+        { x: artworkX, y: artworkY },
+        pencilLastPoint,
+        force,
+        radiusX
+      );
 
     pencilLastPoint = { x: artworkX, y: artworkY };
   }

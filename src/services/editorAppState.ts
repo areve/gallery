@@ -12,7 +12,7 @@ const editorAppState = {
 
   eraserSize: ref<number>(300),
   snapSize: ref<number>(128),
-  pencilColor: ref<string>("#00ff00"),
+  brushColor: ref<string>("#00ff00"),
 
   settingsPanelVisible: ref<boolean>(false),
   galleryPanelVisible: ref<boolean>(true),
@@ -34,7 +34,7 @@ function resetState() {
   toolSelected.value = "pencil";
   eraserSize.value = 300;
   snapSize.value = 128;
-  pencilColor.value = "#00ff00";
+  brushColor.value = "#00ff00";
   settingsPanelVisible.value = false;
   galleryPanelVisible.value = true;
   statusBarVisible.value = true;
@@ -51,7 +51,7 @@ function resetState() {
 export const toolSelected = editorAppState.toolSelected;
 export const eraserSize = editorAppState.eraserSize;
 export const snapSize = editorAppState.snapSize;
-export const pencilColor = editorAppState.pencilColor;
+export const brushColor = editorAppState.brushColor;
 export const settingsPanelVisible = editorAppState.settingsPanelVisible;
 export const galleryPanelVisible = editorAppState.galleryPanelVisible;
 export const statusBarVisible = editorAppState.statusBarVisible;

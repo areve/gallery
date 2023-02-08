@@ -60,8 +60,8 @@
     </section>
     <section class="tool-panel" v-if="toolSelected === 'pencil'">
       <h3>Pencil Settings</h3>
-      <label for="pencilColor">Colour</label>
-      <input type="color" id="pencilColor" v-model="pencilColor" />
+      <label for="brushColor">Colour</label>
+      <input type="color" id="brushColor" v-model="brushColor" />
     </section>
   </div>
 </template>
@@ -71,7 +71,7 @@ import {
   eraserSize,
   snapSize,
   toolSelected,
-  pencilColor,
+  brushColor,
   toolbarVisible,
 } from "@/services/editorAppState";
 </script>
