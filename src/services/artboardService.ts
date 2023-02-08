@@ -1,5 +1,9 @@
 import { clone, rectanglesIntersect } from "@/lib/utils";
-import { cloneContext, createContext, autoCropImage } from "@/lib/canvas/canvas-utils";
+import {
+  cloneContext,
+  createContext,
+  autoCropImage,
+} from "@/lib/canvas/canvas-utils";
 import { ref } from "vue";
 import type { Artwork, ArtworkActive } from "@/interfaces/Artwork";
 import {
@@ -76,7 +80,7 @@ export function render() {
 }
 
 function resetRgbaLayer() {
-  console.log('resetRgbaLayer')
+  console.log("resetRgbaLayer");
   const channels = 4;
   const height = artwork.value.context.canvas.height;
   const width = artwork.value.context.canvas.width;

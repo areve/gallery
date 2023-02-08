@@ -11,7 +11,7 @@ export function makeBrush(radius: number) {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const dataR = (y * width + x) * 4;
-      const [dataG, dataB, dataA] = [dataR + 1, dataR + 2, dataR + 3]
+      const [dataG, dataB, dataA] = [dataR + 1, dataR + 2, dataR + 3];
       const dx = x - radius;
       const dy = y - radius;
       const d = Math.sqrt(dy * dy + dx * dx);
@@ -131,7 +131,7 @@ function brushPoint(
 // }
 
 function pixelMix(pixel: RgbaColor, color: RgbaColor): RgbaColor {
-  if (pixel[3] === 0) return color
+  if (pixel[3] === 0) return color;
   const weight = color[3];
   return [
     (1 - weight) * pixel[0] + weight * color[0],

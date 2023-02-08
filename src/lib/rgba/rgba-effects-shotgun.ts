@@ -6,6 +6,6 @@ export function shotgunEffect(rgbaLayer: RgbaLayer) {
     const x = Math.random() * rgbaLayer.width;
     const y = Math.random() * rgbaLayer.height;
 
-    clearCircle(rgbaLayer, x, y, 8)
+    clearCircle(rgbaLayer, x, y, 8);
   }
 }

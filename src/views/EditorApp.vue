@@ -39,10 +39,7 @@ import PencilPanel from "@/components/PencilPanel.vue";
 import { watch } from "vue";
 import { mostRecentPrompt } from "@/lib/artwork-utils";
 import { shotgunEffect } from "@/lib/rgba/rgba-effects-shotgun";
-import {
-  rgb2rybEffect,
-  ryb2rgbEffect,
-} from "@/lib/rgba/rgba-effects-ryb2rgb";
+import { rgb2rybEffect, ryb2rgbEffect } from "@/lib/rgba/rgba-effects-ryb2rgb";
 
 import { onApplyEffect, onAction } from "@/services/appActions";
 import { useKeyboardHandler } from "@/services/keyboardHandler";
