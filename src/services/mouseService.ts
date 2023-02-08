@@ -1,3 +1,4 @@
+import type { Coord } from "@/interfaces/Coord";
 import { ref } from "vue";
 
 export const globalDragOrigin = ref<MouseEvent | TouchEvent | null>();
@@ -10,9 +11,9 @@ export function mouseUp(_event: MouseEvent | TouchEvent) {
   globalDragOrigin.value = null;
 }
 
-interface PointerEvent {
-  readonly x: number;
-  readonly y: number;
+export interface CanvasPointerEvent {
+  readonly point: Coord;
+  readonly canvasPoint: Coord;
   readonly index?: number;
   readonly sourceEvent: TouchEvent | MouseEvent;
   readonly force?: number;
@@ -20,16 +21,27 @@ interface PointerEvent {
   readonly radiusY?: number;
 }
 
-export function toPointerEvents(event: TouchEvent | MouseEvent) {
-  const pointerEvents: PointerEvent[] = [];
+export function toPointerEvents(event: TouchEvent | MouseEvent, context: CanvasRenderingContext2D) {
+  const pointerEvents: CanvasPointerEvent[] = [];
   if ((event as TouchEvent).touches) {
     const touchEvent = event as TouchEvent;
     for (let i = 0; i < touchEvent.touches.length; i++) {
       const touch = touchEvent.touches[i];
       const rect = (touch.target as any).getBoundingClientRect();
-      const pointerEvent: PointerEvent = {
-        x: touch.clientX - window.pageXOffset - rect.left,
-        y: touch.clientY - window.pageYOffset - rect.top,
+      const x = touch.clientX - window.pageXOffset - rect.left;
+      const y = touch.clientY - window.pageYOffset - rect.top;
+
+      const pointerEvent: CanvasPointerEvent = {
+        point: {
+          x,
+          y
+        },
+        canvasPoint: {
+          x: (x / context.canvas.offsetWidth) *
+            context.canvas.width,
+          y: (y / context.canvas.offsetHeight) *
+            context.canvas.height
+        },
         index: i,
         sourceEvent: event,
         force: touch.force,
@@ -40,9 +52,20 @@ export function toPointerEvents(event: TouchEvent | MouseEvent) {
     }
   } else {
     const mouseEvent: MouseEvent = event as MouseEvent;
-    const pointerEvent: PointerEvent = {
-      x: mouseEvent.offsetX,
-      y: mouseEvent.offsetY,
+    const x = mouseEvent.offsetX;
+    const y = mouseEvent.offsetY;
+
+    const pointerEvent: CanvasPointerEvent = {
+      point: {
+        x,
+        y,
+      },
+      canvasPoint: {
+        x: (x / context.canvas.offsetWidth) *
+          context.canvas.width,
+        y: (y / context.canvas.offsetHeight) *
+          context.canvas.height
+      },
       index: 0,
       sourceEvent: event,
     };

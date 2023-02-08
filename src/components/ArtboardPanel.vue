@@ -91,11 +91,11 @@ watchSyncEffect(() => {
 });
 
 function mouseDown(event: MouseEvent | TouchEvent) {
-  const { x, y } = toPointerEvents(event)[0];
+  const { point } = toPointerEvents(event, artboardService.artwork.value.context)[0];
 
   dragOrigin.value = {
-    x,
-    y,
+    x: point.x,
+    y: point.y,
     data: artboardService.artwork.value.context.getImageData(
       0,
       0,
@@ -108,43 +108,31 @@ function mouseDown(event: MouseEvent | TouchEvent) {
 
 function mouseMove(event: MouseEvent | TouchEvent) {
   if (!dragOrigin.value) return;
-  const pointerEvents = toPointerEvents(event);
+  const pointerEvents = toPointerEvents(event, artboardService.artwork.value.context);
   pointerEvents.forEach((pointerEvent) => {
     pointerEvent.sourceEvent.preventDefault();
   });
-  // the following line rejects palm presses on my laptop and responds to my pen only, may not work on all devices
-  // TODO but it doesn't work if the window is zoomed because the radiusX changes
-  const pointerEvent = pointerEvents.find(
-    (x) => x.radiusX === 0.5 || x.radiusX === undefined
-  );
-  if (!pointerEvent) return;
-  const { x, y, force, radiusX } = pointerEvent;
 
+  const pointerEvent = pointerEvents[0]
   const dx =
-    ((x - dragOrigin.value.x) /
+    ((pointerEvent.point.x - dragOrigin.value.x) /
       artboardService.artwork.value.context.canvas.offsetWidth) *
     artboardService.artwork.value.context.canvas.width;
   const dy =
-    ((y - dragOrigin.value.y) /
+    ((pointerEvent.point.y - dragOrigin.value.y) /
       artboardService.artwork.value.context.canvas.offsetHeight) *
     artboardService.artwork.value.context.canvas.height;
   const snapDx = Math.floor(dx / snapSize.value) * snapSize.value;
   const snapDy = Math.floor(dy / snapSize.value) * snapSize.value;
 
   if (toolSelected.value === "eraser") {
-    const artworkX =
-      (x / artboardService.artwork.value.context.canvas.offsetWidth) *
-      artboardService.artwork.value.context.canvas.width;
-    const artworkY =
-      (y / artboardService.artwork.value.context.canvas.offsetHeight) *
-      artboardService.artwork.value.context.canvas.height;
+    canvas
     clearCircle(
       artboardService.artwork.value.rgbaLayer,
-      artworkX,
-      artworkY,
+      pointerEvent.canvasPoint.x,
+      pointerEvent.canvasPoint.y,
       eraserSize.value / 2
     );
-    //artboardService.resetRgbaLayer();
   } else if (toolSelected.value === "drag") {
     artboardService.artwork.value.context.clearRect(
       0,
@@ -162,24 +150,13 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx;
     artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy;
   } else if (toolSelected.value === "pencil") {
-    if (radiusX != 0.5 && radiusX !== undefined) return;
-    const artworkX =
-      (x / artboardService.artwork.value.context.canvas.offsetWidth) *
-      artboardService.artwork.value.context.canvas.width;
-    const artworkY =
-      (y / artboardService.artwork.value.context.canvas.offsetHeight) *
-      artboardService.artwork.value.context.canvas.height;
-
     if (pencilLastPoint) 
       drag(
         artboardService.artwork.value.rgbaLayer,
-        { x: artworkX, y: artworkY },
         pencilLastPoint,
-        force,
-        radiusX
+        pointerEvent
       );
-
-    pencilLastPoint = { x: artworkX, y: artworkY };
+    pencilLastPoint = pointerEvent.canvasPoint;
   }
 }
 
