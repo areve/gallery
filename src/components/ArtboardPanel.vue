@@ -34,7 +34,6 @@
 <script lang="ts" setup>
 import {
   eraserSize,
-  brushColor,
   snapSize,
   toolSelected,
 } from "@/services/editorAppState";
@@ -42,16 +41,12 @@ import { onMounted, ref, watchSyncEffect } from "vue";
 import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
-import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
-import Color from "color";
-import type { RgbaColor } from "@/interfaces/RgbaLayer";
-import { drag } from "@/services/brushService";
+import { dragPencil, pencilLift } from "@/services/brushService";
 
 const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
-let pencilLastPoint: { x: number; y: number } | null = null;
 
 onMounted(async () => {
   artboardService.artwork.value.context = canvas.value.getContext("2d", {
@@ -87,7 +82,7 @@ watchSyncEffect(() => {
 watchSyncEffect(() => {
   if (globalDragOrigin.value) return;
   dragOrigin.value = null;
-  pencilLastPoint = null;
+  pencilLift()
 });
 
 function mouseDown(event: MouseEvent | TouchEvent) {
@@ -150,13 +145,11 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx;
     artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy;
   } else if (toolSelected.value === "pencil") {
-    if (pencilLastPoint) 
-      drag(
+    dragPencil(
         artboardService.artwork.value.rgbaLayer,
-        pencilLastPoint,
         pointerEvent
       );
-    pencilLastPoint = pointerEvent.canvasPoint;
+
   }
 }
 

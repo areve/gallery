@@ -9,31 +9,40 @@ const radius = 5; // needs to be a integer, I like 5 - 30 is good for debugging 
 
 const brush = makeBrush(radius);
 
-export function drag(
-  rgbaLayer: RgbaLayer,
-  from: Coord,
-  pointerEvent: CanvasPointerEvent
+let pencilLastPoint: { x: number; y: number } | null = null;
+
+export function pencilLift() {
+    pencilLastPoint = null
+}
+
+export function dragPencil(
+    rgbaLayer: RgbaLayer,
+    pointerEvent: CanvasPointerEvent
 ) {
-  let weight = pointerEvent.force ?? 0.5;
-  weight = weight * weight;
+    if (pencilLastPoint) {
+        let weight = pointerEvent.force ?? 0.5;
+        weight = weight * weight;
 
-  const colorToRgbaColor = (value: string) => {
-    const color = Color(value);
-    const { r, g, b, a } = color.object();
-    return [
-      r / 255,
-      g / 255,
-      b / 255,
-      a === undefined ? 1 : a / 255,
-    ] as RgbaColor;
-  };
+        const colorToRgbaColor = (value: string) => {
+            const color = Color(value);
+            const { r, g, b, a } = color.object();
+            return [
+                r / 255,
+                g / 255,
+                b / 255,
+                a === undefined ? 1 : a / 255,
+            ] as RgbaColor;
+        };
 
-  brushApply(
-    rgbaLayer,
-    from,
-    pointerEvent.canvasPoint,
-    brush,
-    colorToRgbaColor(brushColor.value),
-    weight
-  );
+        brushApply(
+            rgbaLayer,
+            pencilLastPoint,
+            pointerEvent.canvasPoint,
+            brush,
+            colorToRgbaColor(brushColor.value),
+            weight
+        );
+    }
+
+    pencilLastPoint = pointerEvent.canvasPoint;
 }
