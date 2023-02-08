@@ -42,8 +42,8 @@ import { onMounted, ref, watchSyncEffect } from "vue";
 import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
-import { brushApply, makeBrush } from "@/lib/rgba-brush";
-import { clearCircle } from "@/lib/canvas-draw";
+import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
+import { clearCircle } from "@/lib/canvas/canvas-draw";
 import Color from "color";
 import type { RgbaColor } from "@/interfaces/RgbaLayer";
 

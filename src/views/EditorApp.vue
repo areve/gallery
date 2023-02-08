@@ -38,12 +38,12 @@ import PencilPanel from "@/components/PencilPanel.vue";
 
 import { watch } from "vue";
 import { mostRecentPrompt } from "@/lib/artwork-utils";
-import { shotgunEffect } from "@/lib/canvas-effects/canvas-effects-shotgun";
+import { shotgunEffect } from "@/lib/canvas/canvas-effects-shotgun";
 import {
   rgb2rgbEffect,
   rgb2rybEffect,
   ryb2rgbEffect,
-} from "@/lib/canvas-effects/rgba-effects-ryb2rgb";
+} from "@/lib/rgba/rgba-effects-ryb2rgb";
 
 import { onApplyEffect, onAction } from "@/services/appActions";
 import { useKeyboardHandler } from "@/services/keyboardHandler";

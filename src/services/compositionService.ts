@@ -1,7 +1,7 @@
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata";
 import { getDatestamp } from "@/lib/utils";
 import { extendMetadata } from "@/lib/artwork-utils";
-import { createContext } from "@/lib/canvas-utils";
+import { createContext } from "@/lib/canvas/canvas-utils";
 import { saveGalleryItem, updateGalleryItem } from "./galleryService";
 import type { ArtworkOnCanvas } from "@/interfaces/Artwork";
 
