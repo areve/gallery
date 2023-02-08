@@ -7,9 +7,9 @@
     @touchstart="mouseDown"
   >
     <main class="main">
-      <Menu></Menu>
+      <TopMenu></TopMenu>
       <div class="artboard-wrap">
-        <Artboard />
+        <ArtboardPanel />
         <PencilPanel />
       </div>
 
@@ -21,7 +21,7 @@
       <StatusBar />
     </main>
     <aside class="side-panel" :hidden="!galleryPanelVisible">
-      <Gallery />
+      <GalleryPanel />
     </aside>
   </div>
 </template>
@@ -29,10 +29,10 @@
 <script lang="ts" setup>
 import ArtworkSettingsPanel from "@/components/ArtworkSettingsPanel.vue";
 import OpenAiPanel from "@/components/OpenAiPanel.vue";
-import Artboard from "@/components/ArtboardPanel.vue";
+import ArtboardPanel from "@/components/ArtboardPanel.vue";
 import AppSettings from "@/components/AppSettings.vue";
-import Menu from "@/components/TopMenu.vue";
-import Gallery from "@/components/GalleryPanel.vue";
+import TopMenu from "@/components/TopMenu.vue";
+import GalleryPanel from "@/components/GalleryPanel.vue";
 import ToolPanel from "@/components/ToolPanel.vue";
 import PencilPanel from "@/components/PencilPanel.vue";
 
