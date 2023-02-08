@@ -13,19 +13,8 @@ const artwork = ref<ArtworkActive>({
   filename: "",
   modified: new Date(),
   metadata: { history: [] },
-  frame: {
-    x: 0,
-    y: 0,
-    width: 1024,
-    height: 1024,
-  },
-
-  bounds: {
-    x: 0,
-    y: 0,
-    width: 1024,
-    height: 1024,
-  },
+  frame: { x: 0, y: 0, width: 1024, height: 1024 },
+  bounds: { x: 0, y: 0, width: 1024, height: 1024 },
   context: undefined!,
   overlayContext: undefined!,
   rgbaLayer: undefined!,
@@ -40,7 +29,7 @@ function resetFrame() {
   };
 }
 
-function drawOverlay() {
+function renderOverlay() {
   artwork.value.overlayContext.clearRect(
     0,
     0,
@@ -128,7 +117,7 @@ export function resetArtwork() {
   artwork.value.filename = "";
   artwork.value.modified = new Date();
   resetFrame();
-  drawOverlay();
+  renderOverlay();
 }
 
 async function scale(by: number) {
@@ -175,7 +164,7 @@ async function scale(by: number) {
   ) {
     resetFrame();
   }
-  drawOverlay();
+  renderOverlay();
   resetRgbaLayer();
 }
 
@@ -202,7 +191,7 @@ function growFrame(by: number) {
   artwork.value.frame.y -= by / 2;
   artwork.value.frame.width = artwork.value.frame.width + by;
   artwork.value.frame.height = artwork.value.frame.height + by;
-  drawOverlay();
+  renderOverlay();
 }
 
 async function autoCrop() {
@@ -265,7 +254,7 @@ export default {
   artwork,
   scale,
   resetArtwork,
-  drawOverlay,
+  renderOverlay,
   load,
   save,
   render,

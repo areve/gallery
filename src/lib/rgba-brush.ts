@@ -7,27 +7,24 @@ export function makeBrush(radius: number) {
   const height = width;
   const channels = 4;
 
-  const rgbaData = new Float32Array(width * height * channels);
+  const data = new Float32Array(width * height * channels);
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const rN = (y * width + x) * 4;
-      const gN = rN + 1;
-      const bN = rN + 2;
-      const aN = rN + 3;
-
+      const dataR = (y * width + x) * 4;
+      const [dataG, dataB, dataA] = [dataR + 1, dataR + 2, dataR + 3]
       const dx = x - radius;
       const dy = y - radius;
       const d = Math.sqrt(dy * dy + dx * dx);
-      const val = Math.max(0, 1 - d / radius);
-      rgbaData[rN] = 1;
-      rgbaData[gN] = 1;
-      rgbaData[bN] = 1;
-      rgbaData[aN] = val;
+      const value = Math.max(0, 1 - d / radius);
+      data[dataR] = 1;
+      data[dataG] = 1;
+      data[dataB] = 1;
+      data[dataA] = value;
     }
   }
 
   return <Brush>{
-    data: rgbaData,
+    data,
     width,
     height,
   };

@@ -80,7 +80,7 @@ watchSyncEffect(() => {
   if (!artboardService.artwork.value.context) return;
   if (!artboardService.artwork.value.overlayContext) return;
   void artboardService.artwork.value.frame;
-  artboardService.drawOverlay();
+  artboardService.renderOverlay();
 });
 
 watchSyncEffect(() => {

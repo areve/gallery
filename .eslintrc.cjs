@@ -30,6 +30,8 @@ module.exports = {
         ignoreReadBeforeAssign: false,
       },
     ],
+    "max-len": ["error", { code: 160, tabWidth: 2 }],
+    "print-width": "off",
     "vue/multi-word-component-names": "warn",
   },
 };
