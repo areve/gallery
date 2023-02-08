@@ -21,7 +21,10 @@ export interface CanvasPointerEvent {
   readonly radiusY?: number;
 }
 
-export function toPointerEvents(event: TouchEvent | MouseEvent, context: CanvasRenderingContext2D) {
+export function toPointerEvents(
+  event: TouchEvent | MouseEvent,
+  context: CanvasRenderingContext2D
+) {
   const pointerEvents: CanvasPointerEvent[] = [];
   if ((event as TouchEvent).touches) {
     const touchEvent = event as TouchEvent;
@@ -34,13 +37,11 @@ export function toPointerEvents(event: TouchEvent | MouseEvent, context: CanvasR
       const pointerEvent: CanvasPointerEvent = {
         point: {
           x,
-          y
+          y,
         },
         canvasPoint: {
-          x: (x / context.canvas.offsetWidth) *
-            context.canvas.width,
-          y: (y / context.canvas.offsetHeight) *
-            context.canvas.height
+          x: (x / context.canvas.offsetWidth) * context.canvas.width,
+          y: (y / context.canvas.offsetHeight) * context.canvas.height,
         },
         index: i,
         sourceEvent: event,
@@ -61,10 +62,8 @@ export function toPointerEvents(event: TouchEvent | MouseEvent, context: CanvasR
         y,
       },
       canvasPoint: {
-        x: (x / context.canvas.offsetWidth) *
-          context.canvas.width,
-        y: (y / context.canvas.offsetHeight) *
-          context.canvas.height
+        x: (x / context.canvas.offsetWidth) * context.canvas.width,
+        y: (y / context.canvas.offsetHeight) * context.canvas.height,
       },
       index: 0,
       sourceEvent: event,

@@ -12,37 +12,37 @@ const brush = makeBrush(radius);
 let pencilLastPoint: { x: number; y: number } | null = null;
 
 export function pencilLift() {
-    pencilLastPoint = null
+  pencilLastPoint = null;
 }
 
 export function pencilDrag(
-    rgbaLayer: RgbaLayer,
-    pointerEvent: CanvasPointerEvent
+  rgbaLayer: RgbaLayer,
+  pointerEvent: CanvasPointerEvent
 ) {
-    if (pencilLastPoint) {
-        let weight = pointerEvent.force ?? 0.5;
-        weight = weight * weight;
+  if (pencilLastPoint) {
+    let weight = pointerEvent.force ?? 0.5;
+    weight = weight * weight;
 
-        const colorToRgbaColor = (value: string) => {
-            const color = Color(value);
-            const { r, g, b, a } = color.object();
-            return [
-                r / 255,
-                g / 255,
-                b / 255,
-                a === undefined ? 1 : a / 255,
-            ] as RgbaColor;
-        };
+    const colorToRgbaColor = (value: string) => {
+      const color = Color(value);
+      const { r, g, b, a } = color.object();
+      return [
+        r / 255,
+        g / 255,
+        b / 255,
+        a === undefined ? 1 : a / 255,
+      ] as RgbaColor;
+    };
 
-        brushApply(
-            rgbaLayer,
-            pencilLastPoint,
-            pointerEvent.canvasPoint,
-            brush,
-            colorToRgbaColor(brushColor.value),
-            weight
-        );
-    }
+    brushApply(
+      rgbaLayer,
+      pencilLastPoint,
+      pointerEvent.canvasPoint,
+      brush,
+      colorToRgbaColor(brushColor.value),
+      weight
+    );
+  }
 
-    pencilLastPoint = pointerEvent.canvasPoint;
+  pencilLastPoint = pointerEvent.canvasPoint;
 }

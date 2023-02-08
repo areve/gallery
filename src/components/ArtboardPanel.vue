@@ -32,11 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  eraserSize,
-  snapSize,
-  toolSelected,
-} from "@/services/editorAppState";
+import { eraserSize, snapSize, toolSelected } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
 import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
 import type { DragOrigin } from "@/interfaces/DragOrigin";
@@ -82,11 +78,14 @@ watchSyncEffect(() => {
 watchSyncEffect(() => {
   if (globalDragOrigin.value) return;
   dragOrigin.value = null;
-  pencilLift()
+  pencilLift();
 });
 
 function mouseDown(event: MouseEvent | TouchEvent) {
-  const { point } = toPointerEvents(event, artboardService.artwork.value.context)[0];
+  const { point } = toPointerEvents(
+    event,
+    artboardService.artwork.value.context
+  )[0];
 
   dragOrigin.value = {
     x: point.x,
@@ -103,12 +102,15 @@ function mouseDown(event: MouseEvent | TouchEvent) {
 
 function mouseMove(event: MouseEvent | TouchEvent) {
   if (!dragOrigin.value) return;
-  const pointerEvents = toPointerEvents(event, artboardService.artwork.value.context);
+  const pointerEvents = toPointerEvents(
+    event,
+    artboardService.artwork.value.context
+  );
   pointerEvents.forEach((pointerEvent) => {
     pointerEvent.sourceEvent.preventDefault();
   });
 
-  const pointerEvent = pointerEvents[0]
+  const pointerEvent = pointerEvents[0];
   const dx =
     ((pointerEvent.point.x - dragOrigin.value.x) /
       artboardService.artwork.value.context.canvas.offsetWidth) *
@@ -121,7 +123,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   const snapDy = Math.floor(dy / snapSize.value) * snapSize.value;
 
   if (toolSelected.value === "eraser") {
-    canvas
+    canvas;
     clearCircle(
       artboardService.artwork.value.rgbaLayer,
       pointerEvent.canvasPoint.x,
@@ -145,11 +147,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx;
     artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy;
   } else if (toolSelected.value === "pencil") {
-    pencilDrag(
-        artboardService.artwork.value.rgbaLayer,
-        pointerEvent
-      );
-
+    pencilDrag(artboardService.artwork.value.rgbaLayer, pointerEvent);
   }
 }
 
