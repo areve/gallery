@@ -1,16 +1,31 @@
 <template>
   <div class="artboard-panel">
     <div class="artboard-wrap">
-      <div class="artboard" :style="{
-        'aspect-ratio':
-          artboardService.artwork.value.bounds.width +
-          ' / ' +
-          artboardService.artwork.value.bounds.height,
-      }">
-        <canvas ref="canvas" class="canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
-          @mousemove="mouseMove"></canvas>
-        <canvas ref="overlayCanvas" class="overlay-canvas" @touchstart="mouseDown" @mousedown="mouseDown"
-          @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
+      <div
+        class="artboard"
+        :style="{
+          'aspect-ratio':
+            artboardService.artwork.value.bounds.width +
+            ' / ' +
+            artboardService.artwork.value.bounds.height,
+        }"
+      >
+        <canvas
+          ref="canvas"
+          class="canvas"
+          @touchstart="mouseDown"
+          @mousedown="mouseDown"
+          @touchmove="mouseMove"
+          @mousemove="mouseMove"
+        ></canvas>
+        <canvas
+          ref="overlayCanvas"
+          class="overlay-canvas"
+          @touchstart="mouseDown"
+          @mousedown="mouseDown"
+          @touchmove="mouseMove"
+          @mousemove="mouseMove"
+        ></canvas>
       </div>
     </div>
   </div>
@@ -24,8 +39,16 @@ import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
 import { pencilDrag, pencilLift } from "@/services/brushService";
-import { canvasDrag, canvasDragEnd, canvasDragStart } from "@/services/artboardImageDragService";
-import { frameDrag, frameDragEnd, frameDragStart } from "@/services/artboardFrameDragService";
+import {
+  canvasDrag,
+  canvasDragEnd,
+  canvasDragStart,
+} from "@/services/artboardImageDragService";
+import {
+  frameDrag,
+  frameDragEnd,
+  frameDragStart,
+} from "@/services/artboardFrameDragService";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
@@ -64,9 +87,9 @@ watchSyncEffect(() => {
 watchSyncEffect(() => {
   if (globalDragOrigin.value) return;
   if (toolSelected.value === "drag") {
-    canvasDragEnd()
+    canvasDragEnd();
   } else if (toolSelected.value === "drag-frame") {
-    frameDragEnd()
+    frameDragEnd();
   } else if (toolSelected.value === "pencil") {
     pencilLift();
   }
@@ -79,9 +102,9 @@ function mouseDown(event: MouseEvent | TouchEvent) {
   )[0];
 
   if (toolSelected.value === "drag") {
-    canvasDragStart(pointerEvent)
+    canvasDragStart(pointerEvent);
   } else if (toolSelected.value === "drag-frame") {
-    frameDragStart(pointerEvent)
+    frameDragStart(pointerEvent);
   }
 }
 
@@ -95,7 +118,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   });
 
   const pointerEvent = pointerEvents[0];
-  
+
   if (toolSelected.value === "eraser") {
     clearCircle(
       artboardService.artwork.value.rgbaLayer,
@@ -104,9 +127,9 @@ function mouseMove(event: MouseEvent | TouchEvent) {
       eraserSize.value / 2
     );
   } else if (toolSelected.value === "drag") {
-    canvasDrag(pointerEvent)
+    canvasDrag(pointerEvent);
   } else if (toolSelected.value === "drag-frame") {
-    frameDrag(pointerEvent)
+    frameDrag(pointerEvent);
   } else if (toolSelected.value === "pencil") {
     pencilDrag(artboardService.artwork.value.rgbaLayer, pointerEvent);
   }
