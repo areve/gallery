@@ -15,7 +15,7 @@ export function pencilLift() {
     pencilLastPoint = null
 }
 
-export function dragPencil(
+export function pencilDrag(
     rgbaLayer: RgbaLayer,
     pointerEvent: CanvasPointerEvent
 ) {

@@ -42,7 +42,7 @@ import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
-import { dragPencil, pencilLift } from "@/services/brushService";
+import { pencilDrag, pencilLift } from "@/services/brushService";
 
 const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!);
@@ -145,7 +145,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
     artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx;
     artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy;
   } else if (toolSelected.value === "pencil") {
-    dragPencil(
+    pencilDrag(
         artboardService.artwork.value.rgbaLayer,
         pointerEvent
       );
