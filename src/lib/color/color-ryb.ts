@@ -28,78 +28,78 @@ export function ryb2rgb(ryb: RybColor): RgbColor {
   return hsv2rgb([h, s, v]);
 }
 
-// These are faster than mine that use hsv2rgb but the colours aren't quite as good (maybe)
-// http://www.deathbysoftware.com/colors/index.html
-export function rgb2ryb_found([red, green, blue]: RgbColor) {
-  const white = Math.min(red, green, blue);
+// // These are faster than mine that use hsv2rgb but the colours aren't quite as good (maybe)
+// // http://www.deathbysoftware.com/colors/index.html
+// export function rgb2ryb_found([red, green, blue]: RgbColor) {
+//   const white = Math.min(red, green, blue);
 
-  red -= white;
-  green -= white;
-  blue -= white;
+//   red -= white;
+//   green -= white;
+//   blue -= white;
 
-  const maxGreen = Math.max(red, green, blue);
-  let yellow = Math.min(red, green);
+//   const maxGreen = Math.max(red, green, blue);
+//   let yellow = Math.min(red, green);
 
-  red -= yellow;
-  green -= yellow;
+//   red -= yellow;
+//   green -= yellow;
 
-  if (blue > 0 && green > 0) {
-    blue /= 2;
-    green /= 2;
-  }
+//   if (blue > 0 && green > 0) {
+//     blue /= 2;
+//     green /= 2;
+//   }
 
-  yellow += green;
-  blue += green;
+//   yellow += green;
+//   blue += green;
 
-  const maxYellow = Math.max(red, yellow, blue);
+//   const maxYellow = Math.max(red, yellow, blue);
 
-  if (maxYellow > 0) {
-    const n = maxGreen / maxYellow;
-    red *= n;
-    yellow *= n;
-    blue *= n;
-  }
+//   if (maxYellow > 0) {
+//     const n = maxGreen / maxYellow;
+//     red *= n;
+//     yellow *= n;
+//     blue *= n;
+//   }
 
-  red += white;
-  yellow += white;
-  blue += white;
+//   red += white;
+//   yellow += white;
+//   blue += white;
 
-  return <RybColor>[Math.floor(red), Math.floor(yellow), Math.floor(blue)];
-}
+//   return <RybColor>[Math.floor(red), Math.floor(yellow), Math.floor(blue)];
+// }
 
-export function ryb2rgb_found([red, yellow, blue]: RybColor) {
-  const white = Math.min(red, yellow, blue);
+// export function ryb2rgb_found([red, yellow, blue]: RybColor) {
+//   const white = Math.min(red, yellow, blue);
 
-  red -= white;
-  yellow -= white;
-  blue -= white;
+//   red -= white;
+//   yellow -= white;
+//   blue -= white;
 
-  const maxYellow = Math.max(red, yellow, blue);
-  let green = Math.min(yellow, blue);
+//   const maxYellow = Math.max(red, yellow, blue);
+//   let green = Math.min(yellow, blue);
 
-  yellow -= green;
-  blue -= green;
+//   yellow -= green;
+//   blue -= green;
 
-  if (blue > 0 && green > 0) {
-    blue *= 2.0;
-    green *= 2.0;
-  }
+//   if (blue > 0 && green > 0) {
+//     blue *= 2.0;
+//     green *= 2.0;
+//   }
 
-  red += yellow;
-  green += yellow;
+//   red += yellow;
+//   green += yellow;
 
-  const maxGreen = Math.max(red, green, blue);
+//   const maxGreen = Math.max(red, green, blue);
 
-  if (maxGreen > 0) {
-    const n = maxYellow / maxGreen;
-    red *= n;
-    green *= n;
-    blue *= n;
-  }
+//   if (maxGreen > 0) {
+//     const n = maxYellow / maxGreen;
+//     red *= n;
+//     green *= n;
+//     blue *= n;
+//   }
 
-  red += white;
-  green += white;
-  blue += white;
+//   red += white;
+//   green += white;
+//   blue += white;
 
-  return <RgbColor>[Math.floor(red), Math.floor(green), Math.floor(blue)];
-}
+//   return <RgbColor>[Math.floor(red), Math.floor(green), Math.floor(blue)];
+// }
