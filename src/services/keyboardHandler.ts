@@ -38,11 +38,6 @@ const keyPressConfigs: any[] = [
     action: () => applyEffect("ryb2rgb"),
   },
   {
-    key: "/",
-    modifiers: ["ctrlKey"],
-    action: () => applyEffect("rgb2rgb"),
-  },
-  {
     key: "g",
     modifiers: ["ctrlKey"],
     action: () => (galleryPanelVisible.value = !galleryPanelVisible.value),

@@ -40,7 +40,6 @@ import { watch } from "vue";
 import { mostRecentPrompt } from "@/lib/artwork-utils";
 import { shotgunEffect } from "@/lib/canvas/canvas-effects-shotgun";
 import {
-  rgb2rgbEffect,
   rgb2rybEffect,
   ryb2rgbEffect,
 } from "@/lib/rgba/rgba-effects-ryb2rgb";
@@ -82,8 +81,6 @@ watch(onApplyEffect, (action) => {
     ryb2rgbEffect(artboardService.artwork.value.rgbaLayer);
   if (action.type === "rgb2ryb")
     rgb2rybEffect(artboardService.artwork.value.rgbaLayer);
-  if (action.type === "rgb2rgb")
-    rgb2rgbEffect(artboardService.artwork.value.rgbaLayer);
 });
 
 watch(selectedItem, (artwork) => artwork && galleryItemSelected(artwork));
