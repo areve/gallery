@@ -38,7 +38,7 @@ import PencilPanel from "@/components/PencilPanel.vue";
 
 import { watch } from "vue";
 import { mostRecentPrompt } from "@/lib/artwork-utils";
-import { shotgunEffect } from "@/lib/canvas/canvas-effects-shotgun";
+import { shotgunEffect } from "@/lib/rgba/rgba-effects-shotgun";
 import {
   rgb2rybEffect,
   ryb2rgbEffect,
@@ -76,7 +76,7 @@ watch(onAction, (action) => {
 
 watch(onApplyEffect, (action) => {
   if (action.type === "shotgun")
-    shotgunEffect(artboardService.artwork.value.context);
+    shotgunEffect(artboardService.artwork.value.rgbaLayer);
   if (action.type === "ryb2rgb")
     ryb2rgbEffect(artboardService.artwork.value.rgbaLayer);
   if (action.type === "rgb2ryb")
