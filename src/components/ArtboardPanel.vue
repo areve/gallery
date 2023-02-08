@@ -1,31 +1,16 @@
 <template>
   <div class="artboard-panel">
     <div class="artboard-wrap">
-      <div
-        class="artboard"
-        :style="{
-          'aspect-ratio':
-            artboardService.artwork.value.bounds.width +
-            ' / ' +
-            artboardService.artwork.value.bounds.height,
-        }"
-      >
-        <canvas
-          ref="canvas"
-          class="canvas"
-          @touchstart="mouseDown"
-          @mousedown="mouseDown"
-          @touchmove="mouseMove"
-          @mousemove="mouseMove"
-        ></canvas>
-        <canvas
-          ref="overlayCanvas"
-          class="overlay-canvas"
-          @touchstart="mouseDown"
-          @mousedown="mouseDown"
-          @touchmove="mouseMove"
-          @mousemove="mouseMove"
-        ></canvas>
+      <div class="artboard" :style="{
+        'aspect-ratio':
+          artboardService.artwork.value.bounds.width +
+          ' / ' +
+          artboardService.artwork.value.bounds.height,
+      }">
+        <canvas ref="canvas" class="canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
+          @mousemove="mouseMove"></canvas>
+        <canvas ref="overlayCanvas" class="overlay-canvas" @touchstart="mouseDown" @mousedown="mouseDown"
+          @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
       </div>
     </div>
   </div>
@@ -39,8 +24,9 @@ import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
 import { pencilDrag, pencilLift } from "@/services/brushService";
+import { canvasDrag, canvasDragEnd, canvasDragStart } from "@/services/artboardImageDragService";
+import { frameDrag, frameDragEnd, frameDragStart } from "@/services/artboardFrameDragService";
 
-const dragOrigin = ref<DragOrigin | null>();
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
 
@@ -77,31 +63,29 @@ watchSyncEffect(() => {
 
 watchSyncEffect(() => {
   if (globalDragOrigin.value) return;
-  dragOrigin.value = null;
-  pencilLift();
+  if (toolSelected.value === "drag") {
+    canvasDragEnd()
+  } else if (toolSelected.value === "drag-frame") {
+    frameDragEnd()
+  } else if (toolSelected.value === "pencil") {
+    pencilLift();
+  }
 });
 
 function mouseDown(event: MouseEvent | TouchEvent) {
-  const { point } = toPointerEvents(
+  const pointerEvent = toPointerEvents(
     event,
     artboardService.artwork.value.context
   )[0];
 
-  dragOrigin.value = {
-    x: point.x,
-    y: point.y,
-    data: artboardService.artwork.value.context.getImageData(
-      0,
-      0,
-      artboardService.artwork.value.bounds.width,
-      artboardService.artwork.value.bounds.height
-    ),
-    frame: { ...artboardService.artwork.value.frame },
-  };
+  if (toolSelected.value === "drag") {
+    canvasDragStart(pointerEvent)
+  } else if (toolSelected.value === "drag-frame") {
+    frameDragStart(pointerEvent)
+  }
 }
 
 function mouseMove(event: MouseEvent | TouchEvent) {
-  if (!dragOrigin.value) return;
   const pointerEvents = toPointerEvents(
     event,
     artboardService.artwork.value.context
@@ -111,19 +95,8 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   });
 
   const pointerEvent = pointerEvents[0];
-  const dx =
-    ((pointerEvent.point.x - dragOrigin.value.x) /
-      artboardService.artwork.value.context.canvas.offsetWidth) *
-    artboardService.artwork.value.context.canvas.width;
-  const dy =
-    ((pointerEvent.point.y - dragOrigin.value.y) /
-      artboardService.artwork.value.context.canvas.offsetHeight) *
-    artboardService.artwork.value.context.canvas.height;
-  const snapDx = Math.floor(dx / snapSize.value) * snapSize.value;
-  const snapDy = Math.floor(dy / snapSize.value) * snapSize.value;
-
+  
   if (toolSelected.value === "eraser") {
-    canvas;
     clearCircle(
       artboardService.artwork.value.rgbaLayer,
       pointerEvent.canvasPoint.x,
@@ -131,21 +104,9 @@ function mouseMove(event: MouseEvent | TouchEvent) {
       eraserSize.value / 2
     );
   } else if (toolSelected.value === "drag") {
-    artboardService.artwork.value.context.clearRect(
-      0,
-      0,
-      artboardService.artwork.value.bounds.width,
-      artboardService.artwork.value.bounds.height
-    );
-    artboardService.artwork.value.context.putImageData(
-      dragOrigin.value.data,
-      snapDx,
-      snapDy
-    );
-    artboardService.resetRgbaLayer();
+    canvasDrag(pointerEvent)
   } else if (toolSelected.value === "drag-frame") {
-    artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx;
-    artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy;
+    frameDrag(pointerEvent)
   } else if (toolSelected.value === "pencil") {
     pencilDrag(artboardService.artwork.value.rgbaLayer, pointerEvent);
   }
