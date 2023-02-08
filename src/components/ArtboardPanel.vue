@@ -43,7 +43,7 @@ import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
-import { clearCircle } from "@/lib/canvas/canvas-draw";
+import { clearCircle } from "@/lib/rgba/rgba-draw";
 import Color from "color";
 import type { RgbaColor } from "@/interfaces/RgbaLayer";
 
@@ -142,12 +142,12 @@ function mouseMove(event: MouseEvent | TouchEvent) {
       (y / artboardService.artwork.value.context.canvas.offsetHeight) *
       artboardService.artwork.value.context.canvas.height;
     clearCircle(
-      artboardService.artwork.value.context,
+      artboardService.artwork.value.rgbaLayer,
       artworkX,
       artworkY,
       eraserSize.value / 2
     );
-    artboardService.resetRgbaLayer();
+    //artboardService.resetRgbaLayer();
   } else if (toolSelected.value === "drag") {
     artboardService.artwork.value.context.clearRect(
       0,
