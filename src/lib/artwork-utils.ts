@@ -7,7 +7,7 @@ export function extendMetadata(
   metadata: ArtworkMetadata,
   historyItem: HistoryItem
 ) {
-  const result = JSON.parse(JSON.stringify(metadata));
+  const result = clone(metadata);
   result.history = Array.isArray(result.history)
     ? result.history
     : [result.history];
