@@ -2,8 +2,8 @@ import type { Coord } from "@/interfaces/Coord";
 import type { RgbaColor, RgbaLayer } from "@/interfaces/RgbaLayer";
 import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
 import Color from "color";
-import { brushColor } from "./editorAppState";
-import type { CanvasPointerEvent } from "./mouseService";
+import { brushColor } from "../services/editorAppState";
+import type { CanvasPointerEvent } from "../services/mouseService";
 
 const radius = 5; // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
 

@@ -37,17 +37,17 @@ import { onMounted, ref, watchSyncEffect } from "vue";
 import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
-import { pencilDrag, pencilLift } from "@/services/brushService";
+import { pencilDrag, pencilLift } from "@/tools/brushService";
 import {
   canvasDrag,
   canvasDragEnd,
   canvasDragStart,
-} from "@/services/artboardImageDragService";
+} from "@/tools/artboardImageDragService";
 import {
   frameDrag,
   frameDragEnd,
   frameDragStart,
-} from "@/services/artboardFrameDragService";
+} from "@/tools/artboardFrameDragService";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);

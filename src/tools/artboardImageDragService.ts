@@ -1,9 +1,9 @@
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import type { RgbaLayer } from "@/interfaces/RgbaLayer";
 import { ref } from "vue";
-import artboardService from "./artboardService";
-import { snapSize } from "./editorAppState";
-import type { CanvasPointerEvent } from "./mouseService";
+import artboardService from "../services/artboardService";
+import { snapSize } from "../services/editorAppState";
+import type { CanvasPointerEvent } from "../services/mouseService";
 
 const dragOrigin = ref<DragOrigin | null>();
 
