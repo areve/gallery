@@ -17,14 +17,14 @@
 </template>
 
 <script lang="ts" setup>
-import { eraserSize, toolSelected } from "@/services/editorAppState";
+import { toolSelected } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
 import { pointerUpEvent, toPointerEvents } from "@/services/mouseService";
 import artboardService, { resetArtwork } from "@/services/artboardService";
-import { clearCircle } from "@/lib/rgba/rgba-draw";
 import { useBrushTool } from "@/tools/brushTool"
 import { useArtboardMoveTool } from "@/tools/artboardMoveTool"
 import { useArtboardFrameTool } from "@/tools/artboardFrameTool"
+import { useEraserTool } from "@/tools/eraserTool";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
@@ -32,7 +32,8 @@ const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
 const tools = [
   useBrushTool(),
   useArtboardMoveTool(),
-  useArtboardFrameTool()
+  useArtboardFrameTool(),
+  useEraserTool()
 ]
 
 function selectedTool() {
@@ -99,22 +100,13 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 
   const pointerEvent = pointerEvents[0];
   selectedTool().pointerMove(pointerEvent)
-
-  // TODO All tools can use the same interface
-  if (toolSelected.value === "eraser") {
-    clearCircle(
-      artboardService.artwork.value.rgbaLayer,
-      pointerEvent.canvasPoint.x,
-      pointerEvent.canvasPoint.y,
-      eraserSize.value / 2
-    );
-  }
 }
 
 const render = () => {
   artboardService.render();
   setTimeout(render, 50);
 };
+
 render();
 </script>
 

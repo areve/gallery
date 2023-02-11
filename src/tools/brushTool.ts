@@ -20,17 +20,20 @@ const radius = 5; // needs to be a integer, I like 5 - 30 is good for debugging 
 const brush = makeBrush(radius);
 
 let pencilLastPoint: { x: number; y: number } | null = null;
+let isPointerDown = false
 
 function pointerUp(pointerEvent: CanvasPointerEvent) {
   pencilLastPoint = null;
+  isPointerDown = false
 }
 function pointerDown(pointerEvent: CanvasPointerEvent) {
-  
+  isPointerDown = true
 }
 
 function pointerMove(
   pointerEvent: CanvasPointerEvent
 ) {
+  if (!isPointerDown) return
   const rgbaLayer = artboardService.artwork.value.rgbaLayer
   if (pencilLastPoint) {
     let weight = pointerEvent.force ?? 0.5;
