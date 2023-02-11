@@ -5,7 +5,7 @@ import type {
   OpenAiResponse,
 } from "@/interfaces/OpenAiResponse";
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
-import { epochToDate, findErrorMessage } from "../lib/utils";
+import { epochToDate, findErrorMessage } from "../../lib/utils";
 
 export async function openAiGenerateImage(
   command: { prompt: string },

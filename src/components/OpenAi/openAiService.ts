@@ -5,9 +5,9 @@ import {
   openAiEditImage,
   openAiGenerateImage,
   openAiImageVariation,
-} from "@/services/openAiApi";
+} from "@/components/OpenAi/openAiApi";
 import { ref } from "vue";
-import { saveGalleryItem, updateGalleryItem } from "./galleryService";
+import { saveGalleryItem, updateGalleryItem } from "../Gallery/galleryService";
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata";
 import type {
   Artwork,
@@ -18,7 +18,7 @@ import type {
   ImageResultError,
   ImageResultReady,
 } from "@/interfaces/OpenAiResponse";
-import { usePersistentState } from "./persistenceService";
+import { usePersistentState } from "../../services/persistenceService";
 
 const config = ref({
   openApiKey: ""

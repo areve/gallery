@@ -10,7 +10,7 @@
 
 <script lang="ts" setup>
 import { panelsVisibleState } from "@/states/panelsVisibleState"
-import openAiService from "@/services/openAiService";
+import openAiService from "@/components/OpenAi/openAiService";
 </script>
 
 <style scoped>

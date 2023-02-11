@@ -21,10 +21,10 @@ import {
 import artboardService from "@/services/artboardService";
 import compositionService, { createLayer } from "@/services/compositionService";
 import { panelsVisibleState } from "@/states/panelsVisibleState"
-import galleryApi from "@/services/galleryApi";
-import openAiService from "@/services/openAiService";
+import galleryApi from "@/components/Gallery/galleryApi";
+import openAiService from "@/components/OpenAi/openAiService";
 import { clone } from "lodash";
-import { openAiPanelState } from "@/states/openAiPanelState";
+import { openAiPanelState } from "@/components/OpenAi/openAiPanelState";
 
 async function generateImage() {
   await openAiService.generate({

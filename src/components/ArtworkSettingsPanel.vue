@@ -33,7 +33,7 @@
 <script lang="ts" setup>
 import artboardService from "@/services/artboardService";
 import { panelsVisibleState } from "@/states/panelsVisibleState"
-import { deleteGalleryItem, saveGalleryItem } from "@/services/galleryService";
+import { deleteGalleryItem, saveGalleryItem } from "@/components/Gallery/galleryService";
 import { computed } from "vue";
 
 const metadataAsJson = computed(() =>

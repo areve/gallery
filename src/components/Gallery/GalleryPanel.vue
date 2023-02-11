@@ -71,7 +71,7 @@ import {
   galleryItems,
   loadGallery,
   selectedItem,
-} from "@/services/galleryService";
+} from "@/components/Gallery/galleryService";
 import type { Artwork } from "@/interfaces/Artwork";
 import { panelsVisibleState } from "@/states/panelsVisibleState"
 
