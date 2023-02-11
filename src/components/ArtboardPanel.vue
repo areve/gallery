@@ -35,7 +35,6 @@
 import { eraserSize, snapSize, toolSelected } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
 import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
-import type { DragOrigin } from "@/interfaces/DragOrigin";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
 import { pencilDrag, pencilLift } from "@/services/brushService";
@@ -119,6 +118,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
 
   const pointerEvent = pointerEvents[0];
 
+  // TODO All tools can use the same interface
   if (toolSelected.value === "eraser") {
     clearCircle(
       artboardService.artwork.value.rgbaLayer,
