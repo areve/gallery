@@ -17,7 +17,9 @@ const tool: Tool = {
 
 export const useArtboardFrameTool = () => tool
 
-function pointerDown(pointerEvent: BasePointerEvent) {
+function pointerDown(pointerEvents: BasePointerEvent[]) {
+  const pointerEvent = pointerEvents[0]
+
   dragOrigin.value = {
     x: pointerEvent.point.x,
     y: pointerEvent.point.y,
@@ -31,13 +33,14 @@ function pointerDown(pointerEvent: BasePointerEvent) {
   };
 }
 
-function pointerUp(pointerEvent: BasePointerEvent) {
+function pointerUp(pointerEvents: BasePointerEvent[]) {
   dragOrigin.value = null;
 }
 
-function pointerMove(pointerEvent: BasePointerEvent) {
+function pointerMove(pointerEvents: BasePointerEvent[]) {
   if (!dragOrigin.value) return;
-  pointerEventsPreventDefault([pointerEvent])
+  const pointerEvent = pointerEvents[0]
+  pointerEventsPreventDefault(pointerEvents)
 
   const dx =
     ((pointerEvent.point.x - dragOrigin.value.x) /

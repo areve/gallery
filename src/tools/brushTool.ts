@@ -23,19 +23,18 @@ const brush = makeBrush(radius);
 let pencilLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false
 
-function pointerUp(pointerEvent: BasePointerEvent) {
+function pointerUp(pointerEvents: BasePointerEvent[]) {
   pencilLastPoint = null;
   isPointerDown = false
 }
-function pointerDown(pointerEvent: BasePointerEvent) {
+function pointerDown(pointerEvents: BasePointerEvent[]) {
   isPointerDown = true
 }
 
-function pointerMove(
-  pointerEvent: BasePointerEvent
-) {
+function pointerMove(pointerEvents: BasePointerEvent[]) {
   if (!isPointerDown) return
-  pointerEventsPreventDefault([pointerEvent])
+  const pointerEvent = pointerEvents[0];
+  pointerEventsPreventDefault(pointerEvents)
 
   const canvasPoint = getCanvasPoint(artboardService.artwork.value.context, pointerEvent.point)
   const rgbaLayer = artboardService.artwork.value.rgbaLayer

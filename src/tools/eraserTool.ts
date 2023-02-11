@@ -19,13 +19,13 @@ const radius = 5; // needs to be a integer, I like 5 - 30 is good for debugging 
 const brush = makeBrush(radius);
 let isPointerDown = false
 
-function pointerUp(pointerEvent: BasePointerEvent) {
+function pointerUp(pointerEvents: BasePointerEvent[]) {
   isPointerDown = false
 }
 
-function pointerDown(pointerEvent: BasePointerEvent) {
+function pointerDown(pointerEvents: BasePointerEvent[]) {
   isPointerDown = true
-  const canvasPoint = getCanvasPoint(artboardService.artwork.value.context, pointerEvent.point)
+  const canvasPoint = getCanvasPoint(artboardService.artwork.value.context, pointerEvents[0].point)
 
   clearCircle(
     artboardService.artwork.value.rgbaLayer,
@@ -35,9 +35,7 @@ function pointerDown(pointerEvent: BasePointerEvent) {
   );
 }
 
-function pointerMove(
-  pointerEvent: BasePointerEvent
-) {
+function pointerMove(pointerEvents: BasePointerEvent[]) {
   if (!isPointerDown) return 
-  pointerDown(pointerEvent)
+  pointerDown(pointerEvents)
 }

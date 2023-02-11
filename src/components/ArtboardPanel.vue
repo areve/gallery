@@ -19,7 +19,7 @@
 <script lang="ts" setup>
 import { toolSelected } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
-import { pointerUpEvent, toPointerEvents } from "@/services/pointerService";
+import { pointerUpEvents, toPointerEvents } from "@/services/pointerService";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { useBrushTool } from "@/tools/brushTool"
 import { useArtboardMoveTool } from "@/tools/artboardMoveTool"
@@ -72,20 +72,18 @@ watchSyncEffect(() => {
 });
 
 watchSyncEffect(() => {
-  if (!pointerUpEvent.value) return
-  const pointerEvent = toPointerEvents(pointerUpEvent.value)[0];
-  selectedTool().pointerUp(pointerEvent)
+  if (pointerUpEvents.value.length === 0) return
+  selectedTool().pointerUp(pointerUpEvents.value)
 });
 
 function mouseDown(event: MouseEvent | TouchEvent) {
-  const pointerEvent = toPointerEvents(event)[0];
-  selectedTool().pointerDown(pointerEvent)
+  const pointerEvents = toPointerEvents(event);
+  selectedTool().pointerDown(pointerEvents)
 }
 
 function mouseMove(event: MouseEvent | TouchEvent) {
   const pointerEvents = toPointerEvents(event);
-  const pointerEvent = pointerEvents[0];
-  selectedTool().pointerMove(pointerEvent)
+  selectedTool().pointerMove(pointerEvents)
 }
 
 const render = () => {
