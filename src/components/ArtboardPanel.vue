@@ -22,9 +22,9 @@ import { onMounted, ref, watchSyncEffect } from "vue";
 import { pointerUpEvent, toPointerEvents } from "@/services/mouseService";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
-import { useBrushTool } from "@/tools/brushService";
-import { useArtboardMoveTool } from "@/tools/artboardImageDragService";
-import { useArtboardFrameTool } from "@/tools/artboardFrameDragService";
+import { useBrushTool } from "@/tools/brushTool"
+import { useArtboardMoveTool } from "@/tools/artboardMoveTool"
+import { useArtboardFrameTool } from "@/tools/artboardFrameTool"
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
@@ -108,7 +108,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
       pointerEvent.canvasPoint.y,
       eraserSize.value / 2
     );
-  } 
+  }
 }
 
 const render = () => {
