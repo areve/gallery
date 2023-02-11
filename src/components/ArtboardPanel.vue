@@ -75,7 +75,7 @@ watchSyncEffect(() => {
   if (!pointerUpEvent.value) return
   const pointerEvent = toPointerEvents(
     pointerUpEvent.value,
-    artboardService.artwork.value.context
+    //artboardService.artwork.value.context
   )[0];
 
   selectedTool().pointerUp(pointerEvent)
@@ -84,7 +84,7 @@ watchSyncEffect(() => {
 function mouseDown(event: MouseEvent | TouchEvent) {
   const pointerEvent = toPointerEvents(
     event,
-    artboardService.artwork.value.context
+    //artboardService.artwork.value.context
   )[0];
   selectedTool().pointerDown(pointerEvent)
 }
@@ -92,7 +92,7 @@ function mouseDown(event: MouseEvent | TouchEvent) {
 function mouseMove(event: MouseEvent | TouchEvent) {
   const pointerEvents = toPointerEvents(
     event,
-    artboardService.artwork.value.context
+   // artboardService.artwork.value.context
   );
   pointerEvents.forEach((pointerEvent) => {
     pointerEvent.sourceEvent.preventDefault();
