@@ -1,11 +1,11 @@
 import type { Tool } from "@/interfaces/Tool";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
-import artboardService from "@/services/artboardService";
-import { eraserToolState } from "@/states/eraserToolState";
+import artboardService from "@/components/Artboard/artboardService";
+import { eraserToolState } from "@/components/Eraser/eraserToolState";
 import {
   getCanvasPoint,
   type BasePointerEvent,
-} from "../services/pointerService";
+} from "../../services/pointerService";
 
 const tool: Tool = {
   toolType: "eraser",

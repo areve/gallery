@@ -1,7 +1,7 @@
 import type { RgbaColor } from "@/interfaces/RgbaLayer";
 import type { Tool } from "@/interfaces/Tool";
 import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
-import artboardService from "@/services/artboardService";
+import artboardService from "@/components/Artboard/artboardService";
 import { brushToolState } from "@/components/Brush/brushToolState";
 import Color from "color";
 import {

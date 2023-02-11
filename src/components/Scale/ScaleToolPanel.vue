@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import artboardService from "@/services/artboardService";
+import artboardService from "@/components/Artboard/artboardService";
 import { panelsVisibleState } from "@/states/panelsVisibleState"
 import { scaleToolState } from "@/components/Scale/scaleToolState";
 </script>

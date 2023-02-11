@@ -18,7 +18,7 @@ import {
   cloneContext,
   createContextFromImage,
 } from "@/lib/canvas/canvas-utils";
-import artboardService from "@/services/artboardService";
+import artboardService from "@/components/Artboard/artboardService";
 import compositionService, { createLayer } from "@/services/compositionService";
 import { panelsVisibleState } from "@/states/panelsVisibleState"
 import galleryApi from "@/components/Gallery/galleryApi";

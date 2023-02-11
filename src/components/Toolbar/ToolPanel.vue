@@ -69,7 +69,7 @@
 <script lang="ts" setup>
 import { brushToolState } from "@/components/Brush/brushToolState";
 import { dragToolState } from "@/states/dragToolState";
-import { eraserToolState } from "@/states/eraserToolState";
+import { eraserToolState } from "@/components/Eraser/eraserToolState";
 import { panelsVisibleState } from "@/states/panelsVisibleState"
 import { toolbarState } from "@/components/Toolbar/toolbarState";
 </script>

@@ -1,23 +1,23 @@
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import type { Tool } from "@/interfaces/Tool";
-import { dragToolState } from "@/states/dragToolState";
 import { ref } from "vue";
-import artboardService from "../services/artboardService";
 import {
   pointerEventsPreventDefault,
   type BasePointerEvent,
-} from "../services/pointerService";
+} from "../../services/pointerService";
+import { dragToolState } from "@/states/dragToolState";
+import artboardService from "./artboardService";
 
 const dragOrigin = ref<DragOrigin | null>();
 
 const tool: Tool = {
-  toolType: "drag",
+  toolType: "drag-frame",
   pointerUp,
   pointerDown,
   pointerMove,
 };
 
-export const useArtboardMoveTool = () => tool;
+export const useArtboardFrameTool = () => tool;
 
 function pointerDown(pointerEvents: BasePointerEvent[]) {
   const pointerEvent = pointerEvents[0];
@@ -54,16 +54,6 @@ function pointerMove(pointerEvents: BasePointerEvent[]) {
     artboardService.artwork.value.context.canvas.height;
   const snapDx = Math.floor(dx / dragToolState.value.snapSize) * dragToolState.value.snapSize;
   const snapDy = Math.floor(dy / dragToolState.value.snapSize) * dragToolState.value.snapSize;
-  artboardService.artwork.value.context.clearRect(
-    0,
-    0,
-    artboardService.artwork.value.bounds.width,
-    artboardService.artwork.value.bounds.height
-  );
-  artboardService.artwork.value.context.putImageData(
-    dragOrigin.value.data,
-    snapDx,
-    snapDy
-  );
-  artboardService.resetRgbaLayer();
+  artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx;
+  artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy;
 }

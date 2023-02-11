@@ -24,11 +24,11 @@ import {
   pointerMoveEvents,
   pointerUpEvents,
 } from "@/services/pointerService";
-import artboardService, { resetArtwork } from "@/services/artboardService";
+import artboardService, { resetArtwork } from "@/components/Artboard/artboardService";
 import { useBrushTool } from "@/components/Brush/brushTool";
-import { useArtboardMoveTool } from "@/tools/artboardMoveTool";
-import { useArtboardFrameTool } from "@/tools/artboardFrameTool";
-import { useEraserTool } from "@/tools/eraserTool";
+import { useArtboardMoveTool } from "@/components/Artboard/artboardMoveTool";
+import { useArtboardFrameTool } from "@/components/Artboard/artboardFrameTool";
+import { useEraserTool } from "@/components/Eraser/eraserTool";
 import { toolbarState } from "@/components/Toolbar/toolbarState";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);

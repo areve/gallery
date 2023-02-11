@@ -6,7 +6,7 @@ import {
 } from "@/lib/canvas/canvas-utils";
 import { ref, watchPostEffect } from "vue";
 import type { Artwork, ArtworkActive } from "@/interfaces/Artwork";
-import { usePersistentState } from "./persistenceService";
+import { usePersistentState } from "../../services/persistenceService";
 import { loadGalleryItem, saveGalleryItem, updateGalleryItem } from "@/components/Gallery/galleryService";
 
 const artwork = ref<ArtworkActive>({

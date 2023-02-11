@@ -24,7 +24,7 @@
 <script lang="ts" setup>
 import ArtworkSettingsPanel from "@/components/ArtworkSettingsPanel.vue";
 import OpenAiPanel from "@/components/OpenAi/OpenAiPanel.vue";
-import ArtboardPanel from "@/components/ArtboardPanel.vue";
+import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
 import AppSettings from "@/components/AppSettings.vue";
 import TopMenu from "@/components/TopMenu.vue";
 import GalleryPanel from "@/components/Gallery/GalleryPanel.vue";
@@ -40,7 +40,7 @@ import { onApplyEffect, onAction } from "@/services/appActions";
 import { useKeyboardHandler } from "@/services/keyboardHandler";
 import { selectedItem, updateGalleryItem } from "@/components/Gallery/galleryService";
 import { panelsVisibleState } from "@/states/panelsVisibleState"
-import artboardService from "@/services/artboardService";
+import artboardService from "@/components/Artboard/artboardService";
 import type { Artwork } from "@/interfaces/Artwork";
 import { pointerUp, pointerDown, pointerMove } from "@/services/pointerService";
 import StatusBar from "@/components/StatusBar.vue";
