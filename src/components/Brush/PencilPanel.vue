@@ -56,9 +56,9 @@
 </template>
 
 <script lang="ts" setup>
-import { brushToolState } from "@/states/brushToolState";
+import { brushToolState } from './brushToolState';
 import { panelsVisibleState } from "@/states/panelsVisibleState"
-import { toolbarState } from "@/states/toolbarState";
+import { toolbarState } from "@/components/Toolbar/toolbarState";
 </script>
 
 <style scoped>

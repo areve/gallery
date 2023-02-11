@@ -67,11 +67,11 @@
 </template>
 
 <script lang="ts" setup>
-import { brushToolState } from "@/states/brushToolState";
+import { brushToolState } from "@/components/Brush/brushToolState";
 import { dragToolState } from "@/states/dragToolState";
 import { eraserToolState } from "@/states/eraserToolState";
 import { panelsVisibleState } from "@/states/panelsVisibleState"
-import { toolbarState } from "@/states/toolbarState";
+import { toolbarState } from "@/components/Toolbar/toolbarState";
 </script>
 
 <style scoped>

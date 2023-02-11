@@ -2,13 +2,13 @@ import type { RgbaColor } from "@/interfaces/RgbaLayer";
 import type { Tool } from "@/interfaces/Tool";
 import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
 import artboardService from "@/services/artboardService";
-import { brushToolState } from "@/states/brushToolState";
+import { brushToolState } from "@/components/Brush/brushToolState";
 import Color from "color";
 import {
   getCanvasPoint,
   pointerEventsPreventDefault,
   type BasePointerEvent,
-} from "../services/pointerService";
+} from "../../services/pointerService";
 
 const tool: Tool = {
   toolType: "pencil",

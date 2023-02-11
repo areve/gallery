@@ -28,8 +28,8 @@ import ArtboardPanel from "@/components/ArtboardPanel.vue";
 import AppSettings from "@/components/AppSettings.vue";
 import TopMenu from "@/components/TopMenu.vue";
 import GalleryPanel from "@/components/GalleryPanel.vue";
-import ToolPanel from "@/components/ToolPanel.vue";
-import PencilPanel from "@/components/PencilPanel.vue";
+import ToolPanel from "@/components/Toolbar/ToolPanel.vue";
+import PencilPanel from "@/components/Brush/PencilPanel.vue";
 
 import { watch } from "vue";
 import { mostRecentPrompt } from "@/lib/artwork-utils";
@@ -44,7 +44,7 @@ import artboardService from "@/services/artboardService";
 import type { Artwork } from "@/interfaces/Artwork";
 import { pointerUp, pointerDown, pointerMove } from "@/services/pointerService";
 import StatusBar from "@/components/StatusBar.vue";
-import ScaleToolPanel from "@/components/ScaleToolPanel.vue";
+import ScaleToolPanel from "@/components/Scale/ScaleToolPanel.vue";
 import { openAiPanelState } from "@/states/openAiPanelState";
 
 useKeyboardHandler();

@@ -73,7 +73,7 @@ import {
   selectedItem,
 } from "@/services/galleryService";
 import type { Artwork } from "@/interfaces/Artwork";
-import {panelsVisibleState } from "@/states/panelsVisibleState"
+import { panelsVisibleState } from "@/states/panelsVisibleState"
 
 onMounted(async () => {
   await loadGallery();

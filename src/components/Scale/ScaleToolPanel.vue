@@ -26,7 +26,7 @@
 <script lang="ts" setup>
 import artboardService from "@/services/artboardService";
 import { panelsVisibleState } from "@/states/panelsVisibleState"
-import { scaleToolState } from "@/states/scaleToolState";
+import { scaleToolState } from "@/components/Scale/scaleToolState";
 </script>
 
 <style scoped></style>
