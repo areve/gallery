@@ -1,6 +1,6 @@
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import type { Tool } from "@/interfaces/Tool";
-import { dragToolState } from "@/states/dragToolState";
+import { dragToolState } from "@/components/Artboard/dragToolState";
 import { ref } from "vue";
 import {
   pointerEventsPreventDefault,

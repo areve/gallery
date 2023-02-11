@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import { panelsVisibleState } from "@/states/panelsVisibleState"
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
 import openAiService from "@/components/OpenAi/openAiService";
 </script>
 

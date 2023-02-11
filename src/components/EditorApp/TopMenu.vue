@@ -142,8 +142,8 @@
 </template>
 
 <script lang="ts" setup>
-import { action, applyEffect } from "@/services/appActions";
-import { panelsVisibleState } from "@/states/panelsVisibleState"
+import { action, applyEffect } from "@/components/EditorApp/appActions";
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
 </script>
 
 <style scoped>

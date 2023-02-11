@@ -22,11 +22,11 @@
 </template>
 
 <script lang="ts" setup>
-import ArtworkSettingsPanel from "@/components/ArtworkSettingsPanel.vue";
+import ArtworkSettingsPanel from "@/components/Artboard/ArtworkSettingsPanel.vue";
 import OpenAiPanel from "@/components/OpenAi/OpenAiPanel.vue";
 import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
-import AppSettings from "@/components/AppSettings.vue";
-import TopMenu from "@/components/TopMenu.vue";
+import AppSettings from "@/components/EditorApp/AppSettings.vue";
+import TopMenu from "@/components/EditorApp/TopMenu.vue";
 import GalleryPanel from "@/components/Gallery/GalleryPanel.vue";
 import ToolPanel from "@/components/Toolbar/ToolPanel.vue";
 import PencilPanel from "@/components/Brush/PencilPanel.vue";
@@ -36,14 +36,14 @@ import { mostRecentPrompt } from "@/lib/artwork-utils";
 import { shotgunEffect } from "@/lib/rgba/rgba-effects-shotgun";
 import { rgb2rybEffect, ryb2rgbEffect } from "@/lib/rgba/rgba-effects-ryb2rgb";
 
-import { onApplyEffect, onAction } from "@/services/appActions";
-import { useKeyboardHandler } from "@/services/keyboardHandler";
+import { onApplyEffect, onAction } from "@/components/EditorApp/appActions";
+import { useKeyboardHandler } from "@/services/keyboardService";
 import { selectedItem, updateGalleryItem } from "@/components/Gallery/galleryService";
-import { panelsVisibleState } from "@/states/panelsVisibleState"
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
 import artboardService from "@/components/Artboard/artboardService";
 import type { Artwork } from "@/interfaces/Artwork";
 import { pointerUp, pointerDown, pointerMove } from "@/services/pointerService";
-import StatusBar from "@/components/StatusBar.vue";
+import StatusBar from "@/components/EditorApp/StatusBar.vue";
 import ScaleToolPanel from "@/components/Scale/ScaleToolPanel.vue";
 import { openAiPanelState } from "@/components/OpenAi/openAiPanelState";
 

@@ -68,9 +68,9 @@
 
 <script lang="ts" setup>
 import { brushToolState } from "@/components/Brush/brushToolState";
-import { dragToolState } from "@/states/dragToolState";
+import { dragToolState } from "@/components/Artboard/dragToolState";
 import { eraserToolState } from "@/components/Eraser/eraserToolState";
-import { panelsVisibleState } from "@/states/panelsVisibleState"
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
 import { toolbarState } from "@/components/Toolbar/toolbarState";
 </script>
 

@@ -57,7 +57,7 @@
 
 <script lang="ts" setup>
 import { brushToolState } from './brushToolState';
-import { panelsVisibleState } from "@/states/panelsVisibleState"
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
 import { toolbarState } from "@/components/Toolbar/toolbarState";
 </script>
 

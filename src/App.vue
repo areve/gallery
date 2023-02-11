@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EditorApp from "./components/EditorApp.vue";
+import EditorApp from "./components/EditorApp/EditorApp.vue";
 </script>
 
 <template>

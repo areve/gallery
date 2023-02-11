@@ -19,8 +19,8 @@ import {
   createContextFromImage,
 } from "@/lib/canvas/canvas-utils";
 import artboardService from "@/components/Artboard/artboardService";
-import compositionService, { createLayer } from "@/services/compositionService";
-import { panelsVisibleState } from "@/states/panelsVisibleState"
+import compositionService, { createLayer } from "@/lib/canvas/composition";
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
 import galleryApi from "@/components/Gallery/galleryApi";
 import openAiService from "@/components/OpenAi/openAiService";
 import { clone } from "lodash";

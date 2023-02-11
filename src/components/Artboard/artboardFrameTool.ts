@@ -5,7 +5,7 @@ import {
   pointerEventsPreventDefault,
   type BasePointerEvent,
 } from "../../services/pointerService";
-import { dragToolState } from "@/states/dragToolState";
+import { dragToolState } from "@/components/Artboard/dragToolState";
 import artboardService from "./artboardService";
 
 const dragOrigin = ref<DragOrigin | null>();
