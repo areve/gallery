@@ -7,7 +7,8 @@ const keyPressConfigs: any[] = [
   {
     key: "m",
     modifiers: ["ctrlKey"],
-    action: () => (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
+    action: () =>
+      (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
   },
   {
     key: "s",
@@ -37,7 +38,8 @@ const keyPressConfigs: any[] = [
   {
     key: "g",
     modifiers: ["ctrlKey"],
-    action: () => (panelsVisibleState.value.gallery = !panelsVisibleState.value.gallery),
+    action: () =>
+      (panelsVisibleState.value.gallery = !panelsVisibleState.value.gallery),
   },
   {
     key: "1",

@@ -2,8 +2,13 @@
   <div class="layout" @mouseup="pointerUp" @touchend="pointerUp">
     <main class="main">
       <TopMenu></TopMenu>
-      <div class="artboard-wrap" @mousedown="pointerDown" @mousemove="pointerMove" @touchstart="pointerDown"
-        @touchmove="pointerMove">
+      <div
+        class="artboard-wrap"
+        @mousedown="pointerDown"
+        @mousemove="pointerMove"
+        @touchstart="pointerDown"
+        @touchmove="pointerMove"
+      >
         <ArtboardPanel />
         <PencilPanel />
       </div>
@@ -38,8 +43,11 @@ import { rgb2rybEffect, ryb2rgbEffect } from "@/lib/rgba/rgba-effects-ryb2rgb";
 
 import { onApplyEffect, onAction } from "@/components/EditorApp/appActions";
 import { useKeyboardHandler } from "@/components/EditorApp/keyboardService";
-import { selectedItem, updateGalleryItem } from "@/components/Gallery/galleryService";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
+import {
+  selectedItem,
+  updateGalleryItem,
+} from "@/components/Gallery/galleryService";
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import artboardService from "@/components/Artboard/artboardService";
 import type { Artwork } from "@/interfaces/Artwork";
 import { pointerUp, pointerDown, pointerMove } from "@/services/pointerService";
@@ -63,7 +71,8 @@ watch(onAction, (action) => {
   if (action.action === "save") saveArtwork();
   if (action.action === "reset") reset();
   if (action.action === "auto-crop") artboardService.autoCrop();
-  if (action.action === "show-settings") panelsVisibleState.value.settings = true;
+  if (action.action === "show-settings")
+    panelsVisibleState.value.settings = true;
 });
 
 watch(onApplyEffect, (action) => {

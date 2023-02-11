@@ -47,7 +47,8 @@
           <li
             class="menu-item"
             @click="
-              panelsVisibleState.artworkSettings = !panelsVisibleState.artworkSettings
+              panelsVisibleState.artworkSettings =
+                !panelsVisibleState.artworkSettings
             "
             role="button"
           >
@@ -62,7 +63,9 @@
           </li>
           <li
             class="menu-item"
-            @click="panelsVisibleState.statusBar = !panelsVisibleState.statusBar"
+            @click="
+              panelsVisibleState.statusBar = !panelsVisibleState.statusBar
+            "
             role="button"
           >
             Status
@@ -143,7 +146,7 @@
 
 <script lang="ts" setup>
 import { action, applyEffect } from "@/components/EditorApp/appActions";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 </script>
 
 <style scoped>

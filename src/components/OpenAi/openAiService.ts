@@ -21,7 +21,7 @@ import type {
 import { usePersistentState } from "../../services/persistenceService";
 
 const config = ref({
-  openApiKey: ""
+  openApiKey: "",
 });
 
 interface GenerateOptions {
@@ -63,7 +63,10 @@ async function generate({ prompt }: GenerateOptions) {
   };
 
   updateGalleryItem(item);
-  const imageResult = await openAiGenerateImage({ prompt }, config.value.openApiKey);
+  const imageResult = await openAiGenerateImage(
+    { prompt },
+    config.value.openApiKey
+  );
   return await handleImageResult(imageResult, item);
 }
 
@@ -158,5 +161,4 @@ export default {
   config,
 };
 
-
-usePersistentState("openAiService.config", config)
+usePersistentState("openAiService.config", config);

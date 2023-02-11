@@ -32,8 +32,11 @@
 
 <script lang="ts" setup>
 import artboardService from "@/components/Artboard/artboardService";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
-import { deleteGalleryItem, saveGalleryItem } from "@/components/Gallery/galleryService";
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+import {
+  deleteGalleryItem,
+  saveGalleryItem,
+} from "@/components/Gallery/galleryService";
 import { computed } from "vue";
 
 const metadataAsJson = computed(() =>

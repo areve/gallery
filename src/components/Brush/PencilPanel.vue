@@ -2,62 +2,106 @@
   <div :hidden="!panelsVisibleState.pencil" class="pencil-panel">
     <div
       class="pencil red"
-      @click="(brushToolState.brushColor = '#ff0000'), (toolbarState.toolSelected = 'pencil')"
-      :class="{ selected: brushToolState.brushColor === 'red' && toolbarState.toolSelected === 'pencil' }"
+      @click="
+        (brushToolState.brushColor = '#ff0000'),
+          (toolbarState.toolSelected = 'pencil')
+      "
+      :class="{
+        selected:
+          brushToolState.brushColor === 'red' &&
+          toolbarState.toolSelected === 'pencil',
+      }"
     ></div>
     <div
       class="pencil orange"
-      @click="(brushToolState.brushColor = 'orange'), (toolbarState.toolSelected = 'pencil')"
+      @click="
+        (brushToolState.brushColor = 'orange'),
+          (toolbarState.toolSelected = 'pencil')
+      "
       :class="{
-        selected: brushToolState.brushColor === 'orange' && toolbarState.toolSelected === 'pencil',
+        selected:
+          brushToolState.brushColor === 'orange' &&
+          toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil yellow"
-      @click="(brushToolState.brushColor = 'yellow'), (toolbarState.toolSelected = 'pencil')"
+      @click="
+        (brushToolState.brushColor = 'yellow'),
+          (toolbarState.toolSelected = 'pencil')
+      "
       :class="{
-        selected: brushToolState.brushColor === 'yellow' && toolbarState.toolSelected === 'pencil',
+        selected:
+          brushToolState.brushColor === 'yellow' &&
+          toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil green"
-      @click="(brushToolState.brushColor = 'green'), (toolbarState.toolSelected = 'pencil')"
+      @click="
+        (brushToolState.brushColor = 'green'),
+          (toolbarState.toolSelected = 'pencil')
+      "
       :class="{
-        selected: brushToolState.brushColor === 'green' && toolbarState.toolSelected === 'pencil',
+        selected:
+          brushToolState.brushColor === 'green' &&
+          toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil blue"
-      @click="(brushToolState.brushColor = 'blue'), (toolbarState.toolSelected = 'pencil')"
-      :class="{ selected: brushToolState.brushColor === 'blue' && toolbarState.toolSelected === 'pencil' }"
+      @click="
+        (brushToolState.brushColor = 'blue'),
+          (toolbarState.toolSelected = 'pencil')
+      "
+      :class="{
+        selected:
+          brushToolState.brushColor === 'blue' &&
+          toolbarState.toolSelected === 'pencil',
+      }"
     ></div>
     <div
       class="pencil purple"
-      @click="(brushToolState.brushColor = 'purple'), (toolbarState.toolSelected = 'pencil')"
+      @click="
+        (brushToolState.brushColor = 'purple'),
+          (toolbarState.toolSelected = 'pencil')
+      "
       :class="{
-        selected: brushToolState.brushColor === 'purple' && toolbarState.toolSelected === 'pencil',
+        selected:
+          brushToolState.brushColor === 'purple' &&
+          toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil black"
-      @click="(brushToolState.brushColor = 'black'), (toolbarState.toolSelected = 'pencil')"
+      @click="
+        (brushToolState.brushColor = 'black'),
+          (toolbarState.toolSelected = 'pencil')
+      "
       :class="{
-        selected: brushToolState.brushColor === 'black' && toolbarState.toolSelected === 'pencil',
+        selected:
+          brushToolState.brushColor === 'black' &&
+          toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil white"
-      @click="(brushToolState.brushColor = 'white'), (toolbarState.toolSelected = 'pencil')"
+      @click="
+        (brushToolState.brushColor = 'white'),
+          (toolbarState.toolSelected = 'pencil')
+      "
       :class="{
-        selected: brushToolState.brushColor === 'white' && toolbarState.toolSelected === 'pencil',
+        selected:
+          brushToolState.brushColor === 'white' &&
+          toolbarState.toolSelected === 'pencil',
       }"
     ></div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { brushToolState } from './brushToolState';
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
+import { brushToolState } from "./brushToolState";
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import { toolbarState } from "@/components/Toolbar/toolbarState";
 </script>
 

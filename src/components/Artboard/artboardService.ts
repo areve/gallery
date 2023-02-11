@@ -7,7 +7,11 @@ import {
 import { ref, watchPostEffect } from "vue";
 import type { Artwork, ArtworkActive } from "@/interfaces/Artwork";
 import { usePersistentState } from "../../services/persistenceService";
-import { loadGalleryItem, saveGalleryItem, updateGalleryItem } from "@/components/Gallery/galleryService";
+import {
+  loadGalleryItem,
+  saveGalleryItem,
+  updateGalleryItem,
+} from "@/components/Gallery/galleryService";
 
 const artwork = ref<ArtworkActive>({
   status: "ready",
@@ -22,14 +26,14 @@ const artwork = ref<ArtworkActive>({
 });
 
 const state = ref({
-  filename: artwork.value.filename
-})
+  filename: artwork.value.filename,
+});
 
-usePersistentState("artboardService.state", state)
+usePersistentState("artboardService.state", state);
 
 // TODO I don't like this but it works to sync the two values
-watchPostEffect(() => artwork.value.filename = state.value.filename)
-watchPostEffect(() => state.value.filename = artwork.value.filename)
+watchPostEffect(() => (artwork.value.filename = state.value.filename));
+watchPostEffect(() => (state.value.filename = artwork.value.filename));
 
 function resetFrame() {
   artwork.value.frame = {
@@ -272,5 +276,5 @@ export default {
   render,
   scaleImage,
   resetRgbaLayer,
-  state
+  state,
 };

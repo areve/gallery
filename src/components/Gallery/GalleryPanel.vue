@@ -18,7 +18,10 @@
       <button
         class="icon-button"
         type="button"
-        @click="panelsVisibleState.artworkSettings = !panelsVisibleState.artworkSettings"
+        @click="
+          panelsVisibleState.artworkSettings =
+            !panelsVisibleState.artworkSettings
+        "
       >
         <i class="fa-solid fa-gear"></i> <span class="text">Settings</span>
       </button>
@@ -73,7 +76,7 @@ import {
   selectedItem,
 } from "@/components/Gallery/galleryService";
 import type { Artwork } from "@/interfaces/Artwork";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 
 onMounted(async () => {
   await loadGallery();

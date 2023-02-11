@@ -15,7 +15,7 @@
 
 <script lang="ts" setup>
 import artboardService from "@/components/Artboard/artboardService";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 </script>
 
 <style scoped></style>

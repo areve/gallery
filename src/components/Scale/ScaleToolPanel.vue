@@ -1,7 +1,10 @@
 <template>
   <section class="tool-panel" :hidden="!panelsVisibleState.scale">
     <h3>Scale</h3>
-    <button type="button" @click="artboardService.scaleImage(scaleToolState.scaleImageBy)">
+    <button
+      type="button"
+      @click="artboardService.scaleImage(scaleToolState.scaleImageBy)"
+    >
       Scale image
     </button>
     <label for="scaleBy">by</label>
@@ -25,7 +28,7 @@
 
 <script lang="ts" setup>
 import artboardService from "@/components/Artboard/artboardService";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import { scaleToolState } from "@/components/Scale/scaleToolState";
 </script>
 

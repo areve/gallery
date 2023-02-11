@@ -12,4 +12,4 @@ export const panelsVisibleState = ref({
   pencil: true,
   menu: true,
 });
-usePersistentState("panelsVisibleState", panelsVisibleState)
+usePersistentState("panelsVisibleState", panelsVisibleState);

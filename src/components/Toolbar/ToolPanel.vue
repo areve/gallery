@@ -45,7 +45,10 @@
     </section>
     <section
       class="tool-panel"
-      v-if="toolbarState.toolSelected === 'drag' || toolbarState.toolSelected === 'drag-frame'"
+      v-if="
+        toolbarState.toolSelected === 'drag' ||
+        toolbarState.toolSelected === 'drag-frame'
+      "
     >
       <h3>Drag Settings</h3>
       <label for="snap">snap</label>
@@ -70,9 +73,8 @@
 import { brushToolState } from "@/components/Brush/brushToolState";
 import { dragToolState } from "@/components/Artboard/dragToolState";
 import { eraserToolState } from "@/components/Eraser/eraserToolState";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
+import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import { toolbarState } from "@/components/Toolbar/toolbarState";
-
 </script>
 
 <style scoped>

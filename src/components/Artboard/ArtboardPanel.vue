@@ -24,7 +24,9 @@ import {
   pointerMoveEvents,
   pointerUpEvents,
 } from "@/services/pointerService";
-import artboardService, { resetArtwork } from "@/components/Artboard/artboardService";
+import artboardService, {
+  resetArtwork,
+} from "@/components/Artboard/artboardService";
 import { useBrushTool } from "@/components/Brush/brushTool";
 import { useArtboardMoveTool } from "@/components/Artboard/artboardMoveTool";
 import { useArtboardFrameTool } from "@/components/Artboard/artboardFrameTool";
@@ -42,7 +44,10 @@ const tools = [
 ];
 
 function selectedTool() {
-  return tools.find((tool) => tool.toolType == toolbarState.value.toolSelected) ?? tools[0];
+  return (
+    tools.find((tool) => tool.toolType == toolbarState.value.toolSelected) ??
+    tools[0]
+  );
 }
 
 onMounted(async () => {

@@ -52,8 +52,12 @@ function pointerMove(pointerEvents: BasePointerEvent[]) {
     ((pointerEvent.page.y - dragOrigin.value.y) /
       artboardService.artwork.value.context.canvas.offsetHeight) *
     artboardService.artwork.value.context.canvas.height;
-  const snapDx = Math.floor(dx / dragToolState.value.snapSize) * dragToolState.value.snapSize;
-  const snapDy = Math.floor(dy / dragToolState.value.snapSize) * dragToolState.value.snapSize;
+  const snapDx =
+    Math.floor(dx / dragToolState.value.snapSize) *
+    dragToolState.value.snapSize;
+  const snapDy =
+    Math.floor(dy / dragToolState.value.snapSize) *
+    dragToolState.value.snapSize;
   artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx;
   artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy;
 }
