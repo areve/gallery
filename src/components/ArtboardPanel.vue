@@ -18,7 +18,6 @@
 </template>
 
 <script lang="ts" setup>
-import { editorAppState } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
 import {
   pointerDownEvents,
@@ -30,6 +29,7 @@ import { useBrushTool } from "@/tools/brushTool";
 import { useArtboardMoveTool } from "@/tools/artboardMoveTool";
 import { useArtboardFrameTool } from "@/tools/artboardFrameTool";
 import { useEraserTool } from "@/tools/eraserTool";
+import { toolbarState } from "@/states/toolbarState";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
@@ -42,7 +42,7 @@ const tools = [
 ];
 
 function selectedTool() {
-  return tools.find((tool) => tool.toolType == editorAppState.value.toolSelected) ?? tools[0];
+  return tools.find((tool) => tool.toolType == toolbarState.value.toolSelected) ?? tools[0];
 }
 
 onMounted(async () => {

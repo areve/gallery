@@ -1,7 +1,7 @@
 import type { Tool } from "@/interfaces/Tool";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
 import artboardService from "@/services/artboardService";
-import { editorAppState } from "../services/editorAppState";
+import { eraserToolState } from "@/states/eraserToolState";
 import {
   getCanvasPoint,
   type BasePointerEvent,
@@ -33,7 +33,7 @@ function pointerDown(pointerEvents: BasePointerEvent[]) {
     artboardService.artwork.value.rgbaLayer,
     canvasPoint.x,
     canvasPoint.y,
-    editorAppState.value.eraserSize / 2
+    eraserToolState.value.eraserSize / 2
   );
 }
 

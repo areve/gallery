@@ -15,7 +15,7 @@
       <ToolPanel />
       <StatusBar />
     </main>
-    <aside class="side-panel" :hidden="!editorAppState.galleryPanelVisible">
+    <aside class="side-panel" :hidden="!panelsVisibleState.gallery">
       <GalleryPanel />
     </aside>
   </div>
@@ -39,12 +39,13 @@ import { rgb2rybEffect, ryb2rgbEffect } from "@/lib/rgba/rgba-effects-ryb2rgb";
 import { onApplyEffect, onAction } from "@/services/appActions";
 import { useKeyboardHandler } from "@/services/keyboardHandler";
 import { selectedItem, updateGalleryItem } from "@/services/galleryService";
-import { editorAppState } from "@/services/editorAppState";
+import { panelsVisibleState } from "@/states/panelsVisibleState"
 import artboardService from "@/services/artboardService";
 import type { Artwork } from "@/interfaces/Artwork";
 import { pointerUp, pointerDown, pointerMove } from "@/services/pointerService";
 import StatusBar from "@/components/StatusBar.vue";
 import ScaleToolPanel from "@/components/ScaleToolPanel.vue";
+import { openAiPanelState } from "@/states/openAiPanelState";
 
 useKeyboardHandler();
 
@@ -62,7 +63,7 @@ watch(onAction, (action) => {
   if (action.action === "save") saveArtwork();
   if (action.action === "reset") reset();
   if (action.action === "auto-crop") artboardService.autoCrop();
-  if (action.action === "show-settings") editorAppState.value.settingsPanelVisible = true;
+  if (action.action === "show-settings") panelsVisibleState.value.settings = true;
 });
 
 watch(onApplyEffect, (action) => {
@@ -82,7 +83,7 @@ function reset() {
 
 async function galleryItemSelected(item: Artwork) {
   artboardService.load(item);
-  editorAppState.value.prompt = mostRecentPrompt(item);
+  openAiPanelState.value.prompt = mostRecentPrompt(item);
 }
 
 async function saveArtwork() {

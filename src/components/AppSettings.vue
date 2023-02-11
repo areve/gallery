@@ -1,7 +1,7 @@
 <template>
-  <section class="tool-panel" v-if="editorAppState.settingsPanelVisible">
+  <section class="tool-panel" v-if="panelsVisibleState.settings">
     <h3>App Settings</h3>
-    <button type="button" @click="editorAppState.settingsPanelVisible = false">
+    <button type="button" @click="panelsVisibleState.settings = false">
       Close Settings
     </button>
     <input type="text" v-model="openAiService.config.value.openApiKey" />
@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import { editorAppState } from "@/services/editorAppState";
+import { panelsVisibleState } from "@/states/panelsVisibleState"
 import openAiService from "@/services/openAiService";
 </script>
 

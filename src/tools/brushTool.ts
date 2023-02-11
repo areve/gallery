@@ -2,8 +2,8 @@ import type { RgbaColor } from "@/interfaces/RgbaLayer";
 import type { Tool } from "@/interfaces/Tool";
 import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
 import artboardService from "@/services/artboardService";
+import { brushToolState } from "@/states/brushToolState";
 import Color from "color";
-import { editorAppState } from "../services/editorAppState";
 import {
   getCanvasPoint,
   pointerEventsPreventDefault,
@@ -64,7 +64,7 @@ function pointerMove(pointerEvents: BasePointerEvent[]) {
       pencilLastPoint,
       canvasPoint,
       brush,
-      colorToRgbaColor(editorAppState.value.brushColor),
+      colorToRgbaColor(brushToolState.value.brushColor),
       weight
     );
   }

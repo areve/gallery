@@ -1,5 +1,5 @@
 <template>
-  <section class="tool-panel" :hidden="!editorAppState.artworkSettingsPanelsVisible">
+  <section class="tool-panel" :hidden="!panelsVisibleState.artworkSettings">
     <h3>Artwork Settings</h3>
     <textarea class="metadata" v-model="metadataAsJson"></textarea>
     <div>
@@ -24,7 +24,7 @@
     >
       <i class="fa-solid fa-floppy-disk"></i> Save
     </button>
-    <button type="button" @click="editorAppState.artworkSettingsPanelsVisible = false">
+    <button type="button" @click="panelsVisibleState.artworkSettings = false">
       <i class="fa-solid fa-close"></i> Close
     </button>
   </section>
@@ -32,7 +32,7 @@
 
 <script lang="ts" setup>
 import artboardService from "@/services/artboardService";
-import { editorAppState } from "@/services/editorAppState";
+import { panelsVisibleState } from "@/states/panelsVisibleState"
 import { deleteGalleryItem, saveGalleryItem } from "@/services/galleryService";
 import { computed } from "vue";
 

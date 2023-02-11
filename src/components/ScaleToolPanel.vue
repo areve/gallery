@@ -1,14 +1,14 @@
 <template>
-  <section class="tool-panel" :hidden="!editorAppState.scalePanelsVisible">
+  <section class="tool-panel" :hidden="!panelsVisibleState.scale">
     <h3>Scale</h3>
-    <button type="button" @click="artboardService.scaleImage(editorAppState.scaleImageBy)">
+    <button type="button" @click="artboardService.scaleImage(scaleToolState.scaleImageBy)">
       Scale image
     </button>
     <label for="scaleBy">by</label>
     <input
       type="number"
       id="scaleBy"
-      v-model="editorAppState.scaleImageBy"
+      v-model="scaleToolState.scaleImageBy"
       step="0.00001"
       min="0"
     />
@@ -25,7 +25,8 @@
 
 <script lang="ts" setup>
 import artboardService from "@/services/artboardService";
-import { editorAppState } from "@/services/editorAppState";
+import { panelsVisibleState } from "@/states/panelsVisibleState"
+import { scaleToolState } from "@/states/scaleToolState";
 </script>
 
 <style scoped></style>

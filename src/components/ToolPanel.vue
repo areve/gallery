@@ -1,43 +1,43 @@
 <template>
-  <div :hidden="!editorAppState.toolbarVisible" class="tool-panel">
+  <div :hidden="!panelsVisibleState.toolbar" class="tool-panel">
     <section class="tool-panel">
       <h3>Tool</h3>
       <button
         type="button"
-        @click="editorAppState.toolSelected = 'eraser'"
-        :class="{ 'use-tool': editorAppState.toolSelected === 'eraser' }"
+        @click="toolbarState.toolSelected = 'eraser'"
+        :class="{ 'use-tool': toolbarState.toolSelected === 'eraser' }"
       >
         Eraser
       </button>
       <button
         type="button"
-        @click="editorAppState.toolSelected = 'drag'"
-        :class="{ 'use-tool': editorAppState.toolSelected === 'drag' }"
+        @click="toolbarState.toolSelected = 'drag'"
+        :class="{ 'use-tool': toolbarState.toolSelected === 'drag' }"
       >
         Drag
       </button>
       <button
         type="button"
-        @click="editorAppState.toolSelected = 'drag-frame'"
-        :class="{ 'use-tool': editorAppState.toolSelected === 'drag-frame' }"
+        @click="toolbarState.toolSelected = 'drag-frame'"
+        :class="{ 'use-tool': toolbarState.toolSelected === 'drag-frame' }"
       >
         Drag frame
       </button>
       <button
         type="button"
-        @click="editorAppState.toolSelected = 'pencil'"
-        :class="{ 'use-tool': editorAppState.toolSelected === 'pencil' }"
+        @click="toolbarState.toolSelected = 'pencil'"
+        :class="{ 'use-tool': toolbarState.toolSelected === 'pencil' }"
       >
         Pencil
       </button>
     </section>
-    <section class="tool-panel" v-if="editorAppState.toolSelected === 'eraser'">
+    <section class="tool-panel" v-if="toolbarState.toolSelected === 'eraser'">
       <h3>Eraser Settings</h3>
       <label for="eraserSize">Eraser size</label>
       <input
         type="number"
         id="eraserSize"
-        v-model="editorAppState.eraserSize"
+        v-model="eraserToolState.eraserSize"
         step="5"
         min="0"
         max="1000"
@@ -45,29 +45,33 @@
     </section>
     <section
       class="tool-panel"
-      v-if="editorAppState.toolSelected === 'drag' || editorAppState.toolSelected === 'drag-frame'"
+      v-if="toolbarState.toolSelected === 'drag' || toolbarState.toolSelected === 'drag-frame'"
     >
       <h3>Drag Settings</h3>
       <label for="snap">snap</label>
       <input
         type="number"
         id="snap"
-        v-model="editorAppState.snapSize"
+        v-model="dragToolState.snapSize"
         step="1"
         min="1"
         max="256"
       />
     </section>
-    <section class="tool-panel" v-if="editorAppState.toolSelected === 'pencil'">
+    <section class="tool-panel" v-if="toolbarState.toolSelected === 'pencil'">
       <h3>Pencil Settings</h3>
       <label for="brushColor">Colour</label>
-      <input type="color" id="brushColor" v-model="editorAppState.brushColor" />
+      <input type="color" id="brushColor" v-model="brushToolState.brushColor" />
     </section>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { editorAppState } from "@/services/editorAppState";
+import { brushToolState } from "@/states/brushToolState";
+import { dragToolState } from "@/states/dragToolState";
+import { eraserToolState } from "@/states/eraserToolState";
+import { panelsVisibleState } from "@/states/panelsVisibleState"
+import { toolbarState } from "@/states/toolbarState";
 </script>
 
 <style scoped>

@@ -1,5 +1,5 @@
 <template>
-  <nav id="menu" :hidden="!editorAppState.menuVisible">
+  <nav id="menu" :hidden="!panelsVisibleState.menu">
     <label for="toggle-menu" class="toggle-menu"
       >Menu <span class="drop-icon">▾</span></label
     >
@@ -32,14 +32,14 @@
         <ul class="sub-menu">
           <li
             class="menu-item"
-            @click="editorAppState.galleryPanelVisible = !editorAppState.galleryPanelVisible"
+            @click="panelsVisibleState.gallery = !panelsVisibleState.gallery"
             role="button"
           >
             Gallery
           </li>
           <li
             class="menu-item"
-            @click="editorAppState.openAiPanelsVisible = !editorAppState.openAiPanelsVisible"
+            @click="panelsVisibleState.openAi = !panelsVisibleState.openAi"
             role="button"
           >
             OpenAI
@@ -47,7 +47,7 @@
           <li
             class="menu-item"
             @click="
-              editorAppState.artworkSettingsPanelsVisible = !editorAppState.artworkSettingsPanelsVisible
+              panelsVisibleState.artworkSettings = !panelsVisibleState.artworkSettings
             "
             role="button"
           >
@@ -55,35 +55,35 @@
           </li>
           <li
             class="menu-item"
-            @click="editorAppState.scalePanelsVisible = !editorAppState.scalePanelsVisible"
+            @click="panelsVisibleState.scale = !panelsVisibleState.scale"
             role="button"
           >
             Scale
           </li>
           <li
             class="menu-item"
-            @click="editorAppState.statusBarVisible = !editorAppState.statusBarVisible"
+            @click="panelsVisibleState.statusBar = !panelsVisibleState.statusBar"
             role="button"
           >
             Status
           </li>
           <li
             class="menu-item"
-            @click="editorAppState.toolbarVisible = !editorAppState.toolbarVisible"
+            @click="panelsVisibleState.toolbar = !panelsVisibleState.toolbar"
             role="button"
           >
             Toolbar
           </li>
           <li
             class="menu-item"
-            @click="editorAppState.menuVisible = !editorAppState.menuVisible"
+            @click="panelsVisibleState.menu = !panelsVisibleState.menu"
             role="button"
           >
             Menu (Ctrl+M)
           </li>
           <li
             class="menu-item"
-            @click="editorAppState.pencilPanelVisible = !editorAppState.pencilPanelVisible"
+            @click="panelsVisibleState.pencil = !panelsVisibleState.pencil"
             role="button"
           >
             Pencils
@@ -143,7 +143,7 @@
 
 <script lang="ts" setup>
 import { action, applyEffect } from "@/services/appActions";
-import { editorAppState } from "@/services/editorAppState";
+import { panelsVisibleState } from "@/states/panelsVisibleState"
 </script>
 
 <style scoped>
