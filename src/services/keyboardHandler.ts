@@ -1,16 +1,12 @@
 import { useKeypress } from "vue3-keypress";
 import { action, applyEffect } from "./appActions";
-import {
-  galleryPanelVisible,
-  menuVisible,
-  toolSelected,
-} from "./editorAppState";
+import { editorAppState } from "./editorAppState";
 
 const keyPressConfigs: any[] = [
   {
     key: "m",
     modifiers: ["ctrlKey"],
-    action: () => (menuVisible.value = !menuVisible.value),
+    action: () => (editorAppState.value.menuVisible = !editorAppState.value.menuVisible),
   },
   {
     key: "s",
@@ -40,27 +36,27 @@ const keyPressConfigs: any[] = [
   {
     key: "g",
     modifiers: ["ctrlKey"],
-    action: () => (galleryPanelVisible.value = !galleryPanelVisible.value),
+    action: () => (editorAppState.value.galleryPanelVisible = !editorAppState.value.galleryPanelVisible),
   },
   {
     key: "1",
     modifiers: ["ctrlKey"],
-    action: () => (toolSelected.value = "eraser"),
+    action: () => (editorAppState.value.toolSelected = "eraser"),
   },
   {
     key: "2",
     modifiers: ["ctrlKey"],
-    action: () => (toolSelected.value = "drag"),
+    action: () => (editorAppState.value.toolSelected = "drag"),
   },
   {
     key: "3",
     modifiers: ["ctrlKey"],
-    action: () => (toolSelected.value = "drag-frame"),
+    action: () => (editorAppState.value.toolSelected = "drag-frame"),
   },
   {
     key: "4",
     modifiers: ["ctrlKey"],
-    action: () => (toolSelected.value = "pencil"),
+    action: () => (editorAppState.value.toolSelected = "pencil"),
   },
 ];
 

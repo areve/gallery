@@ -1,5 +1,5 @@
 <template>
-  <nav id="menu" :hidden="!menuVisible">
+  <nav id="menu" :hidden="!editorAppState.menuVisible">
     <label for="toggle-menu" class="toggle-menu"
       >Menu <span class="drop-icon">▾</span></label
     >
@@ -32,14 +32,14 @@
         <ul class="sub-menu">
           <li
             class="menu-item"
-            @click="galleryPanelVisible = !galleryPanelVisible"
+            @click="editorAppState.galleryPanelVisible = !editorAppState.galleryPanelVisible"
             role="button"
           >
             Gallery
           </li>
           <li
             class="menu-item"
-            @click="openAiPanelsVisible = !openAiPanelsVisible"
+            @click="editorAppState.openAiPanelsVisible = !editorAppState.openAiPanelsVisible"
             role="button"
           >
             OpenAI
@@ -47,7 +47,7 @@
           <li
             class="menu-item"
             @click="
-              artworkSettingsPanelsVisible = !artworkSettingsPanelsVisible
+              editorAppState.artworkSettingsPanelsVisible = !editorAppState.artworkSettingsPanelsVisible
             "
             role="button"
           >
@@ -55,35 +55,35 @@
           </li>
           <li
             class="menu-item"
-            @click="scalePanelsVisible = !scalePanelsVisible"
+            @click="editorAppState.scalePanelsVisible = !editorAppState.scalePanelsVisible"
             role="button"
           >
             Scale
           </li>
           <li
             class="menu-item"
-            @click="statusBarVisible = !statusBarVisible"
+            @click="editorAppState.statusBarVisible = !editorAppState.statusBarVisible"
             role="button"
           >
             Status
           </li>
           <li
             class="menu-item"
-            @click="toolbarVisible = !toolbarVisible"
+            @click="editorAppState.toolbarVisible = !editorAppState.toolbarVisible"
             role="button"
           >
             Toolbar
           </li>
           <li
             class="menu-item"
-            @click="menuVisible = !menuVisible"
+            @click="editorAppState.menuVisible = !editorAppState.menuVisible"
             role="button"
           >
             Menu (Ctrl+M)
           </li>
           <li
             class="menu-item"
-            @click="pencilPanelVisible = !pencilPanelVisible"
+            @click="editorAppState.pencilPanelVisible = !editorAppState.pencilPanelVisible"
             role="button"
           >
             Pencils
@@ -143,16 +143,7 @@
 
 <script lang="ts" setup>
 import { action, applyEffect } from "@/services/appActions";
-import {
-  galleryPanelVisible,
-  statusBarVisible,
-  openAiPanelsVisible,
-  artworkSettingsPanelsVisible,
-  scalePanelsVisible,
-  toolbarVisible,
-  menuVisible,
-  pencilPanelVisible,
-} from "@/services/editorAppState";
+import { editorAppState } from "@/services/editorAppState";
 </script>
 
 <style scoped>

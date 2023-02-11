@@ -1,5 +1,5 @@
 <template>
-  <section class="tool-panel" :hidden="!openAiPanelsVisible">
+  <section class="tool-panel" :hidden="!editorAppState.openAiPanelsVisible">
     <h3>OpenAI</h3>
     <button type="button" @click="generateImage()">Generate</button>
     <button type="button" @click="variationImage()">Variation</button>
@@ -8,7 +8,7 @@
       type="text"
       id="prompt"
       class="prompt"
-      v-model="prompt"
+      v-model="editorAppState.prompt"
     ></textarea>
   </section>
 </template>
@@ -20,14 +20,14 @@ import {
 } from "@/lib/canvas/canvas-utils";
 import artboardService from "@/services/artboardService";
 import compositionService, { createLayer } from "@/services/compositionService";
-import { openAiPanelsVisible, prompt } from "@/services/editorAppState";
+import { editorAppState } from "@/services/editorAppState";
 import galleryApi from "@/services/galleryApi";
 import openAiService from "@/services/openAiService";
 import { clone } from "lodash";
 
 async function generateImage() {
   await openAiService.generate({
-    prompt: prompt.value,
+    prompt: editorAppState.value.prompt,
   });
 }
 
@@ -65,7 +65,7 @@ async function outpaintImage() {
     : null;
 
   const outpaintResult = await openAiService.outpaint({
-    prompt: prompt.value,
+    prompt: editorAppState.value.prompt,
     image: artboardService.createContextFromFrame(1024, 1024),
     metadata: artboardService.artwork.value.metadata,
   });

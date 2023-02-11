@@ -4,7 +4,7 @@
     :class="{
       'gallery-tools-visible': true,
     }"
-    :hidden="!galleryPanelVisible"
+    :hidden="!editorAppState.galleryPanelVisible"
   >
     <div class="tools">
       <button
@@ -18,7 +18,7 @@
       <button
         class="icon-button"
         type="button"
-        @click="artworkSettingsPanelsVisible = !artworkSettingsPanelsVisible"
+        @click="editorAppState.artworkSettingsPanelsVisible = !editorAppState.artworkSettingsPanelsVisible"
       >
         <i class="fa-solid fa-gear"></i> <span class="text">Settings</span>
       </button>
@@ -74,8 +74,7 @@ import {
 } from "@/services/galleryService";
 import type { Artwork } from "@/interfaces/Artwork";
 import {
-  artworkSettingsPanelsVisible,
-  galleryPanelVisible,
+  editorAppState,
 } from "@/services/editorAppState";
 
 onMounted(async () => {

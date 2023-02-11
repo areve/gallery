@@ -11,7 +11,7 @@ import {
   saveGalleryItem,
   updateGalleryItem,
 } from "./galleryService";
-import { usePersistentState } from "./editorAppState";
+import { usePersistentState } from "./persistenceService";
 
 const artwork = ref<ArtworkActive>({
   status: "ready",
@@ -25,9 +25,11 @@ const artwork = ref<ArtworkActive>({
   rgbaLayer: undefined!,
 });
 
-const state = ref({ filename: artwork.value.filename })
+const state = ref({
+  filename: artwork.value.filename
+})
 
-usePersistentState("artboardServiceState", state)
+usePersistentState("artboardService.state", state)
 
 // TODO I don't like this but it works to sync the two values
 watchPostEffect(() => artwork.value.filename = state.value.filename)

@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import { toolSelected } from "@/services/editorAppState";
+import { editorAppState } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
 import {
   pointerDownEvents,
@@ -42,7 +42,7 @@ const tools = [
 ];
 
 function selectedTool() {
-  return tools.find((tool) => tool.toolType == toolSelected.value) ?? tools[0];
+  return tools.find((tool) => tool.toolType == editorAppState.value.toolSelected) ?? tools[0];
 }
 
 onMounted(async () => {

@@ -18,6 +18,7 @@ import type {
   ImageResultError,
   ImageResultReady,
 } from "@/interfaces/OpenAiResponse";
+import { usePersistentState } from "./persistenceService";
 
 const config = ref({
   openApiKey: ""
@@ -156,3 +157,6 @@ export default {
   variation,
   config,
 };
+
+
+usePersistentState("openAiService.config", config)

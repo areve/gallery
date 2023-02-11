@@ -2,7 +2,7 @@ import type { DragOrigin } from "@/interfaces/DragOrigin";
 import type { Tool } from "@/interfaces/Tool";
 import { ref } from "vue";
 import artboardService from "../services/artboardService";
-import { snapSize } from "../services/editorAppState";
+import { editorAppState } from "../services/editorAppState";
 import {
   pointerEventsPreventDefault,
   type BasePointerEvent,
@@ -52,8 +52,8 @@ function pointerMove(pointerEvents: BasePointerEvent[]) {
     ((pointerEvent.page.y - dragOrigin.value.y) /
       artboardService.artwork.value.context.canvas.offsetHeight) *
     artboardService.artwork.value.context.canvas.height;
-  const snapDx = Math.floor(dx / snapSize.value) * snapSize.value;
-  const snapDy = Math.floor(dy / snapSize.value) * snapSize.value;
+  const snapDx = Math.floor(dx / editorAppState.value.snapSize) * editorAppState.value.snapSize;
+  const snapDy = Math.floor(dy / editorAppState.value.snapSize) * editorAppState.value.snapSize;
   artboardService.artwork.value.frame.x = dragOrigin.value.frame.x + snapDx;
   artboardService.artwork.value.frame.y = dragOrigin.value.frame.y + snapDy;
 }

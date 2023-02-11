@@ -1,5 +1,5 @@
 <template>
-  <div class="status-bar" :hidden="!statusBarVisible">
+  <div class="status-bar" :hidden="!editorAppState.statusBarVisible">
     <span
       >canvas:{{ artboardService.artwork.value.bounds.width }}x{{
         artboardService.artwork.value.bounds.height
@@ -15,7 +15,7 @@
 
 <script lang="ts" setup>
 import artboardService from "@/services/artboardService";
-import { statusBarVisible } from "@/services/editorAppState";
+import { editorAppState } from "@/services/editorAppState";
 </script>
 
 <style scoped></style>
