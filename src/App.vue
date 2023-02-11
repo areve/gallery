@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
+import EditorApp from "./components/EditorApp.vue";
 </script>
 
 <template>
   <div class="router-wrapper">
-    <RouterView />
+    <EditorApp />
   </div>
 </template>
 
