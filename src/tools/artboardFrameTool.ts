@@ -1,10 +1,12 @@
 import type { DragOrigin } from "@/interfaces/DragOrigin";
-import type { RgbaLayer } from "@/interfaces/RgbaLayer";
 import type { Tool } from "@/interfaces/Tool";
 import { ref } from "vue";
 import artboardService from "../services/artboardService";
 import { snapSize } from "../services/editorAppState";
-import { pointerEventsPreventDefault, type BasePointerEvent } from "../services/pointerService";
+import {
+  pointerEventsPreventDefault,
+  type BasePointerEvent,
+} from "../services/pointerService";
 
 const dragOrigin = ref<DragOrigin | null>();
 
@@ -13,12 +15,12 @@ const tool: Tool = {
   pointerUp,
   pointerDown,
   pointerMove,
-}
+};
 
-export const useArtboardFrameTool = () => tool
+export const useArtboardFrameTool = () => tool;
 
 function pointerDown(pointerEvents: BasePointerEvent[]) {
-  const pointerEvent = pointerEvents[0]
+  const pointerEvent = pointerEvents[0];
 
   dragOrigin.value = {
     x: pointerEvent.point.x,
@@ -33,14 +35,14 @@ function pointerDown(pointerEvents: BasePointerEvent[]) {
   };
 }
 
-function pointerUp(pointerEvents: BasePointerEvent[]) {
+function pointerUp(_: BasePointerEvent[]) {
   dragOrigin.value = null;
 }
 
 function pointerMove(pointerEvents: BasePointerEvent[]) {
   if (!dragOrigin.value) return;
-  const pointerEvent = pointerEvents[0]
-  pointerEventsPreventDefault(pointerEvents)
+  const pointerEvent = pointerEvents[0];
+  pointerEventsPreventDefault(pointerEvents);
 
   const dx =
     ((pointerEvent.point.x - dragOrigin.value.x) /

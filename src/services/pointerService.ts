@@ -36,12 +36,15 @@ export function pointerEventsPreventDefault(pointerEvents: BasePointerEvent[]) {
   });
 }
 
-export function getCanvasPoint(context: CanvasRenderingContext2D, eventPoint: Coord): Coord {
-  const domRect = context.canvas.getBoundingClientRect()
+export function getCanvasPoint(
+  context: CanvasRenderingContext2D,
+  eventPoint: Coord
+): Coord {
+  const domRect = context.canvas.getBoundingClientRect();
   return {
     x: ((eventPoint.x - domRect.x) / domRect.width) * context.canvas.width,
     y: ((eventPoint.y - domRect.y) / domRect.height) * context.canvas.height,
-  }
+  };
 }
 
 export function toPointerEvents(event: TouchEvent | MouseEvent) {
@@ -50,10 +53,11 @@ export function toPointerEvents(event: TouchEvent | MouseEvent) {
     const touchEvent = event as TouchEvent;
     for (let i = 0; i < touchEvent.touches.length; i++) {
       const touch = touchEvent.touches[i];
-      const x = touch.pageX
-      const y = touch.pageY
+      const x = touch.pageX;
+      const y = touch.pageY;
       const pointerEvent: BasePointerEvent = {
-        point: { // TODO rename to screen or page?
+        point: {
+          // TODO rename to screen or page?
           x,
           y,
         },

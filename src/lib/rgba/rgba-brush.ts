@@ -81,11 +81,15 @@ function brushPoint(
   const { x, y } = to;
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
+      const pixelY = y + bY - brushHeight / 2;
+      const pixelX = x + bX - brushWidth / 2;
 
-      const pixelY = y + bY - brushHeight / 2
-      const pixelX = x + bX - brushWidth / 2
-
-      if (pixelY >= 0 && pixelY <= rgbaLayer.height && pixelX >= 0 && pixelX <= width) {
+      if (
+        pixelY >= 0 &&
+        pixelY <= rgbaLayer.height &&
+        pixelX >= 0 &&
+        pixelX <= width
+      ) {
         const dataR = (width * pixelY + pixelX) * 4;
         const [dataG, dataB, dataA] = [dataR + 1, dataR + 2, dataR + 3];
 

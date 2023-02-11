@@ -1,31 +1,33 @@
 import type { Tool } from "@/interfaces/Tool";
-import { makeBrush } from "@/lib/rgba/rgba-brush";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
 import artboardService from "@/services/artboardService";
 import { eraserSize } from "../services/editorAppState";
-import { getCanvasPoint, type BasePointerEvent } from "../services/pointerService";
+import {
+  getCanvasPoint,
+  type BasePointerEvent,
+} from "../services/pointerService";
 
 const tool: Tool = {
   toolType: "eraser",
   pointerUp,
   pointerDown,
   pointerMove,
-}
+};
 
-export const useEraserTool = () => tool
+export const useEraserTool = () => tool;
 
-const radius = 5; // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
+let isPointerDown = false;
 
-const brush = makeBrush(radius);
-let isPointerDown = false
-
-function pointerUp(pointerEvents: BasePointerEvent[]) {
-  isPointerDown = false
+function pointerUp(_: BasePointerEvent[]) {
+  isPointerDown = false;
 }
 
 function pointerDown(pointerEvents: BasePointerEvent[]) {
-  isPointerDown = true
-  const canvasPoint = getCanvasPoint(artboardService.artwork.value.context, pointerEvents[0].point)
+  isPointerDown = true;
+  const canvasPoint = getCanvasPoint(
+    artboardService.artwork.value.context,
+    pointerEvents[0].point
+  );
 
   clearCircle(
     artboardService.artwork.value.rgbaLayer,
@@ -36,6 +38,6 @@ function pointerDown(pointerEvents: BasePointerEvent[]) {
 }
 
 function pointerMove(pointerEvents: BasePointerEvent[]) {
-  if (!isPointerDown) return 
-  pointerDown(pointerEvents)
+  if (!isPointerDown) return;
+  pointerDown(pointerEvents);
 }

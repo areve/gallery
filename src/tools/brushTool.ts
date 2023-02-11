@@ -4,40 +4,46 @@ import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
 import artboardService from "@/services/artboardService";
 import Color from "color";
 import { brushColor } from "../services/editorAppState";
-import { getCanvasPoint, pointerEventsPreventDefault, type BasePointerEvent } from "../services/pointerService";
-
+import {
+  getCanvasPoint,
+  pointerEventsPreventDefault,
+  type BasePointerEvent,
+} from "../services/pointerService";
 
 const tool: Tool = {
   toolType: "pencil",
   pointerUp,
   pointerDown,
   pointerMove,
-}
+};
 
-export const useBrushTool = () => tool
+export const useBrushTool = () => tool;
 
 const radius = 5; // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
 
 const brush = makeBrush(radius);
 
 let pencilLastPoint: { x: number; y: number } | null = null;
-let isPointerDown = false
+let isPointerDown = false;
 
-function pointerUp(pointerEvents: BasePointerEvent[]) {
+function pointerUp(_: BasePointerEvent[]) {
   pencilLastPoint = null;
-  isPointerDown = false
+  isPointerDown = false;
 }
-function pointerDown(pointerEvents: BasePointerEvent[]) {
-  isPointerDown = true
+function pointerDown(_: BasePointerEvent[]) {
+  isPointerDown = true;
 }
 
 function pointerMove(pointerEvents: BasePointerEvent[]) {
-  if (!isPointerDown) return
+  if (!isPointerDown) return;
   const pointerEvent = pointerEvents[0];
-  pointerEventsPreventDefault(pointerEvents)
+  pointerEventsPreventDefault(pointerEvents);
 
-  const canvasPoint = getCanvasPoint(artboardService.artwork.value.context, pointerEvent.point)
-  const rgbaLayer = artboardService.artwork.value.rgbaLayer
+  const canvasPoint = getCanvasPoint(
+    artboardService.artwork.value.context,
+    pointerEvent.point
+  );
+  const rgbaLayer = artboardService.artwork.value.rgbaLayer;
   if (pencilLastPoint) {
     let weight = pointerEvent.force ?? 0.5;
     weight = weight * weight;

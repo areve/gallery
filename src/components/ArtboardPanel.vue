@@ -1,12 +1,15 @@
 <template>
   <div class="artboard-panel">
     <div class="artboard-wrap">
-      <div class="artboard" :style="{
-        'aspect-ratio':
-          artboardService.artwork.value.bounds.width +
-          ' / ' +
-          artboardService.artwork.value.bounds.height,
-      }">
+      <div
+        class="artboard"
+        :style="{
+          'aspect-ratio':
+            artboardService.artwork.value.bounds.width +
+            ' / ' +
+            artboardService.artwork.value.bounds.height,
+        }"
+      >
         <canvas ref="canvas" class="canvas"></canvas>
         <canvas ref="overlayCanvas" class="overlay-canvas"></canvas>
       </div>
@@ -17,11 +20,15 @@
 <script lang="ts" setup>
 import { toolSelected } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
-import { pointerDownEvents, pointerMoveEvents, pointerUpEvents, toPointerEvents } from "@/services/pointerService";
+import {
+  pointerDownEvents,
+  pointerMoveEvents,
+  pointerUpEvents,
+} from "@/services/pointerService";
 import artboardService, { resetArtwork } from "@/services/artboardService";
-import { useBrushTool } from "@/tools/brushTool"
-import { useArtboardMoveTool } from "@/tools/artboardMoveTool"
-import { useArtboardFrameTool } from "@/tools/artboardFrameTool"
+import { useBrushTool } from "@/tools/brushTool";
+import { useArtboardMoveTool } from "@/tools/artboardMoveTool";
+import { useArtboardFrameTool } from "@/tools/artboardFrameTool";
 import { useEraserTool } from "@/tools/eraserTool";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
@@ -31,11 +38,11 @@ const tools = [
   useBrushTool(),
   useArtboardMoveTool(),
   useArtboardFrameTool(),
-  useEraserTool()
-]
+  useEraserTool(),
+];
 
 function selectedTool() {
-  return tools.find(tool => tool.toolType == toolSelected.value) ?? tools[0]
+  return tools.find((tool) => tool.toolType == toolSelected.value) ?? tools[0];
 }
 
 onMounted(async () => {
@@ -70,18 +77,18 @@ watchSyncEffect(() => {
 });
 
 watchSyncEffect(() => {
-  if (pointerUpEvents.value.length === 0) return
-  selectedTool().pointerUp(pointerUpEvents.value)
+  if (pointerUpEvents.value.length === 0) return;
+  selectedTool().pointerUp(pointerUpEvents.value);
 });
 
 watchSyncEffect(() => {
-  if (pointerDownEvents.value.length === 0) return
-  selectedTool().pointerDown(pointerDownEvents.value)
+  if (pointerDownEvents.value.length === 0) return;
+  selectedTool().pointerDown(pointerDownEvents.value);
 });
 
 watchSyncEffect(() => {
-  if (pointerMoveEvents.value.length === 0) return
-  selectedTool().pointerMove(pointerMoveEvents.value)
+  if (pointerMoveEvents.value.length === 0) return;
+  selectedTool().pointerMove(pointerMoveEvents.value);
 });
 
 const render = () => {
