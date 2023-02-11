@@ -4,7 +4,7 @@ import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
 import artboardService from "@/services/artboardService";
 import Color from "color";
 import { brushColor } from "../services/editorAppState";
-import type { CanvasPointerEvent } from "../services/mouseService";
+import type { CanvasPointerEvent } from "../services/pointerService";
 
 const tool: Tool = {
   toolType: "pencil",

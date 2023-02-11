@@ -1,15 +1,17 @@
 import type { Coord } from "@/interfaces/Coord";
 import { ref } from "vue";
 
-export const globalDragOrigin = ref<MouseEvent | TouchEvent | null>();
+// export const globalDragOrigin = ref<MouseEvent | TouchEvent | null>();
 export const pointerUpEvent = ref<MouseEvent | TouchEvent | null>(null);
 
-export function mouseDown(event: MouseEvent | TouchEvent) {
-  globalDragOrigin.value = event;
+export function pointerDown(event: MouseEvent | TouchEvent) {
+  
+}
+export function pointerMove(event: MouseEvent | TouchEvent) {
+  
 }
 
-export function mouseUp(event: MouseEvent | TouchEvent) {
-  globalDragOrigin.value = null;
+export function pointerUp(event: MouseEvent | TouchEvent) {
   pointerUpEvent.value = event;
 }
 

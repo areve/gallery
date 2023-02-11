@@ -1,4 +1,4 @@
-import type { CanvasPointerEvent } from "@/services/mouseService";
+import type { CanvasPointerEvent } from "@/services/pointerService";
 
 export type ToolType = "eraser" | "drag" | "drag-frame" | "pencil";
 

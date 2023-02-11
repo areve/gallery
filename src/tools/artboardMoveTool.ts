@@ -3,7 +3,7 @@ import type { Tool } from "@/interfaces/Tool";
 import { ref } from "vue";
 import artboardService from "../services/artboardService";
 import { snapSize } from "../services/editorAppState";
-import type { CanvasPointerEvent } from "../services/mouseService";
+import type { CanvasPointerEvent } from "../services/pointerService";
 
 const dragOrigin = ref<DragOrigin | null>();
 

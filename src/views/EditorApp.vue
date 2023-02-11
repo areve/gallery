@@ -1,10 +1,12 @@
 <template>
   <div
     class="layout"
-    @mouseup="mouseUp"
-    @mousedown="mouseDown"
-    @touchend="mouseUp"
-    @touchstart="mouseDown"
+    @mouseup="pointerUp"
+    @mousedown="pointerDown"
+    @mousemove="pointerMove"
+    @touchend="pointerUp"
+    @touchstart="pointerDown"
+    @touchmove="pointerMove"
   >
     <main class="main">
       <TopMenu></TopMenu>
@@ -47,7 +49,7 @@ import { selectedItem, updateGalleryItem } from "@/services/galleryService";
 import { settingsPanelVisible, prompt } from "@/services/editorAppState";
 import artboardService from "@/services/artboardService";
 import type { Artwork } from "@/interfaces/Artwork";
-import { mouseUp, mouseDown } from "@/services/mouseService";
+import { pointerUp, pointerDown, pointerMove } from "@/services/pointerService";
 import { galleryPanelVisible } from "@/services/editorAppState";
 import StatusBar from "@/components/StatusBar.vue";
 import ScaleToolPanel from "@/components/ScaleToolPanel.vue";

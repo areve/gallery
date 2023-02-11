@@ -19,7 +19,7 @@
 <script lang="ts" setup>
 import { toolSelected } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
-import { pointerUpEvent, toPointerEvents } from "@/services/mouseService";
+import { pointerUpEvent, toPointerEvents } from "@/services/pointerService";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { useBrushTool } from "@/tools/brushTool"
 import { useArtboardMoveTool } from "@/tools/artboardMoveTool"

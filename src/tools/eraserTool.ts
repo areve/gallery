@@ -3,7 +3,7 @@ import { makeBrush } from "@/lib/rgba/rgba-brush";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
 import artboardService from "@/services/artboardService";
 import { eraserSize } from "../services/editorAppState";
-import type { CanvasPointerEvent } from "../services/mouseService";
+import type { CanvasPointerEvent } from "../services/pointerService";
 
 const tool: Tool = {
   toolType: "eraser",
