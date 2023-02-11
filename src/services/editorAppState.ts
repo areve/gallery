@@ -1,4 +1,4 @@
-import type { Tool } from "@/interfaces/Tool";
+import type { ToolType } from "@/interfaces/Tool";
 import { ref, watch, watchPostEffect, type Ref } from "vue";
 import { onAction } from "./appActions";
 import artboardService from "./artboardService";
@@ -8,7 +8,7 @@ type StateCollection = { [key: string]: Ref };
 type SerailizedStateCollection = { [key: string]: any };
 
 const editorAppState = {
-  toolSelected: ref<Tool>("pencil"),
+  toolSelected: ref<ToolType>("pencil"),
 
   eraserSize: ref<number>(300),
   snapSize: ref<number>(128),

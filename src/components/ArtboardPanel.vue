@@ -1,31 +1,16 @@
 <template>
   <div class="artboard-panel">
     <div class="artboard-wrap">
-      <div
-        class="artboard"
-        :style="{
-          'aspect-ratio':
-            artboardService.artwork.value.bounds.width +
-            ' / ' +
-            artboardService.artwork.value.bounds.height,
-        }"
-      >
-        <canvas
-          ref="canvas"
-          class="canvas"
-          @touchstart="mouseDown"
-          @mousedown="mouseDown"
-          @touchmove="mouseMove"
-          @mousemove="mouseMove"
-        ></canvas>
-        <canvas
-          ref="overlayCanvas"
-          class="overlay-canvas"
-          @touchstart="mouseDown"
-          @mousedown="mouseDown"
-          @touchmove="mouseMove"
-          @mousemove="mouseMove"
-        ></canvas>
+      <div class="artboard" :style="{
+        'aspect-ratio':
+          artboardService.artwork.value.bounds.width +
+          ' / ' +
+          artboardService.artwork.value.bounds.height,
+      }">
+        <canvas ref="canvas" class="canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
+          @mousemove="mouseMove"></canvas>
+        <canvas ref="overlayCanvas" class="overlay-canvas" @touchstart="mouseDown" @mousedown="mouseDown"
+          @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
       </div>
     </div>
   </div>
@@ -34,7 +19,7 @@
 <script lang="ts" setup>
 import { eraserSize, snapSize, toolSelected } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
-import { globalDragOrigin, toPointerEvents } from "@/services/mouseService";
+import { pointerUpEvent, toPointerEvents } from "@/services/mouseService";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
 import { pencilDrag, pencilLift } from "@/tools/brushService";
@@ -44,13 +29,20 @@ import {
   canvasDragStart,
 } from "@/tools/artboardImageDragService";
 import {
-  frameDrag,
-  frameDragEnd,
-  frameDragStart,
+  useArtboardFrameTool,
 } from "@/tools/artboardFrameDragService";
+import type { Tool, ToolType } from "@/interfaces/Tool";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
+
+
+function selectedTool() {
+  const tools: { [key: string]: Tool } = {
+    "drag-frame": useArtboardFrameTool()
+  }
+  return tools[toolSelected.value] ?? useArtboardFrameTool()
+}
 
 onMounted(async () => {
   artboardService.artwork.value.context = canvas.value.getContext("2d", {
@@ -84,11 +76,20 @@ watchSyncEffect(() => {
 });
 
 watchSyncEffect(() => {
-  if (globalDragOrigin.value) return;
+  if (!pointerUpEvent.value) return
+
+  // TODO globalDragOrigin isn't what i need
+  const pointerEvent = toPointerEvents(
+    pointerUpEvent.value,
+    artboardService.artwork.value.context
+  )[0];
+
+  selectedTool().pointerUp(pointerEvent)
+
   if (toolSelected.value === "drag") {
     canvasDragEnd();
   } else if (toolSelected.value === "drag-frame") {
-    frameDragEnd();
+    //frameDragEnd();
   } else if (toolSelected.value === "pencil") {
     pencilLift();
   }
@@ -99,11 +100,12 @@ function mouseDown(event: MouseEvent | TouchEvent) {
     event,
     artboardService.artwork.value.context
   )[0];
+  selectedTool().pointerDown(pointerEvent)
 
   if (toolSelected.value === "drag") {
     canvasDragStart(pointerEvent);
   } else if (toolSelected.value === "drag-frame") {
-    frameDragStart(pointerEvent);
+    //frameDragStart(pointerEvent);
   }
 }
 
@@ -117,6 +119,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   });
 
   const pointerEvent = pointerEvents[0];
+  selectedTool().pointerMove(pointerEvent)
 
   // TODO All tools can use the same interface
   if (toolSelected.value === "eraser") {
@@ -129,7 +132,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
   } else if (toolSelected.value === "drag") {
     canvasDrag(pointerEvent);
   } else if (toolSelected.value === "drag-frame") {
-    frameDrag(pointerEvent);
+    //frameDrag(pointerEvent);
   } else if (toolSelected.value === "pencil") {
     pencilDrag(artboardService.artwork.value.rgbaLayer, pointerEvent);
   }

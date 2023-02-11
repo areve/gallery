@@ -1,4 +1,4 @@
-import type { Tool } from "@/interfaces/Tool";
+import type { ToolType } from "@/interfaces/Tool";
 import { ref } from "vue";
 
 export type AppActionType = "save" | "reset" | "auto-crop" | "show-settings";
@@ -16,7 +16,7 @@ export interface ApplyEffect extends AppActionBase {
   type: EffectType;
 }
 export interface SelectTool extends AppActionBase {
-  tool: Tool;
+  tool: ToolType;
 }
 
 const id = () => Math.random();
