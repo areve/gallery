@@ -73,31 +73,17 @@ watchSyncEffect(() => {
 
 watchSyncEffect(() => {
   if (!pointerUpEvent.value) return
-  const pointerEvent = toPointerEvents(
-    pointerUpEvent.value,
-    //artboardService.artwork.value.context
-  )[0];
-
+  const pointerEvent = toPointerEvents(pointerUpEvent.value)[0];
   selectedTool().pointerUp(pointerEvent)
 });
 
 function mouseDown(event: MouseEvent | TouchEvent) {
-  const pointerEvent = toPointerEvents(
-    event,
-    //artboardService.artwork.value.context
-  )[0];
+  const pointerEvent = toPointerEvents(event)[0];
   selectedTool().pointerDown(pointerEvent)
 }
 
 function mouseMove(event: MouseEvent | TouchEvent) {
-  const pointerEvents = toPointerEvents(
-    event,
-   // artboardService.artwork.value.context
-  );
-  pointerEvents.forEach((pointerEvent) => {
-    pointerEvent.sourceEvent.preventDefault();
-  });
-
+  const pointerEvents = toPointerEvents(event);
   const pointerEvent = pointerEvents[0];
   selectedTool().pointerMove(pointerEvent)
 }

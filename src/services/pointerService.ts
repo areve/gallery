@@ -28,6 +28,12 @@ export interface CanvasPointerEvent extends BasePointerEvent {
   readonly canvasPoint: Coord;
 }
 
+export function pointerEventsPreventDefault(pointerEvents: BasePointerEvent[]) {
+  pointerEvents.forEach((pointerEvent) => {
+    pointerEvent.sourceEvent.preventDefault();
+  });
+}
+
 export function getCanvasPoint(context: CanvasRenderingContext2D, eventPoint: Coord): Coord {
   return {
     x: (eventPoint.x / context.canvas.offsetWidth) * context.canvas.width,
@@ -35,10 +41,7 @@ export function getCanvasPoint(context: CanvasRenderingContext2D, eventPoint: Co
   }
 }
 
-export function toPointerEvents(
-  event: TouchEvent | MouseEvent,
-  //context: CanvasRenderingContext2D
-) {
+export function toPointerEvents(event: TouchEvent | MouseEvent) {
   const pointerEvents: BasePointerEvent[] = [];
   if ((event as TouchEvent).touches) {
     const touchEvent = event as TouchEvent;

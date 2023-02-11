@@ -3,7 +3,7 @@ import type { Tool } from "@/interfaces/Tool";
 import { ref } from "vue";
 import artboardService from "../services/artboardService";
 import { snapSize } from "../services/editorAppState";
-import type { BasePointerEvent } from "../services/pointerService";
+import { pointerEventsPreventDefault, type BasePointerEvent } from "../services/pointerService";
 
 const dragOrigin = ref<DragOrigin | null>();
 
@@ -36,6 +36,8 @@ function pointerUp(pointerEvent: BasePointerEvent) {
 
 function pointerMove(pointerEvent: BasePointerEvent) {
   if (!dragOrigin.value) return;
+  pointerEventsPreventDefault([pointerEvent])
+
   const dx =
     ((pointerEvent.point.x - dragOrigin.value.x) /
       artboardService.artwork.value.context.canvas.offsetWidth) *

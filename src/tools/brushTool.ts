@@ -4,7 +4,7 @@ import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
 import artboardService from "@/services/artboardService";
 import Color from "color";
 import { brushColor } from "../services/editorAppState";
-import { getCanvasPoint, type BasePointerEvent } from "../services/pointerService";
+import { getCanvasPoint, pointerEventsPreventDefault, type BasePointerEvent } from "../services/pointerService";
 
 
 const tool: Tool = {
@@ -35,6 +35,8 @@ function pointerMove(
   pointerEvent: BasePointerEvent
 ) {
   if (!isPointerDown) return
+  pointerEventsPreventDefault([pointerEvent])
+
   const canvasPoint = getCanvasPoint(artboardService.artwork.value.context, pointerEvent.point)
   const rgbaLayer = artboardService.artwork.value.rgbaLayer
   if (pencilLastPoint) {
