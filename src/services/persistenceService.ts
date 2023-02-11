@@ -1,6 +1,6 @@
 import { watchSyncEffect, type Ref } from "vue";
 
-export type StateCollection = { [key: string]: Ref };
+type StateCollection = { [key: string]: Ref };
 
 const states: StateCollection = {}
 

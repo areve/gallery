@@ -72,6 +72,7 @@ import { dragToolState } from "@/components/Artboard/dragToolState";
 import { eraserToolState } from "@/components/Eraser/eraserToolState";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
 import { toolbarState } from "@/components/Toolbar/toolbarState";
+
 </script>
 
 <style scoped>

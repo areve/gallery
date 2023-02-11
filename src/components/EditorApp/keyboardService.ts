@@ -1,7 +1,7 @@
 import { useKeypress } from "vue3-keypress";
-import { action, applyEffect } from "../components/EditorApp/appActions";
+import { action, applyEffect } from "./appActions";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
-import { toolbarState } from "@/components/Toolbar/toolbarState";
+import { toolbarState } from "../Toolbar/toolbarState";
 
 const keyPressConfigs: any[] = [
   {

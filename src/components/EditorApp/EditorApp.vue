@@ -37,7 +37,7 @@ import { shotgunEffect } from "@/lib/rgba/rgba-effects-shotgun";
 import { rgb2rybEffect, ryb2rgbEffect } from "@/lib/rgba/rgba-effects-ryb2rgb";
 
 import { onApplyEffect, onAction } from "@/components/EditorApp/appActions";
-import { useKeyboardHandler } from "@/services/keyboardService";
+import { useKeyboardHandler } from "@/components/EditorApp/keyboardService";
 import { selectedItem, updateGalleryItem } from "@/components/Gallery/galleryService";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState"
 import artboardService from "@/components/Artboard/artboardService";
