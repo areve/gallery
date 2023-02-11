@@ -8,22 +8,16 @@ import type { CanvasPointerEvent } from "../services/mouseService";
 
 const dragOrigin = ref<DragOrigin | null>();
 
-const artboardFrameTool: Tool = {
+const tool: Tool = {
   toolType: "drag-frame",
-  pointerUp(event) {
-    frameDragEnd()
-  },
-  pointerDown(event) {
-    frameDragStart(event)
-  },
-  pointerMove(event) {
-    frameMove(event)
-  },
+  pointerUp,
+  pointerDown,
+  pointerMove,
 }
 
-export const useArtboardFrameTool = () => artboardFrameTool
+export const useArtboardFrameTool = () => tool
 
-function frameDragStart(pointerEvent: CanvasPointerEvent) {
+function pointerDown(pointerEvent: CanvasPointerEvent) {
   dragOrigin.value = {
     x: pointerEvent.point.x,
     y: pointerEvent.point.y,
@@ -37,11 +31,11 @@ function frameDragStart(pointerEvent: CanvasPointerEvent) {
   };
 }
 
-function frameDragEnd() {
+function pointerUp(pointerEvent: CanvasPointerEvent) {
   dragOrigin.value = null;
 }
 
-function frameMove(pointerEvent: CanvasPointerEvent) {
+function pointerMove(pointerEvent: CanvasPointerEvent) {
   if (!dragOrigin.value) return;
   const dx =
     ((pointerEvent.point.x - dragOrigin.value.x) /

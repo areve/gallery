@@ -1,5 +1,5 @@
 import type { DragOrigin } from "@/interfaces/DragOrigin";
-import type { RgbaLayer } from "@/interfaces/RgbaLayer";
+import type { Tool } from "@/interfaces/Tool";
 import { ref } from "vue";
 import artboardService from "../services/artboardService";
 import { snapSize } from "../services/editorAppState";
@@ -7,7 +7,16 @@ import type { CanvasPointerEvent } from "../services/mouseService";
 
 const dragOrigin = ref<DragOrigin | null>();
 
-export function canvasDragStart(pointerEvent: CanvasPointerEvent) {
+const tool: Tool = {
+  toolType: "drag",
+  pointerUp,
+  pointerDown,
+  pointerMove,
+}
+
+export const useArtboardMoveTool = () => tool
+
+function pointerDown(pointerEvent: CanvasPointerEvent) {
   dragOrigin.value = {
     x: pointerEvent.point.x,
     y: pointerEvent.point.y,
@@ -21,11 +30,11 @@ export function canvasDragStart(pointerEvent: CanvasPointerEvent) {
   };
 }
 
-export function canvasDragEnd() {
+function pointerUp(pointerEvent: CanvasPointerEvent) {
   dragOrigin.value = null;
 }
 
-export function canvasDrag(pointerEvent: CanvasPointerEvent) {
+function pointerMove(pointerEvent: CanvasPointerEvent) {
   if (!dragOrigin.value) return;
   const dx =
     ((pointerEvent.point.x - dragOrigin.value.x) /

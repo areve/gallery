@@ -17,31 +17,26 @@
 </template>
 
 <script lang="ts" setup>
-import { eraserSize, snapSize, toolSelected } from "@/services/editorAppState";
+import { eraserSize, toolSelected } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
 import { pointerUpEvent, toPointerEvents } from "@/services/mouseService";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
-import { pencilDrag, pencilLift } from "@/tools/brushService";
-import {
-  canvasDrag,
-  canvasDragEnd,
-  canvasDragStart,
-} from "@/tools/artboardImageDragService";
-import {
-  useArtboardFrameTool,
-} from "@/tools/artboardFrameDragService";
-import type { Tool, ToolType } from "@/interfaces/Tool";
+import { useBrushTool } from "@/tools/brushService";
+import { useArtboardMoveTool } from "@/tools/artboardImageDragService";
+import { useArtboardFrameTool } from "@/tools/artboardFrameDragService";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
 
+const tools = [
+  useBrushTool(),
+  useArtboardMoveTool(),
+  useArtboardFrameTool()
+]
 
 function selectedTool() {
-  const tools: { [key: string]: Tool } = {
-    "drag-frame": useArtboardFrameTool()
-  }
-  return tools[toolSelected.value] ?? useArtboardFrameTool()
+  return tools.find(tool => tool.toolType == toolSelected.value) ?? tools[0]
 }
 
 onMounted(async () => {
@@ -77,22 +72,12 @@ watchSyncEffect(() => {
 
 watchSyncEffect(() => {
   if (!pointerUpEvent.value) return
-
-  // TODO globalDragOrigin isn't what i need
   const pointerEvent = toPointerEvents(
     pointerUpEvent.value,
     artboardService.artwork.value.context
   )[0];
 
   selectedTool().pointerUp(pointerEvent)
-
-  if (toolSelected.value === "drag") {
-    canvasDragEnd();
-  } else if (toolSelected.value === "drag-frame") {
-    //frameDragEnd();
-  } else if (toolSelected.value === "pencil") {
-    pencilLift();
-  }
 });
 
 function mouseDown(event: MouseEvent | TouchEvent) {
@@ -101,12 +86,6 @@ function mouseDown(event: MouseEvent | TouchEvent) {
     artboardService.artwork.value.context
   )[0];
   selectedTool().pointerDown(pointerEvent)
-
-  if (toolSelected.value === "drag") {
-    canvasDragStart(pointerEvent);
-  } else if (toolSelected.value === "drag-frame") {
-    //frameDragStart(pointerEvent);
-  }
 }
 
 function mouseMove(event: MouseEvent | TouchEvent) {
@@ -129,13 +108,7 @@ function mouseMove(event: MouseEvent | TouchEvent) {
       pointerEvent.canvasPoint.y,
       eraserSize.value / 2
     );
-  } else if (toolSelected.value === "drag") {
-    canvasDrag(pointerEvent);
-  } else if (toolSelected.value === "drag-frame") {
-    //frameDrag(pointerEvent);
-  } else if (toolSelected.value === "pencil") {
-    pencilDrag(artboardService.artwork.value.rgbaLayer, pointerEvent);
-  }
+  } 
 }
 
 const render = () => {
