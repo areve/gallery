@@ -2,11 +2,15 @@ import type { Coord } from "@/interfaces/Coord";
 import { ref } from "vue";
 
 export const pointerUpEvents = ref<BasePointerEvent[]>([]);
+export const pointerDownEvents = ref<BasePointerEvent[]>([]);
+export const pointerMoveEvents = ref<BasePointerEvent[]>([]);
 
 export function pointerDown(event: MouseEvent | TouchEvent) {
+  pointerDownEvents.value = toPointerEvents(event);
 }
 
 export function pointerMove(event: MouseEvent | TouchEvent) {
+  pointerMoveEvents.value = toPointerEvents(event);
 }
 
 export function pointerUp(event: MouseEvent | TouchEvent) {
@@ -33,9 +37,10 @@ export function pointerEventsPreventDefault(pointerEvents: BasePointerEvent[]) {
 }
 
 export function getCanvasPoint(context: CanvasRenderingContext2D, eventPoint: Coord): Coord {
+  const domRect = context.canvas.getBoundingClientRect()
   return {
-    x: (eventPoint.x / context.canvas.offsetWidth) * context.canvas.width,
-    y: (eventPoint.y / context.canvas.offsetHeight) * context.canvas.height,
+    x: ((eventPoint.x - domRect.x) / domRect.width) * context.canvas.width,
+    y: ((eventPoint.y - domRect.y) / domRect.height) * context.canvas.height,
   }
 }
 
@@ -45,12 +50,10 @@ export function toPointerEvents(event: TouchEvent | MouseEvent) {
     const touchEvent = event as TouchEvent;
     for (let i = 0; i < touchEvent.touches.length; i++) {
       const touch = touchEvent.touches[i];
-      const rect = (touch.target as any).getBoundingClientRect();
-      const x = touch.clientX - window.pageXOffset - rect.left;
-      const y = touch.clientY - window.pageYOffset - rect.top;
-
+      const x = touch.pageX
+      const y = touch.pageY
       const pointerEvent: BasePointerEvent = {
-        point: {
+        point: { // TODO rename to screen or page?
           x,
           y,
         },
@@ -64,8 +67,8 @@ export function toPointerEvents(event: TouchEvent | MouseEvent) {
     }
   } else {
     const mouseEvent: MouseEvent = event as MouseEvent;
-    const x = mouseEvent.offsetX;
-    const y = mouseEvent.offsetY;
+    const x = mouseEvent.pageX;
+    const y = mouseEvent.pageY;
 
     const pointerEvent: BasePointerEvent = {
       point: {

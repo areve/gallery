@@ -7,10 +7,8 @@
           ' / ' +
           artboardService.artwork.value.bounds.height,
       }">
-        <canvas ref="canvas" class="canvas" @touchstart="mouseDown" @mousedown="mouseDown" @touchmove="mouseMove"
-          @mousemove="mouseMove"></canvas>
-        <canvas ref="overlayCanvas" class="overlay-canvas" @touchstart="mouseDown" @mousedown="mouseDown"
-          @touchmove="mouseMove" @mousemove="mouseMove"></canvas>
+        <canvas ref="canvas" class="canvas"></canvas>
+        <canvas ref="overlayCanvas" class="overlay-canvas"></canvas>
       </div>
     </div>
   </div>
@@ -19,7 +17,7 @@
 <script lang="ts" setup>
 import { toolSelected } from "@/services/editorAppState";
 import { onMounted, ref, watchSyncEffect } from "vue";
-import { pointerUpEvents, toPointerEvents } from "@/services/pointerService";
+import { pointerDownEvents, pointerMoveEvents, pointerUpEvents, toPointerEvents } from "@/services/pointerService";
 import artboardService, { resetArtwork } from "@/services/artboardService";
 import { useBrushTool } from "@/tools/brushTool"
 import { useArtboardMoveTool } from "@/tools/artboardMoveTool"
@@ -76,15 +74,15 @@ watchSyncEffect(() => {
   selectedTool().pointerUp(pointerUpEvents.value)
 });
 
-function mouseDown(event: MouseEvent | TouchEvent) {
-  const pointerEvents = toPointerEvents(event);
-  selectedTool().pointerDown(pointerEvents)
-}
+watchSyncEffect(() => {
+  if (pointerDownEvents.value.length === 0) return
+  selectedTool().pointerDown(pointerDownEvents.value)
+});
 
-function mouseMove(event: MouseEvent | TouchEvent) {
-  const pointerEvents = toPointerEvents(event);
-  selectedTool().pointerMove(pointerEvents)
-}
+watchSyncEffect(() => {
+  if (pointerMoveEvents.value.length === 0) return
+  selectedTool().pointerMove(pointerMoveEvents.value)
+});
 
 const render = () => {
   artboardService.render();

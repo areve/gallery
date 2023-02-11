@@ -81,27 +81,31 @@ function brushPoint(
   const { x, y } = to;
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
-      const brushR = (bY * brushWidth + bX) * 4;
-      const [brushG, brushB, brushA] = [brushR + 1, brushR + 2, brushR + 3];
 
-      const dataR =
-        (width * (y + bY - brushHeight / 2) + x + bX - brushWidth / 2) * 4;
-      const [dataG, dataB, dataA] = [dataR + 1, dataR + 2, dataR + 3];
+      const pixelY = y + bY - brushHeight / 2
+      const pixelX = x + bX - brushWidth / 2
 
-      const [r, g, b, a] = pixelMix(
-        [data[dataR], data[dataG], data[dataB], data[dataA]],
-        [
-          brushData[brushR] * color[0],
-          brushData[brushG] * color[1],
-          brushData[brushB] * color[2],
-          brushData[brushA] * color[3] * weight,
-        ]
-      );
+      if (pixelY >= 0 && pixelY <= rgbaLayer.height && pixelX >= 0 && pixelX <= width) {
+        const dataR = (width * pixelY + pixelX) * 4;
+        const [dataG, dataB, dataA] = [dataR + 1, dataR + 2, dataR + 3];
 
-      data[dataR] = r;
-      data[dataG] = g;
-      data[dataB] = b;
-      data[dataA] = a;
+        const brushR = (bY * brushWidth + bX) * 4;
+        const [brushG, brushB, brushA] = [brushR + 1, brushR + 2, brushR + 3];
+        const [r, g, b, a] = pixelMix(
+          [data[dataR], data[dataG], data[dataB], data[dataA]],
+          [
+            brushData[brushR] * color[0],
+            brushData[brushG] * color[1],
+            brushData[brushB] * color[2],
+            brushData[brushA] * color[3] * weight,
+          ]
+        );
+
+        data[dataR] = r;
+        data[dataG] = g;
+        data[dataB] = b;
+        data[dataA] = a;
+      }
     }
   }
 }
