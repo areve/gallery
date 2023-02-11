@@ -4,13 +4,14 @@ import {
   createContext,
   autoCropImage,
 } from "@/lib/canvas/canvas-utils";
-import { ref } from "vue";
+import { ref, watchPostEffect } from "vue";
 import type { Artwork, ArtworkActive } from "@/interfaces/Artwork";
 import {
   loadGalleryItem,
   saveGalleryItem,
   updateGalleryItem,
 } from "./galleryService";
+import { usePersistentState } from "./editorAppState";
 
 const artwork = ref<ArtworkActive>({
   status: "ready",
@@ -23,6 +24,14 @@ const artwork = ref<ArtworkActive>({
   overlayContext: undefined!,
   rgbaLayer: undefined!,
 });
+
+const state = ref({ filename: artwork.value.filename })
+
+usePersistentState("artboardServiceState", state)
+
+// TODO I don't like this but it works to sync the two values
+watchPostEffect(() => artwork.value.filename = state.value.filename)
+watchPostEffect(() => state.value.filename = artwork.value.filename)
 
 function resetFrame() {
   artwork.value.frame = {
@@ -119,7 +128,7 @@ export function resetArtwork() {
   resetRgbaLayer();
 
   artwork.value.metadata = { history: [] };
-  artwork.value.filename = "";
+  // artwork.value.filename = "";
   artwork.value.modified = new Date();
   resetFrame();
   renderOverlay();
@@ -265,4 +274,5 @@ export default {
   render,
   scaleImage,
   resetRgbaLayer,
+  state
 };

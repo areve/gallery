@@ -19,7 +19,9 @@ import type {
   ImageResultReady,
 } from "@/interfaces/OpenAiResponse";
 
-const openApiKey = ref<string>("");
+const config = ref({
+  openApiKey: ""
+});
 
 interface GenerateOptions {
   prompt: string;
@@ -60,7 +62,7 @@ async function generate({ prompt }: GenerateOptions) {
   };
 
   updateGalleryItem(item);
-  const imageResult = await openAiGenerateImage({ prompt }, openApiKey.value);
+  const imageResult = await openAiGenerateImage({ prompt }, config.value.openApiKey);
   return await handleImageResult(imageResult, item);
 }
 
@@ -94,7 +96,7 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
   updateGalleryItem(item);
   const imageResult = await openAiEditImage(
     { image: imageBlob, mask: imageBlob, prompt },
-    openApiKey.value
+    config.value.openApiKey
   );
   return await handleImageResult(imageResult, item);
 }
@@ -118,7 +120,7 @@ async function variation({ image, metadata }: VariationOptions) {
   updateGalleryItem(item);
   const imageResult = await openAiImageVariation(
     { image: imageBlob },
-    openApiKey.value
+    config.value.openApiKey
   );
   return await handleImageResult(imageResult, item);
 }
@@ -152,5 +154,5 @@ export default {
   generate,
   outpaint,
   variation,
-  openApiKey,
+  config,
 };

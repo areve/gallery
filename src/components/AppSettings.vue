@@ -4,20 +4,13 @@
     <button type="button" @click="settingsPanelVisible = false">
       Close Settings
     </button>
-    <input type="text" v-model="openAiService.openApiKey.value" />
+    <input type="text" v-model="openAiService.config.value.openApiKey" />
   </section>
 </template>
 
 <script lang="ts" setup>
 import { settingsPanelVisible } from "@/services/editorAppState";
 import openAiService from "@/services/openAiService";
-import { watch } from "vue";
-
-watch(settingsPanelVisible, () => {
-  if (!settingsPanelVisible.value) {
-    window.localStorage.setItem("openApiKey", openAiService.openApiKey.value);
-  }
-});
 </script>
 
 <style scoped>

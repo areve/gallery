@@ -1,5 +1,5 @@
 import type { ToolType } from "@/interfaces/Tool";
-import { ref, watch, watchPostEffect, type Ref } from "vue";
+import { ref, watch, watchPostEffect, watchSyncEffect, type Ref } from "vue";
 import { onAction } from "./appActions";
 import artboardService from "./artboardService";
 import openAiService from "./openAiService";
@@ -27,6 +27,9 @@ const editorAppState = {
   // TODO perhaps these should go to panelState objects?
   prompt: ref<string>(""),
   scaleImageBy: ref<number>(0.5),
+
+  openAiServiceConfig: ref(openAiService.config), // TODO no reset?
+  //artboardServiceState: ref(artboardService.state) // TODO no reset?
 };
 
 function resetState() {
@@ -79,10 +82,12 @@ watchPostEffect(() => {
 loadState();
 function loadState() {
   console.log("loadState");
-  openAiService.openApiKey.value =
-    window.localStorage.getItem("openApiKey") || "";
-  artboardService.artwork.value.filename =
-    window.localStorage.getItem("filename") || "";
+
+  // artboardService.artwork.value.filename =
+  // window.localStorage.getItem("filename") || "";
+
+
+
   deserializeStateCollection(
     editorAppState,
     window.localStorage.getItem("editorAppState") || "{}"
@@ -100,10 +105,10 @@ function saveState() {
     "metadata",
     JSON.stringify(artboardService.artwork.value.metadata)
   );
-  window.localStorage.setItem(
-    "filename",
-    artboardService.artwork.value.filename
-  );
+  // window.localStorage.setItem(
+  //   "filename",
+  //   artboardService.artwork.value.filename
+  // );
   window.localStorage.setItem(
     "editorAppState",
     serializeStateCollection(editorAppState)
@@ -127,4 +132,18 @@ function deserializeStateCollection(
   Object.keys(collection).forEach((key) => {
     if (source[key] !== undefined) collection[key].value = source[key];
   });
+}
+
+
+
+
+const states: StateCollection = {}
+
+export function usePersistentState(key: string, state: Ref) {
+  states[key] = state
+
+  const loadedValue = window.localStorage.getItem(key)
+  if (loadedValue) state.value = JSON.parse(loadedValue)
+
+  watchSyncEffect(() => window.localStorage.setItem(key, JSON.stringify(state.value)))
 }

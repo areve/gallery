@@ -1,16 +1,9 @@
 <template>
-  <div
-    class="layout"
-    @mouseup="pointerUp"
-    @mousedown="pointerDown"
-    @mousemove="pointerMove"
-    @touchend="pointerUp"
-    @touchstart="pointerDown"
-    @touchmove="pointerMove"
-  >
+  <div class="layout" @mouseup="pointerUp" @touchend="pointerUp">
     <main class="main">
       <TopMenu></TopMenu>
-      <div class="artboard-wrap">
+      <div class="artboard-wrap" @mousedown="pointerDown" @mousemove="pointerMove" @touchstart="pointerDown"
+        @touchmove="pointerMove">
         <ArtboardPanel />
         <PencilPanel />
       </div>
@@ -132,7 +125,6 @@ async function saveArtwork() {
   height: 100%;
   display: flex;
   flex-direction: row;
-
   overflow: hidden;
 }
 </style>

@@ -6,6 +6,7 @@ export const pointerDownEvents = ref<BasePointerEvent[]>([]);
 export const pointerMoveEvents = ref<BasePointerEvent[]>([]);
 
 export function pointerDown(event: MouseEvent | TouchEvent) {
+  pointerUpEvents.value = [];
   pointerDownEvents.value = toPointerEvents(event);
 }
 
@@ -15,6 +16,7 @@ export function pointerMove(event: MouseEvent | TouchEvent) {
 
 export function pointerUp(event: MouseEvent | TouchEvent) {
   pointerUpEvents.value = toPointerEvents(event);
+  pointerDownEvents.value = [];
 }
 
 export interface BasePointerEvent {
