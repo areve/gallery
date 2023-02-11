@@ -41,7 +41,7 @@ function pointerMove(pointerEvents: BasePointerEvent[]) {
 
   const canvasPoint = getCanvasPoint(
     artboardService.artwork.value.context,
-    pointerEvent.point
+    pointerEvent.page
   );
   const rgbaLayer = artboardService.artwork.value.rgbaLayer;
   if (pencilLastPoint) {

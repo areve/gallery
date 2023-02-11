@@ -18,7 +18,7 @@ export function pointerUp(event: MouseEvent | TouchEvent) {
 }
 
 export interface BasePointerEvent {
-  readonly point: Coord;
+  readonly page: Coord;
   readonly index?: number;
   readonly sourceEvent: TouchEvent | MouseEvent;
   readonly force?: number;
@@ -47,7 +47,7 @@ export function getCanvasPoint(
   };
 }
 
-export function toPointerEvents(event: TouchEvent | MouseEvent) {
+function toPointerEvents(event: TouchEvent | MouseEvent) {
   const pointerEvents: BasePointerEvent[] = [];
   if ((event as TouchEvent).touches) {
     const touchEvent = event as TouchEvent;
@@ -56,8 +56,7 @@ export function toPointerEvents(event: TouchEvent | MouseEvent) {
       const x = touch.pageX;
       const y = touch.pageY;
       const pointerEvent: BasePointerEvent = {
-        point: {
-          // TODO rename to screen or page?
+        page: {
           x,
           y,
         },
@@ -75,7 +74,7 @@ export function toPointerEvents(event: TouchEvent | MouseEvent) {
     const y = mouseEvent.pageY;
 
     const pointerEvent: BasePointerEvent = {
-      point: {
+      page: {
         x,
         y,
       },

@@ -23,8 +23,8 @@ function pointerDown(pointerEvents: BasePointerEvent[]) {
   const pointerEvent = pointerEvents[0];
 
   dragOrigin.value = {
-    x: pointerEvent.point.x,
-    y: pointerEvent.point.y,
+    x: pointerEvent.page.x,
+    y: pointerEvent.page.y,
     data: artboardService.artwork.value.context.getImageData(
       0,
       0,
@@ -45,11 +45,11 @@ function pointerMove(pointerEvents: BasePointerEvent[]) {
   pointerEventsPreventDefault(pointerEvents);
 
   const dx =
-    ((pointerEvent.point.x - dragOrigin.value.x) /
+    ((pointerEvent.page.x - dragOrigin.value.x) /
       artboardService.artwork.value.context.canvas.offsetWidth) *
     artboardService.artwork.value.context.canvas.width;
   const dy =
-    ((pointerEvent.point.y - dragOrigin.value.y) /
+    ((pointerEvent.page.y - dragOrigin.value.y) /
       artboardService.artwork.value.context.canvas.offsetHeight) *
     artboardService.artwork.value.context.canvas.height;
   const snapDx = Math.floor(dx / snapSize.value) * snapSize.value;

@@ -26,7 +26,7 @@ function pointerDown(pointerEvents: BasePointerEvent[]) {
   isPointerDown = true;
   const canvasPoint = getCanvasPoint(
     artboardService.artwork.value.context,
-    pointerEvents[0].point
+    pointerEvents[0].page
   );
 
   clearCircle(
