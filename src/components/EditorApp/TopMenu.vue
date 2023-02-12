@@ -1,8 +1,8 @@
 <template>
   <nav id="menu" :hidden="!panelsVisibleState.menu">
-    <label for="toggle-menu" class="toggle-menu"
-      >Menu <span class="drop-icon">▾</span></label
-    >
+    <label for="toggle-menu" class="toggle-menu">
+      Menu <span class="drop-icon">▾</span>
+    </label>
     <input type="checkbox" id="toggle-menu" />
     <ul class="main-menu">
       <MenuItemVue v-for="item in menu" :key="item.label" :item="item" />
