@@ -3,7 +3,7 @@
     <div
       class="pencil red"
       @click="
-        (brushToolState.brushColor = '#ff0000'),
+        (brushToolState.brushColor = 'red'),
           (toolbarState.toolSelected = 'pencil')
       "
       :class="{
