@@ -5,56 +5,7 @@
     >
     <input type="checkbox" id="toggle-menu" />
     <ul class="main-menu">
-      <li class="menu-item" v-for="item in menu" :key="item.label">
-        {{ item.label }}
-        <span v-if="item.items" class="drop-icon">▾</span>
-        <label
-          v-if="item.items"
-          title="Toggle Drop-down"
-          class="drop-icon"
-          for="menu-{{ item.label }}"
-          >▾</label
-        >
-        <input v-if="item.items" type="checkbox" id="menu-{{ item.label }}" />
-        <ul v-if="item.items" class="sub-menu">
-          <li
-            class="menu-item"
-            v-for="subItem in item.items"
-            :key="subItem.label"
-            :role="'action' in subItem ? 'button' : ''"
-            @click="subItem.action"
-          >
-            {{ subItem.label }}
-            <span class="menu-item-key" v-if="'key' in subItem">{{
-              subItem.key
-            }}</span>
-            <label
-              v-if="subItem.items"
-              title="Toggle Drop-down"
-              class="drop-icon"
-              for="menu-{{ item.label }}"
-              >▾</label
-            >
-            <input
-              v-if="subItem.items"
-              type="checkbox"
-              id="menu-{{ item.label }}"
-            />
-            <ul v-if="subItem.items" class="sub-menu">
-              <li
-                class="menu-item"
-                v-for="subSubItem in subItem.items"
-                :key="subSubItem.label"
-                :role="'action' in subSubItem ? 'button' : ''"
-                @click="subSubItem.action"
-              >
-                {{ subSubItem.label }}
-                <span v-if="'key' in subSubItem">{{ subSubItem.key }}</span>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </li>
+      <MenuItemVue v-for="item in menu" :key="item.label" :item="item" />
     </ul>
   </nav>
 </template>
@@ -62,8 +13,10 @@
 <script lang="ts" setup>
 import { action, applyEffect } from "@/components/EditorApp/appActions";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+import MenuItemVue from "./MenuItem.vue";
+import type { MenuItem } from "./MenuItem";
 
-const menu = [
+const menu: MenuItem[] = [
   {
     label: "File",
     items: [
@@ -168,29 +121,6 @@ const menu = [
 </script>
 
 <style scoped>
-.clearfix {
-  overflow: auto;
-}
-
-.menu {
-  background-color: #000;
-  color: #fff;
-  padding: 0.2em;
-  grid-area: menu;
-}
-
-.menu-list {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: row;
-}
-
-.menu-item[role="button"] {
-  cursor: pointer;
-}
-
 #menu ul {
   margin: 0;
   padding: 0;
@@ -207,13 +137,6 @@ const menu = [
 #menu input[type="checkbox"],
 #menu ul span.drop-icon {
   display: none;
-}
-
-#menu li,
-.toggle-menu,
-#menu .sub-menu {
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.05);
 }
 
 #menu li,
