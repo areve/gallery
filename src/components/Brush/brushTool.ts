@@ -19,7 +19,7 @@ const tool: Tool = {
 
 export const useBrushTool = () => tool;
 
-const radius = 5; // needs to be a integer, I like 5 - 30 is good for debugging colour mixing
+const radius = 3;
 
 const brush = makeBrush(radius);
 
@@ -27,14 +27,17 @@ let pencilLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
 
 function pointerUp(_: BasePointerEvent[]) {
+  console.log("brush up");
   pencilLastPoint = null;
   isPointerDown = false;
 }
 function pointerDown(_: BasePointerEvent[]) {
+  console.log("brush down");
   isPointerDown = true;
 }
 
 function pointerMove(pointerEvents: BasePointerEvent[]) {
+  console.log("brush move");
   if (!isPointerDown) return;
   const pointerEvent = pointerEvents[0];
   pointerEventsPreventDefault(pointerEvents);
@@ -43,8 +46,10 @@ function pointerMove(pointerEvents: BasePointerEvent[]) {
     artboardService.artwork.value.context,
     pointerEvent.page
   );
+
   const rgbaLayer = artboardService.artwork.value.rgbaLayer;
   if (pencilLastPoint) {
+    console.log("brush drag");
     let weight = pointerEvent.force ?? 0.5;
     weight = weight * weight;
 

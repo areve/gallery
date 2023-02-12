@@ -82,7 +82,6 @@ watchSyncEffect(() => {
 });
 
 watchSyncEffect(() => {
-  if (pointerUpEvents.value.length === 0) return;
   selectedTool().pointerUp(pointerUpEvents.value);
 });
 
