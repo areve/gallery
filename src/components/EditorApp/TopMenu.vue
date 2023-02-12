@@ -124,6 +124,13 @@
               </li>
               <li
                 class="menu-item"
+                @click="applyEffect('all-white')"
+                role="button"
+              >
+                All white
+              </li>
+              <li
+                class="menu-item"
                 @click="applyEffect('ryb2rgb')"
                 role="button"
               >

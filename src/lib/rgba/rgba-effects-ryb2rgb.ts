@@ -11,7 +11,7 @@ export function ryb2rgbEffect(rgbaLayer: RgbaLayer) {
   rgbaLayer.modified = new Date();
 }
 
-function pixelEffect(
+export function pixelEffect(
   data: Float32Array,
   width: number,
   height: number,

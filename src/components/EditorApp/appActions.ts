@@ -10,7 +10,7 @@ export interface AppAction extends AppActionBase {
   action: AppActionType;
 }
 
-export type EffectType = "shotgun" | "ryb2rgb" | "rgb2ryb";
+export type EffectType = "shotgun" | "ryb2rgb" | "rgb2ryb" | "all-white";
 
 export interface ApplyEffect extends AppActionBase {
   type: EffectType;

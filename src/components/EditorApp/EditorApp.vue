@@ -40,6 +40,7 @@ import { watch } from "vue";
 import { mostRecentPrompt } from "@/lib/artwork-utils";
 import { shotgunEffect } from "@/lib/rgba/rgba-effects-shotgun";
 import { rgb2rybEffect, ryb2rgbEffect } from "@/lib/rgba/rgba-effects-ryb2rgb";
+import { allWhiteEffect } from "@/lib/rgba/rgba-effects-all-white";
 
 import { onApplyEffect, onAction } from "@/components/EditorApp/appActions";
 import { useKeyboardHandler } from "@/components/EditorApp/keyboardService";
@@ -82,6 +83,8 @@ watch(onApplyEffect, (action) => {
     ryb2rgbEffect(artboardService.artwork.value.rgbaLayer);
   if (action.type === "rgb2ryb")
     rgb2rybEffect(artboardService.artwork.value.rgbaLayer);
+  if (action.type === "all-white")
+    allWhiteEffect(artboardService.artwork.value.rgbaLayer);
 });
 
 watch(selectedItem, (artwork) => artwork && galleryItemSelected(artwork));
