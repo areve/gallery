@@ -1,73 +1,5 @@
+import type { MenuItem } from "./MenuItem";
 import { useKeypress } from "vue3-keypress";
-import { action, applyEffect } from "./appActions";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
-import { toolbarState } from "../Toolbar/toolbarState";
-
-const _keyConfigs = {
-  "ctrl+m": () =>
-    (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
-  // "ctrl+s": () => action("save")
-};
-
-const keyPressConfigs: any[] = [
-  {
-    key: "m",
-    modifiers: ["ctrlKey"],
-    action: () =>
-      (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
-  },
-  {
-    key: "s",
-    modifiers: ["ctrlKey"],
-    action: () => action("save"),
-  },
-  {
-    key: "r",
-    modifiers: ["ctrlKey"],
-    action: () => action("reset"),
-  },
-  {
-    key: "g",
-    modifiers: ["ctrlKey", "shiftKey"],
-    action: () => applyEffect("shotgun"),
-  },
-  {
-    key: ">",
-    modifiers: ["ctrlKey"],
-    action: () => applyEffect("rgb2ryb"),
-  },
-  {
-    key: "<",
-    modifiers: ["ctrlKey"],
-    action: () => applyEffect("ryb2rgb"),
-  },
-  {
-    key: "g",
-    modifiers: ["ctrlKey"],
-    action: () =>
-      (panelsVisibleState.value.gallery = !panelsVisibleState.value.gallery),
-  },
-  {
-    key: "1",
-    modifiers: ["ctrlKey"],
-    action: () => (toolbarState.value.toolSelected = "eraser"),
-  },
-  {
-    key: "2",
-    modifiers: ["ctrlKey"],
-    action: () => (toolbarState.value.toolSelected = "drag"),
-  },
-  {
-    key: "3",
-    modifiers: ["ctrlKey"],
-    action: () => (toolbarState.value.toolSelected = "drag-frame"),
-  },
-  {
-    key: "4",
-    modifiers: ["ctrlKey"],
-    action: () => (toolbarState.value.toolSelected = "pencil"),
-  },
-];
 
 const keyCodes: { [key: string]: number } = {
   "0": 48,
@@ -139,15 +71,49 @@ function keyDownBinds(keyConfigs: any[]) {
   return result;
 }
 
-export function useKeyboardHandler() {
+function getModifiers(key: string) {
+  const result: string[] = [];
+  if (/Ctrl\+/.test(key)) result.push("ctrlKey");
+  if (/Shift\+/.test(key)) result.push("shiftKey");
+  return result;
+}
+
+function getKey(key: string) {
+  let result = key;
+  result = result.replace(/Ctrl\+/, "");
+  result = result.replace(/Shift\+/, "");
+  return result.toLowerCase();
+}
+
+export function useKey(menuItem: MenuItem) {
+  if (!menuItem.key) return;
+  const modifiers = getModifiers(menuItem.key);
+  const key = getKey(menuItem.key);
+  const keyConfig = {
+    key,
+    modifiers,
+    action: menuItem.action,
+  };
+
+  // TODO calling this lots of times is clearly not how it was intededed
   useKeypress({
     keyEvent: "keyup",
-    keyBinds: [...keyUpBinds(keyPressConfigs)],
-    onAnyKey: (e: any) => console.log(e.event.keyCode),
+    keyBinds: [...keyUpBinds([keyConfig])],
+    // onAnyKey: (e: any) => console.log(e.event.keyCode),
   });
 
   useKeypress({
     keyEvent: "keydown",
-    keyBinds: [...keyDownBinds(keyPressConfigs)],
+    keyBinds: [...keyDownBinds([keyConfig])],
+  });
+}
+
+export function addKeysForMenuItems(items: MenuItem[]) {
+  items.forEach((item) => {
+    useKey(item);
+    console.log(item.key);
+    if (item.items) {
+      addKeysForMenuItems(item.items);
+    }
   });
 }

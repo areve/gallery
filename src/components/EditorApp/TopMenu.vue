@@ -15,6 +15,7 @@ import { action, applyEffect } from "@/components/EditorApp/appActions";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import MenuItemVue from "./MenuItem.vue";
 import type { MenuItem } from "./MenuItem";
+import { addKeysForMenuItems, useKey } from "./keyboardService";
 
 const menu: MenuItem[] = [
   {
@@ -118,6 +119,89 @@ const menu: MenuItem[] = [
     ],
   },
 ];
+
+addKeysForMenuItems(menu);
+// useKey({
+//   label: "Gallery",
+//   action: () =>
+//     (panelsVisibleState.value.gallery = !panelsVisibleState.value.gallery),
+//   key: "Ctrl+G",
+// });
+// useKey({
+//   label: "Menu",
+//   action: () =>
+//     (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
+//   key: "Ctrl+M",
+// });
+
+// {"keyCode":77,"modifiers":["ctrlKey"],"preventDefault":true}
+// keyboardService.ts:140 {"keyCode":77,"modifiers":["ctrlKey"],"preventDefault":true}
+
+// const _keyConfigs = {
+//   "ctrl+m": () =>
+//     (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
+//   // "ctrl+s": () => action("save")
+// };
+
+// const keyPressConfigs: any[] = [
+//   {
+//     key: "m",
+//     modifiers: ["ctrlKey"],
+//     action: () =>
+//       (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
+//   },
+//   {
+//     key: "s",
+//     modifiers: ["ctrlKey"],
+//     action: () => action("save"),
+//   },
+//   {
+//     key: "r",
+//     modifiers: ["ctrlKey"],
+//     action: () => action("reset"),
+//   },
+//   {
+//     key: "g",
+//     modifiers: ["ctrlKey", "shiftKey"],
+//     action: () => applyEffect("shotgun"),
+//   },
+//   {
+//     key: ">",
+//     modifiers: ["ctrlKey"],
+//     action: () => applyEffect("rgb2ryb"),
+//   },
+//   {
+//     key: "<",
+//     modifiers: ["ctrlKey"],
+//     action: () => applyEffect("ryb2rgb"),
+//   },
+//   {
+//     key: "g",
+//     modifiers: ["ctrlKey"],
+//     action: () =>
+//       (panelsVisibleState.value.gallery = !panelsVisibleState.value.gallery),
+//   },
+//   {
+//     key: "1",
+//     modifiers: ["ctrlKey"],
+//     action: () => (toolbarState.value.toolSelected = "eraser"),
+//   },
+//   {
+//     key: "2",
+//     modifiers: ["ctrlKey"],
+//     action: () => (toolbarState.value.toolSelected = "drag"),
+//   },
+//   {
+//     key: "3",
+//     modifiers: ["ctrlKey"],
+//     action: () => (toolbarState.value.toolSelected = "drag-frame"),
+//   },
+//   {
+//     key: "4",
+//     modifiers: ["ctrlKey"],
+//     action: () => (toolbarState.value.toolSelected = "pencil"),
+//   },
+// ];
 </script>
 
 <style scoped>
