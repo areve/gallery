@@ -5,143 +5,51 @@
     >
     <input type="checkbox" id="toggle-menu" />
     <ul class="main-menu">
-      <li class="menu-item">
-        File
-        <span class="drop-icon">▾</span>
-        <label title="Toggle Drop-down" class="drop-icon" for="file-menu"
+      <li class="menu-item" v-for="item in menu" :key="item.label">
+        {{ item.label }}
+        <span v-if="item.items" class="drop-icon">▾</span>
+        <label
+          v-if="item.items"
+          title="Toggle Drop-down"
+          class="drop-icon"
+          for="menu-{{ item.label }}"
           >▾</label
         >
-        <input type="checkbox" id="file-menu" />
-        <ul class="sub-menu">
-          <li class="menu-item" @click="action('save')" role="button">Save</li>
-          <li class="menu-item" @click="action('reset')" role="button">
-            Reset
-          </li>
-          <li class="menu-item" @click="action('show-settings')" role="button">
-            Settings
-          </li>
-        </ul>
-      </li>
-      <li class="menu-item">
-        View
-        <span class="drop-icon">▾</span>
-        <label title="Toggle Drop-down" class="drop-icon" for="view-menu"
-          >▾</label
-        >
-        <input type="checkbox" id="view-menu" />
-        <ul class="sub-menu">
+        <input v-if="item.items" type="checkbox" id="menu-{{ item.label }}" />
+        <ul v-if="item.items" class="sub-menu">
           <li
             class="menu-item"
-            @click="panelsVisibleState.gallery = !panelsVisibleState.gallery"
-            role="button"
+            v-for="subItem in item.items"
+            :key="subItem.label"
+            :role="'action' in subItem ? 'button' : ''"
+            @click="subItem.action"
           >
-            Gallery
-          </li>
-          <li
-            class="menu-item"
-            @click="panelsVisibleState.openAi = !panelsVisibleState.openAi"
-            role="button"
-          >
-            OpenAI
-          </li>
-          <li
-            class="menu-item"
-            @click="
-              panelsVisibleState.artworkSettings =
-                !panelsVisibleState.artworkSettings
-            "
-            role="button"
-          >
-            Artwork Settings
-          </li>
-          <li
-            class="menu-item"
-            @click="panelsVisibleState.scale = !panelsVisibleState.scale"
-            role="button"
-          >
-            Scale
-          </li>
-          <li
-            class="menu-item"
-            @click="
-              panelsVisibleState.statusBar = !panelsVisibleState.statusBar
-            "
-            role="button"
-          >
-            Status
-          </li>
-          <li
-            class="menu-item"
-            @click="panelsVisibleState.toolbar = !panelsVisibleState.toolbar"
-            role="button"
-          >
-            Toolbar
-          </li>
-          <li
-            class="menu-item"
-            @click="panelsVisibleState.menu = !panelsVisibleState.menu"
-            role="button"
-          >
-            Menu (Ctrl+M)
-          </li>
-          <li
-            class="menu-item"
-            @click="panelsVisibleState.pencil = !panelsVisibleState.pencil"
-            role="button"
-          >
-            Pencils
-          </li>
-        </ul>
-      </li>
-      <li class="menu-item">
-        Image
-        <span class="drop-icon">▾</span>
-        <label title="Toggle Drop-down" class="drop-icon" for="image-menu"
-          >▾</label
-        >
-        <input type="checkbox" id="image-menu" />
-        <ul class="sub-menu">
-          <li class="menu-item" @click="action('auto-crop')" role="button">
-            Auto-crop
-          </li>
-          <li class="menu-item">
-            Effect
-            <span class="drop-icon">▾</span>
+            {{ subItem.label }}
+            <span class="menu-item-key" v-if="'key' in subItem">{{
+              subItem.key
+            }}</span>
             <label
+              v-if="subItem.items"
               title="Toggle Drop-down"
               class="drop-icon"
-              for="image-effects-menu"
+              for="menu-{{ item.label }}"
               >▾</label
             >
-            <input type="checkbox" id="image-effects-menu" />
-            <ul class="sub-menu">
+            <input
+              v-if="subItem.items"
+              type="checkbox"
+              id="menu-{{ item.label }}"
+            />
+            <ul v-if="subItem.items" class="sub-menu">
               <li
                 class="menu-item"
-                @click="applyEffect('shotgun')"
-                role="button"
+                v-for="subSubItem in subItem.items"
+                :key="subSubItem.label"
+                :role="'action' in subSubItem ? 'button' : ''"
+                @click="subSubItem.action"
               >
-                Shotgun effect
-              </li>
-              <li
-                class="menu-item"
-                @click="applyEffect('all-white')"
-                role="button"
-              >
-                All white
-              </li>
-              <li
-                class="menu-item"
-                @click="applyEffect('ryb2rgb')"
-                role="button"
-              >
-                RYB > RGB
-              </li>
-              <li
-                class="menu-item"
-                @click="applyEffect('rgb2ryb')"
-                role="button"
-              >
-                RGB > RYB
+                {{ subSubItem.label }}
+                <span v-if="'key' in subSubItem">{{ subSubItem.key }}</span>
               </li>
             </ul>
           </li>
@@ -154,11 +62,114 @@
 <script lang="ts" setup>
 import { action, applyEffect } from "@/components/EditorApp/appActions";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+
+const menu = [
+  {
+    label: "File",
+    items: [
+      {
+        label: "Save",
+        action: () => action("save"),
+        key: "Ctrl+S",
+      },
+      {
+        label: "Reset",
+        action: () => action("reset"),
+        key: "Ctrl+R",
+      },
+      {
+        label: "Settings",
+        action: () => action("show-settings"),
+      },
+    ],
+  },
+  {
+    label: "View",
+    items: [
+      {
+        label: "Gallery",
+        action: () =>
+          (panelsVisibleState.value.gallery =
+            !panelsVisibleState.value.gallery),
+        key: "Ctrl+G",
+      },
+      {
+        label: "OpenAI",
+        action: () =>
+          (panelsVisibleState.value.openAi = !panelsVisibleState.value.openAi),
+      },
+      {
+        label: "Artwork Settings",
+        action: () =>
+          (panelsVisibleState.value.artworkSettings =
+            !panelsVisibleState.value.artworkSettings),
+      },
+      {
+        label: "Scale",
+        action: () =>
+          (panelsVisibleState.value.scale = !panelsVisibleState.value.scale),
+      },
+      {
+        label: "Status",
+        action: () =>
+          (panelsVisibleState.value.statusBar =
+            !panelsVisibleState.value.statusBar),
+      },
+      {
+        label: "Toolbar",
+        action: () =>
+          (panelsVisibleState.value.toolbar =
+            !panelsVisibleState.value.toolbar),
+      },
+      {
+        label: "Menu",
+        action: () =>
+          (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
+        key: "Ctrl+M",
+      },
+      {
+        label: "Pencils",
+        action: () =>
+          (panelsVisibleState.value.pencil = !panelsVisibleState.value.pencil),
+      },
+    ],
+  },
+  {
+    label: "Image",
+    items: [
+      {
+        label: "Auto-crop",
+        action: () => action("auto-crop"),
+      },
+      {
+        label: "Effect",
+        items: [
+          {
+            label: "Shotgun effect",
+            action: () => applyEffect("shotgun"),
+          },
+          {
+            label: "All white",
+            action: () => applyEffect("all-white"),
+          },
+          {
+            label: "RYB > RGB",
+            action: () => applyEffect("ryb2rgb"),
+          },
+          {
+            label: "RGB > RYB",
+            action: () => applyEffect("rgb2ryb"),
+          },
+        ],
+      },
+    ],
+  },
+];
 </script>
 
 <style scoped>
 .clearfix {
-  /* TODO unused? */
+  overflow: auto;
 }
 
 .menu {
@@ -351,5 +362,9 @@ import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
   #menu li:hover > input[type="checkbox"] + .sub-menu {
     display: block;
   }
+}
+
+.menu-item-key {
+  float: right;
 }
 </style>

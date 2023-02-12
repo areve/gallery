@@ -3,6 +3,12 @@ import { action, applyEffect } from "./appActions";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import { toolbarState } from "../Toolbar/toolbarState";
 
+const _keyConfigs = {
+  "ctrl+m": () =>
+    (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
+  // "ctrl+s": () => action("save")
+};
+
 const keyPressConfigs: any[] = [
   {
     key: "m",
