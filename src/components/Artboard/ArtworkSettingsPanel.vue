@@ -26,9 +26,6 @@
     >
       <i class="fa-solid fa-floppy-disk"></i> Save
     </button>
-    <button type="button" @click="panelStates.artworkSettings.visible = false">
-      <i class="fa-solid fa-close"></i> Close
-    </button>
   </ToolPanel>
 </template>
 
