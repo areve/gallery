@@ -1,6 +1,7 @@
 import type { MenuItem } from "../components/EditorApp/MenuItem";
 import { useKeypress } from "vue3-keypress";
 
+// The names of the following keys are for my UK laptop, other keyboards will differ
 const Key: { [key: string]: number } = {
   Backspace: 8,
   Tab: 9,
@@ -26,6 +27,8 @@ const Key: { [key: string]: number } = {
   Right: 39,
   DownArrow: 40,
   Down: 40,
+  PrintScreen: 44,
+  PrintScr: 44,
   Insert: 45,
   Ins: 45,
   Delete: 46,
@@ -76,37 +79,24 @@ const Key: { [key: string]: number } = {
   X: 88,
   Y: 89,
   Z: 90,
-  LeftWindowKey: 91,
   Win: 91,
-  RightWindowKey: 92,
-  Menu: 92,
-  SelectKey: 93,
-  Select: 93,
+  // RightWindowKey: 92,
+  // SelectKey: 93,
   Numpad0: 96,
-  Num0: 96,
   Numpad1: 97,
-  Num1: 97,
   Numpad2: 98,
-  Num2: 98,
   Numpad3: 99,
-  Num3: 99,
   Numpad4: 100,
-  Num4: 100,
   Numpad5: 101,
-  Num5: 101,
   Numpad6: 102,
-  Num6: 102,
   Numpad7: 103,
-  Num7: 103,
   Numpad8: 104,
-  Num8: 104,
   Numpad9: 105,
-  Num9: 105,
-  Multiply: 106, //?
-  Add: 107,
-  Subtract: 109,
-  DecimalPoint: 110,
-  Divide: 111,
+  NumpadMultiply: 106,
+  NumpadAdd: 107,
+  NumpadSubtract: 109,
+  NumpadPoint: 110,
+  NumpadDivide: 111,
   F1: 112,
   F2: 113,
   F3: 114,
@@ -119,31 +109,32 @@ const Key: { [key: string]: number } = {
   F10: 121,
   F11: 122,
   F12: 123,
-  NumLock: 144,
-  ScrollLock: 145,
+  // NumLock: 144,
+  // ScrollLock: 145,
   SemiColon: 186,
   ";": 186,
   Equals: 187,
   "=": 187,
   Comma: 188,
   ",": 188,
-  Dash: 189,
+  Minus: 189,
   "-": 189,
   Period: 190,
   ".": 190,
-  PlusSign: 187,
+  Plus: 187,
   "+": 187,
-  ForwardSlash: 191,
+  Slash: 191,
   "/": 191,
-  Tilde: 192,
-  "#": 192,
-  GraveAccent: 192,
-  "`": 192,
-  OpenBracket: 219,
+  BackSlash: 220,
+  "\\": 220,
+  SingleQuote: 192,
+  "'": 192,
+  OpenSquareBracket: 219,
   "[": 219,
-  ClosedBracket: 221,
+  ClosedSquareBracket: 221,
   "]": 221,
-  Quote: 222, //?
+  Hash: 222,
+  BackTick: 223,
 };
 
 function getKeyCode(value: string) {
@@ -197,12 +188,10 @@ function getKey(key: string) {
 
 export function addKeysForMenuItems(items: MenuItem[]) {
   const keyConfigs = getKeyConfigs(items);
-  // TODO calling this lots of times is clearly not how it was intended, seems to be OK though
   useKeypress({
     keyEvent: "keyup",
     keyBinds: [...keyUpBinds(keyConfigs)],
-    // TODO bring this back perhaps, and then improve tje keycodes dict/enum
-    onAnyKey: (e: any) => console.log(e.event.keyCode),
+    //onAnyKey: (e: any) => console.log(e.event.keyCode),
   });
 
   useKeypress({
