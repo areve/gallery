@@ -1,5 +1,9 @@
 <template>
-  <li class="menu-item">
+  <li
+    class="menu-item"
+    :role="'action' in item ? 'button' : ''"
+    @click="item.action"
+  >
     {{ item.label }}
     <span class="menu-item-key" v-if="'key' in item">{{ item.key }}</span>
     <span v-if="item.items" class="drop-icon">▾</span>

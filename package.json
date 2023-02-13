@@ -22,7 +22,6 @@
     "openai": "^3.1.0",
     "png-metadata": "^1.0.2",
     "sanitize-filename": "^1.6.3",
-    "ts-keycode-enum": "^1.0.6",
     "uuid": "^9.0.0",
     "vue": "^3.2.45",
     "vue3-keypress": "^4.0.1"

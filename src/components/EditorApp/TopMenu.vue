@@ -16,6 +16,7 @@ import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import MenuItemVue from "./MenuItem.vue";
 import type { MenuItem } from "./MenuItem";
 import { addKeysForMenuItems, useKey } from "./keyboardService";
+import { toolbarState } from "../Toolbar/toolbarState";
 
 const menu: MenuItem[] = [
   {
@@ -101,6 +102,7 @@ const menu: MenuItem[] = [
           {
             label: "Shotgun effect",
             action: () => applyEffect("shotgun"),
+            key: "Ctrl+Shitt+G",
           },
           {
             label: "All white",
@@ -109,99 +111,49 @@ const menu: MenuItem[] = [
           {
             label: "RYB > RGB",
             action: () => applyEffect("ryb2rgb"),
+            key: "Ctrl+.",
           },
           {
             label: "RGB > RYB",
             action: () => applyEffect("rgb2ryb"),
+            key: "Ctrl+,",
           },
         ],
+      },
+    ],
+  },
+]
+
+const toolsMenu: MenuItem[] = [
+  {
+    label: "Tools",
+    items: [
+      {
+        label: "Eraser",
+        action: () => (toolbarState.value.toolSelected = "eraser"),
+        key: "Ctrl+1",
+      },
+      {
+        label: "Drag",
+        action: () => (toolbarState.value.toolSelected = "drag"),
+        key: "Ctrl+2",
+      },
+      {
+        label: "Drag Frame",
+        action: () => (toolbarState.value.toolSelected = "drag-frame"),
+        key: "Ctrl+3",
+      },
+      {
+        label: "Pencil",
+        action: () => (toolbarState.value.toolSelected = "pencil"),
+        key: "Ctrl+4",
       },
     ],
   },
 ];
 
 addKeysForMenuItems(menu);
-// useKey({
-//   label: "Gallery",
-//   action: () =>
-//     (panelsVisibleState.value.gallery = !panelsVisibleState.value.gallery),
-//   key: "Ctrl+G",
-// });
-// useKey({
-//   label: "Menu",
-//   action: () =>
-//     (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
-//   key: "Ctrl+M",
-// });
-
-// {"keyCode":77,"modifiers":["ctrlKey"],"preventDefault":true}
-// keyboardService.ts:140 {"keyCode":77,"modifiers":["ctrlKey"],"preventDefault":true}
-
-// const _keyConfigs = {
-//   "ctrl+m": () =>
-//     (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
-//   // "ctrl+s": () => action("save")
-// };
-
-// const keyPressConfigs: any[] = [
-//   {
-//     key: "m",
-//     modifiers: ["ctrlKey"],
-//     action: () =>
-//       (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
-//   },
-//   {
-//     key: "s",
-//     modifiers: ["ctrlKey"],
-//     action: () => action("save"),
-//   },
-//   {
-//     key: "r",
-//     modifiers: ["ctrlKey"],
-//     action: () => action("reset"),
-//   },
-//   {
-//     key: "g",
-//     modifiers: ["ctrlKey", "shiftKey"],
-//     action: () => applyEffect("shotgun"),
-//   },
-//   {
-//     key: ">",
-//     modifiers: ["ctrlKey"],
-//     action: () => applyEffect("rgb2ryb"),
-//   },
-//   {
-//     key: "<",
-//     modifiers: ["ctrlKey"],
-//     action: () => applyEffect("ryb2rgb"),
-//   },
-//   {
-//     key: "g",
-//     modifiers: ["ctrlKey"],
-//     action: () =>
-//       (panelsVisibleState.value.gallery = !panelsVisibleState.value.gallery),
-//   },
-//   {
-//     key: "1",
-//     modifiers: ["ctrlKey"],
-//     action: () => (toolbarState.value.toolSelected = "eraser"),
-//   },
-//   {
-//     key: "2",
-//     modifiers: ["ctrlKey"],
-//     action: () => (toolbarState.value.toolSelected = "drag"),
-//   },
-//   {
-//     key: "3",
-//     modifiers: ["ctrlKey"],
-//     action: () => (toolbarState.value.toolSelected = "drag-frame"),
-//   },
-//   {
-//     key: "4",
-//     modifiers: ["ctrlKey"],
-//     action: () => (toolbarState.value.toolSelected = "pencil"),
-//   },
-// ];
+addKeysForMenuItems(toolsMenu);
 </script>
 
 <style scoped>
