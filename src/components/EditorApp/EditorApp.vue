@@ -61,8 +61,6 @@ watch(onAction, (action) => {
   if (action.action === "save") saveArtwork();
   if (action.action === "reset") reset();
   if (action.action === "auto-crop") artboardService.autoCrop();
-  if (action.action === "show-settings")
-    panelStates.value.settings.visible = true;
 });
 
 watch(onApplyEffect, (action) => {

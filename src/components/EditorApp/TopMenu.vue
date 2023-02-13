@@ -34,7 +34,9 @@ const menu: MenuItem[] = [
       },
       {
         label: "Settings",
-        action: () => action("show-settings"),
+        action: () =>
+          (panelStates.value.settings.visible =
+            !panelStates.value.settings.visible),
       },
     ],
   },

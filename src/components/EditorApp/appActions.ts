@@ -1,7 +1,7 @@
 import type { ToolType } from "@/interfaces/Tool";
 import { ref } from "vue";
 
-export type AppActionType = "save" | "reset" | "auto-crop" | "show-settings";
+export type AppActionType = "save" | "reset" | "auto-crop";
 export interface AppActionBase {
   id: number;
 }
