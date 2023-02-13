@@ -2,9 +2,9 @@
   <ToolPanel
     title="App Settings"
     :panelState="panelStates.settings"
-    @update:rolled="(value) => (panelStates.settings.rolled = value)"
-    @update:docked="(value) => (panelStates.settings.docked = value)"
-    @update:visible="(value) => (panelStates.settings.visible = value)"
+    @update:rolled="panelStates.settings.rolled = $event"
+    @update:docked="panelStates.settings.docked = $event"
+    @update:visible="panelStates.settings.visible = $event"
   >
     <label for="openIdKey">Open API key</label>
     <input
