@@ -1,5 +1,5 @@
 <template>
-  <div class="artboard-panel">
+  <div class="artboard-panel" @pointerdown="pointerDown">
     <div class="artboard-wrap">
       <div
         class="artboard"
@@ -19,11 +19,7 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, watchSyncEffect } from "vue";
-import {
-  pointerDownEvent,
-  pointerMoveEvent,
-  pointerUpEvent,
-} from "@/services/pointerService";
+import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 import artboardService, {
   resetArtwork,
 } from "@/components/Artboard/artboardService";
@@ -86,10 +82,9 @@ watchSyncEffect(() => {
   selectedTool().pointerUp(pointerUpEvent.value);
 });
 
-watchSyncEffect(() => {
-  if (!pointerDownEvent.value) return;
-  selectedTool().pointerDown(pointerDownEvent.value);
-});
+function pointerDown(event: PointerEvent) {
+  selectedTool().pointerDown(event);
+}
 
 watchSyncEffect(() => {
   if (!pointerMoveEvent.value) return;
