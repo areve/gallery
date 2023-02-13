@@ -30,7 +30,6 @@ import artboardService from "@/components/Artboard/artboardService";
 import { panelStates } from "@/components/EditorApp/panelStates";
 import { scaleToolState } from "@/components/Scale/scaleToolState";
 import ToolPanel from "../ToolPanel/ToolPanel.vue";
-
 </script>
 
 <style scoped></style>
