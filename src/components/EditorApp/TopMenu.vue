@@ -16,6 +16,7 @@ import { panelStates } from "@/components/EditorApp/panelStates";
 import MenuItemVue from "./MenuItem.vue";
 import type { MenuItem } from "./MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";
+import { openAiPanelState } from "../OpenAi/openAiPanelState";
 
 const menu: MenuItem[] = [
   {
@@ -50,8 +51,8 @@ const menu: MenuItem[] = [
       {
         label: "OpenAI",
         action: () =>
-          (panelStates.value.openAi.visible =
-            !panelStates.value.openAi.visible),
+          (openAiPanelState.value.panel.visible =
+            !openAiPanelState.value.panel.visible),
       },
       {
         label: "Artwork Settings",

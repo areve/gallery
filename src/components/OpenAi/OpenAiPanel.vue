@@ -1,5 +1,5 @@
 <template>
-  <ToolPanel title="OpenAI" v-model:panelState="panelStates.openAi">
+  <ToolPanel title="OpenAI" v-model:panelState="openAiPanelState.panel">
     <button type="button" @click="generateImage()">Generate</button>
     <button type="button" @click="variationImage()">Variation</button>
     <button type="button" @click="outpaintImage()">Outpaint</button>
@@ -19,7 +19,6 @@ import {
 } from "@/lib/canvas/canvas-utils";
 import artboardService from "@/components/Artboard/artboardService";
 import compositionService, { createLayer } from "@/lib/canvas/composition";
-import { panelStates } from "@/components/EditorApp/panelStates";
 import galleryApi from "@/components/Gallery/galleryApi";
 import openAiService from "@/components/OpenAi/openAiService";
 import { clone } from "lodash";
