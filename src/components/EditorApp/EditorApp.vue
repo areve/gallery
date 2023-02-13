@@ -1,14 +1,8 @@
 <template>
-  <div class="layout" @mouseup="pointerUp" @touchend="pointerUp">
+  <div class="layout">
     <main class="main">
       <TopMenu></TopMenu>
-      <div
-        class="artboard-wrap"
-        @mousedown="pointerDown"
-        @mousemove="pointerMove"
-        @touchstart="pointerDown"
-        @touchmove="pointerMove"
-      >
+      <div class="artboard-wrap">
         <ArtboardPanel />
         <PencilPanel />
       </div>
@@ -51,7 +45,6 @@ import {
 import { panelStates } from "@/components/EditorApp/panelStates";
 import artboardService from "@/components/Artboard/artboardService";
 import type { Artwork } from "@/interfaces/Artwork";
-import { pointerUp, pointerDown, pointerMove } from "@/services/pointerService";
 import StatusBar from "@/components/EditorApp/StatusBar.vue";
 import ScaleToolPanel from "@/components/Scale/ScaleToolPanel.vue";
 import { openAiPanelState } from "@/components/OpenAi/openAiPanelState";

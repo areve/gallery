@@ -17,5 +17,6 @@ import EditorApp from "./components/EditorApp/EditorApp.vue";
   height: 100%;
   display: flex;
   flex-direction: column;
+  touch-action: none;
 }
 </style>

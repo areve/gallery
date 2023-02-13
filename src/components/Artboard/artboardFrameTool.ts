@@ -1,10 +1,6 @@
 import type { DragOrigin } from "@/interfaces/DragOrigin";
 import type { Tool } from "@/interfaces/Tool";
 import { ref } from "vue";
-import {
-  pointerEventsPreventDefault,
-  type BasePointerEvent,
-} from "../../services/pointerService";
 import { dragToolState } from "@/components/Artboard/dragToolState";
 import artboardService from "./artboardService";
 
@@ -19,12 +15,12 @@ const tool: Tool = {
 
 export const useArtboardFrameTool = () => tool;
 
-function pointerDown(pointerEvents: BasePointerEvent[]) {
-  const pointerEvent = pointerEvents[0];
+function pointerDown(pointerEvents: PointerEvent) {
+  const pointerEvent = pointerEvents;
 
   dragOrigin.value = {
-    x: pointerEvent.page.x,
-    y: pointerEvent.page.y,
+    x: pointerEvent.pageX,
+    y: pointerEvent.pageY,
     data: artboardService.artwork.value.context.getImageData(
       0,
       0,
@@ -35,21 +31,19 @@ function pointerDown(pointerEvents: BasePointerEvent[]) {
   };
 }
 
-function pointerUp(_: BasePointerEvent[]) {
+function pointerUp(_: PointerEvent) {
   dragOrigin.value = null;
 }
 
-function pointerMove(pointerEvents: BasePointerEvent[]) {
+function pointerMove(pointerEvent: PointerEvent) {
   if (!dragOrigin.value) return;
-  const pointerEvent = pointerEvents[0];
-  pointerEventsPreventDefault(pointerEvents);
 
   const dx =
-    ((pointerEvent.page.x - dragOrigin.value.x) /
+    ((pointerEvent.pageX - dragOrigin.value.x) /
       artboardService.artwork.value.context.canvas.offsetWidth) *
     artboardService.artwork.value.context.canvas.width;
   const dy =
-    ((pointerEvent.page.y - dragOrigin.value.y) /
+    ((pointerEvent.pageY - dragOrigin.value.y) /
       artboardService.artwork.value.context.canvas.offsetHeight) *
     artboardService.artwork.value.context.canvas.height;
   const snapDx =

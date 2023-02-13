@@ -6,7 +6,9 @@
     :style="{ top, left }"
   >
     <div class="panel-titlebar">
-      <h1 class="title" @pointerdown="pointerDown">{{ title }}</h1>
+      <h1 class="title" @pointerdown="pointerDown">
+        {{ title }}
+      </h1>
       <button
         class="icon-button"
         type="button"
@@ -43,7 +45,7 @@
 <script lang="ts" setup>
 import type { Coord } from "@/interfaces/Coord";
 import { cloneExtend } from "@/lib/utils";
-import { pointerMoveEvents, pointerUpEvents } from "@/services/pointerService";
+import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 import { computed, ref, watchPostEffect, watchSyncEffect } from "vue";
 import type { PanelState } from "../EditorApp/panelStates";
 interface Props {
@@ -65,19 +67,17 @@ function updatePanelState(value: Partial<PanelState>) {
 let dragOrigin: (Coord & { originX: number; originY: number }) | null = null;
 
 watchSyncEffect(() => {
-  if (pointerUpEvents.value.length === 0) return;
+  if (!pointerUpEvent.value) return;
   if (!dragOrigin) return;
   dragOrigin = null;
 });
 
 watchSyncEffect(() => {
-  if (pointerMoveEvents.value.length === 0) return;
+  if (!pointerMoveEvent.value) return;
   if (!dragOrigin) return;
-  const pointerEvent = pointerMoveEvents.value[0];
-  const dy = pointerEvent.page.y - dragOrigin.y;
-  const dx = pointerEvent.page.x - dragOrigin.x;
-
-  // console.log({ dx, dy });
+  const pointerEvent = pointerMoveEvent.value;
+  const dy = pointerEvent.pageY - dragOrigin.y;
+  const dx = pointerEvent.pageX - dragOrigin.x;
   origin.value.x = dragOrigin.originX + dx;
   origin.value.y = dragOrigin.originY + dy;
 });
@@ -89,14 +89,11 @@ function pointerDown(event: PointerEvent) {
     originX: origin.value.x,
     originY: origin.value.y,
   };
-  // console.log(event.pageX, event.pageY);
 }
 </script>
 <style>
 .panel {
   position: absolute;
-  /* left: 100px;
-  top: 100px; */
   z-index: 10;
   background-color: #e7e7e7;
 }

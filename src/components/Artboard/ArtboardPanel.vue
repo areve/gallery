@@ -20,9 +20,9 @@
 <script lang="ts" setup>
 import { onMounted, ref, watchSyncEffect } from "vue";
 import {
-  pointerDownEvents,
-  pointerMoveEvents,
-  pointerUpEvents,
+  pointerDownEvent,
+  pointerMoveEvent,
+  pointerUpEvent,
 } from "@/services/pointerService";
 import artboardService, {
   resetArtwork,
@@ -82,17 +82,18 @@ watchSyncEffect(() => {
 });
 
 watchSyncEffect(() => {
-  selectedTool().pointerUp(pointerUpEvents.value);
+  if (!pointerUpEvent.value) return;
+  selectedTool().pointerUp(pointerUpEvent.value);
 });
 
 watchSyncEffect(() => {
-  if (pointerDownEvents.value.length === 0) return;
-  selectedTool().pointerDown(pointerDownEvents.value);
+  if (!pointerDownEvent.value) return;
+  selectedTool().pointerDown(pointerDownEvent.value);
 });
 
 watchSyncEffect(() => {
-  if (pointerMoveEvents.value.length === 0) return;
-  selectedTool().pointerMove(pointerMoveEvents.value);
+  if (!pointerMoveEvent.value) return;
+  selectedTool().pointerMove(pointerMoveEvent.value);
 });
 
 const render = () => {

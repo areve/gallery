@@ -4,11 +4,7 @@ import { brushApply, makeBrush } from "@/lib/rgba/rgba-brush";
 import artboardService from "@/components/Artboard/artboardService";
 import { brushToolState } from "@/components/Brush/brushToolState";
 import Color from "color";
-import {
-  getCanvasPoint,
-  pointerEventsPreventDefault,
-  type BasePointerEvent,
-} from "../../services/pointerService";
+import { getCanvasPoint } from "../../services/pointerService";
 
 const tool: Tool = {
   toolType: "pencil",
@@ -26,31 +22,28 @@ const brush = makeBrush(radius);
 let pencilLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
 
-function pointerUp(_: BasePointerEvent[]) {
+function pointerUp(_: PointerEvent) {
   console.log("brush up");
   pencilLastPoint = null;
   isPointerDown = false;
 }
-function pointerDown(_: BasePointerEvent[]) {
+function pointerDown(_: PointerEvent) {
   console.log("brush down");
   isPointerDown = true;
 }
 
-function pointerMove(pointerEvents: BasePointerEvent[]) {
-  console.log("brush move");
+function pointerMove(pointerEvent: PointerEvent) {
   if (!isPointerDown) return;
-  const pointerEvent = pointerEvents[0];
-  pointerEventsPreventDefault(pointerEvents);
 
-  const canvasPoint = getCanvasPoint(
-    artboardService.artwork.value.context,
-    pointerEvent.page
-  );
+  const canvasPoint = getCanvasPoint(artboardService.artwork.value.context, {
+    x: pointerEvent.pageX,
+    y: pointerEvent.pageY,
+  });
 
   const rgbaLayer = artboardService.artwork.value.rgbaLayer;
   if (pencilLastPoint) {
-    console.log("brush drag");
-    let weight = pointerEvent.force ?? 0.5;
+    // console.log("brush drag", pointerEvent);
+    let weight = pointerEvent.pressure ?? 0.5;
     weight = weight * weight;
 
     const colorToRgbaColor = (value: string) => {

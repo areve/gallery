@@ -2,10 +2,7 @@ import type { Tool } from "@/interfaces/Tool";
 import { clearCircle } from "@/lib/rgba/rgba-draw";
 import artboardService from "@/components/Artboard/artboardService";
 import { eraserToolState } from "@/components/Eraser/eraserToolState";
-import {
-  getCanvasPoint,
-  type BasePointerEvent,
-} from "../../services/pointerService";
+import { getCanvasPoint } from "../../services/pointerService";
 
 const tool: Tool = {
   toolType: "eraser",
@@ -18,16 +15,16 @@ export const useEraserTool = () => tool;
 
 let isPointerDown = false;
 
-function pointerUp(_: BasePointerEvent[]) {
+function pointerUp(_: PointerEvent) {
   isPointerDown = false;
 }
 
-function pointerDown(pointerEvents: BasePointerEvent[]) {
+function pointerDown(pointerEvent: PointerEvent) {
   isPointerDown = true;
-  const canvasPoint = getCanvasPoint(
-    artboardService.artwork.value.context,
-    pointerEvents[0].page
-  );
+  const canvasPoint = getCanvasPoint(artboardService.artwork.value.context, {
+    x: pointerEvent.pageX,
+    y: pointerEvent.pageY,
+  });
 
   clearCircle(
     artboardService.artwork.value.rgbaLayer,
@@ -37,7 +34,7 @@ function pointerDown(pointerEvents: BasePointerEvent[]) {
   );
 }
 
-function pointerMove(pointerEvents: BasePointerEvent[]) {
+function pointerMove(pointerEvents: PointerEvent) {
   if (!isPointerDown) return;
   pointerDown(pointerEvents);
 }
