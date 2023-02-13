@@ -5,16 +5,31 @@ export const pointerUpEvents = ref<BasePointerEvent[]>([]);
 export const pointerDownEvents = ref<BasePointerEvent[]>([]);
 export const pointerMoveEvents = ref<BasePointerEvent[]>([]);
 
-export function pointerDown(event: MouseEvent | TouchEvent) {
+document.onpointerdown = function (event: PointerEvent) {
+  // export function pointerDown(event: MouseEvent | TouchEvent) {
   pointerDownEvents.value = toPointerEvents(event);
-}
+};
+
+// document.onmousemove = function() {
+//   console.log('ss')
+// }
+
+document.onpointermove = function (event: PointerEvent) {
+  // console.log("pp", event);
+  pointerMoveEvents.value = toPointerEvents(event);
+};
+
+document.onpointerup = function (event: PointerEvent) {
+  // console.log("pp", event);
+  pointerUpEvents.value = toPointerEvents(event);
+};
 
 export function pointerMove(event: MouseEvent | TouchEvent) {
-  pointerMoveEvents.value = toPointerEvents(event);
+  // pointerMoveEvents.value = toPointerEvents(event);
 }
 
 export function pointerUp(event: MouseEvent | TouchEvent) {
-  pointerUpEvents.value = toPointerEvents(event);
+  // pointerUpEvents.value = toPointerEvents(event);
 }
 
 export interface BasePointerEvent {
@@ -47,7 +62,7 @@ export function getCanvasPoint(
   };
 }
 
-function toPointerEvents(event: TouchEvent | MouseEvent) {
+function toPointerEvents(event: TouchEvent | MouseEvent | PointerEvent) {
   const pointerEvents: BasePointerEvent[] = [];
   if ((event as TouchEvent).touches) {
     const touchEvent = event as TouchEvent;

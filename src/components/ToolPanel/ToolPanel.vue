@@ -1,11 +1,12 @@
 <template>
   <section
-    class="panel"
+    class="panel prevent-select"
     v-if="panelState.visible"
     :class="{ docked: panelState.docked }"
+    :style="{ top, left }"
   >
     <div class="panel-titlebar">
-      <h1 class="title">{{ title }}</h1>
+      <h1 class="title" @pointerdown="pointerDown">{{ title }}</h1>
       <button
         class="icon-button"
         type="button"
@@ -40,7 +41,10 @@
 </template>
 
 <script lang="ts" setup>
+import type { Coord } from "@/interfaces/Coord";
 import { cloneExtend } from "@/lib/utils";
+import { pointerMoveEvents, pointerUpEvents } from "@/services/pointerService";
+import { computed, ref, watchPostEffect, watchSyncEffect } from "vue";
 import type { PanelState } from "../EditorApp/panelStates";
 interface Props {
   title: string;
@@ -50,8 +54,42 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(["update:panelState"]);
 
+const origin = ref<Coord>({ x: 100, y: 100 });
+const left = computed(() => origin.value.x + "px");
+const top = computed(() => origin.value.y + "px");
+
 function updatePanelState(value: Partial<PanelState>) {
   emit("update:panelState", cloneExtend(props.panelState, value));
+}
+
+let dragOrigin: (Coord & { originX: number; originY: number }) | null = null;
+
+watchSyncEffect(() => {
+  if (pointerUpEvents.value.length === 0) return;
+  if (!dragOrigin) return;
+  dragOrigin = null;
+});
+
+watchSyncEffect(() => {
+  if (pointerMoveEvents.value.length === 0) return;
+  if (!dragOrigin) return;
+  const pointerEvent = pointerMoveEvents.value[0];
+  const dy = pointerEvent.page.y - dragOrigin.y;
+  const dx = pointerEvent.page.x - dragOrigin.x;
+
+  // console.log({ dx, dy });
+  origin.value.x = dragOrigin.originX + dx;
+  origin.value.y = dragOrigin.originY + dy;
+});
+
+function pointerDown(event: PointerEvent) {
+  dragOrigin = {
+    x: event.pageX,
+    y: event.pageY,
+    originX: origin.value.x,
+    originY: origin.value.y,
+  };
+  // console.log(event.pageX, event.pageY);
 }
 </script>
 <style>
@@ -59,6 +97,7 @@ function updatePanelState(value: Partial<PanelState>) {
   position: absolute;
   /* left: 100px;
   top: 100px; */
+  z-index: 10;
   background-color: #e7e7e7;
 }
 
@@ -98,5 +137,9 @@ function updatePanelState(value: Partial<PanelState>) {
 
 .rolled {
   display: none;
+}
+
+.prevent-select {
+  user-select: none;
 }
 </style>
