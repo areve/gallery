@@ -58,9 +58,11 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits(["update:panelState"]);
 
-const origin = ref<Coord>({ x: 100, y: 100 });
-const left = computed(() => origin.value.x + "px");
-const top = computed(() => origin.value.y + "px");
+const origin = ref<Coord>({ x: 0, y: 0 });
+const left = computed(
+  () => props.panelState.position.x + origin.value.x + "px"
+);
+const top = computed(() => props.panelState.position.y + origin.value.y + "px");
 
 function updatePanelState(value: Partial<PanelState>) {
   emit("update:panelState", cloneExtend(props.panelState, value));
@@ -71,7 +73,20 @@ let dragOrigin: (Coord & { originX: number; originY: number }) | null = null;
 watchSyncEffect(() => {
   if (!pointerUpEvent.value) return;
   if (!dragOrigin) return;
+  const pointerEvent = pointerUpEvent.value;
+  const dy = pointerEvent.pageY - dragOrigin.y;
+  const dx = pointerEvent.pageX - dragOrigin.x;
+  origin.value.x = dragOrigin.originX + dx;
+  origin.value.y = dragOrigin.originY + dy;
+
+  updatePanelState({
+    position: {
+      x: dragOrigin.originX + dx,
+      y: dragOrigin.originY + dy,
+    },
+  });
   dragOrigin = null;
+  origin.value = { x: 0, y: 0 };
 });
 
 watchSyncEffect(() => {
@@ -80,16 +95,16 @@ watchSyncEffect(() => {
   const pointerEvent = pointerMoveEvent.value;
   const dy = pointerEvent.pageY - dragOrigin.y;
   const dx = pointerEvent.pageX - dragOrigin.x;
-  origin.value.x = dragOrigin.originX + dx;
-  origin.value.y = dragOrigin.originY + dy;
+  origin.value.x = dx;
+  origin.value.y = dy;
 });
 
 function pointerDown(event: PointerEvent) {
   dragOrigin = {
     x: event.pageX,
     y: event.pageY,
-    originX: origin.value.x,
-    originY: origin.value.y,
+    originX: props.panelState.position.x,
+    originY: props.panelState.position.y,
   };
 }
 </script>
