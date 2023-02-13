@@ -1,10 +1,23 @@
 <template>
   <section class="tool-panel" v-if="panelsVisibleState.settings">
-    <h3>App Settings</h3>
-    <button type="button" @click="panelsVisibleState.settings = false">
-      Close Settings
-    </button>
-    <input type="text" v-model="openAiService.config.value.openApiKey" />
+    <div class="panel-titlebar">
+      <h1>App Settings</h1>
+      <button type="button" @click="panelsVisibleState.settings = false">
+        Close
+      </button>
+      <button type="button" @click="panelsVisibleState.settings = false">
+        Dock/Undock
+      </button>
+      <button type="button" @click="panelsVisibleState.settings = false">
+        Rollup
+      </button>
+    </div>
+    <label for="openIdKey">Open API key</label>
+    <input
+      id="openIdKey"
+      type="text"
+      v-model="openAiService.config.value.openApiKey"
+    />
   </section>
 </template>
 
@@ -13,12 +26,4 @@ import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import openAiService from "@/components/OpenAi/openAiService";
 </script>
 
-<style scoped>
-.tool-panel {
-  margin: 0.4em;
-}
-
-.tool-panel h3 {
-  display: none;
-}
-</style>
+<style scoped></style>
