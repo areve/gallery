@@ -1,60 +1,58 @@
 <template>
   <section
     class="panel"
-    v-if="visible"
-    :class="{ docked: docked }"
+    v-if="panelState.visible"
+    :class="{ docked: panelState.docked }"
   >
     <div class="panel-titlebar">
       <h1 class="title">{{ title }}</h1>
-      <button
-        class="icon-button"
-        type="button"
-        @click="$emit('update:docked', !docked)"
-      >
-        <i v-if="docked" class="fa-solid fa-lock"></i>
+      <button class="icon-button" type="button" @click="toggleDocked()">
+        <i v-if="panelState.docked" class="fa-solid fa-lock"></i>
         <i v-else class="fa-solid fa-lock-open"></i>
         <span class="text">Dock/Undock</span>
       </button>
-      <button
-        class="icon-button"
-        type="button"
-        @click="$emit('update:rolled', !rolled)"
-      >
-        <i v-if="rolled" class="fa-solid fa-caret-up"></i>
+      <button class="icon-button" type="button" @click="toggleRolled()">
+        <i v-if="panelState.rolled" class="fa-solid fa-caret-up"></i>
         <i v-else class="fa-solid fa-caret-down"></i>
         <span class="text">Rollup</span>
       </button>
-      <button
-        class="icon-button"
-        type="button"
-        @click="$emit('update:visible', false)"
-      >
+      <button class="icon-button" type="button" @click="toggleClosed()">
         <i class="fa-solid fa-close"></i>
         <span class="text">Close</span>
       </button>
     </div>
-    <div class="panel-main" :class="{ rolled: rolled }">
+    <div class="panel-main" :class="{ rolled: panelState.rolled }">
       <slot></slot>
     </div>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
+import { clone } from "@/lib/utils";
 import type { PanelState } from "../EditorApp/panelStates";
-
 interface Props {
   title: string;
-  //   panelState: PanelState;
-  docked: boolean;
-  rolled: boolean;
-  visible: boolean;
-  //   panelState: PanelState;
-  //   panelState: PanelState;
+  panelState: PanelState;
 }
-defineProps<Props>();
+const props = defineProps<Props>();
 
-defineEmits(["update:docked", "update:rolled", "update:visible"]);
+const emit = defineEmits(["update:panelState"]);
+
+function toggleClosed() {
+  const result = clone(props.panelState);
+  result.visible = !props.panelState.visible;
+  emit("update:panelState", result);
+}
+function toggleRolled() {
+  const result = clone(props.panelState);
+  result.rolled = !props.panelState.rolled;
+  emit("update:panelState", result);
+}
+function toggleDocked() {
+  const result = clone(props.panelState);
+  result.docked = !props.panelState.docked;
+  emit("update:panelState", result);
+}
 </script>
 <style>
 .panel {

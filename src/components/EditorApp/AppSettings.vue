@@ -1,10 +1,5 @@
 <template>
-  <ToolPanel
-    title="App Settings"
-    v-model:rolled="panelStates.settings.rolled"
-    v-model:visible="panelStates.settings.visible"
-    v-model:docked="panelStates.settings.docked"
-  >
+  <ToolPanel title="App Settings" v-model:panelState="panelStates.settings">
     <label for="openIdKey">Open API key</label>
     <input
       id="openIdKey"
