@@ -1,10 +1,9 @@
 <template>
   <ToolPanel
     title="App Settings"
-    :panelState="panelStates.settings"
-    @update:rolled="panelStates.settings.rolled = $event"
-    @update:docked="panelStates.settings.docked = $event"
-    @update:visible="panelStates.settings.visible = $event"
+    v-model:rolled="panelStates.settings.rolled"
+    v-model:visible="panelStates.settings.visible"
+    v-model:docked="panelStates.settings.docked"
   >
     <label for="openIdKey">Open API key</label>
     <input

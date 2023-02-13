@@ -1,26 +1,26 @@
 <template>
   <section
     class="panel"
-    v-if="panelState.visible"
-    :class="{ docked: panelState.docked }"
+    v-if="visible"
+    :class="{ docked: docked }"
   >
     <div class="panel-titlebar">
       <h1 class="title">{{ title }}</h1>
       <button
         class="icon-button"
         type="button"
-        @click="$emit('update:docked', !panelState.docked)"
+        @click="$emit('update:docked', !docked)"
       >
-        <i v-if="panelState.docked" class="fa-solid fa-lock"></i>
+        <i v-if="docked" class="fa-solid fa-lock"></i>
         <i v-else class="fa-solid fa-lock-open"></i>
         <span class="text">Dock/Undock</span>
       </button>
       <button
         class="icon-button"
         type="button"
-        @click="$emit('update:rolled', !panelState.rolled)"
+        @click="$emit('update:rolled', !rolled)"
       >
-        <i v-if="panelState.rolled" class="fa-solid fa-caret-up"></i>
+        <i v-if="rolled" class="fa-solid fa-caret-up"></i>
         <i v-else class="fa-solid fa-caret-down"></i>
         <span class="text">Rollup</span>
       </button>
@@ -33,18 +33,24 @@
         <span class="text">Close</span>
       </button>
     </div>
-    <div class="panel-main" :class="{ rolled: panelState.rolled }">
+    <div class="panel-main" :class="{ rolled: rolled }">
       <slot></slot>
     </div>
   </section>
 </template>
 
 <script lang="ts" setup>
+import { computed } from "vue";
 import type { PanelState } from "../EditorApp/panelStates";
 
 interface Props {
   title: string;
-  panelState: PanelState;
+  //   panelState: PanelState;
+  docked: boolean;
+  rolled: boolean;
+  visible: boolean;
+  //   panelState: PanelState;
+  //   panelState: PanelState;
 }
 defineProps<Props>();
 
