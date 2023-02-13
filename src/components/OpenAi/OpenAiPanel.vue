@@ -1,5 +1,5 @@
 <template>
-  <section class="tool-panel" :hidden="!panelsVisibleState.openAi">
+  <section class="tool-panel" :hidden="!panelStates.openAi.visible">
     <h3>OpenAI</h3>
     <button type="button" @click="generateImage()">Generate</button>
     <button type="button" @click="variationImage()">Variation</button>
@@ -20,7 +20,7 @@ import {
 } from "@/lib/canvas/canvas-utils";
 import artboardService from "@/components/Artboard/artboardService";
 import compositionService, { createLayer } from "@/lib/canvas/composition";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+import { panelStates } from "@/components/EditorApp/panelStates";
 import galleryApi from "@/components/Gallery/galleryApi";
 import openAiService from "@/components/OpenAi/openAiService";
 import { clone } from "lodash";

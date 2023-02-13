@@ -20,7 +20,7 @@
       <ToolPanel />
       <StatusBar />
     </main>
-    <aside class="side-panel" :hidden="!panelsVisibleState.gallery">
+    <aside class="side-panel" :hidden="!panelStates.gallery.visible">
       <GalleryPanel />
     </aside>
   </div>
@@ -48,7 +48,7 @@ import {
   selectedItem,
   updateGalleryItem,
 } from "@/components/Gallery/galleryService";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+import { panelStates } from "@/components/EditorApp/panelStates";
 import artboardService from "@/components/Artboard/artboardService";
 import type { Artwork } from "@/interfaces/Artwork";
 import { pointerUp, pointerDown, pointerMove } from "@/services/pointerService";
@@ -73,7 +73,7 @@ watch(onAction, (action) => {
   if (action.action === "reset") reset();
   if (action.action === "auto-crop") artboardService.autoCrop();
   if (action.action === "show-settings")
-    panelsVisibleState.value.settings = true;
+    panelStates.value.settings.visible = true;
 });
 
 watch(onApplyEffect, (action) => {

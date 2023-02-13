@@ -1,14 +1,14 @@
 <template>
-  <section class="tool-panel" v-if="panelsVisibleState.settings">
+  <section class="tool-panel" v-if="panelStates.settings">
     <div class="panel-titlebar">
       <h1>App Settings</h1>
-      <button type="button" @click="panelsVisibleState.settings = false">
+      <button type="button" @click="panelStates.settings.visible = false">
         Close
       </button>
-      <button type="button" @click="panelsVisibleState.settings = false">
+      <button type="button" @click="panelStates.settings.visible = false">
         Dock/Undock
       </button>
-      <button type="button" @click="panelsVisibleState.settings = false">
+      <button type="button" @click="panelStates.settings.visible = false">
         Rollup
       </button>
     </div>
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts" setup>
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+import { panelStates } from "@/components/EditorApp/panelStates";
 import openAiService from "@/components/OpenAi/openAiService";
 </script>
 

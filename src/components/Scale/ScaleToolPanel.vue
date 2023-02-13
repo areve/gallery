@@ -1,5 +1,5 @@
 <template>
-  <section class="tool-panel" :hidden="!panelsVisibleState.scale">
+  <section class="tool-panel" :hidden="!panelStates.scale.visible">
     <h3>Scale</h3>
     <button
       type="button"
@@ -28,7 +28,7 @@
 
 <script lang="ts" setup>
 import artboardService from "@/components/Artboard/artboardService";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+import { panelStates } from "@/components/EditorApp/panelStates";
 import { scaleToolState } from "@/components/Scale/scaleToolState";
 </script>
 

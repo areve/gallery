@@ -1,5 +1,5 @@
 <template>
-  <nav id="menu" :hidden="!panelsVisibleState.menu">
+  <nav id="menu" :hidden="!panelStates.menu.visible">
     <label for="toggle-menu" class="toggle-menu">
       Menu <span class="drop-icon">▾</span>
     </label>
@@ -12,7 +12,7 @@
 
 <script lang="ts" setup>
 import { action, applyEffect } from "@/components/EditorApp/appActions";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+import { panelStates } from "@/components/EditorApp/panelStates";
 import MenuItemVue from "./MenuItem.vue";
 import type { MenuItem } from "./MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";
@@ -43,48 +43,50 @@ const menu: MenuItem[] = [
       {
         label: "Gallery",
         action: () =>
-          (panelsVisibleState.value.gallery =
-            !panelsVisibleState.value.gallery),
+          (panelStates.value.gallery.visible =
+            !panelStates.value.gallery.visible),
         key: "Ctrl+G",
       },
       {
         label: "OpenAI",
         action: () =>
-          (panelsVisibleState.value.openAi = !panelsVisibleState.value.openAi),
+          (panelStates.value.openAi.visible =
+            !panelStates.value.openAi.visible),
       },
       {
         label: "Artwork Settings",
         action: () =>
-          (panelsVisibleState.value.artworkSettings =
-            !panelsVisibleState.value.artworkSettings),
+          (panelStates.value.artworkSettings.visible =
+            !panelStates.value.artworkSettings.visible),
       },
       {
         label: "Scale",
         action: () =>
-          (panelsVisibleState.value.scale = !panelsVisibleState.value.scale),
+          (panelStates.value.scale.visible = !panelStates.value.scale.visible),
       },
       {
         label: "Status",
         action: () =>
-          (panelsVisibleState.value.statusBar =
-            !panelsVisibleState.value.statusBar),
+          (panelStates.value.statusBar.visible =
+            !panelStates.value.statusBar.visible),
       },
       {
         label: "Toolbar",
         action: () =>
-          (panelsVisibleState.value.toolbar =
-            !panelsVisibleState.value.toolbar),
+          (panelStates.value.toolbar.visible =
+            !panelStates.value.toolbar.visible),
       },
       {
         label: "Menu",
         action: () =>
-          (panelsVisibleState.value.menu = !panelsVisibleState.value.menu),
+          (panelStates.value.menu.visible = !panelStates.value.menu.visible),
         key: "Ctrl+M",
       },
       {
         label: "Pencils",
         action: () =>
-          (panelsVisibleState.value.pencil = !panelsVisibleState.value.pencil),
+          (panelStates.value.pencil.visible =
+            !panelStates.value.pencil.visible),
       },
     ],
   },

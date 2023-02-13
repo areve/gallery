@@ -1,5 +1,5 @@
 <template>
-  <div class="status-bar" :hidden="!panelsVisibleState.statusBar">
+  <div class="status-bar" :hidden="!panelStates.statusBar.visible">
     <span
       >canvas:{{ artboardService.artwork.value.bounds.width }}x{{
         artboardService.artwork.value.bounds.height
@@ -15,7 +15,7 @@
 
 <script lang="ts" setup>
 import artboardService from "@/components/Artboard/artboardService";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+import { panelStates } from "@/components/EditorApp/panelStates";
 </script>
 
 <style scoped></style>

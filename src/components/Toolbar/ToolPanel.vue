@@ -1,5 +1,5 @@
 <template>
-  <div :hidden="!panelsVisibleState.toolbar" class="tool-panel">
+  <div :hidden="!panelStates.toolbar.visible" class="tool-panel">
     <section class="tool-panel">
       <h3>Tool</h3>
       <button
@@ -73,7 +73,7 @@
 import { brushToolState } from "@/components/Brush/brushToolState";
 import { dragToolState } from "@/components/Artboard/dragToolState";
 import { eraserToolState } from "@/components/Eraser/eraserToolState";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+import { panelStates } from "@/components/EditorApp/panelStates";
 import { toolbarState } from "@/components/Toolbar/toolbarState";
 import type { MenuItem } from "../EditorApp/MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";

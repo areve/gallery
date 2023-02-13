@@ -1,5 +1,5 @@
 <template>
-  <div :hidden="!panelsVisibleState.pencil" class="pencil-panel">
+  <div :hidden="!panelStates.pencil.visible" class="pencil-panel">
     <div
       class="pencil red"
       @click="
@@ -101,7 +101,7 @@
 
 <script lang="ts" setup>
 import { brushToolState } from "./brushToolState";
-import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
+import { panelStates } from "@/components/EditorApp/panelStates";
 import { toolbarState } from "@/components/Toolbar/toolbarState";
 </script>
 
