@@ -15,8 +15,7 @@ import { action, applyEffect } from "@/components/EditorApp/appActions";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import MenuItemVue from "./MenuItem.vue";
 import type { MenuItem } from "./MenuItem";
-import { addKeysForMenuItems, useKey } from "./keyboardService";
-import { toolbarState } from "../Toolbar/toolbarState";
+import { addKeysForMenuItems } from "./keyboardService";
 
 const menu: MenuItem[] = [
   {
@@ -102,7 +101,7 @@ const menu: MenuItem[] = [
           {
             label: "Shotgun effect",
             action: () => applyEffect("shotgun"),
-            key: "Ctrl+Shitt+G",
+            key: "Ctrl+Shift+G",
           },
           {
             label: "All white",
@@ -122,38 +121,11 @@ const menu: MenuItem[] = [
       },
     ],
   },
-]
-
-const toolsMenu: MenuItem[] = [
-  {
-    label: "Tools",
-    items: [
-      {
-        label: "Eraser",
-        action: () => (toolbarState.value.toolSelected = "eraser"),
-        key: "Ctrl+1",
-      },
-      {
-        label: "Drag",
-        action: () => (toolbarState.value.toolSelected = "drag"),
-        key: "Ctrl+2",
-      },
-      {
-        label: "Drag Frame",
-        action: () => (toolbarState.value.toolSelected = "drag-frame"),
-        key: "Ctrl+3",
-      },
-      {
-        label: "Pencil",
-        action: () => (toolbarState.value.toolSelected = "pencil"),
-        key: "Ctrl+4",
-      },
-    ],
-  },
 ];
 
+
+
 addKeysForMenuItems(menu);
-addKeysForMenuItems(toolsMenu);
 </script>
 
 <style scoped>

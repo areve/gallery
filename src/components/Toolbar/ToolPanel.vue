@@ -75,6 +75,32 @@ import { dragToolState } from "@/components/Artboard/dragToolState";
 import { eraserToolState } from "@/components/Eraser/eraserToolState";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import { toolbarState } from "@/components/Toolbar/toolbarState";
+import type { MenuItem } from "../EditorApp/MenuItem";
+import { addKeysForMenuItems } from "../EditorApp/keyboardService";
+
+const toolsMenu: MenuItem[] = [
+  {
+    label: "Eraser",
+    action: () => (toolbarState.value.toolSelected = "eraser"),
+    key: "Ctrl+1",
+  },
+  {
+    label: "Drag",
+    action: () => (toolbarState.value.toolSelected = "drag"),
+    key: "Ctrl+2",
+  },
+  {
+    label: "Drag Frame",
+    action: () => (toolbarState.value.toolSelected = "drag-frame"),
+    key: "Ctrl+3",
+  },
+  {
+    label: "Pencil",
+    action: () => (toolbarState.value.toolSelected = "pencil"),
+    key: "Ctrl+4",
+  },
+];
+addKeysForMenuItems(toolsMenu);
 </script>
 
 <style scoped>

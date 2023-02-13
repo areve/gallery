@@ -1,7 +1,7 @@
 import type { MenuItem } from "./MenuItem";
 import { useKeypress } from "vue3-keypress";
 
-const Key = {
+const Key: { [key: string]: number } = {
   Backspace: 8,
   Tab: 9,
   Enter: 13,
@@ -147,9 +147,10 @@ const Key = {
 };
 
 function getKeyCode(value: string) {
-  return Key[
-    Object.keys(Key).find((key) => key.toLowerCase() === value.toLowerCase())
-  ];
+  const key = Object.keys(Key).find(
+    (key) => key.toLowerCase() === value.toLowerCase()
+  );
+  return key ? Key[key] : undefined;
 }
 
 function keyUpBinds(keyConfigs: any[]) {
@@ -194,37 +195,41 @@ function getKey(key: string) {
   return getKeyCode(result);
 }
 
-export function useKey(menuItem: MenuItem) {
-  if (!menuItem.key) return;
-  const modifiers = getModifiers(menuItem.key);
-  const key = getKey(menuItem.key);
-  const keyConfig = {
-    key,
-    modifiers,
-    action: menuItem.action,
-  };
-  console.log(keyConfig, menuItem);
-  if (key === undefined) return;
+export function addKeysForMenuItems(items: MenuItem[]) {
+  const keyConfigs = getKeyConfigs(items);
   // TODO calling this lots of times is clearly not how it was intededed
   useKeypress({
     keyEvent: "keyup",
-    keyBinds: [...keyUpBinds([keyConfig])],
+    keyBinds: [...keyUpBinds(keyConfigs)],
+    // TODO bring this back perhaps, and then improve tje keycodes dict/enum
     // onAnyKey: (e: any) => console.log(e.event.keyCode),
   });
 
   useKeypress({
     keyEvent: "keydown",
-    keyBinds: [...keyDownBinds([keyConfig])],
+    keyBinds: [...keyDownBinds(keyConfigs)],
   });
 }
 
-// TODO collect them all and add them at once
-export function addKeysForMenuItems(items: MenuItem[]) {
+function getKeyConfigs(items: MenuItem[]) {
+  const result: any[] = [];
   items.forEach((item) => {
-    useKey(item);
+    if (item.key) {
+      const modifiers = getModifiers(item.key);
+      const key = getKey(item.key);
+      if (key === undefined) console.error("invalid key config", item.key);
+      const keyConfig = {
+        key,
+        modifiers,
+        action: item.action,
+      };
+      result.push(keyConfig);
+    }
 
     if (item.items) {
-      addKeysForMenuItems(item.items);
+      result.push(...getKeyConfigs(item.items));
     }
   });
+
+  return result;
 }
