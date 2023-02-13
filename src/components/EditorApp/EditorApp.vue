@@ -17,7 +17,7 @@
       <AppSettings />
       <ScaleToolPanel />
       <OpenAiPanel />
-      <ToolPanel />
+      <ToolBar />
       <StatusBar />
     </main>
     <aside class="side-panel" :hidden="!panelStates.gallery.visible">
@@ -33,7 +33,7 @@ import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
 import AppSettings from "@/components/EditorApp/AppSettings.vue";
 import TopMenu from "@/components/EditorApp/TopMenu.vue";
 import GalleryPanel from "@/components/Gallery/GalleryPanel.vue";
-import ToolPanel from "@/components/Toolbar/ToolPanel.vue";
+import ToolBar from "@/components/Toolbar/ToolBar.vue";
 import PencilPanel from "@/components/Brush/PencilPanel.vue";
 
 import { watch } from "vue";

@@ -1,7 +1,7 @@
 import { usePersistentState } from "@/services/persistenceService";
 import { ref } from "vue";
 
-interface PanelState {
+export interface PanelState {
   visible: boolean;
   rolled: boolean;
   docked: boolean;
