@@ -27,7 +27,7 @@ import { useBrushTool } from "@/components/Brush/brushTool";
 import { useArtboardMoveTool } from "@/components/Artboard/artboardMoveTool";
 import { useArtboardFrameTool } from "@/components/Artboard/artboardFrameTool";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
-import { toolbarState } from "@/components/Toolbar/toolbarState";
+import { toolbarState } from "@/components/ToolBar/toolBarState";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);

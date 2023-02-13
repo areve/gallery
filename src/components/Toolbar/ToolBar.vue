@@ -73,7 +73,7 @@
 import { brushToolState } from "@/components/Brush/brushToolState";
 import { dragToolState } from "@/components/Artboard/dragToolState";
 import { eraserToolState } from "@/components/Eraser/eraserToolState";
-import { toolbarState } from "@/components/Toolbar/toolbarState";
+import { toolbarState } from "@/components/ToolBar/toolBarState";
 import type { MenuItem } from "../Menu/MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";
 import ToolPanel from "../ToolPanel/ToolPanel.vue";
