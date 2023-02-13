@@ -6,17 +6,29 @@
   >
     <div class="panel-titlebar">
       <h1 class="title">{{ title }}</h1>
-      <button class="icon-button" type="button" @click="toggleDocked()">
+      <button
+        class="icon-button"
+        type="button"
+        @click="updatePanelState({ docked: !panelState.docked })"
+      >
         <i v-if="panelState.docked" class="fa-solid fa-lock"></i>
         <i v-else class="fa-solid fa-lock-open"></i>
         <span class="text">Dock/Undock</span>
       </button>
-      <button class="icon-button" type="button" @click="toggleRolled()">
+      <button
+        class="icon-button"
+        type="button"
+        @click="updatePanelState({ rolled: !panelState.rolled })"
+      >
         <i v-if="panelState.rolled" class="fa-solid fa-caret-up"></i>
         <i v-else class="fa-solid fa-caret-down"></i>
         <span class="text">Rollup</span>
       </button>
-      <button class="icon-button" type="button" @click="toggleClosed()">
+      <button
+        class="icon-button"
+        type="button"
+        @click="updatePanelState({ visible: false })"
+      >
         <i class="fa-solid fa-close"></i>
         <span class="text">Close</span>
       </button>
@@ -28,30 +40,18 @@
 </template>
 
 <script lang="ts" setup>
-import { clone } from "@/lib/utils";
+import { cloneExtend } from "@/lib/utils";
 import type { PanelState } from "../EditorApp/panelStates";
 interface Props {
   title: string;
   panelState: PanelState;
 }
-const props = defineProps<Props>();
 
+const props = defineProps<Props>();
 const emit = defineEmits(["update:panelState"]);
 
-function toggleClosed() {
-  const result = clone(props.panelState);
-  result.visible = !props.panelState.visible;
-  emit("update:panelState", result);
-}
-function toggleRolled() {
-  const result = clone(props.panelState);
-  result.rolled = !props.panelState.rolled;
-  emit("update:panelState", result);
-}
-function toggleDocked() {
-  const result = clone(props.panelState);
-  result.docked = !props.panelState.docked;
-  emit("update:panelState", result);
+function updatePanelState(value: Partial<PanelState>) {
+  emit("update:panelState", cloneExtend(props.panelState, value));
 }
 </script>
 <style>
