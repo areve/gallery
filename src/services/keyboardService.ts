@@ -1,4 +1,4 @@
-import type { MenuItem } from "./MenuItem";
+import type { MenuItem } from "../components/EditorApp/MenuItem";
 import { useKeypress } from "vue3-keypress";
 
 const Key: { [key: string]: number } = {
@@ -197,12 +197,12 @@ function getKey(key: string) {
 
 export function addKeysForMenuItems(items: MenuItem[]) {
   const keyConfigs = getKeyConfigs(items);
-  // TODO calling this lots of times is clearly not how it was intededed
+  // TODO calling this lots of times is clearly not how it was intended, seems to be OK though
   useKeypress({
     keyEvent: "keyup",
     keyBinds: [...keyUpBinds(keyConfigs)],
     // TODO bring this back perhaps, and then improve tje keycodes dict/enum
-    // onAnyKey: (e: any) => console.log(e.event.keyCode),
+    onAnyKey: (e: any) => console.log(e.event.keyCode),
   });
 
   useKeypress({

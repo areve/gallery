@@ -76,7 +76,7 @@ import { eraserToolState } from "@/components/Eraser/eraserToolState";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import { toolbarState } from "@/components/Toolbar/toolbarState";
 import type { MenuItem } from "../EditorApp/MenuItem";
-import { addKeysForMenuItems } from "../EditorApp/keyboardService";
+import { addKeysForMenuItems } from "@/services/keyboardService";
 
 const toolsMenu: MenuItem[] = [
   {

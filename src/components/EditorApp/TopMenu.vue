@@ -15,7 +15,7 @@ import { action, applyEffect } from "@/components/EditorApp/appActions";
 import { panelsVisibleState } from "@/components/EditorApp/panelsVisibleState";
 import MenuItemVue from "./MenuItem.vue";
 import type { MenuItem } from "./MenuItem";
-import { addKeysForMenuItems } from "./keyboardService";
+import { addKeysForMenuItems } from "@/services/keyboardService";
 
 const menu: MenuItem[] = [
   {
@@ -122,8 +122,6 @@ const menu: MenuItem[] = [
     ],
   },
 ];
-
-
 
 addKeysForMenuItems(menu);
 </script>
