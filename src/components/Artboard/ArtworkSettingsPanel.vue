@@ -1,6 +1,8 @@
 <template>
-  <section class="tool-panel" :hidden="!panelStates.artworkSettings.visible">
-    <h3>Artwork Settings</h3>
+  <ToolPanel
+    title="Artwork Settings"
+    v-model:panelState="panelStates.artworkSettings"
+  >
     <textarea class="metadata" v-model="metadataAsJson"></textarea>
     <div>
       <label for="filename">File name</label>
@@ -27,7 +29,7 @@
     <button type="button" @click="panelStates.artworkSettings.visible = false">
       <i class="fa-solid fa-close"></i> Close
     </button>
-  </section>
+  </ToolPanel>
 </template>
 
 <script lang="ts" setup>
@@ -38,6 +40,7 @@ import {
   saveGalleryItem,
 } from "@/components/Gallery/galleryService";
 import { computed } from "vue";
+import ToolPanel from "../ToolPanel/ToolPanel.vue";
 
 const metadataAsJson = computed(() =>
   JSON.stringify(artboardService.artwork.value.metadata)
