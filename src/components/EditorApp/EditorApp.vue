@@ -6,7 +6,6 @@
         <ArtboardPanel />
         <PencilPanel />
       </div>
-
       <ArtworkSettingsPanel />
       <AppSettings />
       <ScaleToolPanel />
@@ -37,7 +36,6 @@ import { rgb2rybEffect, ryb2rgbEffect } from "@/lib/rgba/rgba-effects-ryb2rgb";
 import { allWhiteEffect } from "@/lib/rgba/rgba-effects-all-white";
 
 import { onApplyEffect, onAction } from "@/components/EditorApp/appActions";
-// import { useKeyboardHandler } from "@/components/EditorApp/keyboardService";
 import {
   selectedItem,
   updateGalleryItem,
@@ -48,8 +46,6 @@ import type { Artwork } from "@/interfaces/Artwork";
 import StatusBar from "@/components/EditorApp/StatusBar.vue";
 import ScaleToolPanel from "@/components/Scale/ScaleToolPanel.vue";
 import { openAiPanelState } from "@/components/OpenAi/openAiPanelState";
-
-// useKeyboardHandler();
 
 // IDEA make it possible to select multiple images and delete them
 // IDEA make it possible to have currently selected image

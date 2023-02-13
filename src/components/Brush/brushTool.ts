@@ -42,7 +42,6 @@ function pointerMove(pointerEvent: PointerEvent) {
 
   const rgbaLayer = artboardService.artwork.value.rgbaLayer;
   if (pencilLastPoint) {
-    // console.log("brush drag", pointerEvent);
     let weight = pointerEvent.pressure ?? 0.5;
     weight = weight * weight;
 
