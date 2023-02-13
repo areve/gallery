@@ -75,7 +75,7 @@ import { dragToolState } from "@/components/Artboard/dragToolState";
 import { eraserToolState } from "@/components/Eraser/eraserToolState";
 import { panelStates } from "@/components/EditorApp/panelStates";
 import { toolbarState } from "@/components/Toolbar/toolbarState";
-import type { MenuItem } from "../EditorApp/MenuItem";
+import type { MenuItem } from "../Menu/MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";
 import ToolPanel from "../ToolPanel/ToolPanel.vue";
 

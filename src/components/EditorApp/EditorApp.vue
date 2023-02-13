@@ -24,7 +24,7 @@ import ArtworkSettingsPanel from "@/components/Artboard/ArtworkSettingsPanel.vue
 import OpenAiPanel from "@/components/OpenAi/OpenAiPanel.vue";
 import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
 import AppSettings from "@/components/EditorApp/AppSettings.vue";
-import TopMenu from "@/components/EditorApp/TopMenu.vue";
+import TopMenu from "@/components/Menu/TopMenu.vue";
 import GalleryPanel from "@/components/Gallery/GalleryPanel.vue";
 import ToolBar from "@/components/Toolbar/ToolBar.vue";
 import PencilPanel from "@/components/Brush/PencilPanel.vue";

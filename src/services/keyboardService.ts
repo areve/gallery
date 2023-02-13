@@ -1,4 +1,4 @@
-import type { MenuItem } from "../components/EditorApp/MenuItem";
+import type { MenuItem } from "../components/Menu/MenuItem";
 import { useKeypress } from "vue3-keypress";
 
 // The names of the following keys are for my UK laptop, other keyboards will differ
