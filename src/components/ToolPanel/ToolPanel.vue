@@ -5,11 +5,11 @@
     :class="{ docked: panelState.docked }"
   >
     <div class="panel-titlebar">
-      <h1 class="title">App Settings</h1>
+      <h1 class="title">{{ title }}</h1>
       <button
         class="icon-button"
         type="button"
-        @click="panelState.docked = !panelState.docked"
+        @click="$emit('update:docked', !panelState.docked)"
       >
         <i v-if="panelState.docked" class="fa-solid fa-lock"></i>
         <i v-else class="fa-solid fa-lock-open"></i>
@@ -18,7 +18,7 @@
       <button
         class="icon-button"
         type="button"
-        @click="panelState.rolled = !panelState.rolled"
+        @click="$emit('update:rolled', !panelState.rolled)"
       >
         <i v-if="panelState.rolled" class="fa-solid fa-caret-up"></i>
         <i v-else class="fa-solid fa-caret-down"></i>
@@ -27,7 +27,7 @@
       <button
         class="icon-button"
         type="button"
-        @click="panelState.visible = false"
+        @click="$emit('update:visible', false)"
       >
         <i class="fa-solid fa-close"></i>
         <span class="text">Close</span>
@@ -47,6 +47,8 @@ interface Props {
   panelState: PanelState;
 }
 defineProps<Props>();
+
+defineEmits(["update:docked", "update:rolled", "update:visible"]);
 </script>
 <style>
 .panel {

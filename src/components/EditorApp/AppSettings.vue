@@ -1,5 +1,11 @@
 <template>
-  <ToolPanel title="App Settings" v-model:panelState="panelStates.settings">
+  <ToolPanel
+    title="App Settings"
+    :panelState="panelStates.settings"
+    @update:rolled="(value) => (panelStates.settings.rolled = value)"
+    @update:docked="(value) => (panelStates.settings.docked = value)"
+    @update:visible="(value) => (panelStates.settings.visible = value)"
+  >
     <label for="openIdKey">Open API key</label>
     <input
       id="openIdKey"
@@ -15,5 +21,4 @@ import openAiService from "@/components/OpenAi/openAiService";
 import ToolPanel from "../ToolPanel/ToolPanel.vue";
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
