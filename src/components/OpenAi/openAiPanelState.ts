@@ -11,4 +11,5 @@ export const openAiPanelState = ref({
     position: { x: 0, y: 0 },
   } as PanelState,
 });
+
 usePersistentState("openAiPanelState", openAiPanelState);
