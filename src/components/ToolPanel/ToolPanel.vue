@@ -5,14 +5,15 @@
     :class="{ docked: panelState.docked }"
     :style="{ top, left }"
   >
-    <div class="panel-titlebar">
-      <h1 class="title" @pointerdown="pointerDown">
+    <div class="panel-titlebar" @pointerdown="pointerDown">
+      <h1 class="title">
         {{ title }}
       </h1>
       <button
         class="icon-button"
         type="button"
         @click="updatePanelState({ docked: !panelState.docked })"
+        v-if="!panelState.rolled"
       >
         <i v-if="panelState.docked" class="fa-solid fa-lock"></i>
         <i v-else class="fa-solid fa-lock-open"></i>
@@ -31,6 +32,7 @@
         class="icon-button"
         type="button"
         @click="updatePanelState({ visible: false })"
+        v-if="!panelState.rolled"
       >
         <i class="fa-solid fa-close"></i>
         <span class="text">Close</span>
@@ -46,7 +48,7 @@
 import type { Coord } from "@/interfaces/Coord";
 import { cloneExtend } from "@/lib/utils";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
-import { computed, ref, watchPostEffect, watchSyncEffect } from "vue";
+import { computed, ref, watchSyncEffect } from "vue";
 import type { PanelState } from "../EditorApp/panelStates";
 interface Props {
   title: string;
@@ -96,11 +98,17 @@ function pointerDown(event: PointerEvent) {
   position: absolute;
   z-index: 10;
   background-color: #e7e7e7;
+  box-shadow: 0px 0.25em 0.5em #0007;
 }
 
 .panel-titlebar {
   background-color: #d0d0d0;
   text-align: right;
+  padding: 0.25em;
+  overflow: hidden;
+}
+
+.panel-main {
   padding: 0.25em;
 }
 
@@ -109,7 +117,6 @@ function pointerDown(event: PointerEvent) {
   font-weight: normal;
   float: left;
   margin-right: 1em;
-  margin-left: 0.5em;
 }
 
 .icon-button {
@@ -130,6 +137,7 @@ function pointerDown(event: PointerEvent) {
 
 .panel.docked {
   position: initial;
+  box-shadow: none;
 }
 
 .rolled {
