@@ -1,5 +1,5 @@
 <template>
-  <div :hidden="!panelStates.toolbar.visible" class="tool-panel">
+  <ToolPanel title="Toolbar" v-model:panelState="panelStates.toolbar">
     <section class="tool-panel">
       <h3>Tool</h3>
       <button
@@ -66,7 +66,7 @@
       <label for="brushColor">Colour</label>
       <input type="color" id="brushColor" v-model="brushToolState.brushColor" />
     </section>
-  </div>
+  </ToolPanel>
 </template>
 
 <script lang="ts" setup>
@@ -77,6 +77,7 @@ import { panelStates } from "@/components/EditorApp/panelStates";
 import { toolbarState } from "@/components/Toolbar/toolbarState";
 import type { MenuItem } from "../EditorApp/MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";
+import ToolPanel from "../ToolPanel/ToolPanel.vue";
 
 const toolsMenu: MenuItem[] = [
   {

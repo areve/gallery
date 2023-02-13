@@ -1,6 +1,5 @@
 <template>
-  <section class="tool-panel" :hidden="!panelStates.scale.visible">
-    <h3>Scale</h3>
+  <ToolPanel title="Scale" v-model:panelState="panelStates.scale">
     <button
       type="button"
       @click="artboardService.scaleImage(scaleToolState.scaleImageBy)"
@@ -23,13 +22,15 @@
     <button type="button" @click="artboardService.growFrame(512)">
       Grow frame
     </button>
-  </section>
+  </ToolPanel>
 </template>
 
 <script lang="ts" setup>
 import artboardService from "@/components/Artboard/artboardService";
 import { panelStates } from "@/components/EditorApp/panelStates";
 import { scaleToolState } from "@/components/Scale/scaleToolState";
+import ToolPanel from "../ToolPanel/ToolPanel.vue";
+
 </script>
 
 <style scoped></style>
