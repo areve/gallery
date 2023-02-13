@@ -29,12 +29,6 @@ export const panelStates = ref<{ [key: string]: PanelState }>({
     docked: true,
     position: { x: 0, y: 0 },
   },
-  // openAi: {
-  //   visible: true,
-  //   rolled: false,
-  //   docked: true,
-  //   position: { x: 0, y: 0 },
-  // },
   artworkSettings: {
     visible: true,
     rolled: false,
@@ -42,12 +36,6 @@ export const panelStates = ref<{ [key: string]: PanelState }>({
     position: { x: 0, y: 0 },
   },
   scale: {
-    visible: true,
-    rolled: false,
-    docked: true,
-    position: { x: 0, y: 0 },
-  },
-  toolbar: {
     visible: true,
     rolled: false,
     docked: true,

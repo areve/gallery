@@ -17,6 +17,7 @@ import MenuItemVue from "./MenuItem.vue";
 import type { MenuItem } from "./MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";
 import { openAiPanelState } from "../OpenAi/openAiPanelState";
+import { toolbarState } from "../Toolbar/toolbarState";
 
 const menu: MenuItem[] = [
   {
@@ -76,8 +77,8 @@ const menu: MenuItem[] = [
       {
         label: "Toolbar",
         action: () =>
-          (panelStates.value.toolbar.visible =
-            !panelStates.value.toolbar.visible),
+          (toolbarState.value.panel.visible =
+            !toolbarState.value.panel.visible),
       },
       {
         label: "Menu",
