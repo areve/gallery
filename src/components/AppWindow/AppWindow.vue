@@ -10,31 +10,17 @@
     <div class="resize-handle" @pointerdown="resizeStart"></div>
     <header class="panel-titlebar" @pointerdown="dragStart">
       <h1 class="title">{{ title }}</h1>
-      <button
-        class="icon-button"
-        type="button"
-        @click="updatePanelState({ docked: !panelState.docked })"
-        v-if="!panelState.rolled"
-      >
+      <button class="icon-button" type="button" @click="updatePanelState({ docked: !panelState.docked })" v-if="!panelState.rolled">
         <i v-if="panelState.docked" class="fa-solid fa-lock"></i>
         <i v-else class="fa-solid fa-lock-open"></i>
         <span class="text">Dock/Undock</span>
       </button>
-      <button
-        class="icon-button"
-        type="button"
-        @click="updatePanelState({ rolled: !panelState.rolled })"
-      >
+      <button class="icon-button" type="button" @click="updatePanelState({ rolled: !panelState.rolled })">
         <i v-if="panelState.rolled" class="fa-solid fa-caret-up"></i>
         <i v-else class="fa-solid fa-caret-down"></i>
         <span class="text">Rollup</span>
       </button>
-      <button
-        class="icon-button"
-        type="button"
-        @click="updatePanelState({ visible: false })"
-        v-if="!panelState.rolled"
-      >
+      <button class="icon-button" type="button" @click="updatePanelState({ visible: false })" v-if="!panelState.rolled">
         <i class="fa-solid fa-close"></i>
         <span class="text">Close</span>
       </button>
@@ -66,9 +52,7 @@ const emit = defineEmits(["update:panelState"]);
 
 const origin = ref<Coord>({ x: 0, y: 0 });
 const grow = ref<Coord>({ x: 0, y: 0 });
-const left = computed(
-  () => props.panelState.position.x + origin.value.x + "px"
-);
+const left = computed(() => props.panelState.position.x + origin.value.x + "px");
 const top = computed(() => props.panelState.position.y + origin.value.y + "px");
 const zIndex = computed(() => {
   if (props.panelState.docked) return 0;
@@ -98,8 +82,7 @@ function updatePanelState(value: Partial<PanelState>) {
 }
 
 let dragOrigin: (Coord & { originX: number; originY: number }) | null = null;
-let resizeOrigin: (Coord & { startWidth: number; startHeight: number }) | null =
-  null;
+let resizeOrigin: (Coord & { startWidth: number; startHeight: number }) | null = null;
 
 const id = uuid();
 
