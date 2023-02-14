@@ -1,12 +1,18 @@
 <template>
   <AppWindow title="Scale" v-model:panelState="panelStates.scale">
-    <button type="button" @click="artboardService.scaleImage(scaleToolState.scaleImageBy)">Scale image</button>
-    <label for="scaleBy">by</label>
-    <input type="number" id="scaleBy" v-model="scaleToolState.scaleImageBy" step="0.00001" min="0" />
-    <button type="button" @click="artboardService.scale(0.5)">Shrink</button>
-    <button type="button" @click="artboardService.scale(2)">Grow</button>
-    <button type="button" @click="artboardService.growFrame(-512)">Shrink frame</button>
-    <button type="button" @click="artboardService.growFrame(512)">Grow frame</button>
+    <div>
+      <button type="button" @click="artboardService.scaleImage(scaleToolState.scaleImageBy)">Scale image</button>
+      <label for="scaleBy">by</label>
+      <input type="number" id="scaleBy" v-model="scaleToolState.scaleImageBy" step="0.00001" min="0" />
+    </div>
+    <div>
+      <button type="button" @click="artboardService.scale(0.5)">Shrink</button>
+      <button type="button" @click="artboardService.scale(2)">Grow</button>
+    </div>
+    <div>
+      <button type="button" @click="artboardService.growFrame(-512)">Shrink frame</button>
+      <button type="button" @click="artboardService.growFrame(512)">Grow frame</button>
+    </div>
   </AppWindow>
 </template>
 

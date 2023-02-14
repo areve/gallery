@@ -1,9 +1,11 @@
 <template>
   <AppWindow title="OpenAI" v-model:panelState="openAiPanelState.panel">
-    <button type="button" @click="generateImage()">Generate</button>
-    <button type="button" @click="variationImage()">Variation</button>
-    <button type="button" @click="outpaintImage()">Outpaint</button>
     <textarea type="text" id="prompt" class="prompt" v-model="openAiPanelState.prompt"></textarea>
+    <div>
+      <button type="button" @click="generateImage()">Generate</button>
+      <button type="button" @click="outpaintImage()">Outpaint</button>
+      <button type="button" @click="variationImage()">Variation</button>
+    </div>
   </AppWindow>
 </template>
 
@@ -94,5 +96,6 @@ async function outpaintImage() {
   resize: none;
   width: 100%;
   height: 3.2em;
+  flex: 1 0;
 }
 </style>

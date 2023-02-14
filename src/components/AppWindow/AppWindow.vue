@@ -59,7 +59,7 @@ const zIndex = computed(() => {
   return props.panelState.zIndex;
 });
 const width = computed(() => {
-  if (props.panelState.docked) return "auto";
+  if (props.panelState.docked || props.panelState.rolled) return "auto";
   if (!props.panelState.size && !resizeOrigin) return "auto";
   const size = props.panelState.size ?? {
     x: resizeOrigin!.startWidth,
@@ -68,7 +68,7 @@ const width = computed(() => {
   return size.x + grow.value.x + "px";
 });
 const height = computed(() => {
-  if (props.panelState.docked) return "auto";
+  if (props.panelState.docked || props.panelState.rolled) return "auto";
   if (!props.panelState.size && !resizeOrigin) return "auto";
   const size = props.panelState.size ?? {
     x: resizeOrigin!.startWidth,
@@ -170,6 +170,8 @@ function bringToFront(_event: PointerEvent) {
   box-shadow: 0px 0.25em 0.5em #0007;
   overflow: hidden;
   background-color: #e7e7e7;
+  display: flex;
+  flex-direction: column;
 }
 
 * {
@@ -190,6 +192,8 @@ function bringToFront(_event: PointerEvent) {
 .panel-titlebar {
   background-color: #666;
   padding: 0.25em;
+  min-height: 2.7em;
+  flex: 0 0;
   overflow: hidden;
   display: flex;
 }
@@ -197,6 +201,10 @@ function bringToFront(_event: PointerEvent) {
 .panel-main {
   padding: 0.25em;
   background-color: #e7e7e7;
+  flex: 1 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
 
 .panel-titlebar .title {
@@ -218,7 +226,6 @@ function bringToFront(_event: PointerEvent) {
   background-color: #d0d0d0;
   flex: 0 0;
   min-width: 2rem;
-
   margin-left: 0.25em;
 }
 
