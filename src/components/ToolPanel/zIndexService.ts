@@ -4,12 +4,13 @@ interface ZIndexRegister {
   setZIndex: (zIndex: number) => void;
 }
 
+const maxZIndex = 1000000;
 let registry: ZIndexRegister[] = [];
 
 export function moveToTop(id: string) {
   const found = registry.find((x) => x.id === id)!;
+  found.zIndex = maxZIndex;
   const startIndex = 10;
-  found.zIndex = registry.length + startIndex + 1;
   sortRegistry();
   for (let i = 0; i < registry.length; i++) {
     registry[i].zIndex = startIndex + i;

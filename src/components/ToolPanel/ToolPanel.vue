@@ -6,11 +6,8 @@
     :style="{ top, left, zIndex }"
     @pointerdown="bringToFront"
   >
-    <div class="panel-titlebar" @pointerdown="titlebarDown">
-      <h1 class="title">
-        {{ title }}
-        {{ zIndex }}
-      </h1>
+    <header class="panel-titlebar" @pointerdown="titlebarDown">
+      <h1 class="title">{{ title }}</h1>
       <button
         class="icon-button"
         type="button"
@@ -39,10 +36,10 @@
         <i class="fa-solid fa-close"></i>
         <span class="text">Close</span>
       </button>
-    </div>
-    <div class="panel-main" :class="{ rolled: panelState.rolled }">
+    </header>
+    <main class="panel-main" :class="{ rolled: panelState.rolled }">
       <slot></slot>
-    </div>
+    </main>
   </section>
 </template>
 
@@ -68,7 +65,10 @@ const left = computed(
   () => props.panelState.position.x + origin.value.x + "px"
 );
 const top = computed(() => props.panelState.position.y + origin.value.y + "px");
-const zIndex = computed(() => props.panelState.zIndex);
+const zIndex = computed(() => {
+  if (props.panelState.docked) return 0;
+  return props.panelState.zIndex;
+});
 
 function updatePanelState(value: Partial<PanelState>) {
   emit("update:panelState", cloneExtend(props.panelState, value));
@@ -114,7 +114,7 @@ watchSyncEffect(() => {
 });
 
 function bringToFront(_event: PointerEvent) {
-  //updatePanelState({ zIndex:  });
+  if (props.panelState.docked) return;
   moveToTop(id);
 }
 
