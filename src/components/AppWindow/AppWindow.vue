@@ -75,6 +75,7 @@ const zIndex = computed(() => {
   return props.panelState.zIndex;
 });
 const width = computed(() => {
+  if (props.panelState.docked) return "auto";
   if (!props.panelState.size && !resizeOrigin) return "auto";
   const size = props.panelState.size ?? {
     x: resizeOrigin!.startWidth,
@@ -83,6 +84,7 @@ const width = computed(() => {
   return size.x + grow.value.x + "px";
 });
 const height = computed(() => {
+  if (props.panelState.docked) return "auto";
   if (!props.panelState.size && !resizeOrigin) return "auto";
   const size = props.panelState.size ?? {
     x: resizeOrigin!.startWidth,
