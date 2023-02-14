@@ -3,11 +3,13 @@
     class="panel prevent-select"
     v-if="panelState.visible"
     :class="{ docked: panelState.docked }"
-    :style="{ top, left }"
+    :style="{ top, left, zIndex }"
+    @pointerdown="bringToFront"
   >
-    <div class="panel-titlebar" @pointerdown="pointerDown">
+    <div class="panel-titlebar" @pointerdown="titlebarDown">
       <h1 class="title">
         {{ title }}
+        {{ zIndex }}
       </h1>
       <button
         class="icon-button"
@@ -48,8 +50,11 @@
 import type { Coord } from "@/interfaces/Coord";
 import { cloneExtend } from "@/lib/utils";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
-import { computed, ref, watchSyncEffect } from "vue";
+import { computed, onMounted, ref, watchSyncEffect } from "vue";
 import type { PanelState } from "../EditorApp/panelStates";
+import { moveToTop, registerZIndex } from "./zIndexService";
+import { v4 as uuid } from "uuid";
+
 interface Props {
   title: string;
   panelState: PanelState;
@@ -63,12 +68,21 @@ const left = computed(
   () => props.panelState.position.x + origin.value.x + "px"
 );
 const top = computed(() => props.panelState.position.y + origin.value.y + "px");
+const zIndex = computed(() => props.panelState.zIndex);
 
 function updatePanelState(value: Partial<PanelState>) {
   emit("update:panelState", cloneExtend(props.panelState, value));
 }
 
 let dragOrigin: (Coord & { originX: number; originY: number }) | null = null;
+
+const id = uuid();
+
+onMounted(() => {
+  registerZIndex(id, props.panelState.zIndex, (zIndex) => {
+    updatePanelState({ zIndex });
+  });
+});
 
 watchSyncEffect(() => {
   if (!pointerUpEvent.value) return;
@@ -99,7 +113,12 @@ watchSyncEffect(() => {
   origin.value.y = dy;
 });
 
-function pointerDown(event: PointerEvent) {
+function bringToFront(_event: PointerEvent) {
+  //updatePanelState({ zIndex:  });
+  moveToTop(id);
+}
+
+function titlebarDown(event: PointerEvent) {
   dragOrigin = {
     x: event.pageX,
     y: event.pageY,

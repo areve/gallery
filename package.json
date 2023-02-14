@@ -32,6 +32,7 @@
     "@types/express": "^4.17.15",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.12",
+    "@types/uuid": "^9.0.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.0",
