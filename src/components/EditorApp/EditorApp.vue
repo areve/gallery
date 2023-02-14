@@ -8,7 +8,7 @@
       </div>
       <ArtworkSettingsPanel />
       <AppSettings />
-      <ScaleToolPanel />
+      <ScalePanel />
       <OpenAiPanel />
       <ToolBar />
       <StatusBar />
@@ -26,7 +26,7 @@ import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
 import AppSettings from "@/components/EditorApp/AppSettings.vue";
 import TopMenu from "@/components/Menu/TopMenu.vue";
 import GalleryPanel from "@/components/Gallery/GalleryPanel.vue";
-import ToolBar from "@/components/Toolbar/ToolBar.vue";
+import ToolBar from "../ToolBar/ToolBar.vue";
 import PencilPanel from "@/components/Brush/PencilPanel.vue";
 
 import { watch } from "vue";
@@ -44,7 +44,7 @@ import { panelStates } from "@/components/EditorApp/panelStates";
 import artboardService from "@/components/Artboard/artboardService";
 import type { Artwork } from "@/interfaces/Artwork";
 import StatusBar from "@/components/EditorApp/StatusBar.vue";
-import ScaleToolPanel from "@/components/Scale/ScaleToolPanel.vue";
+import ScalePanel from "@/components/Scale/ScaleToolPanel.vue";
 import { openAiPanelState } from "@/components/OpenAi/openAiPanelState";
 
 // IDEA make it possible to select multiple images and delete them

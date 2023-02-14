@@ -1,5 +1,5 @@
 <template>
-  <ToolPanel title="OpenAI" v-model:panelState="openAiPanelState.panel">
+  <AppWindow title="OpenAI" v-model:panelState="openAiPanelState.panel">
     <button type="button" @click="generateImage()">Generate</button>
     <button type="button" @click="variationImage()">Variation</button>
     <button type="button" @click="outpaintImage()">Outpaint</button>
@@ -9,7 +9,7 @@
       class="prompt"
       v-model="openAiPanelState.prompt"
     ></textarea>
-  </ToolPanel>
+  </AppWindow>
 </template>
 
 <script lang="ts" setup>
@@ -23,7 +23,7 @@ import galleryApi from "@/components/Gallery/galleryApi";
 import openAiService from "@/components/OpenAi/openAiService";
 import { clone } from "lodash";
 import { openAiPanelState } from "@/components/OpenAi/openAiPanelState";
-import ToolPanel from "../ToolPanel/ToolPanel.vue";
+import AppWindow from "../AppWindow/AppWindow.vue";
 
 async function generateImage() {
   await openAiService.generate({

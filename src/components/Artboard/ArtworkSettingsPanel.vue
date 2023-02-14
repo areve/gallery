@@ -1,5 +1,5 @@
 <template>
-  <ToolPanel
+  <AppWindow
     title="Artwork Settings"
     v-model:panelState="panelStates.artworkSettings"
   >
@@ -26,7 +26,7 @@
     >
       <i class="fa-solid fa-floppy-disk"></i> Save
     </button>
-  </ToolPanel>
+  </AppWindow>
 </template>
 
 <script lang="ts" setup>
@@ -37,7 +37,7 @@ import {
   saveGalleryItem,
 } from "@/components/Gallery/galleryService";
 import { computed } from "vue";
-import ToolPanel from "../ToolPanel/ToolPanel.vue";
+import AppWindow from "../AppWindow/AppWindow.vue";
 
 const metadataAsJson = computed(() =>
   JSON.stringify(artboardService.artwork.value.metadata)

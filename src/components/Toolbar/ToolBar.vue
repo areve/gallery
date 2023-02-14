@@ -1,5 +1,5 @@
 <template>
-  <ToolPanel title="Toolbar" v-model:panelState="toolbarState.panel">
+  <AppWindow title="Toolbar" v-model:panelState="toolbarState.panel">
     <section class="tool-panel">
       <h3>Tool</h3>
       <button
@@ -66,7 +66,7 @@
       <label for="brushColor">Colour</label>
       <input type="color" id="brushColor" v-model="brushToolState.brushColor" />
     </section>
-  </ToolPanel>
+  </AppWindow>
 </template>
 
 <script lang="ts" setup>
@@ -76,7 +76,7 @@ import { eraserToolState } from "@/components/Eraser/eraserToolState";
 import { toolbarState } from "@/components/ToolBar/toolBarState";
 import type { MenuItem } from "../Menu/MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";
-import ToolPanel from "../ToolPanel/ToolPanel.vue";
+import AppWindow from "../AppWindow/AppWindow.vue";
 
 const toolsMenu: MenuItem[] = [
   {
