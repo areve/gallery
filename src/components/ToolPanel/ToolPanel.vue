@@ -136,10 +136,10 @@ function titlebarDown(event: PointerEvent) {
 }
 
 .panel-titlebar {
-  background-color: #d0d0d0;
-  text-align: right;
+  background-color: #666;
   padding: 0.25em;
   overflow: hidden;
+  display: flex;
 }
 
 .panel-main {
@@ -151,6 +151,10 @@ function titlebarDown(event: PointerEvent) {
   font-weight: normal;
   float: left;
   margin-right: 1em;
+  white-space: nowrap;
+  flex: 1 0;
+  font-style: italic;
+  color: #ddd;
 }
 
 .icon-button {
@@ -159,6 +163,10 @@ function titlebarDown(event: PointerEvent) {
   height: 2rem;
   padding: 0;
   background-color: #d0d0d0;
+  flex: 0 0;
+  min-width: 2rem;
+  
+  margin-left: 0.25em;
 }
 
 .icon-button .text {
