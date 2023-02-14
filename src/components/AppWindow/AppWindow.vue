@@ -7,14 +7,14 @@
     @pointerdown="bringToFront"
     ref="panel"
   >
-    <div v-if="!panelState.rolled" class="resize-handle bottom" @pointerdown="resizeStart($event, 'bottom')"></div>
-    <div v-if="!panelState.rolled" class="resize-handle right" @pointerdown="resizeStart($event, 'right')"></div>
-    <div v-if="!panelState.rolled" class="resize-handle left" @pointerdown="resizeStart($event, 'left')"></div>
-    <div v-if="!panelState.rolled" class="resize-handle top" @pointerdown="resizeStart($event, 'top')"></div>
-    <div v-if="!panelState.rolled" class="resize-handle top-left" @pointerdown="resizeStart($event, 'top-left')"></div>
-    <div v-if="!panelState.rolled" class="resize-handle top-right" @pointerdown="resizeStart($event, 'top-right')"></div>
-    <div v-if="!panelState.rolled" class="resize-handle bottom-left" @pointerdown="resizeStart($event, 'bottom-left')"></div>
-    <div v-if="!panelState.rolled" class="resize-handle bottom-right" @pointerdown="resizeStart($event, 'bottom-right')"></div>
+    <div v-if="!panelState.rolled && !panelState.docked" class="resize-handle bottom" @pointerdown="resizeStart($event, 'bottom')"></div>
+    <div v-if="!panelState.rolled && !panelState.docked" class="resize-handle right" @pointerdown="resizeStart($event, 'right')"></div>
+    <div v-if="!panelState.rolled && !panelState.docked" class="resize-handle left" @pointerdown="resizeStart($event, 'left')"></div>
+    <div v-if="!panelState.rolled && !panelState.docked" class="resize-handle top" @pointerdown="resizeStart($event, 'top')"></div>
+    <div v-if="!panelState.rolled && !panelState.docked" class="resize-handle top-left" @pointerdown="resizeStart($event, 'top-left')"></div>
+    <div v-if="!panelState.rolled && !panelState.docked" class="resize-handle top-right" @pointerdown="resizeStart($event, 'top-right')"></div>
+    <div v-if="!panelState.rolled && !panelState.docked" class="resize-handle bottom-left" @pointerdown="resizeStart($event, 'bottom-left')"></div>
+    <div v-if="!panelState.rolled && !panelState.docked" class="resize-handle bottom-right" @pointerdown="resizeStart($event, 'bottom-right')"></div>
     <header class="panel-titlebar" @pointerdown="dragStart">
       <h1 class="title">{{ title }}</h1>
       <button class="icon-button" type="button" @click="updatePanelState({ docked: !panelState.docked })" v-if="!panelState.rolled">
