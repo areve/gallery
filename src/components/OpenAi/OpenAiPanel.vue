@@ -3,20 +3,12 @@
     <button type="button" @click="generateImage()">Generate</button>
     <button type="button" @click="variationImage()">Variation</button>
     <button type="button" @click="outpaintImage()">Outpaint</button>
-    <textarea
-      type="text"
-      id="prompt"
-      class="prompt"
-      v-model="openAiPanelState.prompt"
-    ></textarea>
+    <textarea type="text" id="prompt" class="prompt" v-model="openAiPanelState.prompt"></textarea>
   </AppWindow>
 </template>
 
 <script lang="ts" setup>
-import {
-  cloneContext,
-  createContextFromImage,
-} from "@/lib/canvas/canvas-utils";
+import { cloneContext, createContextFromImage } from "@/lib/canvas/canvas-utils";
 import artboardService from "@/components/Artboard/artboardService";
 import compositionService, { createLayer } from "@/lib/canvas/composition";
 import galleryApi from "@/components/Gallery/galleryApi";
@@ -52,10 +44,8 @@ async function outpaintImage() {
   const compositionRequired =
     artboardService.artwork.value.frame.height !== 1024 ||
     artboardService.artwork.value.frame.width !== 1024 ||
-    artboardService.artwork.value.frame.width !==
-      artboardService.artwork.value.bounds.width ||
-    artboardService.artwork.value.frame.height !==
-      artboardService.artwork.value.bounds.height;
+    artboardService.artwork.value.frame.width !== artboardService.artwork.value.bounds.width ||
+    artboardService.artwork.value.frame.height !== artboardService.artwork.value.bounds.height;
 
   const compositionData = compositionRequired
     ? {

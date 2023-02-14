@@ -36,10 +36,7 @@ import { rgb2rybEffect, ryb2rgbEffect } from "@/lib/rgba/rgba-effects-ryb2rgb";
 import { allWhiteEffect } from "@/lib/rgba/rgba-effects-all-white";
 
 import { onApplyEffect, onAction } from "@/components/EditorApp/appActions";
-import {
-  selectedItem,
-  updateGalleryItem,
-} from "@/components/Gallery/galleryService";
+import { selectedItem, updateGalleryItem } from "@/components/Gallery/galleryService";
 import { panelStates } from "@/components/EditorApp/panelStates";
 import artboardService from "@/components/Artboard/artboardService";
 import type { Artwork } from "@/interfaces/Artwork";
@@ -64,14 +61,10 @@ watch(onAction, (action) => {
 });
 
 watch(onApplyEffect, (action) => {
-  if (action.type === "shotgun")
-    shotgunEffect(artboardService.artwork.value.rgbaLayer);
-  if (action.type === "ryb2rgb")
-    ryb2rgbEffect(artboardService.artwork.value.rgbaLayer);
-  if (action.type === "rgb2ryb")
-    rgb2rybEffect(artboardService.artwork.value.rgbaLayer);
-  if (action.type === "all-white")
-    allWhiteEffect(artboardService.artwork.value.rgbaLayer);
+  if (action.type === "shotgun") shotgunEffect(artboardService.artwork.value.rgbaLayer);
+  if (action.type === "ryb2rgb") ryb2rgbEffect(artboardService.artwork.value.rgbaLayer);
+  if (action.type === "rgb2ryb") rgb2rybEffect(artboardService.artwork.value.rgbaLayer);
+  if (action.type === "all-white") allWhiteEffect(artboardService.artwork.value.rgbaLayer);
 });
 
 watch(selectedItem, (artwork) => artwork && galleryItemSelected(artwork));

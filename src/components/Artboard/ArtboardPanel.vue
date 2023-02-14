@@ -4,10 +4,7 @@
       <div
         class="artboard"
         :style="{
-          'aspect-ratio':
-            artboardService.artwork.value.bounds.width +
-            ' / ' +
-            artboardService.artwork.value.bounds.height,
+          'aspect-ratio': artboardService.artwork.value.bounds.width + ' / ' + artboardService.artwork.value.bounds.height,
         }"
       >
         <canvas ref="canvas" class="canvas"></canvas>
@@ -20,9 +17,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, watchSyncEffect } from "vue";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
-import artboardService, {
-  resetArtwork,
-} from "@/components/Artboard/artboardService";
+import artboardService, { resetArtwork } from "@/components/Artboard/artboardService";
 import { useBrushTool } from "@/components/Brush/brushTool";
 import { useArtboardMoveTool } from "@/components/Artboard/artboardMoveTool";
 import { useArtboardFrameTool } from "@/components/Artboard/artboardFrameTool";
@@ -32,42 +27,27 @@ import { toolbarState } from "@/components/ToolBar/toolBarState";
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
 
-const tools = [
-  useBrushTool(),
-  useArtboardMoveTool(),
-  useArtboardFrameTool(),
-  useEraserTool(),
-];
+const tools = [useBrushTool(), useArtboardMoveTool(), useArtboardFrameTool(), useEraserTool()];
 
 function selectedTool() {
-  return (
-    tools.find((tool) => tool.toolType == toolbarState.value.toolSelected) ??
-    tools[0]
-  );
+  return tools.find((tool) => tool.toolType == toolbarState.value.toolSelected) ?? tools[0];
 }
 
 onMounted(async () => {
   artboardService.artwork.value.context = canvas.value.getContext("2d", {
     willReadFrequently: true,
   }) as CanvasRenderingContext2D;
-  artboardService.artwork.value.overlayContext = overlayCanvas.value.getContext(
-    "2d",
-    { willReadFrequently: true }
-  ) as CanvasRenderingContext2D;
+  artboardService.artwork.value.overlayContext = overlayCanvas.value.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
   resetArtwork();
 });
 
 watchSyncEffect(() => {
   if (!artboardService.artwork.value.context) return;
   if (!artboardService.artwork.value.overlayContext) return;
-  artboardService.artwork.value.context.canvas.height =
-    artboardService.artwork.value.bounds.height;
-  artboardService.artwork.value.context.canvas.width =
-    artboardService.artwork.value.bounds.width;
-  artboardService.artwork.value.overlayContext.canvas.height =
-    artboardService.artwork.value.bounds.height;
-  artboardService.artwork.value.overlayContext.canvas.width =
-    artboardService.artwork.value.bounds.width;
+  artboardService.artwork.value.context.canvas.height = artboardService.artwork.value.bounds.height;
+  artboardService.artwork.value.context.canvas.width = artboardService.artwork.value.bounds.width;
+  artboardService.artwork.value.overlayContext.canvas.height = artboardService.artwork.value.bounds.height;
+  artboardService.artwork.value.overlayContext.canvas.width = artboardService.artwork.value.bounds.width;
 });
 
 watchSyncEffect(() => {
@@ -129,10 +109,8 @@ render();
   aspect-ratio: 1024 / 1024;
 
   background-color: #f7f7f7;
-  background-image: linear-gradient(45deg, #ddd 25%, transparent 25%),
-    linear-gradient(135deg, #ddd 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #ddd 75%),
-    linear-gradient(135deg, transparent 75%, #ddd 75%);
+  background-image: linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(135deg, #ddd 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(135deg, transparent 75%, #ddd 75%);
   background-size: 20px 20px;
   background-position: 0 0, 10px 0, 10px -10px, 0px 10px;
   background-repeat: repeat;

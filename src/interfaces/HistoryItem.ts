@@ -1,8 +1,4 @@
-export type HistoryItem =
-  | HistoryItemGeneration
-  | HistoryItemEdit
-  | HistoryItemVariation
-  | HistoryItemComposition;
+export type HistoryItem = HistoryItemGeneration | HistoryItemEdit | HistoryItemVariation | HistoryItemComposition;
 
 export interface HistoryItemComposition {
   method: "composition";

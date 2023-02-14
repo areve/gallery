@@ -13,9 +13,7 @@ editorRoutes.use(bodyParser.json({ limit: "200mb" }));
 
 editorRoutes.post("/saveImage", async (req, res) => {
   const metadata = req.body.metadata || { history: [] };
-  metadata.history = Array.isArray(metadata.history)
-    ? metadata.history
-    : [metadata.history];
+  metadata.history = Array.isArray(metadata.history) ? metadata.history : [metadata.history];
 
   const pngData = req.body.image.replace("data:image/png;base64,", "");
   const filename = sanitize(req.body.filename);
@@ -36,10 +34,7 @@ editorRoutes.post("/deleteImage", async (req, res) => {
   const filename = sanitize(req.body.filename);
 
   if (config.debug) console.debug(`delete image: ${filename}`);
-  fs.renameSync(
-    `${config.downloadsDir}/${filename}`,
-    `${config.deletedDir}/${filename}`
-  );
+  fs.renameSync(`${config.downloadsDir}/${filename}`, `${config.deletedDir}/${filename}`);
 
   res.json({
     filename,

@@ -1,17 +1,9 @@
 import { clone, rectanglesIntersect } from "@/lib/utils";
-import {
-  cloneContext,
-  createContext,
-  autoCropImage,
-} from "@/lib/canvas/canvas-utils";
+import { cloneContext, createContext, autoCropImage } from "@/lib/canvas/canvas-utils";
 import { ref, watchPostEffect } from "vue";
 import type { Artwork, ArtworkActive } from "@/interfaces/Artwork";
 import { usePersistentState } from "../../services/persistenceService";
-import {
-  loadGalleryItem,
-  saveGalleryItem,
-  updateGalleryItem,
-} from "@/components/Gallery/galleryService";
+import { loadGalleryItem, saveGalleryItem, updateGalleryItem } from "@/components/Gallery/galleryService";
 
 const artwork = ref<ArtworkActive>({
   status: "ready",
@@ -45,25 +37,10 @@ function resetFrame() {
 }
 
 function renderOverlay() {
-  artwork.value.overlayContext.clearRect(
-    0,
-    0,
-    artwork.value.bounds.width,
-    artwork.value.bounds.height
-  );
+  artwork.value.overlayContext.clearRect(0, 0, artwork.value.bounds.width, artwork.value.bounds.height);
   artwork.value.overlayContext.fillStyle = "#77777777";
-  artwork.value.overlayContext.fillRect(
-    0,
-    0,
-    artwork.value.bounds.width,
-    artwork.value.bounds.height
-  );
-  artwork.value.overlayContext.clearRect(
-    artwork.value.frame.x,
-    artwork.value.frame.y,
-    artwork.value.frame.width,
-    artwork.value.frame.height
-  );
+  artwork.value.overlayContext.fillRect(0, 0, artwork.value.bounds.width, artwork.value.bounds.height);
+  artwork.value.overlayContext.clearRect(artwork.value.frame.x, artwork.value.frame.y, artwork.value.frame.width, artwork.value.frame.height);
 }
 
 export function render() {
@@ -120,12 +97,7 @@ export function resetArtwork() {
   const [width, height] = [1024, 1024];
   artwork.value.bounds.width = width;
   artwork.value.bounds.height = height;
-  artwork.value.context.clearRect(
-    0,
-    0,
-    artwork.value.context.canvas.width,
-    artwork.value.context.canvas.height
-  );
+  artwork.value.context.clearRect(0, 0, artwork.value.context.canvas.width, artwork.value.context.canvas.height);
 
   resetRgbaLayer();
 
@@ -140,26 +112,12 @@ async function scale(by: number) {
   if (artwork.value.bounds.width <= 1 && by < 1) return;
   if (artwork.value.bounds.width >= 5120 && by > 1) return;
   const clone = cloneContext(artwork.value.context);
-  artwork.value.context.clearRect(
-    0,
-    0,
-    artwork.value.context.canvas.width,
-    artwork.value.context.canvas.height
-  );
+  artwork.value.context.clearRect(0, 0, artwork.value.context.canvas.width, artwork.value.context.canvas.height);
   artwork.value.bounds.width = Math.min(5120, artwork.value.bounds.width * by);
-  artwork.value.bounds.height = Math.min(
-    5120,
-    artwork.value.bounds.height * by
-  );
+  artwork.value.bounds.height = Math.min(5120, artwork.value.bounds.height * by);
   const dx = (artwork.value.bounds.width - clone.canvas.width) / 2;
   const dy = (artwork.value.bounds.width - clone.canvas.width) / 2;
-  artwork.value.context.drawImage(
-    clone.canvas,
-    dx,
-    dy,
-    clone.canvas.width,
-    clone.canvas.height
-  );
+  artwork.value.context.drawImage(clone.canvas, dx, dy, clone.canvas.width, clone.canvas.height);
 
   const scaleArtwork_keepFrameSize = false;
   if (scaleArtwork_keepFrameSize) {
@@ -222,12 +180,7 @@ async function load(item: Artwork) {
   const artworkImage = await loadGalleryItem(item);
   artwork.value.bounds.width = artworkImage.image.width;
   artwork.value.bounds.height = artworkImage.image.height;
-  artwork.value.context.clearRect(
-    0,
-    0,
-    artwork.value.context.canvas.width,
-    artwork.value.context.canvas.height
-  );
+  artwork.value.context.clearRect(0, 0, artwork.value.context.canvas.width, artwork.value.context.canvas.height);
 
   resetFrame();
 

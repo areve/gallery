@@ -2,98 +2,58 @@
   <div :hidden="!panelStates.pencil.visible" class="pencil-panel">
     <div
       class="pencil red"
-      @click="
-        (brushToolState.brushColor = 'red'),
-          (toolbarState.toolSelected = 'pencil')
-      "
+      @click="(brushToolState.brushColor = 'red'), (toolbarState.toolSelected = 'pencil')"
       :class="{
-        selected:
-          brushToolState.brushColor === 'red' &&
-          toolbarState.toolSelected === 'pencil',
+        selected: brushToolState.brushColor === 'red' && toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil orange"
-      @click="
-        (brushToolState.brushColor = 'orange'),
-          (toolbarState.toolSelected = 'pencil')
-      "
+      @click="(brushToolState.brushColor = 'orange'), (toolbarState.toolSelected = 'pencil')"
       :class="{
-        selected:
-          brushToolState.brushColor === 'orange' &&
-          toolbarState.toolSelected === 'pencil',
+        selected: brushToolState.brushColor === 'orange' && toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil yellow"
-      @click="
-        (brushToolState.brushColor = 'yellow'),
-          (toolbarState.toolSelected = 'pencil')
-      "
+      @click="(brushToolState.brushColor = 'yellow'), (toolbarState.toolSelected = 'pencil')"
       :class="{
-        selected:
-          brushToolState.brushColor === 'yellow' &&
-          toolbarState.toolSelected === 'pencil',
+        selected: brushToolState.brushColor === 'yellow' && toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil green"
-      @click="
-        (brushToolState.brushColor = 'green'),
-          (toolbarState.toolSelected = 'pencil')
-      "
+      @click="(brushToolState.brushColor = 'green'), (toolbarState.toolSelected = 'pencil')"
       :class="{
-        selected:
-          brushToolState.brushColor === 'green' &&
-          toolbarState.toolSelected === 'pencil',
+        selected: brushToolState.brushColor === 'green' && toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil blue"
-      @click="
-        (brushToolState.brushColor = 'blue'),
-          (toolbarState.toolSelected = 'pencil')
-      "
+      @click="(brushToolState.brushColor = 'blue'), (toolbarState.toolSelected = 'pencil')"
       :class="{
-        selected:
-          brushToolState.brushColor === 'blue' &&
-          toolbarState.toolSelected === 'pencil',
+        selected: brushToolState.brushColor === 'blue' && toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil purple"
-      @click="
-        (brushToolState.brushColor = 'purple'),
-          (toolbarState.toolSelected = 'pencil')
-      "
+      @click="(brushToolState.brushColor = 'purple'), (toolbarState.toolSelected = 'pencil')"
       :class="{
-        selected:
-          brushToolState.brushColor === 'purple' &&
-          toolbarState.toolSelected === 'pencil',
+        selected: brushToolState.brushColor === 'purple' && toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil black"
-      @click="
-        (brushToolState.brushColor = 'black'),
-          (toolbarState.toolSelected = 'pencil')
-      "
+      @click="(brushToolState.brushColor = 'black'), (toolbarState.toolSelected = 'pencil')"
       :class="{
-        selected:
-          brushToolState.brushColor === 'black' &&
-          toolbarState.toolSelected === 'pencil',
+        selected: brushToolState.brushColor === 'black' && toolbarState.toolSelected === 'pencil',
       }"
     ></div>
     <div
       class="pencil white"
-      @click="
-        (brushToolState.brushColor = 'white'),
-          (toolbarState.toolSelected = 'pencil')
-      "
+      @click="(brushToolState.brushColor = 'white'), (toolbarState.toolSelected = 'pencil')"
       :class="{
-        selected:
-          brushToolState.brushColor === 'white' &&
-          toolbarState.toolSelected === 'pencil',
+        selected: brushToolState.brushColor === 'white' && toolbarState.toolSelected === 'pencil',
       }"
     ></div>
   </div>
@@ -148,9 +108,7 @@ import { toolbarState } from "@/components/ToolBar/toolBarState";
   display: block;
   background-image: url("@/assets/pencil.png");
   width: calc(var(--pencil-image-width-px) * var(--scale-factor));
-  height: calc(
-    var(--tip-size) * var(--pencil-image-height-px) * var(--scale-factor)
-  );
+  height: calc(var(--tip-size) * var(--pencil-image-height-px) * var(--scale-factor));
   background-image: url("@/assets/pencil.png");
   background-size: var(--pencil-width-px);
   background-position: 0px 0px;
@@ -161,20 +119,11 @@ import { toolbarState } from "@/components/ToolBar/toolBarState";
   content: "";
   display: block;
   width: calc(var(--pencil-image-width-px) * var(--scale-factor));
-  height: calc(
-    var(--body-size) * var(--pencil-image-height-px) * var(--scale-factor)
-  );
-  top: calc(
-    (var(--tip-size) + var(--wood-size)) * var(--pencil-image-height-px) *
-      var(--scale-factor)
-  );
+  height: calc(var(--body-size) * var(--pencil-image-height-px) * var(--scale-factor));
+  top: calc((var(--tip-size) + var(--wood-size)) * var(--pencil-image-height-px) * var(--scale-factor));
   background-image: url("@/assets/pencil.png");
   background-size: var(--pencil-width-px);
-  background-position: 0px
-    calc(
-      0px - (var(--tip-size) + var(--wood-size)) * var(--pencil-image-height-px) *
-        var(--scale-factor)
-    );
+  background-position: 0px calc(0px - (var(--tip-size) + var(--wood-size)) * var(--pencil-image-height-px) * var(--scale-factor));
 }
 
 .pencil.red::before,

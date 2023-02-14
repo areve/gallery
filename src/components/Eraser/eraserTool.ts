@@ -26,12 +26,7 @@ function pointerDown(pointerEvent: PointerEvent) {
     y: pointerEvent.pageY,
   });
 
-  clearCircle(
-    artboardService.artwork.value.rgbaLayer,
-    canvasPoint.x,
-    canvasPoint.y,
-    eraserToolState.value.eraserSize / 2
-  );
+  clearCircle(artboardService.artwork.value.rgbaLayer, canvasPoint.x, canvasPoint.y, eraserToolState.value.eraserSize / 2);
 }
 
 function pointerMove(pointerEvents: PointerEvent) {

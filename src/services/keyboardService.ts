@@ -138,9 +138,7 @@ const Key: { [key: string]: number } = {
 };
 
 function getKeyCode(value: string) {
-  const key = Object.keys(Key).find(
-    (key) => key.toLowerCase() === value.toLowerCase()
-  );
+  const key = Object.keys(Key).find((key) => key.toLowerCase() === value.toLowerCase());
   return key ? Key[key] : undefined;
 }
 

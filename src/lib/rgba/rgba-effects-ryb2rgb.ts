@@ -11,12 +11,7 @@ export function ryb2rgbEffect(rgbaLayer: RgbaLayer) {
   rgbaLayer.modified = new Date();
 }
 
-export function pixelEffect(
-  data: Float32Array,
-  width: number,
-  height: number,
-  func: (rgb: [number, number, number]) => [number, number, number]
-) {
+export function pixelEffect(data: Float32Array, width: number, height: number, func: (rgb: [number, number, number]) => [number, number, number]) {
   const last = width * height * 4;
   for (let i = 0; i < last; i += 4) {
     const [r, g, b] = func([data[i], data[i + 1], data[i + 2]]);

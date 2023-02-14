@@ -1,8 +1,4 @@
-import type {
-  Artwork,
-  ArtworkOnCanvas,
-  ArtworkInMemory,
-} from "@/interfaces/Artwork";
+import type { Artwork, ArtworkOnCanvas, ArtworkInMemory } from "@/interfaces/Artwork";
 import { clone } from "@/lib/utils";
 import { ref } from "vue";
 import galleryApi from "./galleryApi";
@@ -25,13 +21,9 @@ export async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
 }
 
 export async function deleteGalleryItem(item: Artwork) {
-  const itemToDelete = clone(
-    galleryItems.value.filter((i) => i.filename === item.filename)[0]
-  );
+  const itemToDelete = clone(galleryItems.value.filter((i) => i.filename === item.filename)[0]);
   if (itemToDelete.status === "error") {
-    galleryItems.value = galleryItems.value.filter(
-      (i) => i.filename !== itemToDelete.filename
-    );
+    galleryItems.value = galleryItems.value.filter((i) => i.filename !== itemToDelete.filename);
   } else {
     itemToDelete.status = "waiting";
     updateGalleryItem(itemToDelete);
@@ -39,9 +31,7 @@ export async function deleteGalleryItem(item: Artwork) {
     if (result.status === "error") {
       updateGalleryItem(result);
     } else {
-      galleryItems.value = galleryItems.value.filter(
-        (i) => i.filename !== result.filename
-      );
+      galleryItems.value = galleryItems.value.filter((i) => i.filename !== result.filename);
     }
   }
 }
@@ -51,12 +41,8 @@ export async function loadGalleryItem(item: Artwork) {
 }
 
 export function updateGalleryItem(updatedItem: Artwork) {
-  if (
-    galleryItems.value.find((item) => item.filename === updatedItem.filename)
-  ) {
-    galleryItems.value = galleryItems.value.map((item) =>
-      item.filename === updatedItem.filename ? updatedItem : item
-    );
+  if (galleryItems.value.find((item) => item.filename === updatedItem.filename)) {
+    galleryItems.value = galleryItems.value.map((item) => (item.filename === updatedItem.filename ? updatedItem : item));
   } else {
     galleryItems.value = [updatedItem, ...galleryItems.value];
   }

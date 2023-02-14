@@ -58,8 +58,7 @@ export function readMetadata(filePath: string) {
 export function setMetadata(filePath: string, metadata: Metadata) {
   const savedMetadata = readMetadata(filePath);
   const newMetadata = Object.assign({}, savedMetadata, metadata);
-  if (JSON.stringify(newMetadata) === JSON.stringify(savedMetadata))
-    return false;
+  if (JSON.stringify(newMetadata) === JSON.stringify(savedMetadata)) return false;
 
   const file = png.readFileSync(filePath);
   const chunks = png.splitChunk(file);
@@ -74,15 +73,10 @@ export function setMetadata(filePath: string, metadata: Metadata) {
   const iend = newChunks.pop();
   for (const key in newMetadata) {
     if (newMetadata[key]) {
-      const values = Array.isArray(newMetadata[key])
-        ? newMetadata[key]
-        : [newMetadata[key]];
+      const values = Array.isArray(newMetadata[key]) ? newMetadata[key] : [newMetadata[key]];
       values.forEach((value) => {
         if (typeof value === "object") {
-          const newChunk = png.createChunk(
-            "tEXt",
-            `${key}\0${JSON.stringify(value)}`
-          );
+          const newChunk = png.createChunk("tEXt", `${key}\0${JSON.stringify(value)}`);
           newChunks.push(newChunk);
         } else {
           const newChunk = png.createChunk("tEXt", `${key}\0${value}`);

@@ -1,28 +1,15 @@
-import type {
-  ArtworkDeleted,
-  ArtworkOnCanvas,
-  ArtworkError,
-  ArtworkInMemory,
-  Artwork,
-  ArtworkImage,
-  ArtworkWithDatesAsIso,
-} from "@/interfaces/Artwork";
+import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage, ArtworkWithDatesAsIso } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import axios, { type AxiosResponse } from "axios";
 
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   let response: AxiosResponse<ArtworkWithDatesAsIso>;
   try {
-    response = await axios.post<ArtworkWithDatesAsIso>(
-      "/api/editor/saveImage",
-      {
-        image:
-          (item as ArtworkInMemory).dataUrl ||
-          (item as ArtworkOnCanvas).context.canvas.toDataURL(),
-        filename: item.filename,
-        metadata: item.metadata,
-      }
-    );
+    response = await axios.post<ArtworkWithDatesAsIso>("/api/editor/saveImage", {
+      image: (item as ArtworkInMemory).dataUrl || (item as ArtworkOnCanvas).context.canvas.toDataURL(),
+      filename: item.filename,
+      metadata: item.metadata,
+    });
   } catch (e) {
     const result: ArtworkError = {
       status: "error",
@@ -56,16 +43,9 @@ async function getGallery(): Promise<Artwork[]> {
 }
 
 async function getGalleryItem(filename: string): Promise<ArtworkImage> {
-  const imagePromise = loadImage(
-    `/downloads/${filename}?${new Date().toISOString()}`
-  );
-  const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(
-    `/api/gallery/${filename}`
-  );
-  const [image, artworkResponse] = await Promise.all([
-    imagePromise,
-    artworkResponsePromise,
-  ]);
+  const imagePromise = loadImage(`/downloads/${filename}?${new Date().toISOString()}`);
+  const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(`/api/gallery/${filename}`);
+  const [image, artworkResponse] = await Promise.all([imagePromise, artworkResponsePromise]);
   const artwork = artworkResponse.data;
   const result = clone(artwork) as any as ArtworkImage;
   result.image = image;

@@ -10,7 +10,5 @@ export function usePersistentState(key: string, state: Ref) {
   const loadedValue = window.localStorage.getItem(key);
   if (loadedValue) state.value = JSON.parse(loadedValue);
 
-  watchSyncEffect(() =>
-    window.localStorage.setItem(key, JSON.stringify(state.value))
-  );
+  watchSyncEffect(() => window.localStorage.setItem(key, JSON.stringify(state.value)));
 }

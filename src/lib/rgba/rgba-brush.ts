@@ -30,14 +30,7 @@ export function makeBrush(radius: number) {
   };
 }
 
-export async function brushApply(
-  rgbaLayer: RgbaLayer,
-  from: Coord | null,
-  to: Coord,
-  brush: Brush,
-  color: RgbaColor,
-  weight: number
-) {
+export async function brushApply(rgbaLayer: RgbaLayer, from: Coord | null, to: Coord, brush: Brush, color: RgbaColor, weight: number) {
   if (from) {
     brushLine(rgbaLayer, from, to, brush, color, weight);
   } else {
@@ -45,14 +38,7 @@ export async function brushApply(
   }
 }
 
-function brushLine(
-  rgbaLayer: RgbaLayer,
-  from: Coord,
-  to: Coord,
-  brush: Brush,
-  color: RgbaColor,
-  weight: number
-) {
+function brushLine(rgbaLayer: RgbaLayer, from: Coord, to: Coord, brush: Brush, color: RgbaColor, weight: number) {
   const dx = from.x - to.x;
   const dy = from.y - to.y;
   const d = Math.sqrt(dy * dy + dx * dx);
@@ -66,13 +52,7 @@ function brushLine(
   rgbaLayer.modified = new Date();
 }
 
-function brushPoint(
-  rgbaLayer: RgbaLayer,
-  to: Coord,
-  brush: Brush,
-  color: RgbaColor,
-  weight: number
-) {
+function brushPoint(rgbaLayer: RgbaLayer, to: Coord, brush: Brush, color: RgbaColor, weight: number) {
   const brushHeight = brush.height;
   const brushWidth = brush.width;
   const brushData = brush.data;
@@ -84,12 +64,7 @@ function brushPoint(
       const pixelY = y + bY - brushHeight / 2;
       const pixelX = x + bX - brushWidth / 2;
 
-      if (
-        pixelY >= 0 &&
-        pixelY <= rgbaLayer.height &&
-        pixelX >= 0 &&
-        pixelX <= width
-      ) {
+      if (pixelY >= 0 && pixelY <= rgbaLayer.height && pixelX >= 0 && pixelX <= width) {
         const dataR = (width * pixelY + pixelX) * 4;
         const [dataG, dataB, dataA] = [dataR + 1, dataR + 2, dataR + 3];
 
@@ -97,12 +72,7 @@ function brushPoint(
         const [brushG, brushB, brushA] = [brushR + 1, brushR + 2, brushR + 3];
         const [r, g, b, a] = pixelMix(
           [data[dataR], data[dataG], data[dataB], data[dataA]],
-          [
-            brushData[brushR] * color[0],
-            brushData[brushG] * color[1],
-            brushData[brushB] * color[2],
-            brushData[brushA] * color[3] * weight,
-          ]
+          [brushData[brushR] * color[0], brushData[brushG] * color[1], brushData[brushB] * color[2], brushData[brushA] * color[3] * weight]
         );
 
         data[dataR] = r;

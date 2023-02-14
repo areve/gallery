@@ -1,8 +1,6 @@
 <template>
   <nav id="menu" :hidden="!panelStates.menu.visible">
-    <label for="toggle-menu" class="toggle-menu">
-      Menu <span class="drop-icon">▾</span>
-    </label>
+    <label for="toggle-menu" class="toggle-menu"> Menu <span class="drop-icon">▾</span> </label>
     <input type="checkbox" id="toggle-menu" />
     <ul class="main-menu">
       <MenuItemVue v-for="item in menu" :key="item.label" :item="item" />
@@ -35,9 +33,7 @@ const menu: MenuItem[] = [
       },
       {
         label: "Settings",
-        action: () =>
-          (panelStates.value.settings.visible =
-            !panelStates.value.settings.visible),
+        action: () => (panelStates.value.settings.visible = !panelStates.value.settings.visible),
       },
     ],
   },
@@ -46,51 +42,37 @@ const menu: MenuItem[] = [
     items: [
       {
         label: "Gallery",
-        action: () =>
-          (panelStates.value.gallery.visible =
-            !panelStates.value.gallery.visible),
+        action: () => (panelStates.value.gallery.visible = !panelStates.value.gallery.visible),
         key: "Ctrl+G",
       },
       {
         label: "OpenAI",
-        action: () =>
-          (openAiPanelState.value.panel.visible =
-            !openAiPanelState.value.panel.visible),
+        action: () => (openAiPanelState.value.panel.visible = !openAiPanelState.value.panel.visible),
       },
       {
         label: "Artwork Settings",
-        action: () =>
-          (panelStates.value.artworkSettings.visible =
-            !panelStates.value.artworkSettings.visible),
+        action: () => (panelStates.value.artworkSettings.visible = !panelStates.value.artworkSettings.visible),
       },
       {
         label: "Scale",
-        action: () =>
-          (panelStates.value.scale.visible = !panelStates.value.scale.visible),
+        action: () => (panelStates.value.scale.visible = !panelStates.value.scale.visible),
       },
       {
         label: "Status",
-        action: () =>
-          (panelStates.value.statusBar.visible =
-            !panelStates.value.statusBar.visible),
+        action: () => (panelStates.value.statusBar.visible = !panelStates.value.statusBar.visible),
       },
       {
         label: "Toolbar",
-        action: () =>
-          (toolbarState.value.panel.visible =
-            !toolbarState.value.panel.visible),
+        action: () => (toolbarState.value.panel.visible = !toolbarState.value.panel.visible),
       },
       {
         label: "Menu",
-        action: () =>
-          (panelStates.value.menu.visible = !panelStates.value.menu.visible),
+        action: () => (panelStates.value.menu.visible = !panelStates.value.menu.visible),
         key: "Ctrl+M",
       },
       {
         label: "Pencils",
-        action: () =>
-          (panelStates.value.pencil.visible =
-            !panelStates.value.pencil.visible),
+        action: () => (panelStates.value.pencil.visible = !panelStates.value.pencil.visible),
       },
     ],
   },

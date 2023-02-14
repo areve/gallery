@@ -48,22 +48,10 @@ function pointerMove(pointerEvent: PointerEvent) {
     const colorToRgbaColor = (value: string) => {
       const color = Color(value);
       const { r, g, b, a } = color.object();
-      return [
-        r / 255,
-        g / 255,
-        b / 255,
-        a === undefined ? 1 : a / 255,
-      ] as RgbaColor;
+      return [r / 255, g / 255, b / 255, a === undefined ? 1 : a / 255] as RgbaColor;
     };
 
-    brushApply(
-      rgbaLayer,
-      pencilLastPoint,
-      canvasPoint,
-      brush,
-      colorToRgbaColor(brushToolState.value.brushColor),
-      weight
-    );
+    brushApply(rgbaLayer, pencilLastPoint, canvasPoint, brush, colorToRgbaColor(brushToolState.value.brushColor), weight);
   }
 
   pencilLastPoint = canvasPoint;

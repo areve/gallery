@@ -1,26 +1,12 @@
 <template>
-  <li
-    class="menu-item"
-    :role="'action' in item ? 'button' : ''"
-    @click="item.action"
-  >
+  <li class="menu-item" :role="'action' in item ? 'button' : ''" @click="item.action">
     {{ item.label }}
     <span class="menu-item-key" v-if="'key' in item">{{ item.key }}</span>
     <span v-if="item.items" class="drop-icon">▾</span>
-    <label
-      v-if="item.items"
-      title="Toggle Drop-down"
-      class="drop-icon"
-      for="menu-{{ item.label }}"
-      >▾</label
-    >
+    <label v-if="item.items" title="Toggle Drop-down" class="drop-icon" for="menu-{{ item.label }}">▾</label>
     <input v-if="item.items" type="checkbox" id="menu-{{ item.label }}" />
     <ul v-if="item.items" class="sub-menu">
-      <MenuItem
-        v-for="subItem in item.items"
-        :key="subItem.label"
-        :item="subItem"
-      />
+      <MenuItem v-for="subItem in item.items" :key="subItem.label" :item="subItem" />
     </ul>
   </li>
 </template>

@@ -1,23 +1,12 @@
 import { clone, getDatestamp, last } from "@/lib/utils";
 import { extendMetadata } from "@/lib/artwork-utils";
 import { imageCountEmptyPixels } from "@/lib/canvas/canvas-utils";
-import {
-  openAiEditImage,
-  openAiGenerateImage,
-  openAiImageVariation,
-} from "@/components/OpenAi/openAiApi";
+import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/components/OpenAi/openAiApi";
 import { ref } from "vue";
 import { saveGalleryItem, updateGalleryItem } from "../Gallery/galleryService";
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata";
-import type {
-  Artwork,
-  ArtworkError,
-  ArtworkInMemory,
-} from "@/interfaces/Artwork";
-import type {
-  ImageResultError,
-  ImageResultReady,
-} from "@/interfaces/OpenAiResponse";
+import type { Artwork, ArtworkError, ArtworkInMemory } from "@/interfaces/Artwork";
+import type { ImageResultError, ImageResultReady } from "@/interfaces/OpenAiResponse";
 import { usePersistentState } from "../../services/persistenceService";
 
 const config = ref({
@@ -63,10 +52,7 @@ async function generate({ prompt }: GenerateOptions) {
   };
 
   updateGalleryItem(item);
-  const imageResult = await openAiGenerateImage(
-    { prompt },
-    config.value.openApiKey
-  );
+  const imageResult = await openAiGenerateImage({ prompt }, config.value.openApiKey);
   return await handleImageResult(imageResult, item);
 }
 
@@ -81,9 +67,7 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
     return;
   }
 
-  const imageBlob = (await new Promise<Blob | null>((resolve) =>
-    image.canvas.toBlob(resolve)
-  ))!;
+  const imageBlob = (await new Promise<Blob | null>((resolve) => image.canvas.toBlob(resolve)))!;
   const filename = `outpaint-${getDatestamp()}.png`;
   const item: Artwork = {
     filename,
@@ -98,17 +82,12 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
   };
 
   updateGalleryItem(item);
-  const imageResult = await openAiEditImage(
-    { image: imageBlob, mask: imageBlob, prompt },
-    config.value.openApiKey
-  );
+  const imageResult = await openAiEditImage({ image: imageBlob, mask: imageBlob, prompt }, config.value.openApiKey);
   return await handleImageResult(imageResult, item);
 }
 
 async function variation({ image, metadata }: VariationOptions) {
-  const imageBlob = (await new Promise<Blob | null>((resolve) =>
-    image.canvas.toBlob(resolve)
-  ))!;
+  const imageBlob = (await new Promise<Blob | null>((resolve) => image.canvas.toBlob(resolve)))!;
   const filename = `variation-${getDatestamp()}.png`;
   const item: Artwork = {
     filename,
@@ -122,17 +101,11 @@ async function variation({ image, metadata }: VariationOptions) {
   };
 
   updateGalleryItem(item);
-  const imageResult = await openAiImageVariation(
-    { image: imageBlob },
-    config.value.openApiKey
-  );
+  const imageResult = await openAiImageVariation({ image: imageBlob }, config.value.openApiKey);
   return await handleImageResult(imageResult, item);
 }
 
-async function handleImageResult(
-  imageResult: ImageResultError | ImageResultReady,
-  item: Artwork
-) {
+async function handleImageResult(imageResult: ImageResultError | ImageResultReady, item: Artwork) {
   if (imageResult.status === "error") {
     const errorResult = clone(item) as ArtworkError;
     last(errorResult.metadata.history).error = imageResult.error;

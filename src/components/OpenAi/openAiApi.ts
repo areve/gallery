@@ -1,16 +1,8 @@
-import type {
-  ImageResult,
-  ImageResultError,
-  ImageResultReady,
-  OpenAiResponse,
-} from "@/interfaces/OpenAiResponse";
+import type { ImageResult, ImageResultError, ImageResultReady, OpenAiResponse } from "@/interfaces/OpenAiResponse";
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { epochToDate, findErrorMessage } from "../../lib/utils";
 
-export async function openAiGenerateImage(
-  command: { prompt: string },
-  openApiKey: string
-): Promise<ImageResult> {
+export async function openAiGenerateImage(command: { prompt: string }, openApiKey: string): Promise<ImageResult> {
   return await tryPost(
     `${getBaseUrl(openApiKey)}/images/generations`,
     {
@@ -28,10 +20,7 @@ export async function openAiGenerateImage(
   );
 }
 
-export async function openAiEditImage(
-  command: { image: Blob; mask: Blob; prompt: string },
-  openApiKey: string
-) {
+export async function openAiEditImage(command: { image: Blob; mask: Blob; prompt: string }, openApiKey: string) {
   return await tryPost(
     `${getBaseUrl(openApiKey)}/images/edits`,
     formData({
@@ -51,10 +40,7 @@ export async function openAiEditImage(
   );
 }
 
-export async function openAiImageVariation(
-  command: { image: Blob },
-  openApiKey: string
-) {
+export async function openAiImageVariation(command: { image: Blob }, openApiKey: string) {
   return await tryPost(
     `${getBaseUrl(openApiKey)}/images/variations`,
     formData({
@@ -72,11 +58,7 @@ export async function openAiImageVariation(
   );
 }
 
-async function tryPost(
-  url: string,
-  data: any,
-  config: AxiosRequestConfig<any>
-) {
+async function tryPost(url: string, data: any, config: AxiosRequestConfig<any>) {
   let response: AxiosResponse<OpenAiResponse>;
   try {
     response = await axios.post(url, data, config);

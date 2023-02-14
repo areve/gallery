@@ -1,11 +1,7 @@
 <template>
   <AppWindow title="App Settings" v-model:panelState="panelStates.settings">
     <label for="openIdKey">Open API key</label>
-    <input
-      id="openIdKey"
-      type="text"
-      v-model="openAiService.config.value.openApiKey"
-    />
+    <input id="openIdKey" type="text" v-model="openAiService.config.value.openApiKey" />
   </AppWindow>
 </template>
 

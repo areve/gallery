@@ -28,12 +28,9 @@ openaiRoutes.use(bodyParser.json({ limit: "10mb" }));
 openaiRoutes.post("/createImage", async (req, res) => {
   const prompt = req.body.prompt;
   const metadata = req.body.metadata || { history: [] };
-  metadata.history = Array.isArray(metadata.history)
-    ? metadata.history
-    : [metadata.history];
+  metadata.history = Array.isArray(metadata.history) ? metadata.history : [metadata.history];
 
-  if (debug)
-    console.debug(`create image, prompt: ${prompt} (${prompt.length} chars)`);
+  if (debug) console.debug(`create image, prompt: ${prompt} (${prompt.length} chars)`);
 
   const request: CreateImageRequest = {
     prompt,
@@ -47,20 +44,13 @@ openaiRoutes.post("/createImage", async (req, res) => {
 
   let data, datestamp;
   if (mockRequests) {
-    data = JSON.parse(
-      fs.readFileSync(`${config.mocks}/createImage-mock.json`, "utf8")
-    );
+    data = JSON.parse(fs.readFileSync(`${config.mocks}/createImage-mock.json`, "utf8"));
     datestamp = "20000101T000000";
   } else {
     datestamp = getDatestamp();
     const response = await openai.createImage(request);
     data = response.data;
-    if (debugSaveResponses)
-      fs.writeFileSync(
-        `${config.mocks}/createImage-${datestamp}.json`,
-        JSON.stringify(data, null, "  "),
-        "utf8"
-      );
+    if (debugSaveResponses) fs.writeFileSync(`${config.mocks}/createImage-${datestamp}.json`, JSON.stringify(data, null, "  "), "utf8");
   }
 
   const filename = `image-0-${datestamp}.png`;
@@ -94,42 +84,28 @@ openaiRoutes.post("/createImage", async (req, res) => {
 openaiRoutes.post("/createImageVariation", async (req, res) => {
   if (!fs.existsSync(config.tempDir)) fs.mkdirSync(config.tempDir);
   const metadata = req.body.metadata || { history: [] };
-  metadata.history = Array.isArray(metadata.history)
-    ? metadata.history
-    : [metadata.history];
+  metadata.history = Array.isArray(metadata.history) ? metadata.history : [metadata.history];
 
   const pngData = req.body.image.replace("data:image/png;base64,", "");
   const imageFilename = `image-${uuid()}.png`;
   fs.writeFileSync(`${config.tempDir}/${imageFilename}`, pngData, "base64");
-  if (debug)
-    console.debug(
-      `create image variation from: ${config.tempDir}/${imageFilename}`
-    );
+  if (debug) console.debug(`create image variation from: ${config.tempDir}/${imageFilename}`);
 
   let data, datestamp;
   if (mockRequests) {
-    data = JSON.parse(
-      fs.readFileSync(`${config.mocks}/createImageVariation-mock.json`, "utf8")
-    );
+    data = JSON.parse(fs.readFileSync(`${config.mocks}/createImageVariation-mock.json`, "utf8"));
     datestamp = "20000101T000000";
   } else {
     datestamp = getDatestamp();
     const response = await openai.createImageVariation(
-      fs.createReadStream(
-        `${config.tempDir}/${imageFilename}`
-      ) as unknown as File,
+      fs.createReadStream(`${config.tempDir}/${imageFilename}`) as unknown as File,
       1,
       "1024x1024",
       "b64_json",
       undefined
     );
     data = response.data;
-    if (debugSaveResponses)
-      fs.writeFileSync(
-        `${config.mocks}/createImageVariation-${datestamp}.json`,
-        JSON.stringify(response.data, null, "  "),
-        "utf8"
-      );
+    if (debugSaveResponses) fs.writeFileSync(`${config.mocks}/createImageVariation-${datestamp}.json`, JSON.stringify(response.data, null, "  "), "utf8");
   }
 
   const filename = `image-0-${datestamp}.png`;
@@ -162,47 +138,28 @@ openaiRoutes.post("/createImageVariation", async (req, res) => {
 openaiRoutes.post("/createImageEdit", async (req, res) => {
   if (!fs.existsSync(config.tempDir)) fs.mkdirSync(config.tempDir);
   const metadata = req.body.metadata || { history: [] };
-  metadata.history = Array.isArray(metadata.history)
-    ? metadata.history
-    : [metadata.history];
+  metadata.history = Array.isArray(metadata.history) ? metadata.history : [metadata.history];
 
   const imageFilename = `image-${uuid()}.png`;
-  fs.writeFileSync(
-    `${config.tempDir}/${imageFilename}`,
-    req.body.image.replace("data:image/png;base64,", ""),
-    "base64"
-  );
+  fs.writeFileSync(`${config.tempDir}/${imageFilename}`, req.body.image.replace("data:image/png;base64,", ""), "base64");
 
   const maskFilename = `mask-${uuid()}.png`;
-  fs.writeFileSync(
-    `${config.tempDir}/${maskFilename}`,
-    req.body.mask.replace("data:image/png;base64,", ""),
-    "base64"
-  );
+  fs.writeFileSync(`${config.tempDir}/${maskFilename}`, req.body.mask.replace("data:image/png;base64,", ""), "base64");
 
   const prompt = req.body.prompt || "extend this image";
-  if (debug)
-    console.debug(
-      `create image edit from: ${config.tempDir}/${imageFilename}, mask ${config.tempDir}/${maskFilename},  prompt: ${prompt}`
-    );
+  if (debug) console.debug(`create image edit from: ${config.tempDir}/${imageFilename}, mask ${config.tempDir}/${maskFilename},  prompt: ${prompt}`);
 
   let data, datestamp;
   if (mockRequests) {
-    data = JSON.parse(
-      fs.readFileSync(`${config.mocks}/createImageEdit-mock.json`, "utf8")
-    );
+    data = JSON.parse(fs.readFileSync(`${config.mocks}/createImageEdit-mock.json`, "utf8"));
     datestamp = "20000101T000000";
   } else {
     datestamp = getDatestamp();
     let response;
     try {
       response = await openai.createImageEdit(
-        fs.createReadStream(
-          `${config.tempDir}/${imageFilename}`
-        ) as unknown as File,
-        fs.createReadStream(
-          `${config.tempDir}/${maskFilename}`
-        ) as unknown as File,
+        fs.createReadStream(`${config.tempDir}/${imageFilename}`) as unknown as File,
+        fs.createReadStream(`${config.tempDir}/${maskFilename}`) as unknown as File,
         prompt,
         1,
         "1024x1024",
@@ -247,12 +204,7 @@ openaiRoutes.post("/createImageEdit", async (req, res) => {
       // }
     }
     data = response.data;
-    if (debugSaveResponses)
-      fs.writeFileSync(
-        `${config.mocks}/createImageEdit-${datestamp}.json`,
-        JSON.stringify(response.data, null, "  "),
-        "utf8"
-      );
+    if (debugSaveResponses) fs.writeFileSync(`${config.mocks}/createImageEdit-${datestamp}.json`, JSON.stringify(response.data, null, "  "), "utf8");
   }
 
   const filename = `image-0-${datestamp}.png`;

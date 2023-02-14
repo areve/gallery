@@ -25,9 +25,7 @@ galleryRoutes.get("/", async (req, res) => {
         status: "ready",
       });
   });
-  list.sort(
-    (a, b) => (b.modified?.getTime() || 0) - (a.modified?.getTime() || 0)
-  );
+  list.sort((a, b) => (b.modified?.getTime() || 0) - (a.modified?.getTime() || 0));
   res.json(list);
 });
 

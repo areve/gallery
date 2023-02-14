@@ -22,8 +22,7 @@ export interface SelectTool extends AppActionBase {
 const id = () => Math.random();
 
 export const onAction = ref<AppAction>(undefined!);
-export const action = (action: AppActionType) =>
-  (onAction.value = { id: id(), action });
+export const action = (action: AppActionType) => (onAction.value = { id: id(), action });
 
 export const onApplyEffect = ref<ApplyEffect>(undefined!);
 export const applyEffect = (type: EffectType) => {

@@ -3,10 +3,7 @@ import { getDatestamp } from "@/lib/utils";
 import { extendMetadata } from "@/lib/artwork-utils";
 import { createContext } from "@/lib/canvas/canvas-utils";
 import type { ArtworkOnCanvas } from "@/interfaces/Artwork";
-import {
-  saveGalleryItem,
-  updateGalleryItem,
-} from "@/components/Gallery/galleryService";
+import { saveGalleryItem, updateGalleryItem } from "@/components/Gallery/galleryService";
 
 interface Layer {
   context: CanvasRenderingContext2D;
@@ -26,13 +23,7 @@ interface FlattenOptions {
 async function flatten({ metadata, width, height, layers }: FlattenOptions) {
   const context = createContext(width, height);
   layers.forEach((layer) => {
-    context.drawImage(
-      layer.context.canvas,
-      layer.x,
-      layer.y,
-      layer.width,
-      layer.height
-    );
+    context.drawImage(layer.context.canvas, layer.x, layer.y, layer.width, layer.height);
   });
 
   const filename = `composition-${getDatestamp()}.png`;

@@ -19,16 +19,10 @@ export function moveToTop(id: string) {
 }
 
 function sortRegistry() {
-  registry = registry.sort(
-    (a: ZIndexRegister, b: ZIndexRegister) => a.zIndex - b.zIndex
-  );
+  registry = registry.sort((a: ZIndexRegister, b: ZIndexRegister) => a.zIndex - b.zIndex);
 }
 
-export function registerZIndex(
-  id: string,
-  zIndex: number,
-  setZIndex: (zIndex: number) => void
-) {
+export function registerZIndex(id: string, zIndex: number, setZIndex: (zIndex: number) => void) {
   registry.push({
     id,
     zIndex,

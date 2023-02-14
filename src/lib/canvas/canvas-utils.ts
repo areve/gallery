@@ -14,13 +14,7 @@ export function createContextFromImage(image: HTMLImageElement) {
   return context;
 }
 
-export function cloneContext(
-  context: CanvasRenderingContext2D,
-  x: number = 0,
-  y: number = 0,
-  w: number = 0,
-  h: number = 0
-) {
+export function cloneContext(context: CanvasRenderingContext2D, x: number = 0, y: number = 0, w: number = 0, h: number = 0) {
   const width = w === 0 ? context.canvas.width : w;
   const height = h === 0 ? context.canvas.height : h;
   const imageData = context.getImageData(x, y, width, height);
