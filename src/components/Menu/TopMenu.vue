@@ -32,7 +32,7 @@ const menu: MenuItem[] = [
         key: "Ctrl+R",
       },
       {
-        label: "Settings",
+        label: "App Settings",
         action: () => (panelStates.value.settings.visible = !panelStates.value.settings.visible),
       },
     ],
@@ -50,7 +50,7 @@ const menu: MenuItem[] = [
         action: () => (openAiPanelState.value.panel.visible = !openAiPanelState.value.panel.visible),
       },
       {
-        label: "Artwork Settings",
+        label: "Artwork",
         action: () => (panelStates.value.artworkSettings.visible = !panelStates.value.artworkSettings.visible),
       },
       {
