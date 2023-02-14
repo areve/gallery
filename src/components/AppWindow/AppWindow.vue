@@ -7,7 +7,14 @@
     @pointerdown="bringToFront"
     ref="panel"
   >
-    <div class="resize-handle" @pointerdown="resizeStart"></div>
+    <div class="resize-handle bottom" @pointerdown="resizeStart"></div>
+    <div class="resize-handle right" @pointerdown="resizeStart"></div>
+    <div class="resize-handle left" @pointerdown="resizeStart"></div>
+    <div class="resize-handle top" @pointerdown="resizeStart"></div>
+    <div class="resize-handle top-left" @pointerdown="resizeStart"></div>
+    <div class="resize-handle top-right" @pointerdown="resizeStart"></div>
+    <div class="resize-handle bottom-left" @pointerdown="resizeStart"></div>
+    <div class="resize-handle bottom-right" @pointerdown="resizeStart"></div>
     <header class="panel-titlebar" @pointerdown="dragStart">
       <h1 class="title">{{ title }}</h1>
       <button class="icon-button" type="button" @click="updatePanelState({ docked: !panelState.docked })" v-if="!panelState.rolled">
@@ -182,8 +189,84 @@ function bringToFront(_event: PointerEvent) {
   content: " ";
   position: absolute;
   display: block;
-  width: calc(100%);
+  width: var(--resize-border-size);
   height: var(--resize-border-size);
+  z-index: 1;
+}
+
+.resize-handle.bottom {
+  width: calc(100%);
+  bottom: 0;
+  right: 0;
+  cursor: s-resize;
+}
+
+.resize-handle.top {
+  width: calc(100%);
+  top: 0;
+  right: 0;
+  cursor: n-resize;
+}
+
+.resize-handle.right {
+  height: calc(100%);
+  bottom: 0;
+  right: 0;
+  cursor: e-resize;
+}
+
+.resize-handle.left {
+  height: calc(100%);
+  bottom: 0;
+  left: 0;
+  cursor: w-resize;
+}
+
+.resize-handle.top-left,
+.resize-handle.top-left::after,
+.resize-handle.top-right,
+.resize-handle.top-right::after,
+.resize-handle.bottom-left,
+.resize-handle.bottom-left::after,
+.resize-handle.bottom-right,
+.resize-handle.bottom-right::after {
+  width: var(--resize-border-size);
+  height: calc(var(--resize-border-size) * 5);
+  position: absolute;
+}
+
+.resize-handle.top-left::after,
+.resize-handle.top-right::after,
+.resize-handle.bottom-left::after,
+.resize-handle.bottom-right::after {
+  content: " ";
+  display: block;
+  width: calc(var(--resize-border-size) * 5);
+  height: var(--resize-border-size);
+}
+
+.resize-handle.top-left,
+.resize-handle.top-left::after {
+  top: 0;
+  left: 0;
+  cursor: nw-resize;
+}
+
+.resize-handle.top-right,
+.resize-handle.top-right::after {
+  top: 0;
+  right: 0;
+  cursor: ne-resize;
+}
+
+.resize-handle.bottom-left,
+.resize-handle.bottom-left::after {
+  bottom: 0;
+  left: 0;
+  cursor: sw-resize;
+}
+.resize-handle.bottom-right,
+.resize-handle.bottom-right::after {
   bottom: 0;
   right: 0;
   cursor: se-resize;
