@@ -7,14 +7,14 @@
     @pointerdown="bringToFront"
     ref="panel"
   >
-    <div class="resize-handle bottom" @pointerdown="resizeStart"></div>
-    <div class="resize-handle right" @pointerdown="resizeStart"></div>
-    <div class="resize-handle left" @pointerdown="resizeStart"></div>
-    <div class="resize-handle top" @pointerdown="resizeStart"></div>
-    <div class="resize-handle top-left" @pointerdown="resizeStart"></div>
-    <div class="resize-handle top-right" @pointerdown="resizeStart"></div>
-    <div class="resize-handle bottom-left" @pointerdown="resizeStart"></div>
-    <div class="resize-handle bottom-right" @pointerdown="resizeStart"></div>
+    <div class="resize-handle bottom" @pointerdown="resizeStart($event, 'bottom')"></div>
+    <div class="resize-handle right" @pointerdown="resizeStart($event, 'right')"></div>
+    <div class="resize-handle left" @pointerdown="resizeStart($event, 'left')"></div>
+    <div class="resize-handle top" @pointerdown="resizeStart($event, 'top')"></div>
+    <div class="resize-handle top-left" @pointerdown="resizeStart($event, 'top-left')"></div>
+    <div class="resize-handle top-right" @pointerdown="resizeStart($event, 'top-right')"></div>
+    <div class="resize-handle bottom-left" @pointerdown="resizeStart($event, 'bottom-left')"></div>
+    <div class="resize-handle bottom-right" @pointerdown="resizeStart($event, 'bottom-right')"></div>
     <header class="panel-titlebar" @pointerdown="dragStart">
       <h1 class="title">{{ title }}</h1>
       <button class="icon-button" type="button" @click="updatePanelState({ docked: !panelState.docked })" v-if="!panelState.rolled">
@@ -88,8 +88,9 @@ function updatePanelState(value: Partial<PanelState>) {
   emit("update:panelState", cloneExtend(props.panelState, value));
 }
 
+type Handle = "bottom" | "right" | "left" | "top" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
 let dragOrigin: (Coord & { originX: number; originY: number }) | null = null;
-let resizeOrigin: (Coord & { startWidth: number; startHeight: number }) | null = null;
+let resizeOrigin: (Coord & { startWidth: number; startHeight: number; handle: Handle }) | null = null;
 
 const id = uuid();
 
@@ -109,12 +110,13 @@ watchSyncEffect(() => {
   if (resizeOrigin) return resizeMove(pointerMoveEvent.value);
 });
 
-function resizeStart(event: PointerEvent) {
+function resizeStart(event: PointerEvent, handle: Handle) {
   resizeOrigin = {
     x: event.pageX,
     y: event.pageY,
     startWidth: panel.value.offsetWidth,
     startHeight: panel.value.offsetHeight,
+    handle,
   };
 }
 
@@ -126,17 +128,66 @@ function resizeEnd(_pointerEvent: PointerEvent) {
       x: resizeOrigin.startWidth + grow.value.x,
       y: resizeOrigin.startHeight + grow.value.y,
     },
+    position: {
+      x: props.panelState.position.x + origin.value.x,
+      y: props.panelState.position.y + origin.value.y,
+    },
   });
   resizeOrigin = null;
   grow.value = { x: 0, y: 0 };
+  origin.value = { x: 0, y: 0 };
 }
 
 function resizeMove(pointerEvent: PointerEvent) {
   if (!resizeOrigin) return;
-  grow.value = {
-    x: pointerEvent.pageX - resizeOrigin.x,
-    y: pointerEvent.pageY - resizeOrigin.y,
-  };
+
+  if (resizeOrigin.handle === "bottom-right") {
+    grow.value = {
+      x: pointerEvent.pageX - resizeOrigin.x,
+      y: pointerEvent.pageY - resizeOrigin.y,
+    };
+  } else if (resizeOrigin.handle === "bottom") {
+    grow.value = {
+      x: grow.value.x,
+      y: pointerEvent.pageY - resizeOrigin.y,
+    };
+  } else if (resizeOrigin.handle === "right") {
+    grow.value = {
+      x: pointerEvent.pageX - resizeOrigin.x,
+      y: grow.value.y,
+    };
+  } else if (resizeOrigin.handle === "top") {
+    origin.value.y = pointerEvent.pageY - resizeOrigin.y;
+    grow.value = {
+      x: grow.value.x,
+      y: -(pointerEvent.pageY - resizeOrigin.y),
+    };
+  } else if (resizeOrigin.handle === "left") {
+    origin.value.x = pointerEvent.pageX - resizeOrigin.x;
+    grow.value = {
+      x: -(pointerEvent.pageX - resizeOrigin.x),
+      y: grow.value.y,
+    };
+  } else if (resizeOrigin.handle === "top-left") {
+    origin.value.x = pointerEvent.pageX - resizeOrigin.x;
+    origin.value.y = pointerEvent.pageY - resizeOrigin.y;
+    grow.value = {
+      x: -(pointerEvent.pageX - resizeOrigin.x),
+      y: -(pointerEvent.pageY - resizeOrigin.y),
+    };
+  } else if (resizeOrigin.handle === "top-right") {
+    origin.value.y = pointerEvent.pageY - resizeOrigin.y;
+    grow.value = {
+      x: pointerEvent.pageX - resizeOrigin.x,
+      y: -(pointerEvent.pageY - resizeOrigin.y),
+    };
+  } else if (resizeOrigin.handle === "bottom-left") {
+    origin.value.x = pointerEvent.pageX - resizeOrigin.x;
+    grow.value = {
+      x: -(pointerEvent.pageX - resizeOrigin.x),
+      y: pointerEvent.pageY - resizeOrigin.y,
+    };
+  }
 }
 
 function dragStart(event: PointerEvent) {
