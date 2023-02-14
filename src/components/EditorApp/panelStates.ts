@@ -7,6 +7,7 @@ export interface PanelState {
   rolled: boolean;
   docked: boolean;
   position: Coord;
+  size?: Coord;
   zIndex: number;
 }
 

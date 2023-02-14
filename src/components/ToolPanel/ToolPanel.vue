@@ -3,10 +3,12 @@
     class="panel prevent-select"
     v-if="panelState.visible"
     :class="{ docked: panelState.docked }"
-    :style="{ top, left, zIndex }"
+    :style="{ top, left, zIndex, width, height }"
     @pointerdown="bringToFront"
+    ref="panel"
   >
-    <header class="panel-titlebar" @pointerdown="titlebarDown">
+    <div class="resize-handle" @pointerdown="resizeStart"></div>
+    <header class="panel-titlebar" @pointerdown="dragStart">
       <h1 class="title">{{ title }}</h1>
       <button
         class="icon-button"
@@ -47,7 +49,7 @@
 import type { Coord } from "@/interfaces/Coord";
 import { cloneExtend } from "@/lib/utils";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
-import { computed, onMounted, ref, watchSyncEffect } from "vue";
+import { computed, ref, watchSyncEffect } from "vue";
 import type { PanelState } from "../EditorApp/panelStates";
 import { moveToTop, registerZIndex } from "./zIndexService";
 import { v4 as uuid } from "uuid";
@@ -57,10 +59,13 @@ interface Props {
   panelState: PanelState;
 }
 
+const panel = ref<HTMLDivElement>(undefined!);
+
 const props = defineProps<Props>();
 const emit = defineEmits(["update:panelState"]);
 
 const origin = ref<Coord>({ x: 0, y: 0 });
+const grow = ref<Coord>({ x: 0, y: 0 });
 const left = computed(
   () => props.panelState.position.x + origin.value.x + "px"
 );
@@ -69,56 +74,80 @@ const zIndex = computed(() => {
   if (props.panelState.docked) return 0;
   return props.panelState.zIndex;
 });
+const width = computed(() => {
+  if (!props.panelState.size && !resizeOrigin) return "auto";
+  const size = props.panelState.size ?? {
+    x: resizeOrigin!.startWidth,
+    y: resizeOrigin!.startHeight,
+  };
+  return size.x + grow.value.x + "px";
+});
+const height = computed(() => {
+  if (!props.panelState.size && !resizeOrigin) return "auto";
+  const size = props.panelState.size ?? {
+    x: resizeOrigin!.startWidth,
+    y: resizeOrigin!.startHeight,
+  };
+  return size.y + grow.value.y + "px";
+});
 
 function updatePanelState(value: Partial<PanelState>) {
   emit("update:panelState", cloneExtend(props.panelState, value));
 }
 
 let dragOrigin: (Coord & { originX: number; originY: number }) | null = null;
+let resizeOrigin: (Coord & { startWidth: number; startHeight: number }) | null =
+  null;
 
 const id = uuid();
 
-onMounted(() => {
-  registerZIndex(id, props.panelState.zIndex, (zIndex) => {
-    updatePanelState({ zIndex });
-  });
+registerZIndex(id, props.panelState.zIndex, (zIndex) => {
+  updatePanelState({ zIndex });
 });
 
 watchSyncEffect(() => {
   if (!pointerUpEvent.value) return;
-  if (!dragOrigin) return;
-  const pointerEvent = pointerUpEvent.value;
-  const dy = pointerEvent.pageY - dragOrigin.y;
-  const dx = pointerEvent.pageX - dragOrigin.x;
-  origin.value.x = dragOrigin.originX + dx;
-  origin.value.y = dragOrigin.originY + dy;
-
-  updatePanelState({
-    position: {
-      x: dragOrigin.originX + dx,
-      y: dragOrigin.originY + dy,
-    },
-  });
-  dragOrigin = null;
-  origin.value = { x: 0, y: 0 };
+  if (dragOrigin) dragEnd(pointerUpEvent.value);
+  if (resizeOrigin) resizeEnd(pointerUpEvent.value);
 });
 
 watchSyncEffect(() => {
   if (!pointerMoveEvent.value) return;
-  if (!dragOrigin) return;
-  const pointerEvent = pointerMoveEvent.value;
-  const dy = pointerEvent.pageY - dragOrigin.y;
-  const dx = pointerEvent.pageX - dragOrigin.x;
-  origin.value.x = dx;
-  origin.value.y = dy;
+  if (dragOrigin) return dragMove(pointerMoveEvent.value);
+  if (resizeOrigin) return resizeMove(pointerMoveEvent.value);
 });
 
-function bringToFront(_event: PointerEvent) {
-  if (props.panelState.docked) return;
-  moveToTop(id);
+function resizeStart(event: PointerEvent) {
+  resizeOrigin = {
+    x: event.pageX,
+    y: event.pageY,
+    startWidth: panel.value.offsetWidth,
+    startHeight: panel.value.offsetHeight,
+  };
 }
 
-function titlebarDown(event: PointerEvent) {
+function resizeEnd(_pointerEvent: PointerEvent) {
+  if (!resizeOrigin) return;
+
+  updatePanelState({
+    size: {
+      x: resizeOrigin.startWidth + grow.value.x,
+      y: resizeOrigin.startHeight + grow.value.y,
+    },
+  });
+  resizeOrigin = null;
+  grow.value = { x: 0, y: 0 };
+}
+
+function resizeMove(pointerEvent: PointerEvent) {
+  if (!resizeOrigin) return;
+  grow.value = {
+    x: pointerEvent.pageX - resizeOrigin.x,
+    y: pointerEvent.pageY - resizeOrigin.y,
+  };
+}
+
+function dragStart(event: PointerEvent) {
   dragOrigin = {
     x: event.pageX,
     y: event.pageY,
@@ -126,13 +155,51 @@ function titlebarDown(event: PointerEvent) {
     originY: props.panelState.position.y,
   };
 }
+
+function dragEnd(_pointerEvent: PointerEvent) {
+  if (!dragOrigin) return;
+  updatePanelState({
+    position: {
+      x: dragOrigin.originX + origin.value.x,
+      y: dragOrigin.originY + origin.value.y,
+    },
+  });
+  dragOrigin = null;
+  origin.value = { x: 0, y: 0 };
+}
+
+function dragMove(pointerEvent: PointerEvent) {
+  if (!dragOrigin) return;
+  origin.value.x = pointerEvent.pageX - dragOrigin.x;
+  origin.value.y = pointerEvent.pageY - dragOrigin.y;
+}
+
+function bringToFront(_event: PointerEvent) {
+  if (props.panelState.docked) return;
+  moveToTop(id);
+}
 </script>
 <style>
 .panel {
   position: absolute;
-  z-index: 10;
-  background-color: #e7e7e7;
   box-shadow: 0px 0.25em 0.5em #0007;
+  overflow: hidden;
+  background-color: #e7e7e7;
+}
+
+* {
+  --resize-border-size: 6px;
+}
+
+.resize-handle {
+  content: " ";
+  position: absolute;
+  display: block;
+  width: calc(100%);
+  height: var(--resize-border-size);
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
 }
 
 .panel-titlebar {
@@ -144,6 +211,7 @@ function titlebarDown(event: PointerEvent) {
 
 .panel-main {
   padding: 0.25em;
+  background-color: #e7e7e7;
 }
 
 .panel-titlebar .title {
@@ -165,7 +233,7 @@ function titlebarDown(event: PointerEvent) {
   background-color: #d0d0d0;
   flex: 0 0;
   min-width: 2rem;
-  
+
   margin-left: 0.25em;
 }
 
