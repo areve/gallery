@@ -30,5 +30,6 @@ function changeStatusBar() {
   padding: 0 0.25em;
   background-color: #000;
   color: #999;
+  text-align: center;
 }
 </style>
