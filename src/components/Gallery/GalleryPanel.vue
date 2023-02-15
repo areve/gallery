@@ -135,6 +135,7 @@ function selectItem(item: Artwork) {
   border-width: 0;
   border-radius: 0;
   background-color: transparent;
+  float: left;
 }
 
 .gallery-button.loading {
