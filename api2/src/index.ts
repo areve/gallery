@@ -1,4 +1,4 @@
-export const helloWorld = (req, res) => {
-  let message = req.query?.message || req.body?.message || "Hello From TS3!";
-  res.status(200).send(message);
-};
+import express from "express";
+import { helloRoutes } from "./routes/hello-routes";
+
+export const handler = express().use("/api/hello", helloRoutes);

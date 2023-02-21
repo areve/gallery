@@ -18,7 +18,8 @@ export default defineConfig(({ command }) => {
   if (command !== "build") {
     plugins.push(
       mix({
-        handler: "./api/api.ts",
+        //handler: "./api/api.ts", // TODO revert this or fix
+        handler: "./api2/src/index.ts",
       })
     );
   }
