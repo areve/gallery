@@ -39,7 +39,7 @@ jobs:
       - id: "deploy"
         uses: "google-github-actions/deploy-cloud-functions@v0"
         with:
-          source_dir: ./api2/dist/
+          source_dir: ./api2/
           name: "helloWorld"
           runtime: "nodejs16"
 
