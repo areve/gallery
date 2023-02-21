@@ -4,4 +4,4 @@ import * as ff from '@google-cloud/functions-framework';
 
 export const handler = express().use("/api/hello", helloRoutes);
 
-ff.http('TypescriptFunction', handler);
+ff.http('helloWorld', handler);
