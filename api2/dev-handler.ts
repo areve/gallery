@@ -1,6 +1,6 @@
 //import { handler } from './../api/api';
 import express from "express";
-import { helloWorld } from "../api2";
+import { helloWorld } from "./src/helloWorld";
 
 const app = express();
 
