@@ -28,7 +28,9 @@ jobs:
         shell: bash
 
       - name: Move node_modules
-        run: mv ./node_modules ./api2/dist/node_modules
+        run: |
+          mv ./node_modules ./api2/dist/node_modules
+          mv ./package.json ./api2/dist/package.json
         shell: bash
 
       - id: "auth"
