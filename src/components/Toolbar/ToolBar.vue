@@ -31,7 +31,7 @@
 import { brushToolState } from "@/components/Brush/brushToolState";
 import { dragToolState } from "@/components/Artboard/dragToolState";
 import { eraserToolState } from "@/components/Eraser/eraserToolState";
-import { toolbarState } from "@/components/ToolBar/toolBarState";
+import { toolbarState } from "@/components/ToolBar/toolbarState";
 import type { MenuItem } from "../Menu/MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";
 import AppWindow from "../AppWindow/AppWindow.vue";

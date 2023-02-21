@@ -15,7 +15,7 @@ import MenuItemVue from "./MenuItem.vue";
 import type { MenuItem } from "./MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";
 import { openAiPanelState } from "../OpenAi/openAiPanelState";
-import { toolbarState } from "../ToolBar/toolBarState";
+import { toolbarState } from "@/components/ToolBar/toolbarState";
 import { selectNextArtwork, selectPreviousArtwork } from "../Gallery/galleryService";
 
 const menu: MenuItem[] = [

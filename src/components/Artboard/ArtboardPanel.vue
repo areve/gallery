@@ -22,7 +22,7 @@ import { useBrushTool } from "@/components/Brush/brushTool";
 import { useArtboardMoveTool } from "@/components/Artboard/artboardMoveTool";
 import { useArtboardFrameTool } from "@/components/Artboard/artboardFrameTool";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
-import { toolbarState } from "@/components/ToolBar/toolBarState";
+import { toolbarState } from "@/components/ToolBar/toolbarState";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 const overlayCanvas = ref<HTMLCanvasElement>(undefined!);
@@ -73,7 +73,7 @@ watchSyncEffect(() => {
 
 const render = () => {
   artboardService.render();
-  setTimeout(render, 50);
+  setTimeout(render, 0);
 };
 
 render();

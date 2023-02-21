@@ -47,6 +47,7 @@ export function render() {
   if (!artwork.value.context) return;
   const context = artwork.value.context;
   if (artwork.value.modified === artwork.value.rgbaLayer.modified) return;
+  // console.log('render')
   artwork.value.modified = artwork.value.rgbaLayer.modified;
 
   const data = artwork.value.rgbaLayer.data;
