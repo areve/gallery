@@ -19,6 +19,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install
+        run: yarn install --frozen-lockfile
+        shell: bash
+
+      - name: Build
+        run: yarn build-server
+        shell: bash
+
       - id: "auth"
         name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v0"
@@ -29,7 +37,7 @@ jobs:
       - id: "deploy"
         uses: "google-github-actions/deploy-cloud-functions@v0"
         with:
-          source_dir: ./api2/
+          source_dir: ./api2/dist/
           name: "helloWorld"
           runtime: "nodejs16"
 
