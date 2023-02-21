@@ -16,6 +16,7 @@ import type { MenuItem } from "./MenuItem";
 import { addKeysForMenuItems } from "@/services/keyboardService";
 import { openAiPanelState } from "../OpenAi/openAiPanelState";
 import { toolbarState } from "../ToolBar/toolBarState";
+import { selectNextArtwork, selectPreviousArtwork } from "../Gallery/galleryService";
 
 const menu: MenuItem[] = [
   {
@@ -112,6 +113,20 @@ const menu: MenuItem[] = [
 ];
 
 addKeysForMenuItems(menu);
+
+const galleryMenu: MenuItem[] = [
+  {
+    label: "Next Artwork",
+    action: () => selectNextArtwork(),
+    key: "Right",
+  },
+  {
+    label: "Previous Artwork",
+    action: () => selectPreviousArtwork(),
+    key: "Left",
+  },
+];
+addKeysForMenuItems(galleryMenu);
 </script>
 
 <style scoped>

@@ -186,10 +186,11 @@ function getKey(key: string) {
 
 export function addKeysForMenuItems(items: MenuItem[]) {
   const keyConfigs = getKeyConfigs(items);
+  console.log(keyConfigs)
   useKeypress({
     keyEvent: "keyup",
     keyBinds: [...keyUpBinds(keyConfigs)],
-    //onAnyKey: (e: any) => console.log(e.event.keyCode),
+    // onAnyKey: (e: any) => console.log(e.event.keyCode),
   });
 
   useKeypress({

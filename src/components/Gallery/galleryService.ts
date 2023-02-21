@@ -7,6 +7,24 @@ export const selectedItem = ref<Artwork | null>(null);
 
 export const galleryItems = ref<Artwork[]>([]);
 
+export function selectNextArtwork() {
+  if (!selectedItem.value) {
+    selectedItem.value = galleryItems.value[0];
+  } else {
+    const i = galleryItems.value.indexOf(selectedItem.value) + 1;
+    selectedItem.value = galleryItems.value[i % galleryItems.value.length];
+  }
+}
+
+export function selectPreviousArtwork() {
+  if (!selectedItem.value) {
+    selectedItem.value = galleryItems.value[0];
+  } else {
+    const i = galleryItems.value.indexOf(selectedItem.value) + galleryItems.value.length - 1;
+    selectedItem.value = galleryItems.value[i % galleryItems.value.length];
+  }
+}
+
 export async function loadGallery() {
   galleryItems.value = await galleryApi.getGallery();
 }
