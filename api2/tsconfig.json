@@ -1,13 +1,15 @@
 {
   "include": ["src/**/*"],
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2018",
+    "lib": ["dom", "es2018"],
     "module": "commonjs",
-    "sourceMap": false,
     "esModuleInterop": true,
+    "sourceMap": true,
     "outDir": "./dist",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "pretty": true
   }
 }
