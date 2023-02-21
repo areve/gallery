@@ -21,17 +21,12 @@ jobs:
 
       - name: Install
         run: yarn install --frozen-lockfile
+        working-directory: ./api2/
         shell: bash
 
       - name: Build
-        run: yarn build-server
-        shell: bash
-
-      - name: Copy node_modules
-        run: |
-          cp -R ./node_modules ./api2/dist/node_modules
-          cp ./package.json ./api2/dist/package.json
-          find ./api2/dist/
+        run: yarn build
+        working-directory: ./api2/
         shell: bash
 
       - id: "auth"
