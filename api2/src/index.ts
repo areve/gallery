@@ -1,7 +1,4 @@
-import express from "express";
-import { helloRoutes } from "./routes/hello-routes";
-import * as ff from '@google-cloud/functions-framework';
+import { handler } from "./../../api/api";
+import * as functionsFramework from "@google-cloud/functions-framework";
 
-export const handler = express().use("/api/hello", helloRoutes);
-
-ff.http('helloWorld', handler);
+functionsFramework.http("helloWorld", handler);

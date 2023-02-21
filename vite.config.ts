@@ -19,7 +19,7 @@ export default defineConfig(({ command }) => {
     plugins.push(
       mix({
         //handler: "./api/api.ts", // TODO revert this or fix
-        handler: "./api2/src/index.ts",
+        handler: "./api2/src/handler.ts",
       })
     );
   }
