@@ -27,10 +27,11 @@ jobs:
         run: yarn build-server
         shell: bash
 
-      - name: Move node_modules
+      - name: Copy node_modules
         run: |
           cp -R ./node_modules ./api2/dist/node_modules
           cp ./package.json ./api2/dist/package.json
+          find ./api2/dist/
         shell: bash
 
       - id: "auth"
