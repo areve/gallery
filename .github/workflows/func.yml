@@ -27,8 +27,8 @@ jobs:
         run: yarn build-server
         shell: bash
 
-      - name: Link node_modules
-        run: ln ./node_modules ./api2/dist/node_modules
+      - name: Move node_modules
+        run: mv ./node_modules ./api2/dist/node_modules
         shell: bash
 
       - id: "auth"
