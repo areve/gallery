@@ -36,11 +36,12 @@ jobs:
           # Replace with your Workload Identity Provider Location
           workload_identity_provider: "projects/750379347440/locations/global/workloadIdentityPools/gh-pool/providers/gh-provider"
           # Replace with your GitHub Service Account
-          service_account: "github-actions-service-account@gallery-challen-info.iam.gserviceaccount.com@$PROJECT_ID.iam.gserviceaccount.com"
+          service_account: "github-actions-service-account@gallery-challen-info.iam.gserviceaccount.com@gallery-challen-info.iam.gserviceaccount.com"
 
       - id: "deploy"
         uses: "google-github-actions/deploy-cloud-functions@v0"
         with:
+          working-directory: ./api2
           # Name of the Cloud Function, same as the entry point name
           name: "helloWorld"
           # Runtime to use for the function
