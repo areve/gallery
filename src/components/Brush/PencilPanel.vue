@@ -62,7 +62,7 @@
 <script lang="ts" setup>
 import { brushToolState } from "./brushToolState";
 import { panelStates } from "@/components/EditorApp/panelStates";
-import { toolbarState } from "@/components/ToolBar/toolbarState";
+import { toolbarState } from "@/components/Toolbar/toolbarState";
 </script>
 
 <style scoped>
