@@ -42,6 +42,7 @@ jobs:
           source_dir: ./gallery-api/
           name: "gallery-api"
           runtime: "nodejs16"
+          env_vars: OPEN_AI_KEY=YOUR_OPEN_AI_KEY
 
       - id: "test"
         run: 'curl "${{ steps.deploy.outputs.url }}"'
