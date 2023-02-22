@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
+//import dotenv from "dotenv";
 import proxy from "express-http-proxy";
 
-const env = dotenv.config().parsed!;
-const apiKey = env.OPEN_AI_KEY;
+// const env = dotenv.config().parsed!;
+const apiKey = process.env.OPEN_AI_KEY;
 
 export const openApiProxy = proxy("api.openai.com", {
   https: true,
