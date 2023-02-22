@@ -42,7 +42,7 @@ jobs:
           source_dir: ./gallery-api/
           name: "gallery-api"
           runtime: "nodejs16"
-          secret_environment_variables: L-
+          secret_environment_variables: |-
             OPEN_AI_KEY=projects/750379347440/secrets/OPEN_AI_KEY,
             FOO=projects/750379347440/secrets/OPEN_AI_KEY
       - id: "test"
