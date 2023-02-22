@@ -1,11 +1,11 @@
 {
-  "name": "api2",
+  "name": "gallery-api",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "npx functions-framework --target=helloWorld",
+    "start": "npx functions-framework --target=gallery-api",
     "prestart": "npm run build",
     "gcp-build": "npm run build"
   },

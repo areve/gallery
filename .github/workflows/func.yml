@@ -21,12 +21,12 @@ jobs:
 
       - name: Install
         run: yarn install --frozen-lockfile
-        working-directory: ./api2/
+        working-directory: ./gallery-api/
         shell: bash
 
       - name: Build
         run: yarn build
-        working-directory: ./api2/
+        working-directory: ./gallery-api/
         shell: bash
 
       - id: "auth"
@@ -39,8 +39,8 @@ jobs:
       - id: "deploy"
         uses: "google-github-actions/deploy-cloud-functions@v0"
         with:
-          source_dir: ./api2/
-          name: "helloWorld"
+          source_dir: ./gallery-api/
+          name: "gallery-api"
           runtime: "nodejs16"
 
       - id: "test"

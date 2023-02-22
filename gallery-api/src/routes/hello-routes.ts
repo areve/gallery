@@ -5,7 +5,7 @@ export const helloRoutes = express.Router();
 
 helloRoutes.use(bodyParser.json({ limit: "200mb" }));
 
-helloRoutes.get("/what", async (req, res) => {
+helloRoutes.get("/", async (req, res) => {
   res.json({
     timeIs: new Date(),
   });

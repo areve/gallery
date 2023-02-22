@@ -78,7 +78,7 @@ async function tryPost(url: string, data: any, config: AxiosRequestConfig<any>) 
 }
 
 function getBaseUrl(openApiKey: string | null) {
-  return openApiKey ? "https://api.openai.com/v1" : "/api2/openai";
+  return openApiKey ? "https://api.openai.com/v1" : "/openai";
 }
 
 function formData(value: { [key: string]: string | Blob }) {

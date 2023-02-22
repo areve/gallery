@@ -18,7 +18,7 @@ export default defineConfig(({ command }) => {
   if (command !== "build") {
     plugins.push(
       mix({
-        handler: "./api2/src/handler.ts",
+        handler: "./gallery-api/src/handler.ts",
       }),
       mix({
         handler: "./api/api.ts",
