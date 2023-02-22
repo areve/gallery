@@ -138,3 +138,6 @@ To set the OPEN_AI_KEY
 gcloud functions deploy gallery-api \
   --update-env-vars OPEN_AI_KEY=YOUR_OPEN_AI_KEY
 ```
+
+Which worked but after that I put the key in Google Secret manager
+and set `secret_environment_variables: OPEN_AI_KEY` in the yaml file
