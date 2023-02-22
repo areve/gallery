@@ -119,3 +119,22 @@ gcloud functions add-iam-policy-binding helloWorld \
 ```
 
 Done, next to make it do something better
+
+
+----
+
+## Later
+The API was renamed
+
+```bash
+gcloud functions add-iam-policy-binding gallery-api \
+  --member="allUsers" \
+  --role="roles/cloudfunctions.invoker"
+```
+
+To set the OPEN_AI_KEY 
+
+```bash
+gcloud functions deploy gallery-api \
+  --update-env-vars OPEN_AI_KEY=YOUR_OPEN_AI_KEY
+```

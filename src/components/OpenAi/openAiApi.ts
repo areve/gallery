@@ -78,7 +78,9 @@ async function tryPost(url: string, data: any, config: AxiosRequestConfig<any>) 
 }
 
 function getBaseUrl(openApiKey: string | null) {
-  return openApiKey ? "https://api.openai.com/v1" : "/openai";
+  //return openApiKey ? "https://api.openai.com/v1" : "/openai";
+  return openApiKey ? "https://api.openai.com/v1" : "https://us-central1-gallery-challen-info.cloudfunctions.net/gallery-api/openai";
+  //return openApiKey ? "https://api.openai.com/v1" : "http://localhost:8080/openai";
 }
 
 function formData(value: { [key: string]: string | Blob }) {

@@ -1,6 +1,5 @@
 import express from "express";
 import { editorRoutes } from "./routes/editor-routes";
-import { openaiRoutes } from "./routes/openai-routes";
 import { galleryRoutes } from "./routes/gallery-routes";
 
-export const handler = express().use("/api/editor", editorRoutes).use("/api/openai_old", openaiRoutes).use("/api/gallery", galleryRoutes);
+export const handler = express().use("/api/editor", editorRoutes).use("/api/gallery", galleryRoutes);
