@@ -142,4 +142,6 @@ gcloud functions deploy gallery-api \
 Which worked but after that I put the key in Google Secret manager
 and set `secret_environment_variables: OPEN_AI_KEY` in the yaml file
 
-When running locally for development then OPEN_AI_KEY must be in an environment varaiable
+When running locally for development then OPEN_AI_KEY must be in an environment variable
+
+gallery-challen-info@appspot.gserviceaccount.com needs Secret Manager Secret Accessor, i did it through the UI
