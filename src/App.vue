@@ -70,10 +70,10 @@ const callback = (response: any) => {
   loginState.value = userData.name;
 };
 
-const idConfiguration = {
-  //login_uri: "http://localhost:3000/oauth",
-  ux_mode: "redirect",
-};
+// const idConfiguration = {
+//   //login_uri: "http://localhost:3000/oauth",
+//   ux_mode: "redirect",
+// };
 onMounted(() => {
   googleOneTap({ autoLogin: true })
     .then((response) => {
@@ -91,7 +91,7 @@ onMounted(() => {
 <template>
   <div class="app-wrapper">
     <EditorApp />
-    <GoogleLogin :callback="callback" prompt auto-login :idConfiguration="idConfiguration" />
+    <GoogleLogin :callback="callback" prompt auto-login />
   </div>
 </template>
 
