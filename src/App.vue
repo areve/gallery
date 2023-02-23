@@ -62,24 +62,32 @@ import { loginState } from "./components/EditorApp/loginState";
 //   console.log("Handle the response", response, userData);
 // };
 
-onMounted(() => {
-  googleOneTap({ autoLogin: true })
-    .then((response) => {
-      // This promise is resolved when user selects an account from the the One Tap prompt
-      const userData = decodeCredential(response.credential) as any;
-      console.log("Handle the response", response, userData);
-      loginState.value = userData.name;
-    })
-    .catch((error) => {
-      console.log("Handle the error", error);
-    });
-});
+const callback = (response: any) => {
+  // This callback will be triggered automatically
+  // if one single Google account is already logged in
+  const userData = decodeCredential(response.credential) as any;
+  console.log("Handle the response", response, userData);
+  loginState.value = userData.name;
+};
+
+// onMounted(() => {
+//   googleOneTap({ autoLogin: true })
+//     .then((response) => {
+//       // This promise is resolved when user selects an account from the the One Tap prompt
+//       const userData = decodeCredential(response.credential) as any;
+//       console.log("Handle the response", response, userData);
+//       loginState.value = userData.name;
+//     })
+//     .catch((error) => {
+//       console.log("Handle the error", error);
+//     });
+// });
 </script>
 
 <template>
   <div class="app-wrapper">
     <EditorApp />
-    <!-- <GoogleLogin :callback="callback" prompt auto-login /> -->
+    <GoogleLogin :callback="callback" prompt auto-login />
   </div>
 </template>
 
