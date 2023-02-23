@@ -3013,6 +3013,11 @@ vue-tsc@^1.0.12:
     "@volar/vue-language-core" "1.0.22"
     "@volar/vue-typescript" "1.0.22"
 
+vue3-google-login@^2.0.14:
+  version "2.0.14"
+  resolved "https://registry.yarnpkg.com/vue3-google-login/-/vue3-google-login-2.0.14.tgz#bd3e582288a7626caa36023f8c628dec756d49e6"
+  integrity sha512-pgrFETY4TWgtAxTv3G7BkfoKUs8+zWB2WRc+jhGpy3fVtU1ll1vAdjGXiQfZ5XADfAJLZ2zNTDJp/0cPF3z7BQ==
+
 vue3-keypress@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/vue3-keypress/-/vue3-keypress-4.0.1.tgz#161959779dda7a0bb86902fac594c75117a0dca4"
