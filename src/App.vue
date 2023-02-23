@@ -2,6 +2,7 @@
 import { onMounted } from "vue";
 import { decodeCredential, googleOneTap } from "vue3-google-login";
 import EditorApp from "./components/EditorApp/EditorApp.vue";
+import { loginState } from "./components/EditorApp/loginState";
 
 // import { onMounted } from "vue";
 // const gAuth = googleAuth.createGAuth({
@@ -65,8 +66,9 @@ onMounted(() => {
   googleOneTap({ autoLogin: true })
     .then((response) => {
       // This promise is resolved when user selects an account from the the One Tap prompt
-      const userData = decodeCredential(response.credential);
+      const userData = decodeCredential(response.credential) as any;
       console.log("Handle the response", response, userData);
+      loginState.value = userData.name;
     })
     .catch((error) => {
       console.log("Handle the error", error);
