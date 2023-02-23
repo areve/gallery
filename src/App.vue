@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { decodeCredential } from "vue3-google-login";
 import EditorApp from "./components/EditorApp/EditorApp.vue";
 
 // import { onMounted } from "vue";
@@ -28,7 +29,7 @@ import EditorApp from "./components/EditorApp/EditorApp.vue";
 // function googleUserToProfile(googleUser: any) {
 //   const profile = googleUser?.getBasicProfile();
 //   console.log('get', profile)
-//  
+//
 //   return (
 //     (profile && {
 //       id: profile.getId(),
@@ -54,14 +55,16 @@ import EditorApp from "./components/EditorApp/EditorApp.vue";
 const callback = (response: any) => {
   // This callback will be triggered when the user selects or login to
   // his Google account from the popup
-  console.log("Handle the response", response);
+  const userData = decodeCredential(response.credential);
+
+  console.log("Handle the response", response, userData);
 };
 </script>
 
 <template>
   <div class="app-wrapper">
     <EditorApp />
-    <GoogleLogin :callback="callback" />
+    <GoogleLogin :callback="callback" prompt auto-login />
   </div>
 </template>
 
