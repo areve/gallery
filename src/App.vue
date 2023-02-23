@@ -70,24 +70,28 @@ const callback = (response: any) => {
   loginState.value = userData.name;
 };
 
-// onMounted(() => {
-//   googleOneTap({ autoLogin: true })
-//     .then((response) => {
-//       // This promise is resolved when user selects an account from the the One Tap prompt
-//       const userData = decodeCredential(response.credential) as any;
-//       console.log("Handle the response", response, userData);
-//       loginState.value = userData.name;
-//     })
-//     .catch((error) => {
-//       console.log("Handle the error", error);
-//     });
-// });
+const idConfiguration = {
+  //login_uri: "http://localhost:3000/oauth",
+  ux_mode: "redirect",
+};
+onMounted(() => {
+  googleOneTap({ autoLogin: true })
+    .then((response) => {
+      // This promise is resolved when user selects an account from the the One Tap prompt
+      const userData = decodeCredential(response.credential) as any;
+      console.log("Handle the response", response, userData);
+      loginState.value = userData.name;
+    })
+    .catch((error) => {
+      console.log("Handle the error", error);
+    });
+});
 </script>
 
 <template>
   <div class="app-wrapper">
     <EditorApp />
-    <GoogleLogin :callback="callback" prompt auto-login />
+    <GoogleLogin :callback="callback" prompt auto-login :idConfiguration="idConfiguration" />
   </div>
 </template>
 
