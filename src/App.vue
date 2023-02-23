@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { decodeCredential } from "vue3-google-login";
+import { onMounted } from "vue";
+import { decodeCredential, googleOneTap } from "vue3-google-login";
 import EditorApp from "./components/EditorApp/EditorApp.vue";
 
 // import { onMounted } from "vue";
@@ -52,19 +53,31 @@ import EditorApp from "./components/EditorApp/EditorApp.vue";
 //       this.isAuthorized = gAuth.isAuthorized;
 //       this.profile = {};
 //     },
-const callback = (response: any) => {
-  // This callback will be triggered when the user selects or login to
-  // his Google account from the popup
-  const userData = decodeCredential(response.credential);
+// const callback = (response: any) => {
+//   // This callback will be triggered when the user selects or login to
+//   // his Google account from the popup
+//   const userData = decodeCredential(response.credential);
 
-  console.log("Handle the response", response, userData);
-};
+//   console.log("Handle the response", response, userData);
+// };
+
+onMounted(() => {
+  googleOneTap({ autoLogin: true })
+    .then((response) => {
+      // This promise is resolved when user selects an account from the the One Tap prompt
+      const userData = decodeCredential(response.credential);
+      console.log("Handle the response", response, userData);
+    })
+    .catch((error) => {
+      console.log("Handle the error", error);
+    });
+});
 </script>
 
 <template>
   <div class="app-wrapper">
     <EditorApp />
-    <GoogleLogin :callback="callback" prompt auto-login />
+    <!-- <GoogleLogin :callback="callback" prompt auto-login /> -->
   </div>
 </template>
 
