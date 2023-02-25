@@ -10,10 +10,45 @@
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
+    <button id="do_thing" onclick="doThing()">Do Thing</button>
 
     <pre id="content" style="white-space: pre-wrap;"></pre>
 
     <script type="text/javascript">
+
+function doThing() {
+  const req = new XMLHttpRequest();
+  req.addEventListener("load", reqListener);
+  req.withCredentials = true
+  // req.open("GET", "https://us-central1-gallery-challen-info.cloudfunctions.net/gallery-api/hello");
+  req.open("GET", "http://localhost:8080/hello");
+  req.withCredentials = true
+  req.setRequestHeader("Authorization", "Bearer eyJ...");
+  req.withCredentials = true
+  req.send();
+// Access-Control-Allow-Origin
+function reqListener(resp) {
+  console.log(resp)
+}
+
+    const client = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: (a) => {
+            console.log('a',a)
+          }, 
+        });
+
+        if (gapi.client.getToken() === null) {
+          // Prompt the user to select a Google Account and ask for consent to share their data
+          // when establishing a new session.
+          client.requestAccessToken({prompt: 'consent'});
+        } else {
+          // Skip display of account chooser and consent dialog for an existing session.
+          client.requestAccessToken({prompt: ''});
+        }
+        
+}
       /* exported gapiLoaded */
       /* exported gisLoaded */
       /* exported handleAuthClick */
@@ -46,6 +81,7 @@
 
       /**
        * Callback after the API client is loaded. Loads the
+  
        * discovery doc to initialize the API.
        */
       async function initializeGapiClient() {
@@ -63,7 +99,7 @@
       function gisLoaded() {
         tokenClient = google.accounts.oauth2.initTokenClient({
           client_id: CLIENT_ID,
-          scope: SCOPES,
+          scope: "email profile openid",
           callback: '', // defined later
         });
         gisInited = true;
@@ -87,6 +123,7 @@
           if (resp.error !== undefined) {
             throw (resp);
           }
+          console.log(resp)
           document.getElementById('signout_button').style.visibility = 'visible';
           document.getElementById('authorize_button').innerText = 'Refresh';
           await listFiles();
@@ -144,5 +181,22 @@
     </script>
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
     <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+    <script>
+      function handleCredentialResponse(response) {
+        console.log("Encoded JWT ID token: " + response.credential);
+      }
+      window.onload = function () {
+        google.accounts.id.initialize({
+          client_id: '750379347440-mp8am6q8hg41lvkn8pi4jku3eq7ts2lq.apps.googleusercontent.com',
+          callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+          document.getElementById("buttonDiv"),
+          { theme: "outline", size: "large" }  // customization attributes
+        );
+        google.accounts.id.prompt(); // also display the One Tap dialog
+      }
+  </script>
+  <div id="buttonDiv"></div> 
   </body>
 </html>
