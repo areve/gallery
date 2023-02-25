@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { decodeCredential, googleOneTap } from "vue3-google-login";
+import { decodeCredential, googleOneTap, googleSdkLoaded } from "vue3-google-login";
 import EditorApp from "./components/EditorApp/EditorApp.vue";
 import { loginState } from "./components/EditorApp/loginState";
 
@@ -93,12 +93,33 @@ onMounted(() => {
       console.log("Handle the error", error);
     });
 });
+
+const login = () => {
+  googleSdkLoaded((google: any) => {
+    google.accounts.oauth2
+      .initCodeClient({
+        client_id: "750379347440-mp8am6q8hg41lvkn8pi4jku3eq7ts2lq.apps.googleusercontent.com",
+        scope: "email profile openid https://www.googleapis.com/auth/drive.metadata.readonly",
+        callback: (response: any) => {
+          const userData = decodeCredential(response.credential) as any;
+          console.log("Handle the response", response, userData);
+          loginState.value = {
+            name: userData.name,
+            token: response.credential,
+          };
+          console.log("loginState.value", loginState.value);
+        },
+      })
+      .requestCode();
+  });
+};
 </script>
 
 <template>
   <div class="app-wrapper">
     <EditorApp />
-    <GoogleLogin :callback="callback" prompt auto-login />
+    <button type="button" @click="login">Login</button>
+    <!-- <GoogleLogin :callback="callback" prompt auto-login /> -->
   </div>
 </template>
 
