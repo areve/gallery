@@ -1,2 +1,10 @@
 import { ref } from "vue";
-export const loginState = ref<string>("anon");
+
+interface LoginState {
+  name: string;
+  token: string | null;
+}
+export const loginState = ref<LoginState>({
+  name: "anon",
+  token: null,
+});

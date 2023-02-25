@@ -1,6 +1,7 @@
 import type { ImageResult, ImageResultError, ImageResultReady, OpenAiResponse } from "@/interfaces/OpenAiResponse";
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { epochToDate, findErrorMessage } from "../../lib/utils";
+import { loginState } from "../EditorApp/loginState";
 
 export async function openAiGenerateImage(command: { prompt: string }, openApiKey: string): Promise<ImageResult> {
   return await tryPost(
@@ -14,7 +15,7 @@ export async function openAiGenerateImage(command: { prompt: string }, openApiKe
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${openApiKey}`,
+        Authorization: `Bearer ${openApiKey ?? loginState.value.token}`,
       },
     }
   );
@@ -34,7 +35,7 @@ export async function openAiEditImage(command: { image: Blob; mask: Blob; prompt
     {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${openApiKey}`,
+        Authorization: `Bearer ${openApiKey ?? loginState.value.token}`,
       },
     }
   );
@@ -52,7 +53,7 @@ export async function openAiImageVariation(command: { image: Blob }, openApiKey:
     {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${openApiKey}`,
+        Authorization: `Bearer ${openApiKey ?? loginState.value.token}`,
       },
     }
   );

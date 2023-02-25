@@ -4,7 +4,7 @@
       <span>canvas:{{ artboardService.artwork.value.bounds.width }}x{{ artboardService.artwork.value.bounds.height }}</span>
       <span>frame:{{ artboardService.artwork.value.frame.width }}x{{ artboardService.artwork.value.frame.height }}</span>
     </div>
-    <div v-if="statusbarState.mode === 'openai'">{{ openAiPanelState.prompt }} &nbsp; {{ loginState }}</div>
+    <div v-if="statusbarState.mode === 'openai'">{{ openAiPanelState.prompt }} &nbsp; {{ loginState.name }}</div>
     <div v-if="statusbarState.mode === 'filename'">{{ artboardService.artwork.value.filename }} &nbsp;</div>
   </div>
 </template>

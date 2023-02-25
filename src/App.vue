@@ -67,7 +67,10 @@ const callback = (response: any) => {
   // if one single Google account is already logged in
   const userData = decodeCredential(response.credential) as any;
   console.log("Handle the response", response, userData);
-  loginState.value = userData.name;
+  loginState.value = {
+    name: userData.name,
+    token: response.credential,
+  };
 };
 
 // const idConfiguration = {
@@ -80,7 +83,10 @@ onMounted(() => {
       // This promise is resolved when user selects an account from the the One Tap prompt
       const userData = decodeCredential(response.credential) as any;
       console.log("Handle the response", response, userData);
-      loginState.value = userData.name;
+      loginState.value = {
+        name: userData.name,
+        token: response.credential,
+      };
     })
     .catch((error) => {
       console.log("Handle the error", error);
