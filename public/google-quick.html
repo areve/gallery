@@ -192,6 +192,7 @@ function reqListener(resp) {
     <script>
       function handleCredentialResponse(response) {
         console.log("Encoded JWT ID token: " + response.credential);
+        gapi.client.setToken({access_token: response.credential})
       }
       window.onload = function () {
         google.accounts.id.initialize({
