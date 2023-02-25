@@ -12,4 +12,9 @@ export const openApiProxy = proxy("api.openai.com", {
     opts.headers.Authorization = `Bearer ${apiKey}`;
     return opts;
   },
+  userResHeaderDecorator(headers) {
+    headers["Access-Control-Allow-Origin"] = "*";
+    headers["Access-Control-Allow-Methods"] = "GET, POST";
+    return headers;
+  },
 });
