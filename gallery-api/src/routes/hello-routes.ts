@@ -12,3 +12,11 @@ helloRoutes.get("/", async (req, res) => {
     timeIs: new Date(),
   });
 });
+
+helloRoutes.options("/", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.json({
+    timeIs: new Date(),
+  });
+});
