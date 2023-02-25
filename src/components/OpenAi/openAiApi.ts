@@ -16,7 +16,7 @@ export async function openAiGenerateImage(command: { prompt: string }, openApiKe
     {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${loginState.value.token}`,
+        Authorization: `Bearer ${openApiKey || loginState.value.token}`,
       },
     }
   );
@@ -36,7 +36,7 @@ export async function openAiEditImage(command: { image: Blob; mask: Blob; prompt
     {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${loginState.value.token}`,
+        Authorization: `Bearer ${openApiKey || loginState.value.token}`,
       },
     }
   );
@@ -54,7 +54,7 @@ export async function openAiImageVariation(command: { image: Blob }, openApiKey:
     {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${loginState.value.token}`,
+        Authorization: `Bearer ${openApiKey || loginState.value.token}`,
       },
     }
   );
