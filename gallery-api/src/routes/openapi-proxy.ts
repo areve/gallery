@@ -4,6 +4,7 @@ import proxy from "express-http-proxy";
 // const env = dotenv.config().parsed!;
 const apiKey = process.env.OPEN_AI_KEY;
 
+//export const openApiProxy = proxy("api.openai.com", {
 export const openApiProxy = proxy("api.openai.com", {
   https: true,
   limit: "10mb",
@@ -13,8 +14,9 @@ export const openApiProxy = proxy("api.openai.com", {
     return opts;
   },
   userResHeaderDecorator(headers) {
-    headers["Access-Control-Allow-Origin"] = "*";
-    headers["Access-Control-Allow-Methods"] = "GET, POST";
-    return headers;
+    return {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    };
   },
 });
