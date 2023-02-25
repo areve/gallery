@@ -11,11 +11,19 @@
     <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
     <button id="do_thing" onclick="doThing()">Do Thing</button>
+    <button id="do_thing2" onclick="doThing2()">Do Thing2</button>
 
     <pre id="content" style="white-space: pre-wrap;"></pre>
 
     <script type="text/javascript">
 
+async function doThing2() {
+  console.log('gapi.client.getToken()', gapi.client.getToken())
+  response = await gapi.client.drive.files.list({
+      'pageSize': 10,
+      'fields': 'files(id, name)',
+    });
+}
 function doThing() {
   const req = new XMLHttpRequest();
   req.addEventListener("load", reqListener);
@@ -23,7 +31,7 @@ function doThing() {
   // req.open("GET", "https://us-central1-gallery-challen-info.cloudfunctions.net/gallery-api/hello");
   req.open("GET", "http://localhost:8080/hello");
   req.withCredentials = true
-  req.setRequestHeader("Authorization", "Bearer eyJ...");
+  req.setRequestHeader("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImQyNWY4ZGJjZjk3ZGM3ZWM0MDFmMDE3MWZiNmU2YmRhOWVkOWU3OTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYmYiOjE2NzczMzgyMTQsImF1ZCI6Ijc1MDM3OTM0NzQ0MC1tcDhhbTZxOGhnNDFsdmtuOHBpNGprdTNlcTd0czJscS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExNjk3NjkyNzk1MjMzNzc5NDkzNyIsImVtYWlsIjoiYW5kcmV3Y2hhbGxlbkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXpwIjoiNzUwMzc5MzQ3NDQwLW1wOGFtNnE4aGc0MWx2a244cGk0amt1M2VxN3RzMmxxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwibmFtZSI6IkFuZHJldyBDaGFsbGVuIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FHTm15eFpfLXBHZFRHNXFzckptQzNwTVU5Wk5scUx2WVZnREduV1VvZ09oPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IkFuZHJldyIsImZhbWlseV9uYW1lIjoiQ2hhbGxlbiIsImlhdCI6MTY3NzMzODUxNCwiZXhwIjoxNjc3MzQyMTE0LCJqdGkiOiI1MDQyN2I0MDM5Y2FjOGEzMTBjZmZhZDVhMjNkNjg1NzE4YzY0NDgyIn0.Crecw79O1g8iz1XTrgzNmX37nhpIOJ7z70adwH5stQYdNsUE21f8Ld-k4QS3CgGjJWnYN-iY2oI0e0aWlXTVwFPyPSqnGZ1tXMLMLH_x3yxkGajgy4GzxSgcYLY1-QW5pZwNLQ4v-F646uE3GfjoWGIJ_KugjPI2pdU6lBWknPRgobiNYMIt8q_ZDajcCtRAzoHeBPXbppUKZ6imVv7VuZTjbKDge7dDMX_EpDIK2g1LNVwBt0qMLSSGYlV_iRQgGD07ivgooIXj9YasaQAjoaA5w-xIi-IayJrOCgZ2UfMMIR_424gtitJzpGZcgUwXZAnNs1Eb-_S9I4rtm_nIew");
   req.withCredentials = true
   req.send();
 // Access-Control-Allow-Origin
@@ -31,22 +39,22 @@ function reqListener(resp) {
   console.log(resp)
 }
 
-    const client = google.accounts.oauth2.initTokenClient({
-          client_id: CLIENT_ID,
-          scope: SCOPES,
-          callback: (a) => {
-            console.log('a',a)
-          }, 
-        });
+    // const client = google.accounts.oauth2.initTokenClient({
+    //       client_id: CLIENT_ID,
+    //       scope: SCOPES,
+    //       callback: (a) => {
+    //         console.log('a',a)
+    //       }, 
+    //     });
 
-        if (gapi.client.getToken() === null) {
-          // Prompt the user to select a Google Account and ask for consent to share their data
-          // when establishing a new session.
-          client.requestAccessToken({prompt: 'consent'});
-        } else {
-          // Skip display of account chooser and consent dialog for an existing session.
-          client.requestAccessToken({prompt: ''});
-        }
+    //     if (gapi.client.getToken() === null) {
+    //       // Prompt the user to select a Google Account and ask for consent to share their data
+    //       // when establishing a new session.
+    //       client.requestAccessToken({prompt: 'consent'});
+    //     } else {
+    //       // Skip display of account chooser and consent dialog for an existing session.
+    //       client.requestAccessToken({prompt: ''});
+    //     }
         
 }
       /* exported gapiLoaded */
