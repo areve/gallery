@@ -87,6 +87,7 @@ onMounted(() => {
         name: userData.name,
         token: response.credential,
       };
+      console.log("loginState.value", loginState.value);
     })
     .catch((error) => {
       console.log("Handle the error", error);

@@ -4,6 +4,7 @@ import { epochToDate, findErrorMessage } from "../../lib/utils";
 import { loginState } from "../EditorApp/loginState";
 
 export async function openAiGenerateImage(command: { prompt: string }, openApiKey: string): Promise<ImageResult> {
+  console.log("loginState.value", loginState.value);
   return await tryPost(
     `${getBaseUrl(openApiKey)}/images/generations`,
     {
