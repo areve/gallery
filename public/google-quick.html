@@ -5,207 +5,143 @@
     <meta charset="utf-8" />
   </head>
   <body>
-    <p>Drive API Quickstart</p>
-
-    <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+    <div id="buttonDiv"  
+    ></div>
+    <button id="authorize_button" onclick="handleAuthClick()">Auth</button>
+    <button id="authorize_button" onclick="listFiles()">List</button>
+    <button id="authorize_button" onclick="clearList()">Clear list</button>
+    <!-- <button id="authorize_button" onclick="listOnly()">List only</button> -->
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
-    <button id="do_thing" onclick="doThing()">Do Thing</button>
-    <button id="do_thing2" onclick="doThing2()">Do Thing2</button>
 
-    <pre id="content" style="white-space: pre-wrap;"></pre>
+    <button id="call_api" onclick="callApi()">Call API</button>
+
+    <div>id_token from "Sign in with Google" - good for my API's</div>
+    <pre id="gsi_client" style="white-space: pre-wrap"></pre>
+    <div>access_token from "tokenClient.requestAccessToken()" - good for Googel API's</div>
+    <pre id="initTokenClient" style="white-space: pre-wrap"></pre>
+    <div>list (from a Googel API):</div>
+    <pre id="list" style="white-space: pre-wrap"></pre>
 
     <script type="text/javascript">
+      const CLIENT_ID = "750379347440-mp8am6q8hg41lvkn8pi4jku3eq7ts2lq.apps.googleusercontent.com";
+      const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest";
+      let tokenClient = null;
+      let tokenCache = null;
+      let tokenCache2 = null;
 
-async function doThing2() {
-  console.log('gapi.client.getToken()', gapi.client.getToken())
-  response = await gapi.client.drive.files.list({
-      'pageSize': 10,
-      'fields': 'files(id, name)',
-    });
-}
-function doThing() {
-  const req = new XMLHttpRequest();
-  req.addEventListener("load", reqListener);
-  req.withCredentials = true
-  // req.open("GET", "https://us-central1-gallery-challen-info.cloudfunctions.net/gallery-api/hello");
-  req.open("GET", "http://localhost:8080/hello");
-  req.withCredentials = true
-  req.setRequestHeader("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImQyNWY4ZGJjZjk3ZGM3ZWM0MDFmMDE3MWZiNmU2YmRhOWVkOWU3OTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJuYmYiOjE2NzczMzgyMTQsImF1ZCI6Ijc1MDM3OTM0NzQ0MC1tcDhhbTZxOGhnNDFsdmtuOHBpNGprdTNlcTd0czJscS5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjExNjk3NjkyNzk1MjMzNzc5NDkzNyIsImVtYWlsIjoiYW5kcmV3Y2hhbGxlbkBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXpwIjoiNzUwMzc5MzQ3NDQwLW1wOGFtNnE4aGc0MWx2a244cGk0amt1M2VxN3RzMmxxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwibmFtZSI6IkFuZHJldyBDaGFsbGVuIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FHTm15eFpfLXBHZFRHNXFzckptQzNwTVU5Wk5scUx2WVZnREduV1VvZ09oPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IkFuZHJldyIsImZhbWlseV9uYW1lIjoiQ2hhbGxlbiIsImlhdCI6MTY3NzMzODUxNCwiZXhwIjoxNjc3MzQyMTE0LCJqdGkiOiI1MDQyN2I0MDM5Y2FjOGEzMTBjZmZhZDVhMjNkNjg1NzE4YzY0NDgyIn0.Crecw79O1g8iz1XTrgzNmX37nhpIOJ7z70adwH5stQYdNsUE21f8Ld-k4QS3CgGjJWnYN-iY2oI0e0aWlXTVwFPyPSqnGZ1tXMLMLH_x3yxkGajgy4GzxSgcYLY1-QW5pZwNLQ4v-F646uE3GfjoWGIJ_KugjPI2pdU6lBWknPRgobiNYMIt8q_ZDajcCtRAzoHeBPXbppUKZ6imVv7VuZTjbKDge7dDMX_EpDIK2g1LNVwBt0qMLSSGYlV_iRQgGD07ivgooIXj9YasaQAjoaA5w-xIi-IayJrOCgZ2UfMMIR_424gtitJzpGZcgUwXZAnNs1Eb-_S9I4rtm_nIew");
-  req.withCredentials = true
-  req.send();
-// Access-Control-Allow-Origin
-function reqListener(resp) {
-  console.log(resp)
-}
+      async function clearList() {
+        document.getElementById("list").innerText = "";
+      }
 
-    // const client = google.accounts.oauth2.initTokenClient({
-    //       client_id: CLIENT_ID,
-    //       scope: SCOPES,
-    //       callback: (a) => {
-    //         console.log('a',a)
-    //       }, 
-    //     });
-
-    //     if (gapi.client.getToken() === null) {
-    //       // Prompt the user to select a Google Account and ask for consent to share their data
-    //       // when establishing a new session.
-    //       client.requestAccessToken({prompt: 'consent'});
-    //     } else {
-    //       // Skip display of account chooser and consent dialog for an existing session.
-    //       client.requestAccessToken({prompt: ''});
-    //     }
-        
-}
-      /* exported gapiLoaded */
-      /* exported gisLoaded */
-      /* exported handleAuthClick */
-      /* exported handleSignoutClick */
-
-      // TODO(developer): Set to client ID and API key from the Developer Console
-      const CLIENT_ID = '750379347440-mp8am6q8hg41lvkn8pi4jku3eq7ts2lq.apps.googleusercontent.com';
-      const API_KEY = '<YOUR_API_KEY>';
-
-      // Discovery doc URL for APIs used by the quickstart
-      const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
-
-      // Authorization scopes required by the API; multiple scopes can be
-      // included, separated by spaces.
-      const SCOPES = 'https://www.googleapis.com/auth/drive.metadata.readonly';
-
-      let tokenClient;
-      let gapiInited = false;
-      let gisInited = false;
-
-      document.getElementById('authorize_button').style.visibility = 'hidden';
-      document.getElementById('signout_button').style.visibility = 'hidden';
-
-      /**
-       * Callback after api.js is loaded.
-       */
       function gapiLoaded() {
-        gapi.load('client', initializeGapiClient);
-      }
-
-      /**
-       * Callback after the API client is loaded. Loads the
-  
-       * discovery doc to initialize the API.
-       */
-      async function initializeGapiClient() {
-        await gapi.client.init({
-          // apiKey: API_KEY,
-          discoveryDocs: [DISCOVERY_DOC],
+        gapi.load("client", async function () {
+          await gapi.client.init({
+            discoveryDocs: [DISCOVERY_DOC]
+          });
         });
-        gapiInited = true;
-        maybeEnableButtons();
       }
 
-      /**
-       * Callback after Google Identity Services are loaded.
-       */
       function gisLoaded() {
         tokenClient = google.accounts.oauth2.initTokenClient({
           client_id: CLIENT_ID,
-          scope: "email profile openid",
-          callback: '', // defined later
+          //discoveryDocs: [DISCOVERY_DOC],
+          scope: "email profile openid https://www.googleapis.com/auth/drive.metadata.readonly",
+          ux_mode: 'popup',
+          response_type: "code token id_token",
+          callback: "", // defined later
+          error_callback: "" // define it later
         });
         gisInited = true;
-        maybeEnableButtons();
+        // decodeCredential
       }
 
-      /**
-       * Enables user interaction after all libraries are loaded.
-       */
-      function maybeEnableButtons() {
-        if (gapiInited && gisInited) {
-          document.getElementById('authorize_button').style.visibility = 'visible';
-        }
-      }
-
-      /**
-       *  Sign in the user upon button click.
-       */
-      function handleAuthClick() {
-        tokenClient.callback = async (resp) => {
-          if (resp.error !== undefined) {
-            throw (resp);
+      async function handleAuthClick() {
+        tokenClient.callback = async (response) => {
+          if (response.error !== undefined) {
+            throw response;
           }
-          console.log(resp)
-          document.getElementById('signout_button').style.visibility = 'visible';
-          document.getElementById('authorize_button').innerText = 'Refresh';
-          await listFiles();
+
+//          const data = JSON.stringify(parseJwt(response.access_token), null, "  ") + "\n" + JSON.stringify(response, null, "  ");
+            
+          document.getElementById("initTokenClient").innerText = JSON.stringify(response, null, "  ");
+          console.log(response);
+
         };
 
         if (gapi.client.getToken() === null) {
-          // Prompt the user to select a Google Account and ask for consent to share their data
-          // when establishing a new session.
-          tokenClient.requestAccessToken({prompt: 'consent'});
-        } else {
-          // Skip display of account chooser and consent dialog for an existing session.
-          tokenClient.requestAccessToken({prompt: ''});
+          // tokenClient.requestAccessToken({ prompt: "" });
+          tokenClient.requestAccessToken({ prompt: "", hint: "andrewchallen@gmail.com" });
+          // tokenClient.requestAccessToken();
+        } 
+      }
+      function parseJwt(token) {
+        var base64Url = token.split(".")[1];
+        var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        var jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map(function (c) {
+              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join("")
+        );
+
+        return JSON.parse(jsonPayload);
+      }
+      async function listFiles() {
+        console.log("listFiles", (gapi.client.getToken()?.access_token || "").substring(0, 10) + "...");
+        let response;
+        try {
+          response = await gapi.client.drive.files.list({
+            pageSize: 10,
+            fields: "files(id, name)"
+          });
+        } catch (err) {
+          document.getElementById("list").innerText = err.message;
+          return;
         }
+
+        document.getElementById("list").innerText = JSON.stringify(response.result, null, "  ");
       }
 
-      /**
-       *  Sign out the user upon button click.
-       */
+      window.onload = function () {
+        google.accounts.id.initialize({
+          client_id: CLIENT_ID,
+          auto_select: true,
+          callback: function (response) {
+            const data = JSON.stringify(parseJwt(response.credential), null, "  ") + "\n" + JSON.stringify(response, null, "  ");
+            document.getElementById("gsi_client").innerText = data;
+            tokenCache = response;
+          }
+        });
+
+        google.accounts.id.renderButton(document.getElementById("buttonDiv"), { theme: "outline", size: "large" });
+        google.accounts.id.prompt();
+      };
       function handleSignoutClick() {
         const token = gapi.client.getToken();
         if (token !== null) {
           google.accounts.oauth2.revoke(token.access_token);
-          gapi.client.setToken('');
-          document.getElementById('content').innerText = '';
-          document.getElementById('authorize_button').innerText = 'Authorize';
-          document.getElementById('signout_button').style.visibility = 'hidden';
+          gapi.client.setToken("");
         }
+        // TODO also
+        // google.accounts.id.revoke(hint, callback)
       }
-
-      /**
-       * Print metadata for first 10 files.
-       */
-      async function listFiles() {
-        let response;
-        try {
-          response = await gapi.client.drive.files.list({
-            'pageSize': 10,
-            'fields': 'files(id, name)',
-          });
-        } catch (err) {
-          document.getElementById('content').innerText = err.message;
-          return;
-        }
-        const files = response.result.files;
-        if (!files || files.length == 0) {
-          document.getElementById('content').innerText = 'No files found.';
-          return;
-        }
-        // Flatten to string to display
-        const output = files.reduce(
-            (str, file) => `${str}${file.name} (${file.id})\n`,
-            'Files:\n');
-        document.getElementById('content').innerText = output;
+      function callApi() {
+        const req = new XMLHttpRequest();
+        req.addEventListener("load", function reqListener(resp) {
+          console.log(resp);
+        });
+        req.withCredentials = true;
+        req.open("GET", "http://localhost:8080/hello");
+        req.withCredentials = true;
+        console.log("GET http://localhost:8080/hello", (tokenCache?.credential || "").substring(0, 10) + "...");
+        req.setRequestHeader("Authorization", "Bearer " + tokenCache?.credential);
+        req.withCredentials = true;
+        req.send();
       }
     </script>
     <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
     <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
-    <script>
-      function handleCredentialResponse(response) {
-        console.log("Encoded JWT ID token: " + response.credential);
-        gapi.client.setToken({access_token: response.credential})
-      }
-      window.onload = function () {
-        google.accounts.id.initialize({
-          client_id: '750379347440-mp8am6q8hg41lvkn8pi4jku3eq7ts2lq.apps.googleusercontent.com',
-          callback: handleCredentialResponse
-        });
-        google.accounts.id.renderButton(
-          document.getElementById("buttonDiv"),
-          { theme: "outline", size: "large" }  // customization attributes
-        );
-        google.accounts.id.prompt(); // also display the One Tap dialog
-      }
-  </script>
-  <div id="buttonDiv"></div> 
   </body>
 </html>
