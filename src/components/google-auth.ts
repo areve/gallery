@@ -57,7 +57,7 @@ async function initialize(options: Options) {
         "&scope=" +
         encodeURIComponent(scope) +
         "&redirect_uri=" +
-        encodeURIComponent(document.location.href.split("#")[0]) +
+        encodeURIComponent(document.location.origin) +
         "&login_hint=" +
         encodeURIComponent(hint) +
         "&response_type=token" +
