@@ -18,7 +18,9 @@ function defaultTokens() {
 }
 export const tokens = ref<Tokens>(defaultTokens());
 
-tokens.value = JSON.parse(sessionStorage.getItem("tokens") || "{}") as any;
+if (sessionStorage.getItem("tokens")) {
+  tokens.value = JSON.parse(sessionStorage.getItem("tokens")!);
+}
 
 interface Options {
   buttonWrapper: Ref<HTMLDivElement>;
