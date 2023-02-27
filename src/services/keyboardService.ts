@@ -186,7 +186,7 @@ function getKey(key: string) {
 
 export function addKeysForMenuItems(items: MenuItem[]) {
   const keyConfigs = getKeyConfigs(items);
-  console.log(keyConfigs)
+  console.log(keyConfigs);
   useKeypress({
     keyEvent: "keyup",
     keyBinds: [...keyUpBinds(keyConfigs)],

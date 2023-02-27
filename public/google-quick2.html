@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Google Auth</title>
+    <title>Drive API Quickstart</title>
     <meta charset="utf-8" />
   </head>
   <body>
@@ -153,8 +153,8 @@
       window.onload = function () {
         google.accounts.id.initialize({
           client_id: CLIENT_ID,
-          // ux_mode: "redirect", // this worked, but needs my redirect page
-          // login_uri: "http://localhost:8080/login", // this worked, but needs my redirect page
+          ux_mode: "redirect", // this worked, but needs my redirect page
+          login_uri: "http://localhost:8080/login", // this worked, but needs my redirect page
           scope: "email profile openid https://www.googleapis.com/auth/drive.metadata.readonly",
           auto_select: true,
           callback: function (response) {
