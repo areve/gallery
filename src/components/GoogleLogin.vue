@@ -1,15 +1,15 @@
 <template>
-  <div ref="buttonWrapper" v-show="!tokens.idToken"></div>
-  <button type="button" @click="signout" v-show="tokens.accessToken">Sign Out</button>
-  <div v-show="!!tokens.accessToken != !!tokens.idToken">LOADING</div>
-  <div v-show="!!tokens.accessToken == !!tokens.idToken">
+  <div ref="buttonWrapper" v-show="authState.state === 'signed_out'"></div>
+  <button type="button" @click="signout" v-show="authState.state === 'signed_in'">Sign Out</button>
+  <div v-show="authState.state === 'in_progress'">LOADING</div>
+  <!-- <div v-show="tokens.state === 'signed_in'">
     {{ tokens }}
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { signout, use, tokens } from "./google-auth";
+import { signout, use, authState } from "./google-auth";
 
 const buttonWrapper = ref<HTMLDivElement>(undefined!);
 

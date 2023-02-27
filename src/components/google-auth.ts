@@ -5,23 +5,30 @@ declare let google: any;
 const client_id = "750379347440-mp8am6q8hg41lvkn8pi4jku3eq7ts2lq.apps.googleusercontent.com";
 const scope = "email profile openid https://www.googleapis.com/auth/drive.metadata.readonly";
 
-export interface Tokens {
+export interface AuthState {
   idToken: string | null;
   accessToken: string | null;
+  state: "in_progress" | "signed_in" | "signed_out";
 }
 
 function defaultTokens() {
-  return {
+  return <AuthState>{
     idToken: null,
     accessToken: null,
+    state: "signed_out",
   };
 }
-export const tokens = ref<Tokens>(defaultTokens());
+export const authState = ref<AuthState>(defaultTokens());
 
 if (sessionStorage.getItem("tokens")) {
-  tokens.value = JSON.parse(sessionStorage.getItem("tokens")!);
+  authState.value = JSON.parse(sessionStorage.getItem("tokens")!);
 }
 
+function getAuthState() {
+  if (!!authState.value.accessToken !== !!authState.value.idToken) return "in_progress";
+  if (!!authState.value.accessToken && !!authState.value.idToken) return "signed_in";
+  return "signed_out";
+}
 interface Options {
   buttonWrapper: Ref<HTMLDivElement>;
 }
@@ -38,8 +45,9 @@ function getHashObject() {
 async function initialize(options: Options) {
   const hashObject = getHashObject();
   if (hashObject.access_token) {
-    tokens.value.accessToken = hashObject.access_token;
-    sessionStorage.setItem("tokens", JSON.stringify(tokens.value));
+    authState.value.accessToken = hashObject.access_token;
+    authState.value.state = getAuthState();
+    sessionStorage.setItem("tokens", JSON.stringify(authState.value));
     removeHash();
   }
   await waitUntilLoaded();
@@ -65,8 +73,9 @@ async function initialize(options: Options) {
         "&response_type=token" +
         "&include_granted_scopes=true" +
         "&enable_serial_consent=true";
-      tokens.value.idToken = response.credential;
-      sessionStorage.setItem("tokens", JSON.stringify(tokens.value));
+      authState.value.idToken = response.credential;
+      authState.value.state = getAuthState();
+      sessionStorage.setItem("tokens", JSON.stringify(authState.value));
     },
   });
 
@@ -77,7 +86,7 @@ async function initialize(options: Options) {
     size: "medium",
   });
 
-  if (!tokens.value.accessToken && !tokens.value.idToken) {
+  if (!authState.value.accessToken && !authState.value.idToken) {
     google.accounts.id.prompt();
   }
 
@@ -126,9 +135,9 @@ export function use(options: Options) {
 }
 
 export function signout() {
-  google.accounts.oauth2.revoke(tokens.value.accessToken, (result: any) => {
+  google.accounts.oauth2.revoke(authState.value.accessToken, (result: any) => {
     if (result.error) console.error(result);
-    tokens.value = defaultTokens();
-    sessionStorage.setItem("tokens", JSON.stringify(tokens.value));
+    authState.value = defaultTokens();
+    sessionStorage.setItem("tokens", JSON.stringify(authState.value));
   });
 }

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import EditorApp from "./components/EditorApp/EditorApp.vue";
+import { authState } from "./components/google-auth";
 import GoogleLogin from "./components/GoogleLogin.vue";
+
+
 </script>
 
 <template>
   <div class="app-wrapper">
-    <!-- <EditorApp /> -->
     <GoogleLogin />
+    <EditorApp v-if="authState.state === 'signed_in'" />
   </div>
 </template>
 
