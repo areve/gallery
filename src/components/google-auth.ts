@@ -57,7 +57,7 @@ async function initialize(options: Options) {
         "&scope=" +
         encodeURIComponent(scope) +
         "&redirect_uri=" +
-        encodeURIComponent("http://localhost:5173") +
+        encodeURIComponent(document.location.href.split("#")[0]) +
         "&login_hint=" +
         encodeURIComponent(hint) +
         "&response_type=token" +
