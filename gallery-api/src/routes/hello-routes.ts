@@ -19,7 +19,7 @@ helloRoutes.get("/", async (req, res) => {
   async function verify() {
     const ticket = await client.verifyIdToken({
       idToken: token,
-      // audience: CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
+      audience: CLIENT_ID, // Specify the CLIENT_ID of the app that accesses the backend
       // Or, if multiple clients access the backend:
       //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
     });
@@ -32,7 +32,15 @@ helloRoutes.get("/", async (req, res) => {
       userid,
     };
   }
-  const result = await verify().catch(console.error);
+  const result = await verify().catch((e) => {
+    console.error(e.toString()); // JSON.stringify doesn't work on this object!?
+    res.status(403).json({
+      error: "not allowed",
+      timeIs: new Date(),
+    });
+    return false;
+  });
+  if (!result) return;
   console.log(result);
 
   res.json({
