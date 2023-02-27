@@ -75,7 +75,9 @@ async function initialize(options: Options) {
     size: "medium",
   });
 
-  google.accounts.id.prompt();
+  if (!tokens.value.accessToken && !tokens.value.idToken) {
+    google.accounts.id.prompt();
+  }
 
   function waitUntilLoaded() {
     function test(resolve: (result: boolean) => void) {
