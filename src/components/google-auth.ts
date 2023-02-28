@@ -82,17 +82,14 @@ async function initialize(options: GoogleAuthOptions) {
     size: "medium",
   });
 
-  if (!authState.value.accessToken && !authState.value.idToken) {
-    //google.accounts.id.prompt(); // TODO it's kind of nice sometimes
+  if (getAuthState() == "signed_out") {
+    //google.accounts.id.prompt(); // TODO it's nice sometimes but it can't do simultaneous "id_token token" login
   }
 
   function waitUntilLoaded() {
     function test(resolve: (result: boolean) => void) {
-      if (options.buttonWrapper.value) {
-        resolve(true);
-      } else {
-        setTimeout(() => test(resolve));
-      }
+      if (options.buttonWrapper.value) resolve(true);
+      else setTimeout(() => test(resolve));
     }
     return new Promise(test);
   }

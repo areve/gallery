@@ -1,7 +1,7 @@
 <template>
-  <div ref="buttonWrapper" v-show="authState.mode() === 'signed_out'"></div>
-  <button type="button" @click="signOut" v-show="authState.mode() === 'signed_in'">Sign Out</button>
-  <button type="button" @click="signIn" v-show="authState.mode() === 'signed_out'">Sign In</button>
+  <div ref="buttonWrapper" v-show="getAuthState() === 'signed_out'"></div>
+  <button type="button" @click="signOut" v-show="getAuthState() === 'signed_in'">Sign Out</button>
+  <button type="button" @click="signIn" v-show="getAuthState() === 'signed_out'">Sign In</button>
   <button type="button" @click="getIdToken">getIdToken</button>
   <button type="button" @click="getAccessToken">getAccessToken</button>
   <button type="button" @click="getBothTokens">getBothTokens</button>
