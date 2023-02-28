@@ -82,6 +82,7 @@ async function initialize(options: GoogleAuthOptions) {
 
   function waitUntilLoaded() {
     function test(resolve: (result: boolean) => void) {
+      // TODO must wait for onload of script and onmounted of the wrapper
       if (options.buttonWrapper.value) resolve(true);
       else setTimeout(() => test(resolve));
     }
