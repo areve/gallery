@@ -1,4 +1,4 @@
-import { ref, watchSyncEffect, type Ref } from "vue";
+import { computed, ref, type ComputedRef, type Ref } from "vue";
 import { v4 as uuid } from "uuid";
 import { usePersistentState } from "@/services/persistenceService";
 
@@ -8,32 +8,34 @@ const client_id = "750379347440-mp8am6q8hg41lvkn8pi4jku3eq7ts2lq.apps.googleuser
 const id_scope = "email profile openid";
 const all_scope = id_scope + " https://www.googleapis.com/auth/drive.metadata.readonly";
 
+type AuthStateMode = "in_progress" | "signed_in" | "signed_out";
+
+interface GoogleAuthOptions {
+  buttonWrapper: Ref<HTMLDivElement>;
+}
+
 export interface AuthState {
   idToken: string | null;
   accessToken: string | null;
-  mode: "in_progress" | "signed_in" | "signed_out";
-  state: string | null;
+  oauthState: string | null;
+}
+
+export const authState = ref<AuthState>(defaultTokens());
+usePersistentState("authState", authState);
+loadFromHash();
+
+export function getAuthState(): AuthStateMode {
+  if (!!authState.value.accessToken !== !!authState.value.idToken) return "in_progress";
+  if (!!authState.value.accessToken && !!authState.value.idToken) return "signed_in";
+  return "signed_out";
 }
 
 function defaultTokens() {
   return <AuthState>{
     idToken: null,
     accessToken: null,
-    mode: "signed_out",
-    state: null,
+    oauthState: null,
   };
-}
-
-export const authState = ref<AuthState>(defaultTokens());
-usePersistentState("authState", authState);
-
-function getAuthState() {
-  if (!!authState.value.accessToken !== !!authState.value.idToken) return "in_progress";
-  if (!!authState.value.accessToken && !!authState.value.idToken) return "signed_in";
-  return "signed_out";
-}
-interface Options {
-  buttonWrapper: Ref<HTMLDivElement>;
 }
 
 function getHashObject() {
@@ -49,22 +51,21 @@ function getHashObject() {
 function loadFromHash() {
   const hashObject = getHashObject();
   if (hashObject.state) {
-    // TODO I think I should really check state is the same here
-    if (hashObject.access_token) authState.value.accessToken = hashObject.access_token;
-    if (hashObject.id_token) authState.value.idToken = hashObject.id_token;
-    authState.value.mode = getAuthState();
+    if (hashObject.state === authState.value.oauthState) {
+      if (hashObject.access_token) authState.value.accessToken = hashObject.access_token;
+      if (hashObject.id_token) authState.value.idToken = hashObject.id_token;
+    }
+    authState.value.oauthState = null;
     removeHashFromAddressBar();
   }
 }
-loadFromHash();
 
-async function initialize(options: Options) {
+async function initialize(options: GoogleAuthOptions) {
   await waitUntilLoaded();
-  const opts = {
+  google.accounts.id.initialize({
     client_id,
-    // ux_mode: "redirect", // this worked, but needs my redirect page to receive the POST
-    // login_uri: "http://localhost:8080/login", // this worked, but needs my redirect page to receive the POST
-    response_type: "token id_token",
+    // ux_mode: "redirect", // this worked, but needed http://localhost:8080/login to receive the POST
+    // login_uri: "http://localhost:8080/login",
     scope: all_scope,
     auto_select: true,
     callback: (response: any) => {
@@ -72,8 +73,7 @@ async function initialize(options: Options) {
       const hint = parseJwt(response.credential).email;
       getToken("token", hint);
     },
-  };
-  google.accounts.id.initialize(opts);
+  });
 
   google.accounts.id.renderButton(options.buttonWrapper.value, {
     theme: "filled_blue",
@@ -126,7 +126,7 @@ function addScript(script: string, onload: (event: Event) => any) {
   document.head.appendChild(tag);
 }
 
-export function use(options: Options) {
+export function use(options: GoogleAuthOptions) {
   addScript("https://accounts.google.com/gsi/client", () => initialize(options));
 }
 
@@ -138,12 +138,12 @@ export function signOut() {
 }
 
 function getToken(type: "token" | "id_token" | "id_token token", hint?: string) {
-  const state = uuid();
-  let uri =
+  authState.value.oauthState = uuid();
+  let location =
     "https://accounts.google.com/o/oauth2/v2/auth" +
     "?gsiwebsdk=3" +
     "&select_account=false" +
-    `&state=${state}` +
+    `&state=${authState.value.oauthState}` +
     `&client_id=${encodeURIComponent(client_id)}` +
     `&redirect_uri=${encodeURIComponent(document.location.origin)}` +
     (hint ? `&login_hint=${encodeURIComponent(hint)}` : "") +
@@ -151,19 +151,17 @@ function getToken(type: "token" | "id_token" | "id_token token", hint?: string) 
     "&enable_serial_consent=true";
 
   if (type.split(" ").find((x) => x === "token")) {
-    uri += "&include_granted_scopes=true";
-    uri += `&scope=${encodeURIComponent(all_scope)}`;
+    location += "&include_granted_scopes=true";
+    location += `&scope=${encodeURIComponent(all_scope)}`;
   } else {
-    uri += `&scope=${encodeURIComponent(id_scope)}`;
+    location += `&scope=${encodeURIComponent(id_scope)}`;
   }
 
   if (type.split(" ").find((x) => x === "id_token")) {
-    uri += `&nonce=${uuid()}`;
+    location += `&nonce=${uuid()}`;
   }
 
-  document.location = uri;
-
-  authState.value.mode = getAuthState();
+  document.location = location;
 }
 
 export function signIn() {
