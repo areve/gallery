@@ -1,5 +1,6 @@
-import { ref, type Ref } from "vue";
+import { ref, watchSyncEffect, type Ref } from "vue";
 import { v4 as uuid } from "uuid";
+import { usePersistentState } from "@/services/persistenceService";
 
 declare let google: any;
 
@@ -10,21 +11,21 @@ const all_scope = id_scope + " https://www.googleapis.com/auth/drive.metadata.re
 export interface AuthState {
   idToken: string | null;
   accessToken: string | null;
-  state: "in_progress" | "signed_in" | "signed_out";
+  mode: "in_progress" | "signed_in" | "signed_out";
+  state: string | null;
 }
 
 function defaultTokens() {
   return <AuthState>{
     idToken: null,
     accessToken: null,
-    state: "signed_out",
+    mode: "signed_out",
+    state: null,
   };
 }
-export const authState = ref<AuthState>(defaultTokens());
 
-if (sessionStorage.getItem("tokens")) {
-  authState.value = JSON.parse(sessionStorage.getItem("tokens")!);
-}
+export const authState = ref<AuthState>(defaultTokens());
+usePersistentState("authState", authState);
 
 function getAuthState() {
   if (!!authState.value.accessToken !== !!authState.value.idToken) return "in_progress";
@@ -51,8 +52,7 @@ function loadFromHash() {
     // TODO I think I should really check state is the same here
     if (hashObject.access_token) authState.value.accessToken = hashObject.access_token;
     if (hashObject.id_token) authState.value.idToken = hashObject.id_token;
-    authState.value.state = getAuthState();
-    sessionStorage.setItem("tokens", JSON.stringify(authState.value));
+    authState.value.mode = getAuthState();
     removeHashFromAddressBar();
   }
 }
@@ -69,7 +69,6 @@ async function initialize(options: Options) {
     auto_select: true,
     callback: (response: any) => {
       authState.value.idToken = response.credential;
-      sessionStorage.setItem("tokens", JSON.stringify(authState.value));
       const hint = parseJwt(response.credential).email;
       getToken("token", hint);
     },
@@ -135,16 +134,16 @@ export function signOut() {
   google.accounts.oauth2.revoke(authState.value.accessToken, (result: any) => {
     if (result.error) console.error(result);
     authState.value = defaultTokens();
-    sessionStorage.setItem("tokens", JSON.stringify(authState.value));
   });
 }
 
 function getToken(type: "token" | "id_token" | "id_token token", hint?: string) {
+  const state = uuid();
   let uri =
     "https://accounts.google.com/o/oauth2/v2/auth" +
     "?gsiwebsdk=3" +
     "&select_account=false" +
-    `&state=${uuid()}` +
+    `&state=${state}` +
     `&client_id=${encodeURIComponent(client_id)}` +
     `&redirect_uri=${encodeURIComponent(document.location.origin)}` +
     (hint ? `&login_hint=${encodeURIComponent(hint)}` : "") +
@@ -164,8 +163,7 @@ function getToken(type: "token" | "id_token" | "id_token token", hint?: string) 
 
   document.location = uri;
 
-  authState.value.state = getAuthState();
-  sessionStorage.setItem("tokens", JSON.stringify(authState.value));
+  authState.value.mode = getAuthState();
 }
 
 export function signIn() {

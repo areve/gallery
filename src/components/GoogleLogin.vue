@@ -1,13 +1,13 @@
 <template>
-  <div ref="buttonWrapper" v-show="authState.state === 'signed_out'"></div>
-  <button type="button" @click="signOut" v-show="authState.state === 'signed_in'">Sign Out</button>
-  <button type="button" @click="signIn" v-show="authState.state === 'signed_out'">Sign In</button>
+  <div ref="buttonWrapper" v-show="authState.mode === 'signed_out'"></div>
+  <button type="button" @click="signOut" v-show="authState.mode === 'signed_in'">Sign Out</button>
+  <button type="button" @click="signIn" v-show="authState.mode === 'signed_out'">Sign In</button>
   <button type="button" @click="getIdToken">getIdToken</button>
   <button type="button" @click="getAccessToken">getAccessToken</button>
   <button type="button" @click="getBothTokens">getBothTokens</button>
-  <div v-show="authState.state === 'in_progress'">LOADING</div>
+  <div v-show="authState.mode === 'in_progress'">LOADING</div>
   <!-- {{ authState }} -->
-  <div v-show="authState.state === 'signed_in'"></div>
+  <div v-show="authState.mode === 'signed_in'"></div>
 </template>
 
 <script lang="ts" setup>

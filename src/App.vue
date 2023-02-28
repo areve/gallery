@@ -9,7 +9,7 @@ import GoogleLogin from "./components/GoogleLogin.vue";
 <template>
   <div class="app-wrapper">
     <GoogleLogin />
-    <EditorApp v-if="authState.state === 'signed_in'" />
+    <EditorApp v-if="authState.mode === 'signed_in'" />
   </div>
 </template>
 
