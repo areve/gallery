@@ -53,13 +53,12 @@ function loadFromHash() {
     if (hashObject.id_token) authState.value.idToken = hashObject.id_token;
     authState.value.state = getAuthState();
     sessionStorage.setItem("tokens", JSON.stringify(authState.value));
-    removeHash();
+    removeHashFromAddressBar();
   }
 }
 loadFromHash();
 
 async function initialize(options: Options) {
-  //loadFromHash();
   await waitUntilLoaded();
   const opts = {
     client_id,
@@ -68,7 +67,12 @@ async function initialize(options: Options) {
     response_type: "token id_token",
     scope: all_scope,
     auto_select: true,
-    callback: handleLoginResponse,
+    callback: (response: any) => {
+      authState.value.idToken = response.credential;
+      sessionStorage.setItem("tokens", JSON.stringify(authState.value));
+      const hint = parseJwt(response.credential).email;
+      getToken("token", hint);
+    },
   };
   google.accounts.id.initialize(opts);
 
@@ -80,7 +84,7 @@ async function initialize(options: Options) {
   });
 
   if (!authState.value.accessToken && !authState.value.idToken) {
-    //google.accounts.id.prompt();
+    //google.accounts.id.prompt(); // TODO it's kind of nice sometimes
   }
 
   function waitUntilLoaded() {
@@ -110,7 +114,7 @@ function parseJwt(token: string) {
   return JSON.parse(jsonPayload);
 }
 
-function removeHash() {
+function removeHashFromAddressBar() {
   history.pushState("", document.title, window.location.pathname + window.location.search);
 }
 
@@ -127,49 +131,35 @@ export function use(options: Options) {
   addScript("https://accounts.google.com/gsi/client", () => initialize(options));
 }
 
-export function signout() {
+export function signOut() {
   google.accounts.oauth2.revoke(authState.value.accessToken, (result: any) => {
     if (result.error) console.error(result);
     authState.value = defaultTokens();
     sessionStorage.setItem("tokens", JSON.stringify(authState.value));
   });
 }
-function handleLoginResponse(response: any) {
-  console.log(response);
-  authState.value.idToken = response.credential;
-  sessionStorage.setItem("tokens", JSON.stringify(authState.value));
 
-  const hint = parseJwt(response.credential).email;
-  console.log(hint);
-  getToken(hint, "token");
-}
-
-function getToken(hint: string, type: "token" | "id_token" | "id_token token") {
+function getToken(type: "token" | "id_token" | "id_token token", hint?: string) {
   let uri =
     "https://accounts.google.com/o/oauth2/v2/auth" +
     "?gsiwebsdk=3" +
     "&select_account=false" +
-    "&state=" +
-    uuid() +
-    "&client_id=" +
-    encodeURIComponent(client_id) +
-    "&redirect_uri=" +
-    encodeURIComponent(document.location.origin) +
-    "&login_hint=" +
-    encodeURIComponent(hint) +
-    "&response_type=" +
-    encodeURIComponent(type) +
+    `&state=${uuid()}` +
+    `&client_id=${encodeURIComponent(client_id)}` +
+    `&redirect_uri=${encodeURIComponent(document.location.origin)}` +
+    (hint ? `&login_hint=${encodeURIComponent(hint)}` : "") +
+    `&response_type=${encodeURIComponent(type)}` +
     "&enable_serial_consent=true";
 
   if (type.split(" ").find((x) => x === "token")) {
     uri += "&include_granted_scopes=true";
-    uri += "&scope=" + encodeURIComponent(all_scope);
+    uri += `&scope=${encodeURIComponent(all_scope)}`;
   } else {
-    uri += "&scope=" + encodeURIComponent(id_scope);
+    uri += `&scope=${encodeURIComponent(id_scope)}`;
   }
 
   if (type.split(" ").find((x) => x === "id_token")) {
-    uri += "&nonce=" + uuid();
+    uri += `&nonce=${uuid()}`;
   }
 
   document.location = uri;
@@ -178,18 +168,19 @@ function getToken(hint: string, type: "token" | "id_token" | "id_token token") {
   sessionStorage.setItem("tokens", JSON.stringify(authState.value));
 }
 
-export function signin() {
+export function signIn() {
+  // TODO this does not always trigger the prompt, so needs to fallback to it's equivalent `getToken("id_token")`
   google.accounts.id.prompt();
 }
 
 export function getAccessToken() {
-  getToken("", "token");
+  getToken("token");
 }
 
 export function getIdToken() {
-  getToken("", "id_token");
+  getToken("id_token");
 }
 
 export function getBothTokens() {
-  getToken("", "id_token token");
+  getToken("id_token token");
 }
