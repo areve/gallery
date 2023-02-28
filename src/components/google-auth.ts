@@ -1,4 +1,5 @@
 import { ref, type Ref } from "vue";
+import { v4 as uuid } from "uuid";
 
 declare let google: any;
 
@@ -45,6 +46,7 @@ function getHashObject() {
 async function initialize(options: Options) {
   const hashObject = getHashObject();
   if (hashObject.access_token) {
+    // TODO I think I should really check state is the same here
     authState.value.accessToken = hashObject.access_token;
     authState.value.state = getAuthState();
     sessionStorage.setItem("tokens", JSON.stringify(authState.value));
@@ -130,6 +132,9 @@ function handleLoginResponse(response: any) {
   document.location =
     "https://accounts.google.com/o/oauth2/v2/auth" +
     "?gsiwebsdk=3" +
+    "&select_account=false" +
+    "&state=" +
+    uuid() +
     "&client_id=" +
     encodeURIComponent(client_id) +
     "&scope=" +
@@ -138,7 +143,8 @@ function handleLoginResponse(response: any) {
     encodeURIComponent(document.location.origin) +
     "&login_hint=" +
     encodeURIComponent(hint) +
-    "&response_type=token" +
+    //"&response_type=token" +
+    "&response_type=token" + // Can this be something else?
     "&include_granted_scopes=true" +
     "&enable_serial_consent=true";
   authState.value.idToken = response.credential;
@@ -147,11 +153,5 @@ function handleLoginResponse(response: any) {
 }
 
 export function signin() {
-  // tokenClient.callback = handleLoginResponse;
-  //console.log(document.querySelector("[aria-labelledby='button-label']"))
-  //console.log(document.querySelector("[tabindex='0']"))
-  // console.log(document.getElementById('container'))
-  //(! as HTMLButtonElement).click();
-  // tokenClient.requestAccessToken({ prompt: "" });
   google.accounts.id.prompt();
 }
