@@ -51,33 +51,15 @@ async function initialize(options: Options) {
     removeHash();
   }
   await waitUntilLoaded();
-  google.accounts.id.initialize({
+  const opts = {
     client_id,
     // ux_mode: "redirect", // this worked, but needs my redirect page to receive the POST
     // login_uri: "http://localhost:8080/login", // this worked, but needs my redirect page to receive the POST
     scope: scope,
     auto_select: true,
-    callback: function (response: any) {
-      const hint = parseJwt(response.credential).email;
-      document.location =
-        "https://accounts.google.com/o/oauth2/v2/auth" +
-        "?gsiwebsdk=3" +
-        "&client_id=" +
-        encodeURIComponent(client_id) +
-        "&scope=" +
-        encodeURIComponent(scope) +
-        "&redirect_uri=" +
-        encodeURIComponent(document.location.origin) +
-        "&login_hint=" +
-        encodeURIComponent(hint) +
-        "&response_type=token" +
-        "&include_granted_scopes=true" +
-        "&enable_serial_consent=true";
-      authState.value.idToken = response.credential;
-      authState.value.state = getAuthState();
-      sessionStorage.setItem("tokens", JSON.stringify(authState.value));
-    },
-  });
+    callback: handleLoginResponse,
+  };
+  google.accounts.id.initialize(opts);
 
   google.accounts.id.renderButton(options.buttonWrapper.value, {
     theme: "filled_blue",
@@ -140,4 +122,36 @@ export function signout() {
     authState.value = defaultTokens();
     sessionStorage.setItem("tokens", JSON.stringify(authState.value));
   });
+}
+function handleLoginResponse(response: any) {
+  console.log(response);
+  const hint = parseJwt(response.credential).email;
+  console.log(hint);
+  document.location =
+    "https://accounts.google.com/o/oauth2/v2/auth" +
+    "?gsiwebsdk=3" +
+    "&client_id=" +
+    encodeURIComponent(client_id) +
+    "&scope=" +
+    encodeURIComponent(scope) +
+    "&redirect_uri=" +
+    encodeURIComponent(document.location.origin) +
+    "&login_hint=" +
+    encodeURIComponent(hint) +
+    "&response_type=token" +
+    "&include_granted_scopes=true" +
+    "&enable_serial_consent=true";
+  authState.value.idToken = response.credential;
+  authState.value.state = getAuthState();
+  sessionStorage.setItem("tokens", JSON.stringify(authState.value));
+}
+
+export function signin() {
+  // tokenClient.callback = handleLoginResponse;
+  //console.log(document.querySelector("[aria-labelledby='button-label']"))
+  //console.log(document.querySelector("[tabindex='0']"))
+  // console.log(document.getElementById('container'))
+  //(! as HTMLButtonElement).click();
+  // tokenClient.requestAccessToken({ prompt: "" });
+  google.accounts.id.prompt();
 }
