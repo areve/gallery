@@ -8,7 +8,7 @@ const client_id = "750379347440-mp8am6q8hg41lvkn8pi4jku3eq7ts2lq.apps.googleuser
 const id_scope = "email profile openid";
 const all_scope = id_scope + " https://www.googleapis.com/auth/drive.metadata.readonly";
 
-type AuthStateMode = "in_progress" | "signed_in" | "signed_out";
+type AuthStateState = "in_progress" | "signed_in" | "signed_out";
 
 interface GoogleAuthOptions {
   buttonWrapper: Ref<HTMLDivElement>;
@@ -23,12 +23,6 @@ export interface AuthState {
 export const authState = ref<AuthState>(defaultTokens());
 usePersistentState("authState", authState);
 loadFromHash();
-
-export function getAuthState(): AuthStateMode {
-  if (!!authState.value.accessToken !== !!authState.value.idToken) return "in_progress";
-  if (!!authState.value.accessToken && !!authState.value.idToken) return "signed_in";
-  return "signed_out";
-}
 
 function defaultTokens() {
   return <AuthState>{
@@ -123,17 +117,6 @@ function addScript(script: string, onload: (event: Event) => any) {
   document.head.appendChild(tag);
 }
 
-export function use(options: GoogleAuthOptions) {
-  addScript("https://accounts.google.com/gsi/client", () => initialize(options));
-}
-
-export function signOut() {
-  google.accounts.oauth2.revoke(authState.value.accessToken, (result: any) => {
-    if (result.error) console.error(result);
-    authState.value = defaultTokens();
-  });
-}
-
 function getToken(type: "token" | "id_token" | "id_token token", hint?: string) {
   authState.value.oauthState = uuid();
   let location =
@@ -159,6 +142,23 @@ function getToken(type: "token" | "id_token" | "id_token token", hint?: string) 
   }
 
   document.location = location;
+}
+
+export function getAuthState(): AuthStateState {
+  if (!!authState.value.accessToken !== !!authState.value.idToken) return "in_progress";
+  if (!!authState.value.accessToken && !!authState.value.idToken) return "signed_in";
+  return "signed_out";
+}
+
+export function use(options: GoogleAuthOptions) {
+  addScript("https://accounts.google.com/gsi/client", () => initialize(options));
+}
+
+export function signOut() {
+  google.accounts.oauth2.revoke(authState.value.accessToken, (result: any) => {
+    if (result.error) console.error(result);
+    authState.value = defaultTokens();
+  });
 }
 
 export function signIn() {
