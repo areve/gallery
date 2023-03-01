@@ -13,6 +13,8 @@
       <button class="icon-button" type="button" @click="panelStates.artworkSettings.visible = !panelStates.artworkSettings.visible">
         <i class="fa-solid fa-gear"></i> <span class="text">Settings</span>
       </button>
+      <button type="button" @click="listFiles">listFiles</button>
+
     </div>
     <ul class="gallery">
       <li
@@ -44,6 +46,9 @@ import { mostRecentError, mostRecentPrompt } from "@/lib/artwork-utils";
 import { deleteGalleryItem, galleryItems, loadGallery, selectedItem } from "@/components/Gallery/galleryService";
 import type { Artwork } from "@/interfaces/Artwork";
 import { panelStates } from "@/components/EditorApp/panelStates";
+import { useGoogleApi, listFiles } from "./googleApiService";
+
+useGoogleApi();
 
 onMounted(async () => {
   await loadGallery();
