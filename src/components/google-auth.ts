@@ -20,6 +20,8 @@ export interface AuthState {
   oauthState: string | null;
 }
 
+let isScriptAdded = false;
+let isScriptLoaded = false;
 export const authState = ref<AuthState>(defaultTokens());
 usePersistentState("authState", authState);
 loadFromHash();
@@ -54,12 +56,12 @@ function loadFromHash() {
   }
 }
 
-async function initialize(options: GoogleAuthOptions) {
+async function onScriptLoaded() {
+  isScriptLoaded = true;
   await waitUntilLoaded();
   google.accounts.id.initialize({
     client_id,
-    // ux_mode: "redirect", // this worked, but needed http://localhost:8080/login to receive the POST
-    // login_uri: "http://localhost:8080/login",
+    // ux_mode=redirect this worked, but it needs a server-side login_uri to receive the POST
     scope: all_scope,
     auto_select: true,
     callback: (response: any) => {
@@ -69,25 +71,17 @@ async function initialize(options: GoogleAuthOptions) {
     },
   });
 
-  google.accounts.id.renderButton(options.buttonWrapper.value, {
-    theme: "filled_blue",
-    shape: "pill",
-    text: "signin",
-    size: "medium",
-  });
-
   if (getAuthState() == "signed_out") {
-    //google.accounts.id.prompt(); // TODO it's nice sometimes but it can't do simultaneous "id_token token" login
+    google.accounts.id.prompt(); // it's nice sometimes but it can't do simultaneous "id_token token" login
   }
+}
 
-  function waitUntilLoaded() {
-    function test(resolve: (result: boolean) => void) {
-      // TODO must wait for onload of script and onmounted of the wrapper
-      if (options.buttonWrapper.value) resolve(true);
-      else setTimeout(() => test(resolve));
-    }
-    return new Promise(test);
+function waitUntilLoaded() {
+  function test(resolve: (result: boolean) => void) {
+    if (isScriptLoaded) resolve(true);
+    else setTimeout(() => test(resolve));
   }
+  return new Promise(test);
 }
 
 function parseJwt(token: string) {
@@ -151,8 +145,28 @@ export function getAuthState(): AuthStateState {
   return "signed_out";
 }
 
-export function use(options: GoogleAuthOptions) {
-  addScript("https://accounts.google.com/gsi/client", () => initialize(options));
+// useGoogleAuth is only required for signOut, renderButton and showPrompt
+export function useGoogleAuth() {
+  if (isScriptAdded) return;
+  isScriptAdded = true;
+  addScript("https://accounts.google.com/gsi/client", () => onScriptLoaded());
+}
+
+// renderButton will create the google button, it's actually in iframe in the div, it's not nice to style
+export async function renderButton(buttonWrapper: HTMLDivElement) {
+  await waitUntilLoaded();
+  google.accounts.id.renderButton(buttonWrapper, {
+    theme: "filled_blue",
+    shape: "pill",
+    text: "signin",
+    size: "medium",
+  });
+}
+
+// showPrompt does not always trigger the prompt so needs a fallback. It's equivalent `getToken("id_token")`,
+// I want `getToken("id_token token")` it can't do that in one load
+export function showPrompt() {
+  google.accounts.id.prompt();
 }
 
 export function signOut() {
@@ -162,17 +176,16 @@ export function signOut() {
   });
 }
 
-export function signIn() {
-  // TODO this does not always trigger the prompt, so needs to fallback to it's equivalent `getToken("id_token")`
-  google.accounts.id.prompt();
-}
-
 export function getAccessToken() {
   getToken("token");
 }
 
 export function getIdToken() {
   getToken("id_token");
+}
+
+export function signIn() {
+  getBothTokens();
 }
 
 export function getBothTokens() {

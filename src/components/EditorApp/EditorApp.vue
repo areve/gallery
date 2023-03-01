@@ -1,5 +1,8 @@
 <template>
-  <div class="layout">
+  <div v-if="getAuthState() === 'signed_out'">
+    <button type="button" @click="signIn">Sign in</button>
+  </div>
+  <div class="layout" v-if="getAuthState() === 'signed_in'">
     <main class="main">
       <TopMenu></TopMenu>
       <div class="artboard-wrap">
@@ -43,7 +46,9 @@ import type { Artwork } from "@/interfaces/Artwork";
 import StatusBar from "@/components/EditorApp/StatusBar.vue";
 import ScalePanel from "@/components/Scale/ScaleToolPanel.vue";
 import { openAiPanelState } from "@/components/OpenAi/openAiPanelState";
+import { getAuthState, signIn, useGoogleAuth } from "../google-auth";
 
+useGoogleAuth();
 // IDEA make it possible to select multiple images and delete them
 // IDEA make it possible to have currently selected image
 // IDEA tidy up the controls somehow
