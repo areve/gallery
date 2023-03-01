@@ -46,7 +46,7 @@ import type { Artwork } from "@/interfaces/Artwork";
 import StatusBar from "@/components/EditorApp/StatusBar.vue";
 import ScalePanel from "@/components/Scale/ScaleToolPanel.vue";
 import { openAiPanelState } from "@/components/OpenAi/openAiPanelState";
-import { getAuthState, signIn, useGoogleAuth } from "../google-auth";
+import { getAuthState, signIn, useGoogleAuth } from "../../services/googleAuthService";
 
 useGoogleAuth();
 // IDEA make it possible to select multiple images and delete them

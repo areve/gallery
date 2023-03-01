@@ -13,7 +13,17 @@
 
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
-import { signOut, showPrompt, getAuthState, getIdToken, getAccessToken, getBothTokens, useGoogleAuth, authState, renderButton } from "./google-auth";
+import {
+  signOut,
+  showPrompt,
+  getAuthState,
+  getIdToken,
+  getAccessToken,
+  getBothTokens,
+  useGoogleAuth,
+  authState,
+  renderButton,
+} from "../services/googleAuthService";
 
 const buttonWrapper = ref<HTMLDivElement>(undefined!);
 useGoogleAuth();

@@ -17,7 +17,7 @@ import { addKeysForMenuItems } from "@/services/keyboardService";
 import { openAiPanelState } from "../OpenAi/openAiPanelState";
 import { toolbarState } from "@/components/Toolbar/toolbarState";
 import { selectNextArtwork, selectPreviousArtwork } from "../Gallery/galleryService";
-import { signOut } from "../google-auth";
+import { signOut } from "../../services/googleAuthService";
 
 const menu: MenuItem[] = [
   {
