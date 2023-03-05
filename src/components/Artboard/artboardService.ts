@@ -69,7 +69,6 @@ export function render() {
 }
 
 function resetRgbaLayer() {
-  console.log("resetRgbaLayer");
   const channels = 4;
   const height = artwork.value.context.canvas.height;
   const width = artwork.value.context.canvas.width;
