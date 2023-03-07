@@ -50,13 +50,55 @@ export function useGoogleApi() {
   addScript("https://apis.google.com/js/api.js", () => onScriptLoaded());
 }
 
-export async function listFiles() {
-  console.log("listFiles", (gapi.client.getToken()?.access_token || "").substring(0, 10) + "...");
+export async function folderExists(name: string) {
   let response;
   try {
     response = await gapi.client.drive.files.list({
+      q: "trashed=false and name='" + name + "' and mimeType='application/vnd.google-apps.folder'",
+      fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
+    });
+  } catch (err: any) {
+    console.error(err.message);
+    return null;
+  }
+  console.log(response.result.files[0]);
+  return response.result.files[0]?.id;
+}
+
+export async function createFolder(name: string) {
+  console.log("create folder", name);
+  const fileMetadata = {
+    name: "gallery.challen.info",
+    mimeType: "application/vnd.google-apps.folder",
+  };
+  try {
+    const file = await gapi.client.drive.files.create({
+      resource: fileMetadata,
+      fields: "id, name, parents, mimeType, modifiedTime",
+    });
+    console.log("file", file);
+    return file.result.id;
+  } catch (err: any) {
+    console.error(err.message);
+    return null;
+  }
+}
+
+export async function ensureFolder(name: string) {
+  let folder = await folderExists(name);
+  if (!folder) folder = await createFolder(name);
+  return folder;
+}
+
+export async function listFiles() {
+  const folder = await ensureFolder("gallery.challen.info");
+  console.log("folder", folder);
+  let response;
+  try {
+    response = await gapi.client.drive.files.list({
+      q: " trashed=false and '" + folder + "' in parents",
       pageSize: 10,
-      fields: "files(id, name)",
+      fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
     });
   } catch (err: any) {
     console.error(err.message);
