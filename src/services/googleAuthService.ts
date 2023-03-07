@@ -6,7 +6,8 @@ declare let google: any;
 
 const client_id = "750379347440-mp8am6q8hg41lvkn8pi4jku3eq7ts2lq.apps.googleusercontent.com";
 const id_scope = "email profile openid";
-const all_scope = id_scope + " https://www.googleapis.com/auth/drive.metadata.readonly";
+//const all_scope = id_scope + " https://www.googleapis.com/auth/drive.file";
+const all_scope = id_scope + " https://www.googleapis.com/auth/drive";
 
 type AuthStateState = "in_progress" | "signed_in" | "signed_out";
 
