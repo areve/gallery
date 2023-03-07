@@ -50,34 +50,34 @@ export function useGoogleApi() {
   addScript("https://apis.google.com/js/api.js", () => onScriptLoaded());
 }
 
+export function escapeQuery(value: string) {
+  return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
 export async function folderExists(name: string) {
   let response;
   try {
     response = await gapi.client.drive.files.list({
-      q: "trashed=false and name='" + name + "' and mimeType='application/vnd.google-apps.folder'",
-      fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
+      q: `trashed=false and name='${escapeQuery(name)}' and mimeType='application/vnd.google-apps.folder'`,
+      pageSize: 1,
+      fields: "files(id, name, parents, mimeType, modifiedTime)",
     });
   } catch (err: any) {
     console.error(err.message);
     return null;
   }
-  console.log(response.result.files[0]);
-  return response.result.files[0]?.id;
+  return response.result.files[0];
 }
 
 export async function createFolder(name: string) {
-  console.log("create folder", name);
-  const fileMetadata = {
-    name: "gallery.challen.info",
-    mimeType: "application/vnd.google-apps.folder",
-  };
   try {
-    const file = await gapi.client.drive.files.create({
-      resource: fileMetadata,
+    const response = await gapi.client.drive.files.create({
+      resource: {
+        name,
+        mimeType: "application/vnd.google-apps.folder",
+      },
       fields: "id, name, parents, mimeType, modifiedTime",
     });
-    console.log("file", file);
-    return file.result.id;
+    return response.result;
   } catch (err: any) {
     console.error(err.message);
     return null;
@@ -92,18 +92,15 @@ export async function ensureFolder(name: string) {
 
 export async function listFiles() {
   const folder = await ensureFolder("gallery.challen.info");
-  console.log("folder", folder);
-  let response;
   try {
-    response = await gapi.client.drive.files.list({
-      q: " trashed=false and '" + folder + "' in parents",
+    const response = await gapi.client.drive.files.list({
+      q: ` trashed=false and '${escapeQuery(folder.id)}' in parents`,
       pageSize: 10,
       fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
     });
+    return response.result;
   } catch (err: any) {
     console.error(err.message);
     return;
   }
-
-  console.log(response.result);
 }
