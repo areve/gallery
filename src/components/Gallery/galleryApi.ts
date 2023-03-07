@@ -1,7 +1,9 @@
 import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage, ArtworkWithDatesAsIso } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import axios, { type AxiosResponse } from "axios";
+import { getFile, getFileAsDataUrl, listFiles } from "./googleApiService";
 
+const useGoogleDrive = true;
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   let response: AxiosResponse<ArtworkWithDatesAsIso>;
   try {
@@ -27,30 +29,56 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
 }
 
 async function getGallery(): Promise<Artwork[]> {
-  let response: AxiosResponse<ArtworkWithDatesAsIso[]>;
-  try {
-    response = await axios.get<ArtworkWithDatesAsIso[]>("/api/gallery/");
-  } catch (e) {
-    console.error(e);
-    return [] as Artwork[];
+  if (useGoogleDrive) {
+    const files = await listFiles();
+    console.log(files);
+    return Promise.all(
+      files.map(async (x: any) => ({
+        filename: x.id,
+        status: "ready",
+        dataUrl: await getFileAsDataUrl(x.id),
+        modified: new Date(x.modifiedTime),
+      }))
+    );
+  } else {
+    let response: AxiosResponse<ArtworkWithDatesAsIso[]>;
+    try {
+      response = await axios.get<ArtworkWithDatesAsIso[]>("/api/gallery/");
+    } catch (e) {
+      console.error(e);
+      return [] as Artwork[];
+    }
+    return response.data.map((x) =>
+      Object.assign(clone(x), {
+        modified: new Date(x.modified),
+      })
+    );
   }
-
-  return response.data.map((x) =>
-    Object.assign(clone(x), {
-      modified: new Date(x.modified),
-    })
-  );
 }
 
 async function getGalleryItem(filename: string): Promise<ArtworkImage> {
-  const imagePromise = loadImage(`/downloads/${filename}?${new Date().toISOString()}`);
-  const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(`/api/gallery/${filename}`);
-  const [image, artworkResponse] = await Promise.all([imagePromise, artworkResponsePromise]);
-  const artwork = artworkResponse.data;
-  const result = clone(artwork) as any as ArtworkImage;
-  result.image = image;
-  result.modified = new Date(result.modified);
-  return result;
+  if (useGoogleDrive) {
+    let file = await getFile(filename);
+    //console.log("file", file);
+    return {
+      filename: file.id,
+      status: "ready",
+      metadata: { history: [] }, // TODO read it
+      image: file.image,
+      modified: new Date(file.modifiedTime),
+    };
+    //console.log("getFile", file);
+    throw "not supported";
+  } else {
+    const imagePromise = loadImage(`/downloads/${filename}?${new Date().toISOString()}`);
+    const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(`/api/gallery/${filename}`);
+    const [image, artworkResponse] = await Promise.all([imagePromise, artworkResponsePromise]);
+    const artwork = artworkResponse.data;
+    const result = clone(artwork) as any as ArtworkImage;
+    result.image = image;
+    result.modified = new Date(result.modified);
+    return result;
+  }
 }
 
 async function deleteGalleryItem(filename: string) {

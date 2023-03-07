@@ -80,7 +80,7 @@ function reset() {
 
 async function galleryItemSelected(item: Artwork) {
   artboardService.load(item);
-  openAiPanelState.value.prompt = mostRecentPrompt(item);
+  //openAiPanelState.value.prompt = mostRecentPrompt(item);
 }
 
 async function saveArtwork() {
