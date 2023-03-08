@@ -1,7 +1,7 @@
 import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage, ArtworkWithDatesAsIso } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import axios, { type AxiosResponse } from "axios";
-import { getFile, getFileAsDataUrl, listFiles, saveFile } from "./googleApiService";
+import { deleteFile, getFile, getFileAsDataUrl, listFiles, saveFile } from "./googleApiService";
 
 const useGoogleDrive = true;
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
@@ -103,21 +103,27 @@ async function deleteGalleryItem(filename: string) {
     modified: new Date(),
     metadata: { history: [] },
   };
-  try {
-    await axios.post("/api/editor/deleteImage", {
-      filename,
-    });
-  } catch (e) {
-    const error: ArtworkError = {
-      status: "error",
-      modified: new Date(),
-      error: findErrorMessage(e),
-      filename,
-      metadata: result.metadata,
-    };
-    return error;
+  
+  if (useGoogleDrive) {
+    await deleteFile(filename);
+    return result;
+  } else {
+    try {
+      await axios.post("/api/editor/deleteImage", {
+        filename,
+      });
+    } catch (e) {
+      const error: ArtworkError = {
+        status: "error",
+        modified: new Date(),
+        error: findErrorMessage(e),
+        filename,
+        metadata: result.metadata,
+      };
+      return error;
+    }
+    return result;
   }
-  return result;
 }
 
 export default {

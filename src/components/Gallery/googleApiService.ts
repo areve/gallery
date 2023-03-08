@@ -132,6 +132,19 @@ export async function getFile(id: string) {
   }
 }
 
+export async function deleteFile(id: string) {
+  await waitUntilLoaded();
+  try {
+    return await gapi.client.drive.files.delete({
+      fileId: id,
+      fields: "id, name, parents, mimeType, modifiedTime",
+    });
+  } catch (err: any) {
+    console.error(err.message);
+    return;
+  }
+}
+
 export async function saveFile(name: string, file: Blob): Promise<{ id: string; modifiedTime: string }> {
   await waitUntilLoaded();
   const folder = await ensureFolder("gallery.challen.info");
