@@ -141,47 +141,20 @@ export async function saveFile(name: string, file: Blob): Promise<{ id: string; 
   //const file = new Blob([atob(dataUrl.replace("data:image/png;base64,", ""))], { type: "image/png" });
   //  const file = new Blob([atob(dataUrl.replace("data:image/png;base64,", ""))], { type: "image/png" });
   const metadata = {
-    name: "foobar.png",
+    name,
     mimeType: "image/png",
-    parents: [folder.id]
+    parents: [folder.id],
   };
   const form = new FormData();
   form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
   form.append("file", file);
   const accessToken = gapi.auth.getToken().access_token;
 
-  //try {
-  return new Promise((resolve, reject) => {
-    fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,modifiedTime", {
-      method: "POST",
-      headers: new Headers({ Authorization: "Bearer " + accessToken }),
-      body: form,
-      // method: "POST",
-      // headers: new Headers({ Authorization: "Bearer " + accessToken }),
-      // body: form,
-      // const blah = {
-      //   resource: ,
-      //   // media: {
-      //   //   dataUrl: atob(dataUrl.replace("data:image/png;base64,", "")),
-      //   // },
-      //   fields: "id, name, parents, mimeType, modifiedTime",
-      // };
-    })
-      .then(async (res) => {
-        console.log(res);
-        console.log(res.body);
-        console.log(await res.json());
-      })
-      .then(function (val) {
-        console.log(val);
-      });
+  const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,modifiedTime", {
+    method: "POST",
+    headers: new Headers({ Authorization: "Bearer " + accessToken }),
+    body: form,
   });
 
-  //   console.log(blah);
-  //   const response = await gapi.client.drive.files.create(blah);
-  //   return response.result;
-  // } catch (err: any) {
-  //   console.error(err.message);
-  //   return;
-  // }
+  return response.json();
 }

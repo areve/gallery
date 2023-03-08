@@ -7,7 +7,7 @@ const useGoogleDrive = true;
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   if (useGoogleDrive) {
     const imageBlob = (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
-    const file = await saveFile("hello.png", imageBlob);
+    const file = await saveFile(item.filename, imageBlob);
     return {
       filename: file.id,
       status: "ready",
