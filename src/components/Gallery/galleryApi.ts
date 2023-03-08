@@ -43,16 +43,21 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
 async function getGallery(): Promise<Artwork[]> {
   if (useGoogleDrive) {
     const files = await listFiles();
-    console.log(files);
-    return Promise.all(
-      files.map(async (x: any) => ({
-        filename: x.id,
-        status: "ready",
-        metadata: { history: [] }, // TODO read it
-        dataUrl: await getFileAsDataUrl(x.id),
-        modified: new Date(x.modifiedTime),
-      }))
+    const result = await Promise.all(
+      files.map(
+        async (x: any) =>
+          ({
+            filename: x.id,
+            status: "ready",
+            metadata: { history: [] }, // TODO read it
+            dataUrl: await getFileAsDataUrl(x.id),
+            image: null! as HTMLImageElement,
+            modified: new Date(x.modifiedTime),
+          } as ArtworkImage)
+      )
     );
+    console.log(result);
+    return result;
   } else {
     let response: AxiosResponse<ArtworkWithDatesAsIso[]>;
     try {
@@ -75,6 +80,7 @@ async function getGalleryItem(filename: string): Promise<ArtworkImage> {
     const imagePromise = loadImage(await getFileAsDataUrl(filename));
     const [image, file] = await Promise.all([imagePromise, filePromise]);
 
+    console.log("getgal", file);
     return {
       filename: file.id,
       status: "ready",
@@ -103,7 +109,7 @@ async function deleteGalleryItem(filename: string) {
     modified: new Date(),
     metadata: { history: [] },
   };
-  
+
   if (useGoogleDrive) {
     await deleteFile(filename);
     return result;

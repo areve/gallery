@@ -122,10 +122,12 @@ export async function getFileAsDataUrl(id: string) {
 export async function getFile(id: string) {
   await waitUntilLoaded();
   try {
-    return await gapi.client.drive.files.get({
+    const response = await gapi.client.drive.files.get({
       fileId: id,
       fields: "id, name, parents, mimeType, modifiedTime",
     });
+
+    return response.result;
   } catch (err: any) {
     console.error(err.message);
     return;
@@ -135,10 +137,12 @@ export async function getFile(id: string) {
 export async function deleteFile(id: string) {
   await waitUntilLoaded();
   try {
-    return await gapi.client.drive.files.delete({
+    const response = await gapi.client.drive.files.delete({
       fileId: id,
       fields: "id, name, parents, mimeType, modifiedTime",
     });
+
+    return response.result;
   } catch (err: any) {
     console.error(err.message);
     return;
