@@ -58,13 +58,15 @@ async function getGallery(): Promise<Artwork[]> {
 
 async function getGalleryItem(filename: string): Promise<ArtworkImage> {
   if (useGoogleDrive) {
-    let file = await getFile(filename);
-    //console.log("file", file);
+    const filePromise = getFile(filename);
+    const imagePromise = loadImage(await getFileAsDataUrl(filename));
+    const [image, file] = await Promise.all([imagePromise, filePromise]);
+
     return {
       filename: file.id,
       status: "ready",
       metadata: { history: [] }, // TODO read it
-      image: file.image,
+      image,
       modified: new Date(file.modifiedTime),
     };
     //console.log("getFile", file);

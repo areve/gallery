@@ -1,3 +1,4 @@
+import axios from "axios";
 import { loadImage } from "@/lib/utils";
 import { watchPostEffect } from "vue";
 import { authState } from "@/services/googleAuthService";
@@ -98,6 +99,7 @@ export async function listFiles() {
     const response = await gapi.client.drive.files.list({
       q: ` trashed=false and '${escapeQuery(folder.id)}' in parents`,
       pageSize: 10,
+      // TODO thumbnailLink is an option but to use it I need a proxy because of CORS
       fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
     });
     return response.result.files;
@@ -108,25 +110,22 @@ export async function listFiles() {
 }
 
 export async function getFileAsDataUrl(id: string) {
+  await waitUntilLoaded();
   const response = await gapi.client.drive.files.get({
     fileId: id,
     alt: "media",
   });
+  // may be able to use URL.createObjectURL
   return "data:image/png;base64," + btoa(response.body);
 }
 
 export async function getFile(id: string) {
   await waitUntilLoaded();
   try {
-    const metadataPromise = gapi.client.drive.files.get({
+    return await gapi.client.drive.files.get({
       fileId: id,
       fields: "id, name, parents, mimeType, modifiedTime",
     });
-
-    const imagePromise = loadImage(await getFileAsDataUrl(id));
-
-    const [image, metadata] = await Promise.all([imagePromise, metadataPromise]);
-    return Object.assign({}, metadata.result, { image });
   } catch (err: any) {
     console.error(err.message);
     return;
