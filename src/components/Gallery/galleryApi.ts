@@ -36,6 +36,7 @@ async function getGallery(): Promise<Artwork[]> {
       files.map(async (x: any) => ({
         filename: x.id,
         status: "ready",
+        metadata: { history: [] }, // TODO read it
         dataUrl: await getFileAsDataUrl(x.id),
         modified: new Date(x.modifiedTime),
       }))
