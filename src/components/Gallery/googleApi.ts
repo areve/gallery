@@ -1,5 +1,3 @@
-import axios from "axios";
-import { loadImage } from "@/lib/utils";
 import { watchPostEffect } from "vue";
 import { authState } from "@/services/googleAuthService";
 
@@ -18,7 +16,8 @@ async function onScriptLoaded() {
     isScriptLoaded = true;
   });
 }
-function waitUntilLoaded() {
+
+async function waitUntilLoaded() {
   function test(resolve: (result: boolean) => void) {
     if (isScriptLoaded) resolve(true);
     else setTimeout(() => test(resolve));
@@ -55,7 +54,9 @@ export function useGoogleApi() {
 export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
+
 export async function folderExists(name: string) {
+  await waitUntilLoaded();
   let response;
   try {
     response = await gapi.client.drive.files.list({
@@ -71,6 +72,7 @@ export async function folderExists(name: string) {
 }
 
 export async function createFolder(name: string) {
+  await waitUntilLoaded();
   try {
     const response = await gapi.client.drive.files.create({
       resource: {
@@ -98,8 +100,8 @@ export async function listFiles() {
   try {
     const response = await gapi.client.drive.files.list({
       q: ` trashed=false and '${escapeQuery(folder.id)}' in parents`,
-      pageSize: 10,
-      // TODO thumbnailLink is an option but to use it I need a proxy because of CORS
+      pageSize: 1, // TODO set to something big?
+      // thumbnailLink is an option but to use it I need a proxy because of CORS
       fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
     });
     return response.result.files;

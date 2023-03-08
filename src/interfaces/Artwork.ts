@@ -6,6 +6,7 @@ type ArtworkStatus = "ready" | "waiting" | "error" | "deleted";
 
 export interface Artwork {
   status: ArtworkStatus;
+  id: string;
   filename: string;
   metadata: ArtworkMetadata;
   modified: Date;
@@ -13,6 +14,7 @@ export interface Artwork {
 
 export interface ArtworkWithDatesAsIso {
   status: ArtworkStatus;
+  id: string;
   filename: string;
   metadata: ArtworkMetadata;
   modified: string;
