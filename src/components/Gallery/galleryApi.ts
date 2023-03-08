@@ -1,31 +1,43 @@
 import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage, ArtworkWithDatesAsIso } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import axios, { type AxiosResponse } from "axios";
-import { getFile, getFileAsDataUrl, listFiles } from "./googleApiService";
+import { getFile, getFileAsDataUrl, listFiles, saveFile } from "./googleApiService";
 
 const useGoogleDrive = true;
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
-  let response: AxiosResponse<ArtworkWithDatesAsIso>;
-  try {
-    response = await axios.post<ArtworkWithDatesAsIso>("/api/editor/saveImage", {
-      image: (item as ArtworkInMemory).dataUrl || (item as ArtworkOnCanvas).context.canvas.toDataURL(),
-      filename: item.filename,
-      metadata: item.metadata,
-    });
-  } catch (e) {
-    const result: ArtworkError = {
-      status: "error",
-      modified: new Date(),
-      filename: item.filename,
-      metadata: item.metadata,
-      error: findErrorMessage(e),
+  if (useGoogleDrive) {
+    const imageBlob = (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
+    const file = await saveFile("hello.png", imageBlob);
+    return {
+      filename: file.id,
+      status: "ready",
+      metadata: { history: [] }, // TODO read it
+      //image,
+      modified: new Date(file.modifiedTime),
     };
-    return result;
-  }
+  } else {
+    let response: AxiosResponse<ArtworkWithDatesAsIso>;
+    try {
+      response = await axios.post<ArtworkWithDatesAsIso>("/api/editor/saveImage", {
+        image: (item as ArtworkInMemory).dataUrl || (item as ArtworkOnCanvas).context.canvas.toDataURL(),
+        filename: item.filename,
+        metadata: item.metadata,
+      });
+    } catch (e) {
+      const result: ArtworkError = {
+        status: "error",
+        modified: new Date(),
+        filename: item.filename,
+        metadata: item.metadata,
+        error: findErrorMessage(e),
+      };
+      return result;
+    }
 
-  return Object.assign(clone(response.data), {
-    modified: new Date(response.data.modified),
-  });
+    return Object.assign(clone(response.data), {
+      modified: new Date(response.data.modified),
+    });
+  }
 }
 
 async function getGallery(): Promise<Artwork[]> {
