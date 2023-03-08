@@ -7,7 +7,8 @@ import { loadGalleryItem, saveGalleryItem, updateGalleryItem } from "@/component
 
 const artwork = ref<ArtworkActive>({
   status: "ready",
-  filename: "",
+  name: "",
+  id: "",
   modified: new Date(),
   metadata: { history: [] },
   frame: { x: 0, y: 0, width: 1024, height: 1024 },
@@ -18,14 +19,14 @@ const artwork = ref<ArtworkActive>({
 });
 
 const state = ref({
-  filename: artwork.value.filename,
+  name: artwork.value.name,
 });
 
 usePersistentState("artboardService.state", state);
 
 // TODO I don't like this but it works to sync the two values
-watchPostEffect(() => (artwork.value.filename = state.value.filename));
-watchPostEffect(() => (state.value.filename = artwork.value.filename));
+watchPostEffect(() => (artwork.value.name = state.value.name));
+watchPostEffect(() => (state.value.name = artwork.value.name));
 
 function resetFrame() {
   artwork.value.frame = {
@@ -102,7 +103,8 @@ export function resetArtwork() {
   resetRgbaLayer();
 
   artwork.value.metadata = { history: [] };
-  // artwork.value.filename = "";
+  artwork.value.name = "";
+  artwork.value.id = "";
   artwork.value.modified = new Date();
   resetFrame();
   renderOverlay();
@@ -185,7 +187,8 @@ async function load(item: Artwork) {
   resetFrame();
 
   artwork.value.context.drawImage(artworkImage.image, 0, 0);
-  artwork.value.filename = artworkImage.filename;
+  artwork.value.id = artworkImage.id;
+  artwork.value.name = artworkImage.name;
   artwork.value.metadata = clone(artworkImage.metadata);
   artwork.value.modified = new Date(artworkImage.modified);
   resetRgbaLayer();
@@ -193,7 +196,7 @@ async function load(item: Artwork) {
 
 async function save() {
   const item = await saveGalleryItem(artwork.value);
-  artwork.value.filename = item.filename;
+  artwork.value.name = item.name;
   artwork.value.metadata = item.metadata;
   updateGalleryItem(item);
   return item;

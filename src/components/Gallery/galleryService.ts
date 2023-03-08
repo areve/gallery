@@ -39,28 +39,28 @@ export async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
 }
 
 export async function deleteGalleryItem(item: Artwork) {
-  const itemToDelete = clone(galleryItems.value.filter((i) => i.filename === item.filename)[0]);
+  const itemToDelete = clone(galleryItems.value.filter((i) => i.name === item.name)[0]);
   if (itemToDelete.status === "error") {
-    galleryItems.value = galleryItems.value.filter((i) => i.filename !== itemToDelete.filename);
+    galleryItems.value = galleryItems.value.filter((i) => i.name !== itemToDelete.name);
   } else {
     itemToDelete.status = "waiting";
     updateGalleryItem(itemToDelete);
-    const result = await galleryApi.deleteGalleryItem(item.filename);
+    const result = await galleryApi.deleteGalleryItem(item.name);
     if (result.status === "error") {
       updateGalleryItem(result);
     } else {
-      galleryItems.value = galleryItems.value.filter((i) => i.filename !== result.filename);
+      galleryItems.value = galleryItems.value.filter((i) => i.name !== result.name);
     }
   }
 }
 
 export async function loadGalleryItem(item: Artwork) {
-  return await galleryApi.getGalleryItem(item.filename);
+  return await galleryApi.getGalleryItem(item.id);
 }
 
 export function updateGalleryItem(updatedItem: Artwork) {
-  if (galleryItems.value.find((item) => item.filename === updatedItem.filename)) {
-    galleryItems.value = galleryItems.value.map((item) => (item.filename === updatedItem.filename ? updatedItem : item));
+  if (galleryItems.value.find((item) => item.name === updatedItem.name)) {
+    galleryItems.value = galleryItems.value.map((item) => (item.name === updatedItem.name ? updatedItem : item));
   } else {
     galleryItems.value = [updatedItem, ...galleryItems.value];
   }

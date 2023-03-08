@@ -34,9 +34,9 @@ async function generate({ prompt }: GenerateOptions) {
     return;
   }
 
-  const filename = `generation-${getDatestamp()}.png`;
+  const name = `generation-${getDatestamp()}.png`;
   const item: Artwork = {
-    filename,
+    name,
     status: "waiting",
     modified: new Date(),
     metadata: {
@@ -44,7 +44,7 @@ async function generate({ prompt }: GenerateOptions) {
         {
           method: "generation",
           prompt,
-          filename,
+          name,
           version: "OpenAI",
         },
       ],
@@ -68,15 +68,15 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
   }
 
   const imageBlob = (await new Promise<Blob | null>((resolve) => image.canvas.toBlob(resolve)))!;
-  const filename = `outpaint-${getDatestamp()}.png`;
+  const name = `outpaint-${getDatestamp()}.png`;
   const item: Artwork = {
-    filename,
+    name,
     modified: new Date(),
     status: "waiting",
     metadata: extendMetadata(metadata, {
       method: "edit",
       prompt,
-      filename,
+      name,
       version: "OpenAI",
     }),
   };
@@ -88,14 +88,14 @@ async function outpaint({ prompt, image, metadata }: OutpaintOptions) {
 
 async function variation({ image, metadata }: VariationOptions) {
   const imageBlob = (await new Promise<Blob | null>((resolve) => image.canvas.toBlob(resolve)))!;
-  const filename = `variation-${getDatestamp()}.png`;
+  const name = `variation-${getDatestamp()}.png`;
   const item: Artwork = {
-    filename,
+    name,
     modified: new Date(),
     status: "waiting",
     metadata: extendMetadata(metadata, {
       method: "variation",
-      filename,
+      name,
       version: "OpenAI",
     }),
   };

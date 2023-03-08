@@ -63,7 +63,7 @@ async function outpaintImage() {
   });
 
   if (compositionData && outpaintResult) {
-    const artwork = await galleryApi.getGalleryItem(outpaintResult.filename);
+    const artwork = await galleryApi.getGalleryItem(outpaintResult.id);
 
     await compositionService.flatten({
       metadata: artwork.metadata,

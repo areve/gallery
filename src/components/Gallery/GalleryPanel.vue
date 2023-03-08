@@ -19,10 +19,10 @@
     <ul class="gallery">
       <li
         v-for="item in galleryItems"
-        :key="item.filename"
+        :key="item.id"
         class="gallery-item"
         :class="{
-          selected: selectedItem?.filename === item.filename,
+          selected: selectedItem?.id === item.id,
         }"
       >
         <button v-if="item.status === 'waiting'" type="button" class="gallery-button loading">
@@ -33,7 +33,7 @@
           <div class="button-text">{{ mostRecentError(item) }}</div>
         </button>
         <button v-else type="button" @click="selectItem(item)" class="gallery-button">
-          <img :src="(item as any).dataUrl || '/downloads/' + item.filename + '?' + item.modified.toISOString()" />
+          <img :src="(item as any).dataUrl || '/downloads/' + item.id + '?' + item.modified.toISOString()" />
         </button>
       </li>
     </ul>

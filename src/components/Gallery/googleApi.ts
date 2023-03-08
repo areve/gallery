@@ -151,7 +151,7 @@ export async function deleteFile(id: string) {
   }
 }
 
-export async function saveFile(name: string, file: Blob): Promise<{ id: string; modifiedTime: string }> {
+export async function saveFile(name: string, file: Blob): Promise<{ id: string; name: string; modifiedTime: string }> {
   await waitUntilLoaded();
   const folder = await ensureFolder("gallery.challen.info");
   const metadata = {
@@ -165,7 +165,7 @@ export async function saveFile(name: string, file: Blob): Promise<{ id: string; 
   body.append("file", file);
   const accessToken = gapi.auth.getToken().access_token;
 
-  const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,modifiedTime", {
+  const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime", {
     method: "POST",
     headers: new Headers({ Authorization: "Bearer " + accessToken }),
     body,

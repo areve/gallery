@@ -26,15 +26,15 @@ async function flatten({ metadata, width, height, layers }: FlattenOptions) {
     context.drawImage(layer.context.canvas, layer.x, layer.y, layer.width, layer.height);
   });
 
-  const filename = `composition-${getDatestamp()}.png`;
+  const name = `composition-${getDatestamp()}.png`;
   const item: ArtworkOnCanvas = {
-    filename,
+    name,
     modified: new Date(),
     context,
     status: "ready",
     metadata: extendMetadata(metadata, {
       method: "composition",
-      filename,
+      name,
       created: new Date().toISOString(),
     }),
   };

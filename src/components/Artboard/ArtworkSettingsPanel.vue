@@ -2,8 +2,12 @@
   <AppWindow title="Artwork" v-model:panelState="panelStates.artworkSettings">
     <textarea class="metadata" v-model="metadataAsJson"></textarea>
     <div>
-      <label for="filename">File name</label>
-      <input type="text" class="filename" id="filename" v-model="artboardService.artwork.value.filename" />
+      <label for="id">Id</label>
+      <input type="text" class="id" id="id" v-model="artboardService.artwork.value.id" />
+    </div>
+    <div>
+      <label for="name">Name</label>
+      <input type="text" class="name" id="name" v-model="artboardService.artwork.value.name" />
     </div>
     <div>
       <button type="button" @click="deleteGalleryItem(artboardService.artwork.value)"><i class="fas fa-trash"></i> Delete</button>
@@ -23,7 +27,10 @@ const metadataAsJson = computed(() => JSON.stringify(artboardService.artwork.val
 </script>
 
 <style scoped>
-.filename {
+.id {
+  width: 100%;
+}
+.name {
   width: 100%;
 }
 

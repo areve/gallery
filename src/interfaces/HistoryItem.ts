@@ -3,7 +3,7 @@ export type HistoryItem = HistoryItemGeneration | HistoryItemEdit | HistoryItemV
 export interface HistoryItemComposition {
   method: "composition";
   error?: string;
-  filename: string;
+  name: string;
   created: string;
 }
 
@@ -11,7 +11,7 @@ export interface HistoryItemEdit {
   method: "edit";
   error?: string;
   prompt: string;
-  filename: string;
+  name: string;
   version: "OpenAI";
   created?: string;
 }
@@ -19,7 +19,7 @@ export interface HistoryItemGeneration {
   method: "generation";
   error?: string;
   prompt: string;
-  filename: string;
+  name: string;
   version: "OpenAI";
   created?: string;
 }
@@ -27,7 +27,7 @@ export interface HistoryItemGeneration {
 export interface HistoryItemVariation {
   method: "variation";
   error?: string;
-  filename: string;
+  name: string;
   // image: Blob;
   version: "OpenAI";
   created?: string;

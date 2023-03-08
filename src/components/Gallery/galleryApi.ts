@@ -7,9 +7,10 @@ const useGoogleDrive = true;
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   if (useGoogleDrive) {
     const imageBlob = (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
-    const file = await saveFile(item.filename, imageBlob);
+    const file = await saveFile(item.name, imageBlob);
     return {
-      filename: file.id,
+      id: file.id,
+      name: file.name,
       status: "ready",
       metadata: { history: [] }, // TODO read it
       //image,
@@ -20,14 +21,16 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
     try {
       response = await axios.post<ArtworkWithDatesAsIso>("/api/editor/saveImage", {
         image: (item as ArtworkInMemory).dataUrl || (item as ArtworkOnCanvas).context.canvas.toDataURL(),
-        filename: item.filename,
+        name: item.name,
+        id: item.name,
         metadata: item.metadata,
       });
     } catch (e) {
       const result: ArtworkError = {
         status: "error",
         modified: new Date(),
-        filename: item.filename,
+        name: item.name,
+        id: item.name,
         metadata: item.metadata,
         error: findErrorMessage(e),
       };
@@ -47,7 +50,8 @@ async function getGallery(): Promise<Artwork[]> {
       files.map(
         async (x: any) =>
           ({
-            filename: x.id,
+            id: x.id,
+            name: x.name,
             status: "ready",
             metadata: { history: [] }, // TODO read it
             dataUrl: await getFileAsDataUrl(x.id),
@@ -74,15 +78,14 @@ async function getGallery(): Promise<Artwork[]> {
   }
 }
 
-async function getGalleryItem(filename: string): Promise<ArtworkImage> {
+async function getGalleryItem(id: string): Promise<ArtworkImage> {
   if (useGoogleDrive) {
-    const filePromise = getFile(filename);
-    const imagePromise = loadImage(await getFileAsDataUrl(filename));
+    const filePromise = getFile(id);
+    const imagePromise = loadImage(await getFileAsDataUrl(id));
     const [image, file] = await Promise.all([imagePromise, filePromise]);
-
-    console.log("getgal", file);
     return {
-      filename: file.id,
+      id: file.id,
+      name: file.name,
       status: "ready",
       metadata: { history: [] }, // TODO read it
       image,
@@ -91,8 +94,8 @@ async function getGalleryItem(filename: string): Promise<ArtworkImage> {
     //console.log("getFile", file);
     throw "not supported";
   } else {
-    const imagePromise = loadImage(`/downloads/${filename}?${new Date().toISOString()}`);
-    const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(`/api/gallery/${filename}`);
+    const imagePromise = loadImage(`/downloads/${id}?${new Date().toISOString()}`);
+    const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(`/api/gallery/${id}`);
     const [image, artworkResponse] = await Promise.all([imagePromise, artworkResponsePromise]);
     const artwork = artworkResponse.data;
     const result = clone(artwork) as any as ArtworkImage;
@@ -102,28 +105,29 @@ async function getGalleryItem(filename: string): Promise<ArtworkImage> {
   }
 }
 
-async function deleteGalleryItem(filename: string) {
+async function deleteGalleryItem(id: string) {
   const result: ArtworkDeleted = {
     status: "deleted",
-    filename,
+    id,
     modified: new Date(),
     metadata: { history: [] },
   };
 
   if (useGoogleDrive) {
-    await deleteFile(filename);
+    await deleteFile(id);
     return result;
   } else {
     try {
       await axios.post("/api/editor/deleteImage", {
-        filename,
+        id,
       });
     } catch (e) {
       const error: ArtworkError = {
         status: "error",
         modified: new Date(),
         error: findErrorMessage(e),
-        filename,
+        id: id,
+        name: "", // TODO bad name?
         metadata: result.metadata,
       };
       return error;

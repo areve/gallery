@@ -5,7 +5,7 @@
       <span>frame:{{ artboardService.artwork.value.frame.width }}x{{ artboardService.artwork.value.frame.height }}</span>
     </div>
     <div v-if="statusbarState.mode === 'openai'">{{ openAiPanelState.prompt }} &nbsp; {{ loginState.name }}</div>
-    <div v-if="statusbarState.mode === 'filename'">{{ artboardService.artwork.value.filename }} &nbsp;</div>
+    <div v-if="statusbarState.mode === 'filename'">{{ artboardService.artwork.value.id }} | {{ artboardService.artwork.value.name }} &nbsp;</div>
   </div>
 </template>
 
