@@ -1,7 +1,7 @@
 import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage, ArtworkWithDatesAsIso } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import axios, { type AxiosResponse } from "axios";
-import { deleteFile, getFile, getFileAsDataUrl, listFiles, saveFile } from "./googleApiService";
+import { deleteFile, getFile, getFileAsDataUrl, listFiles, saveFile } from "./googleApi";
 
 const useGoogleDrive = true;
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
