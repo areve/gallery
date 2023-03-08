@@ -134,26 +134,22 @@ export async function getFile(id: string) {
 
 export async function saveFile(name: string, file: Blob): Promise<{ id: string; modifiedTime: string }> {
   await waitUntilLoaded();
-
   const folder = await ensureFolder("gallery.challen.info");
-
-  //const fileContent = "sample text"; // As a sample, upload a text file.
-  //const file = new Blob([atob(dataUrl.replace("data:image/png;base64,", ""))], { type: "image/png" });
-  //  const file = new Blob([atob(dataUrl.replace("data:image/png;base64,", ""))], { type: "image/png" });
   const metadata = {
     name,
     mimeType: "image/png",
     parents: [folder.id],
   };
-  const form = new FormData();
-  form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
-  form.append("file", file);
+
+  const body = new FormData();
+  body.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+  body.append("file", file);
   const accessToken = gapi.auth.getToken().access_token;
 
   const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,modifiedTime", {
     method: "POST",
     headers: new Headers({ Authorization: "Bearer " + accessToken }),
-    body: form,
+    body,
   });
 
   return response.json();
