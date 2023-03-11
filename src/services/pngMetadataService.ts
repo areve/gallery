@@ -54,38 +54,60 @@ export function readMetadata(pngBytes: string) {
   return metadata;
 }
 
-// export function setMetadata(filePath: string, metadata: Metadata) {
-//   const savedMetadata = readMetadata(filePath);
-//   const newMetadata = Object.assign({}, savedMetadata, metadata);
-//   if (JSON.stringify(newMetadata) === JSON.stringify(savedMetadata)) return false;
+function blobToBinary(blob: Blob): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (_e) => resolve(reader.result as string);
+    reader.onerror = (_e) => reject(reader.error);
+    reader.onabort = (_e) => reject(new Error("Read aborted"));
+    reader.readAsBinaryString(blob); // TODO readAsBinaryString deprecated some say
+  });
+}
 
-//   const file = png.readFileSync(filePath);
-//   const chunks = png.splitChunk(file);
-//   const newChunks: any[] = [];
+function binaryToBlob(binary: string): Blob {
+  const len = binary.length;
+  const array = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    array[i] = binary.charCodeAt(i);
+  }
+  return new Blob([array], { type: "image/png" });
+}
 
-//   chunks.forEach((chunk) => {
-//     if (chunk.type !== "tEXt" || chunk.data.split("\0").length !== 2) {
-//       newChunks.push(chunk);
-//     }
-//   });
+export async function setMetadata(blob: Blob, metadata: Metadata) {
+  //   const savedMetadata = readMetadata(filePath);
+  const newMetadata = Object.assign({}, metadata);
+  //   if (JSON.stringify(newMetadata) === JSON.stringify(savedMetadata)) return false;
 
-//   const iend = newChunks.pop();
-//   for (const key in newMetadata) {
-//     if (newMetadata[key]) {
-//       const values = Array.isArray(newMetadata[key]) ? newMetadata[key] : [newMetadata[key]];
-//       values.forEach((value) => {
-//         if (typeof value === "object") {
-//           const newChunk = png.createChunk("tEXt", `${key}\0${JSON.stringify(value)}`);
-//           newChunks.push(newChunk);
-//         } else {
-//           const newChunk = png.createChunk("tEXt", `${key}\0${value}`);
-//           newChunks.push(newChunk);
-//         }
-//       });
-//     }
-//   }
-//   newChunks.push(iend);
-//   const newPng = png.joinChunk(newChunks);
-//   fs.writeFileSync(filePath, newPng, "binary");
-//   return true;
-// }
+  //   const file = png.readFileSync(filePath);
+  const pngBinary = await blobToBinary(blob);
+  // console.log(foo);
+
+  const chunks = png.splitChunk(pngBinary);
+  // console.log(chunks);
+  const newChunks: any[] = [];
+
+  chunks.forEach((chunk: any) => {
+    if (chunk.type !== "tEXt" || chunk.data.split("\0").length !== 2) {
+      newChunks.push(chunk);
+    }
+  });
+
+  const iend = newChunks.pop();
+  for (const key in newMetadata) {
+    if (newMetadata[key]) {
+      const values = Array.isArray(newMetadata[key]) ? newMetadata[key] : [newMetadata[key]];
+      values.forEach((value) => {
+        if (typeof value === "object") {
+          const newChunk = png.createChunk("tEXt", `${key}\0${JSON.stringify(value)}`);
+          newChunks.push(newChunk);
+        } else {
+          const newChunk = png.createChunk("tEXt", `${key}\0${value}`);
+          newChunks.push(newChunk);
+        }
+      });
+    }
+  }
+  newChunks.push(iend);
+
+  return binaryToBlob(png.joinChunk(newChunks));
+}

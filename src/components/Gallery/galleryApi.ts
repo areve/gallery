@@ -1,4 +1,4 @@
-import { readMetadata } from "@/services/pngMetadataService";
+import { readMetadata, setMetadata } from "@/services/pngMetadataService";
 import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage, ArtworkWithDatesAsIso } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import axios, { type AxiosResponse } from "axios";
@@ -26,6 +26,7 @@ function blobToDataURL(blob: Blob): Promise<string> {
     reader.readAsDataURL(blob);
   });
 }
+
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   if (useGoogleDrive) {
     const imageBlob = (item as ArtworkInMemory).dataUrl
@@ -33,13 +34,17 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
       : (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
     // TODO setMetadata in imageBlob
     // ...
-    const file = await saveFile(item.id, item.name, imageBlob);
+    const imageBlob2 = await setMetadata(imageBlob, item.metadata as any)
+    //const png = await getBytes(x.id);
+    // console.log(item.metadata)
+    // throw "whatever"
+    const file = await saveFile(item.id, item.name, imageBlob2);
     return {
       id: file.id,
       name: file.name,
       status: "ready",
       metadata: item.metadata,
-      dataUrl: await blobToDataURL(imageBlob),
+      dataUrl: await blobToDataURL(imageBlob2),
       modified: new Date(file.modifiedTime),
     };
   } else {
