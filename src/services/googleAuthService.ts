@@ -1,4 +1,4 @@
-import { computed, ref, type ComputedRef, type Ref } from "vue";
+import { ref, type Ref } from "vue";
 import { v4 as uuid } from "uuid";
 import { usePersistentState } from "@/services/persistenceService";
 
@@ -10,10 +10,6 @@ const id_scope = "email profile openid";
 const all_scope = id_scope + " https://www.googleapis.com/auth/drive";
 
 type AuthStateState = "in_progress" | "signed_in" | "signed_out";
-
-interface GoogleAuthOptions {
-  buttonWrapper: Ref<HTMLDivElement>;
-}
 
 export interface AuthState {
   idToken: string | null;
