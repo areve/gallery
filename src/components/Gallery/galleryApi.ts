@@ -85,11 +85,11 @@ async function getGallery(): Promise<Artwork[]> {
 
 async function getGalleryItem(id: string): Promise<ArtworkImage> {
   if (useGoogleDrive) {
+    const pngPromise = getBytes(id);
     const filePromise = getFile(id);
-    const png = await getBytes(id);
-    const metadata = readMetadata(png) as any as ArtworkMetadata;
-    const imagePromise = loadImage(bytesToDataUrl(png));
-    const [image, file] = await Promise.all([imagePromise, filePromise]);
+    const imagePromise = pngPromise.then((png: any) => loadImage(bytesToDataUrl(png)));
+    const metadataPromise = pngPromise.then((png: any) => readMetadata(png) as any as ArtworkMetadata);
+    const [image, file, metadata] = await Promise.all([imagePromise, filePromise, metadataPromise]);
     return {
       id: file.id,
       name: file.name,
