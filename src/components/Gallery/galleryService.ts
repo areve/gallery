@@ -59,8 +59,8 @@ export async function loadGalleryItem(item: Artwork) {
 }
 
 export function updateGalleryItem(updatedItem: Artwork) {
-  if (galleryItems.value.find((item) => item.id === updatedItem.id)) {
-    galleryItems.value = galleryItems.value.map((item) => (item.id === updatedItem.id ? updatedItem : item));
+  if (galleryItems.value.find((item) => item.id === updatedItem.id || item.name === updatedItem.name)) {
+    galleryItems.value = galleryItems.value.map((item) => (item.id === updatedItem.id || item.name === updatedItem.name ? updatedItem : item));
   } else {
     galleryItems.value = [updatedItem, ...galleryItems.value];
   }
