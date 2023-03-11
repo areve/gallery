@@ -39,17 +39,17 @@ export async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
 }
 
 export async function deleteGalleryItem(item: Artwork) {
-  const itemToDelete = clone(galleryItems.value.filter((i) => i.name === item.name)[0]);
+  const itemToDelete = clone(galleryItems.value.filter((i) => i.id === item.id)[0]);
   if (itemToDelete.status === "error") {
-    galleryItems.value = galleryItems.value.filter((i) => i.name !== itemToDelete.name);
+    galleryItems.value = galleryItems.value.filter((i) => i.id !== itemToDelete.id);
   } else {
     itemToDelete.status = "waiting";
     updateGalleryItem(itemToDelete);
-    const result = await galleryApi.deleteGalleryItem(item.name);
+    const result = await galleryApi.deleteGalleryItem(item.id);
     if (result.status === "error") {
       updateGalleryItem(result);
     } else {
-      galleryItems.value = galleryItems.value.filter((i) => i.name !== result.name);
+      galleryItems.value = galleryItems.value.filter((i) => i.id !== result.id);
     }
   }
 }
@@ -59,8 +59,8 @@ export async function loadGalleryItem(item: Artwork) {
 }
 
 export function updateGalleryItem(updatedItem: Artwork) {
-  if (galleryItems.value.find((item) => item.name === updatedItem.name)) {
-    galleryItems.value = galleryItems.value.map((item) => (item.name === updatedItem.name ? updatedItem : item));
+  if (galleryItems.value.find((item) => item.id === updatedItem.id)) {
+    galleryItems.value = galleryItems.value.map((item) => (item.id === updatedItem.id ? updatedItem : item));
   } else {
     galleryItems.value = [updatedItem, ...galleryItems.value];
   }

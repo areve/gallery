@@ -11,14 +11,17 @@ async function dataUrlToBlob(dataUrl: string) {
 }
 
 function metadataToArtworkMetadata(metadata: any) {
+  // TODO could also support old style metadata here (filename to name and id, etc)
   return Object.assign({ history: [] }, clone(metadata)) as ArtworkMetadata;
 }
 
 const useGoogleDrive = true;
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   if (useGoogleDrive) {
-    const imageDataUrl = (item as ArtworkInMemory).dataUrl || (item as ArtworkOnCanvas).context.canvas.toDataURL();
-    const imageBlob = await dataUrlToBlob(imageDataUrl);
+    const imageBlob = (item as ArtworkInMemory).dataUrl
+      ? await dataUrlToBlob((item as ArtworkInMemory).dataUrl)
+      : (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
+    // TODO setMetadata in imageBlob 
     const file = await saveFile(item.name, imageBlob);
     return {
       id: file.id,
