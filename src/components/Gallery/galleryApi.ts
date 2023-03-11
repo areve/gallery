@@ -5,16 +5,26 @@ import axios, { type AxiosResponse } from "axios";
 import { deleteFile, getBytes, getFile, listFiles, saveFile } from "./googleApi";
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata";
 
+async function dataUrlToBlob(dataUrl: string) {
+  const res = await fetch(dataUrl);
+  return res.blob();
+}
+
+function metadataToArtworkMetadata(metadata: any) {
+  return Object.assign({ history: [] }, clone(metadata)) as ArtworkMetadata;
+}
+
 const useGoogleDrive = true;
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   if (useGoogleDrive) {
-    const imageBlob = (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
+    const imageDataUrl = (item as ArtworkInMemory).dataUrl || (item as ArtworkOnCanvas).context.canvas.toDataURL();
+    const imageBlob = await dataUrlToBlob(imageDataUrl);
     const file = await saveFile(item.name, imageBlob);
     return {
       id: file.id,
       name: file.name,
       status: "ready",
-      metadata: { history: [] }, // TODO read it
+      metadata: item.metadata,
       //image,
       modified: new Date(file.modifiedTime),
     };
@@ -58,7 +68,7 @@ async function getGallery(): Promise<Artwork[]> {
           id: x.id,
           name: x.name,
           status: "ready",
-          metadata: readMetadata(png) as any as ArtworkMetadata,
+          metadata: metadataToArtworkMetadata(readMetadata(png)),
           dataUrl: bytesToDataUrl(png),
           image: null! as HTMLImageElement,
           modified: new Date(x.modifiedTime),
@@ -88,7 +98,7 @@ async function getGalleryItem(id: string): Promise<ArtworkImage> {
     const pngPromise = getBytes(id);
     const filePromise = getFile(id);
     const imagePromise = pngPromise.then((png: any) => loadImage(bytesToDataUrl(png)));
-    const metadataPromise = pngPromise.then((png: any) => readMetadata(png) as any as ArtworkMetadata);
+    const metadataPromise = pngPromise.then((png: any) => metadataToArtworkMetadata(readMetadata(png)));
     const [image, file, metadata] = await Promise.all([imagePromise, filePromise, metadataPromise]);
     return {
       id: file.id,

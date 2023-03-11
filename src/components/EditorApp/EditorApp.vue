@@ -79,7 +79,6 @@ function reset() {
 }
 
 async function galleryItemSelected(item: Artwork) {
-  console.log("selected", item);
   artboardService.load(item);
   openAiPanelState.value.prompt = mostRecentPrompt(item);
 }

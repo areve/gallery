@@ -101,7 +101,7 @@ export async function listFiles() {
   try {
     const response = await gapi.client.drive.files.list({
       q: ` trashed=false and '${escapeQuery(folder.id)}' in parents`,
-      pageSize: 1, // TODO set to something big?
+      pageSize: 10, // TODO set to something big?
       // thumbnailLink is an option but to use it I need a proxy because of CORS
       fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
     });
