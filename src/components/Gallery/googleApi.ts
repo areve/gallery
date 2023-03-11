@@ -1,5 +1,6 @@
 import { watchPostEffect } from "vue";
 import { authState } from "@/services/googleAuthService";
+import { readMetadata } from "@/services/pngMetadataService";
 
 declare let gapi: any;
 
@@ -111,14 +112,14 @@ export async function listFiles() {
   }
 }
 
-export async function getFileAsDataUrl(id: string) {
+export async function getBytes(id: string) {
   await waitUntilLoaded();
   const response = await gapi.client.drive.files.get({
     fileId: id,
     alt: "media",
   });
-  // may be able to use URL.createObjectURL
-  return "data:image/png;base64," + btoa(response.body);
+
+  return response.body;
 }
 
 export async function getFile(id: string) {

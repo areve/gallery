@@ -1,7 +1,9 @@
+import { readMetadata } from "@/services/pngMetadataService";
 import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage, ArtworkWithDatesAsIso } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import axios, { type AxiosResponse } from "axios";
-import { deleteFile, getFile, getFileAsDataUrl, listFiles, saveFile } from "./googleApi";
+import { deleteFile, getBytes, getFile, listFiles, saveFile } from "./googleApi";
+import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata";
 
 const useGoogleDrive = true;
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
@@ -43,22 +45,25 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   }
 }
 
+function bytesToDataUrl(bytes: string) {
+  return "data:image/png;base64," + btoa(bytes);
+}
 async function getGallery(): Promise<Artwork[]> {
   if (useGoogleDrive) {
     const files = await listFiles();
     const result = await Promise.all(
-      files.map(
-        async (x: any) =>
-          ({
-            id: x.id,
-            name: x.name,
-            status: "ready",
-            metadata: { history: [] }, // TODO read it
-            dataUrl: await getFileAsDataUrl(x.id),
-            image: null! as HTMLImageElement,
-            modified: new Date(x.modifiedTime),
-          } as ArtworkImage)
-      )
+      files.map(async (x: any) => {
+        const png = await getBytes(x.id);
+        return {
+          id: x.id,
+          name: x.name,
+          status: "ready",
+          metadata: readMetadata(png) as any as ArtworkMetadata,
+          dataUrl: bytesToDataUrl(png),
+          image: null! as HTMLImageElement,
+          modified: new Date(x.modifiedTime),
+        } as ArtworkImage;
+      })
     );
     console.log(result);
     return result;
@@ -81,18 +86,18 @@ async function getGallery(): Promise<Artwork[]> {
 async function getGalleryItem(id: string): Promise<ArtworkImage> {
   if (useGoogleDrive) {
     const filePromise = getFile(id);
-    const imagePromise = loadImage(await getFileAsDataUrl(id));
+    const png = await getBytes(id);
+    const metadata = readMetadata(png) as any as ArtworkMetadata;
+    const imagePromise = loadImage(bytesToDataUrl(png));
     const [image, file] = await Promise.all([imagePromise, filePromise]);
     return {
       id: file.id,
       name: file.name,
       status: "ready",
-      metadata: { history: [] }, // TODO read it
+      metadata,
       image,
       modified: new Date(file.modifiedTime),
     };
-    //console.log("getFile", file);
-    throw "not supported";
   } else {
     const imagePromise = loadImage(`/downloads/${id}?${new Date().toISOString()}`);
     const artworkResponsePromise = axios.get<ArtworkWithDatesAsIso>(`/api/gallery/${id}`);
