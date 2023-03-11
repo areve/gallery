@@ -152,25 +152,45 @@ export async function deleteFile(id: string) {
   }
 }
 
-export async function saveFile(name: string, file: Blob): Promise<{ id: string; name: string; modifiedTime: string }> {
+export async function saveFile(id: string, name: string, file: Blob): Promise<{ id: string; name: string; modifiedTime: string }> {
   await waitUntilLoaded();
   const folder = await ensureFolder("gallery.challen.info");
-  const metadata = {
-    name,
-    mimeType: "image/png",
-    parents: [folder.id],
-  };
+  if (id) {
+    const metadata = {
+      name,
+      mimeType: "image/png",
+    };
 
-  const body = new FormData();
-  body.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
-  body.append("file", file);
-  const accessToken = gapi.auth.getToken().access_token;
+    const body = new FormData();
+    body.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+    body.append("file", file);
+    const accessToken = gapi.auth.getToken().access_token;
 
-  const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime", {
-    method: "POST",
-    headers: new Headers({ Authorization: "Bearer " + accessToken }),
-    body,
-  });
+    const response = await fetch("https://www.googleapis.com/upload/drive/v3/files/" + id + "?uploadType=multipart&fields=id,name,modifiedTime", {
+      method: "PATCH",
+      headers: new Headers({ Authorization: "Bearer " + accessToken }),
+      body,
+    });
 
-  return response.json();
+    return response.json();
+  } else {
+    const metadata = {
+      name,
+      mimeType: "image/png",
+      parents: [folder.id],
+    };
+
+    const body = new FormData();
+    body.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+    body.append("file", file);
+    const accessToken = gapi.auth.getToken().access_token;
+
+    const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime", {
+      method: "POST",
+      headers: new Headers({ Authorization: "Bearer " + accessToken }),
+      body,
+    });
+
+    return response.json();
+  }
 }

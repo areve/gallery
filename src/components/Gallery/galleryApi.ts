@@ -16,19 +16,30 @@ function metadataToArtworkMetadata(metadata: any) {
 }
 
 const useGoogleDrive = true;
+
+function blobToDataURL(blob: Blob): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (_e) => resolve(reader.result as string);
+    reader.onerror = (_e) => reject(reader.error);
+    reader.onabort = (_e) => reject(new Error("Read aborted"));
+    reader.readAsDataURL(blob);
+  });
+}
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   if (useGoogleDrive) {
     const imageBlob = (item as ArtworkInMemory).dataUrl
       ? await dataUrlToBlob((item as ArtworkInMemory).dataUrl)
       : (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
-    // TODO setMetadata in imageBlob 
-    const file = await saveFile(item.name, imageBlob);
+    // TODO setMetadata in imageBlob
+    // ...
+    const file = await saveFile(item.id, item.name, imageBlob);
     return {
       id: file.id,
       name: file.name,
       status: "ready",
       metadata: item.metadata,
-      //image,
+      dataUrl: await blobToDataURL(imageBlob),
       modified: new Date(file.modifiedTime),
     };
   } else {
