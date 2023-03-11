@@ -23,7 +23,10 @@ import { deleteGalleryItem, saveGalleryItem } from "@/components/Gallery/gallery
 import { computed } from "vue";
 import AppWindow from "../AppWindow/AppWindow.vue";
 
-const metadataAsJson = computed(() => JSON.stringify(artboardService.artwork.value.metadata));
+const metadataAsJson = computed({
+  get: () => JSON.stringify(artboardService.artwork.value.metadata),
+  set: (value) => (artboardService.artwork.value.metadata = JSON.parse(value)),
+});
 </script>
 
 <style scoped>
