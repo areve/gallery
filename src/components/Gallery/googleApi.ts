@@ -106,7 +106,7 @@ export async function listFiles() {
   try {
     const params: Record<string, string> = {
       q: `trashed=false and '${escapeQuery(folder.id)}' in parents`,
-      pageSize: "10", // TODO set to something big?
+      pageSize: "12", // TODO set to something big?
       fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
     };
     const url = "https://www.googleapis.com/drive/v3/files?" + new URLSearchParams(params).toString();
