@@ -151,7 +151,7 @@ export async function getFile(id: string) {
 
 export async function deleteFile(id: string) {
   await waitUntilLoaded();
-  
+  await cacheFlush() // TODO a bit of overkill to flush the entire cache
   try {
     const response = await gapi.client.drive.files.delete({
       fileId: id,
