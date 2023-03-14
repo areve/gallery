@@ -1,6 +1,6 @@
 import { watchPostEffect } from "vue";
 import { authState } from "@/services/googleAuthService";
-import { readMetadata } from "@/services/pngMetadataService";
+import { cacheFetch, cacheFlush } from "@/services/cacheService";
 
 declare let gapi: any;
 
@@ -58,18 +58,23 @@ export function escapeQuery(value: string) {
 
 export async function folderExists(name: string) {
   await waitUntilLoaded();
-  let response;
   try {
-    response = await gapi.client.drive.files.list({
+    const params: Record<string, string> = {
       q: `trashed=false and name='${escapeQuery(name)}' and mimeType='application/vnd.google-apps.folder'`,
-      pageSize: 1,
-      fields: "files(id, name, parents, mimeType, modifiedTime)",
+      pageSize: "1",
+      fields: "files(id,name,parents,mimeType,modifiedTime)",
+    };
+    const url = "https://www.googleapis.com/drive/v3/files?" + new URLSearchParams(params).toString();
+    const response = await cacheFetch(url, {
+      method: "GET",
+      headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
     });
+    const result = await response.json();
+    return result.files[0];
   } catch (err: any) {
     console.error(err.message);
     return null;
   }
-  return response.result.files[0];
 }
 
 export async function createFolder(name: string) {
@@ -99,38 +104,45 @@ export async function listFiles() {
   await waitUntilLoaded();
   const folder = await ensureFolder("gallery.challen.info");
   try {
-    const response = await gapi.client.drive.files.list({
-      q: ` trashed=false and '${escapeQuery(folder.id)}' in parents`,
-      pageSize: 10, // TODO set to something big?
-      // thumbnailLink is an option but to use it I need a proxy because of CORS
+    const params: Record<string, string> = {
+      q: `trashed=false and '${escapeQuery(folder.id)}' in parents`,
+      pageSize: "10", // TODO set to something big?
       fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
+    };
+    const url = "https://www.googleapis.com/drive/v3/files?" + new URLSearchParams(params).toString();
+    const response = await cacheFetch(url, {
+      method: "GET",
+      headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
     });
-    return response.result.files;
+    const result = await response.json();
+    return result.files;
   } catch (err: any) {
     console.error(err.message);
-    return;
+    return null;
   }
 }
 
 export async function getBytes(id: string) {
   await waitUntilLoaded();
-  const response = await gapi.client.drive.files.get({
-    fileId: id,
-    alt: "media",
-  });
+  // https://content.googleapis.com/drive/v3/files/12XG2BWDp4EGheg-VNPtUDSS8tNuViH57?alt=media
 
-  return response.body;
+  // TODO try without all these .toString()'s
+  const params: Record<string, string> = {
+    alt: "media",
+  };
+  const url = `https://www.googleapis.com/drive/v3/files/${id}?${new URLSearchParams(params).toString()}`;
+  const response = await cacheFetch(url, {
+    method: "GET",
+    headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+  });
+  const bytes = await response.blob();
+  return bytes;
 }
 
 export async function getFile(id: string) {
   await waitUntilLoaded();
   try {
-    const response = await gapi.client.drive.files.get({
-      fileId: id,
-      fields: "id, name, parents, mimeType, modifiedTime",
-    });
-
-    return response.result;
+    return getBytes(id);
   } catch (err: any) {
     console.error(err.message);
     return;
@@ -139,6 +151,7 @@ export async function getFile(id: string) {
 
 export async function deleteFile(id: string) {
   await waitUntilLoaded();
+  
   try {
     const response = await gapi.client.drive.files.delete({
       fileId: id,

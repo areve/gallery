@@ -35,8 +35,9 @@ export interface Metadata {
   [name: string]: any[];
 }
 
-export function readMetadata(pngBytes: string) {
-  const chunks = png.splitChunk(pngBytes);
+export async function readMetadata(blob: Blob) {
+  const pngBinary = await blobToBinary(blob);
+  const chunks = png.splitChunk(pngBinary);
   const metadataRaw = chunks.filter((x: any) => x.type === "tEXt");
   const metadataList = metadataRaw.map((x: any) => x.data.split("\0"));
   const metadata: Metadata = {};

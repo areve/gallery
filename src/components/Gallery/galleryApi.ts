@@ -87,8 +87,8 @@ async function getGallery(): Promise<Artwork[]> {
           id: x.id,
           name: x.name,
           status: "ready",
-          metadata: metadataToArtworkMetadata(readMetadata(png)),
-          dataUrl: bytesToDataUrl(png),
+          metadata: metadataToArtworkMetadata(await readMetadata(png)),
+          dataUrl: await blobToDataURL(png),
           image: null! as HTMLImageElement,
           modified: new Date(x.modifiedTime),
         } as ArtworkImage;
@@ -116,8 +116,8 @@ async function getGalleryItem(id: string): Promise<ArtworkImage> {
   if (useGoogleDrive) {
     const pngPromise = getBytes(id);
     const filePromise = getFile(id);
-    const imagePromise = pngPromise.then((png: any) => loadImage(bytesToDataUrl(png)));
-    const metadataPromise = pngPromise.then((png: any) => metadataToArtworkMetadata(readMetadata(png)));
+    const imagePromise = pngPromise.then((png: Blob) => loadImage(png));
+    const metadataPromise = pngPromise.then(async (png: any) => metadataToArtworkMetadata(await readMetadata(png)));
     const [image, file, metadata] = await Promise.all([imagePromise, filePromise, metadataPromise]);
     return {
       id: file.id,

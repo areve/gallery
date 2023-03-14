@@ -9,7 +9,7 @@ export function findErrorMessage(error: any): string {
   return result || "Unknown Error";
 }
 
-export function loadImage(dataUrl: string): Promise<HTMLImageElement> {
+export function loadImage(dataUrl: string | Blob): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const tempImage = new Image();
     tempImage.onload = () => {
@@ -18,7 +18,12 @@ export function loadImage(dataUrl: string): Promise<HTMLImageElement> {
     tempImage.onerror = (e) => {
       reject(e);
     };
-    tempImage.src = dataUrl;
+    if (typeof dataUrl === "object") {
+      tempImage.src = URL.createObjectURL(dataUrl);
+    } else {
+      // TODO not sure if I'm using this path anymore
+      tempImage.src = dataUrl;
+    }
   });
 }
 
