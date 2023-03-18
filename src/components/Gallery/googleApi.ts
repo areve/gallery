@@ -67,7 +67,7 @@ export async function folderExists(name: string) {
     const url = `https://www.googleapis.com/drive/v3/files?${new URLSearchParams(params)}`;
     const response = await cacheFetch(url, {
       method: "GET",
-      headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+      headers: new Headers({ Authorization: `Bearer ${authState.value.accessToken}` }),
     });
     const result = await response.json();
     return result.files[0];
@@ -84,7 +84,7 @@ export async function createFolder(name: string) {
   };
   const response = await fetch("https://www.googleapis.com/drive/v3/files?${new URLSearchParams(params)}", {
     method: "POST",
-    headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+    headers: new Headers({ Authorization: `Bearer ${authState.value.accessToken}` }),
     body: JSON.stringify({
       name,
       mimeType: "application/vnd.google-apps.folder",
@@ -115,7 +115,7 @@ export async function listFiles() {
       url,
       {
         method: "GET",
-        headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+        headers: new Headers({ Authorization: `Bearer ${authState.value.accessToken}` }),
       },
       true
     );
@@ -135,7 +135,7 @@ export async function getBytes(id: string) {
   const url = `https://www.googleapis.com/drive/v3/files/${id}?${new URLSearchParams(params)}`;
   const response = await cacheFetch(url, {
     method: "GET",
-    headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+    headers: new Headers({ Authorization: `Bearer ${authState.value.accessToken}` }),
   });
   const bytes = await response.blob();
   return bytes;
@@ -149,7 +149,7 @@ export async function getFile(id: string) {
   const url = `https://www.googleapis.com/drive/v3/files/${id}?${new URLSearchParams(params)}`;
   const response = await cacheFetch(url, {
     method: "GET",
-    headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+    headers: new Headers({ Authorization: `Bearer ${authState.value.accessToken}` }),
   });
   const result = await response.json();
   console.log(result);
@@ -165,7 +165,7 @@ export async function deleteFile(id: string) {
   const url = `https://www.googleapis.com/drive/v3/files/${id}?${new URLSearchParams(params)}`;
   const response = await fetch(url, {
     method: "DELETE",
-    headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+    headers: new Headers({ Authorization: `Bearer ${authState.value.accessToken}` }),
   });
   if (response.status === 204) {
     return true;
@@ -188,7 +188,7 @@ export async function saveFile(id: string, name: string, file: Blob): Promise<{ 
     const body = new FormData();
     body.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
     body.append("file", file);
-    const accessToken = gapi.auth.getToken().access_token;
+    const accessToken = authState.value.accessToken;
 
     const response = await fetch("https://www.googleapis.com/upload/drive/v3/files/" + id + "?uploadType=multipart&fields=id,name,modifiedTime", {
       method: "PATCH",
@@ -207,7 +207,7 @@ export async function saveFile(id: string, name: string, file: Blob): Promise<{ 
     const body = new FormData();
     body.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
     body.append("file", file);
-    const accessToken = gapi.auth.getToken().access_token;
+    const accessToken = authState.value.accessToken;
 
     const response = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime", {
       method: "POST",
