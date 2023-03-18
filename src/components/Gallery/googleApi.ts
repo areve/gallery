@@ -1,41 +1,5 @@
-import { watchPostEffect } from "vue";
 import { authState } from "@/services/googleAuthService";
 import { cacheFetch, cacheFlush } from "@/services/cacheService";
-
-declare let gapi: any;
-
-const discoveryDocs = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
-
-let isScriptAdded = false;
-let isScriptLoaded = false;
-
-async function onScriptLoaded() {
-  gapi.load("client", async function () {
-    await gapi.client.init({
-      discoveryDocs,
-    });
-    isScriptLoaded = true;
-  });
-}
-
-async function waitUntilLoaded() {
-  function test(resolve: (result: boolean) => void) {
-    if (isScriptLoaded) resolve(true);
-    else setTimeout(() => test(resolve));
-  }
-  return new Promise(test);
-}
-
-watchPostEffect(async () => {
-  await waitUntilLoaded();
-  if (authState.value.accessToken) {
-    gapi.client.setToken({
-      access_token: authState.value.accessToken,
-    });
-  } else {
-    gapi.client.setToken("");
-  }
-});
 
 function addScript(script: string, onload: (event: Event) => any) {
   const tag = document.createElement("script");
@@ -46,18 +10,11 @@ function addScript(script: string, onload: (event: Event) => any) {
   document.head.appendChild(tag);
 }
 
-export function useGoogleApi() {
-  if (isScriptAdded) return;
-  isScriptAdded = true;
-  addScript("https://apis.google.com/js/api.js", () => onScriptLoaded());
-}
-
 export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 
 export async function folderExists(name: string) {
-  await waitUntilLoaded();
   try {
     const params: Record<string, string> = {
       q: `trashed=false and name='${escapeQuery(name)}' and mimeType='application/vnd.google-apps.folder'`,
@@ -78,7 +35,6 @@ export async function folderExists(name: string) {
 }
 
 export async function createFolder(name: string) {
-  await waitUntilLoaded();
   const params: Record<string, string> = {
     fields: "id, name, parents, mimeType, modifiedTime",
   };
@@ -102,7 +58,6 @@ export async function ensureFolder(name: string) {
 }
 
 export async function listFiles() {
-  await waitUntilLoaded();
   const folder = await ensureFolder("gallery.challen.info");
   try {
     const params: Record<string, string> = {
@@ -128,7 +83,6 @@ export async function listFiles() {
 }
 
 export async function getBytes(id: string) {
-  await waitUntilLoaded();
   const params: Record<string, string> = {
     alt: "media",
   };
@@ -142,7 +96,6 @@ export async function getBytes(id: string) {
 }
 
 export async function getFile(id: string) {
-  await waitUntilLoaded();
   const params: Record<string, string> = {
     fields: "id, name, parents, mimeType, modifiedTime",
   };
@@ -157,7 +110,6 @@ export async function getFile(id: string) {
 }
 
 export async function deleteFile(id: string) {
-  await waitUntilLoaded();
   await cacheFlush(); // TODO a bit of overkill to flush the entire cache
   const params: Record<string, string> = {
     fields: "id, name, parents, mimeType, modifiedTime",
@@ -175,7 +127,6 @@ export async function deleteFile(id: string) {
 }
 
 export async function saveFile(id: string, name: string, file: Blob): Promise<{ id: string; name: string; modifiedTime: string }> {
-  await waitUntilLoaded();
   await cacheFlush(); // TODO a bit of overkill to flush the entire cache
 
   const folder = await ensureFolder("gallery.challen.info");
