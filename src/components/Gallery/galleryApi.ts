@@ -34,7 +34,7 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
       : (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
     // TODO setMetadata in imageBlob
     // ...
-    const imageBlob2 = await setMetadata(imageBlob, item.metadata as any)
+    const imageBlob2 = await setMetadata(imageBlob, item.metadata as any);
     //const png = await getBytes(x.id);
     // console.log(item.metadata)
     // throw "whatever"
@@ -74,9 +74,6 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   }
 }
 
-function bytesToDataUrl(bytes: string) {
-  return "data:image/png;base64," + btoa(bytes);
-}
 async function getGallery(): Promise<Artwork[]> {
   if (useGoogleDrive) {
     const files = await listFiles();

@@ -1,4 +1,4 @@
-import { ref, type Ref } from "vue";
+import { ref } from "vue";
 import { v4 as uuid } from "uuid";
 import { usePersistentState } from "@/services/persistenceService";
 
