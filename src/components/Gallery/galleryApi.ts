@@ -2,7 +2,7 @@ import { readMetadata, setMetadata } from "@/services/pngMetadataService";
 import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkError, ArtworkInMemory, Artwork, ArtworkImage, ArtworkWithDatesAsIso } from "@/interfaces/Artwork";
 import { clone, findErrorMessage, loadImage } from "@/lib/utils";
 import axios, { type AxiosResponse } from "axios";
-import { deleteFile, getBytes, getFile, listFiles, saveFile } from "./googleApi";
+import { deleteFile, getFileBlob, getFile, listFiles, saveFile } from "./googleApi";
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata";
 
 async function dataUrlToBlob(dataUrl: string) {
@@ -35,7 +35,7 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
     // TODO setMetadata in imageBlob
     // ...
     const imageBlob2 = await setMetadata(imageBlob, item.metadata as any);
-    //const png = await getBytes(x.id);
+    //const png = await getFileBlob(x.id);
     // console.log(item.metadata)
     // throw "whatever"
     const file = await saveFile(item.id, item.name, imageBlob2);
@@ -79,7 +79,7 @@ async function getGallery(): Promise<Artwork[]> {
     const files = await listFiles();
     const result = await Promise.all(
       files.map(async (x: any) => {
-        const png = await getBytes(x.id);
+        const png = await getFileBlob(x.id);
         return {
           id: x.id,
           name: x.name,
@@ -111,7 +111,7 @@ async function getGallery(): Promise<Artwork[]> {
 
 async function getGalleryItem(id: string): Promise<ArtworkImage> {
   if (useGoogleDrive) {
-    const pngPromise = getBytes(id);
+    const pngPromise = getFileBlob(id);
     const filePromise = getFile(id);
     const imagePromise = pngPromise.then((png: Blob) => loadImage(png));
     const metadataPromise = pngPromise.then(async (png: any) => metadataToArtworkMetadata(await readMetadata(png)));
