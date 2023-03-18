@@ -152,6 +152,8 @@ async function googleFilesGet(params: Record<string, string>, cacheKey: string) 
   return result.files as FileInfo[];
 }
 
+const rootDirName = "gallery.challen.info"; // TODO hard coded folder name?
+
 export async function folderExists(name: string) {
   const result = await googleFilesGet(
     {
@@ -175,11 +177,11 @@ export async function ensureFolder(name: string) {
 }
 
 export async function listFiles() {
-  const folder = await ensureFolder("gallery.challen.info");
+  const folder = await ensureFolder(rootDirName);
   return await googleFilesGet(
     {
       q: `trashed=false and '${escapeQuery(folder.id)}' in parents`,
-      pageSize: "12", // TODO set to something big?
+      // TODO support "pageSize"
       fields: `nextPageToken, files(${fileInfoKeys.join(",")})`,
     },
     "/gallery"
@@ -200,7 +202,7 @@ export async function deleteFile(id: string) {
 }
 
 export async function saveFile(id: string, name: string, file: Blob) {
-  const folder = await ensureFolder("gallery.challen.info"); // TODO hard coded folder name?
+  const folder = await ensureFolder(rootDirName);
   if (id) {
     await cacheFlushKeys([`/gallery/${id}`, `/gallery/${id}/metadata`]);
     return await googleFileUpdate(id, name, file);
