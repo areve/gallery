@@ -79,20 +79,20 @@ export async function folderExists(name: string) {
 
 export async function createFolder(name: string) {
   await waitUntilLoaded();
-  try {
-    // TODO use the REST API, then probably don't need gapi.client at all
-    const response = await gapi.client.drive.files.create({
-      resource: {
-        name,
-        mimeType: "application/vnd.google-apps.folder",
-      },
-      fields: "id, name, parents, mimeType, modifiedTime",
-    });
-    return response.result;
-  } catch (err: any) {
-    console.error(err.message);
-    return null;
-  }
+  const params: Record<string, string> = {
+    fields: "id, name, parents, mimeType, modifiedTime",
+  };
+  const response = await fetch("https://www.googleapis.com/drive/v3/files?${new URLSearchParams(params)}", {
+    method: "POST",
+    headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+    body: JSON.stringify({
+      name,
+      mimeType: "application/vnd.google-apps.folder",
+    }),
+  });
+  const result = await response.json();
+  console.log("result", result);
+  return result;
 }
 
 export async function ensureFolder(name: string) {
