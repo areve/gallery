@@ -64,7 +64,7 @@ export async function folderExists(name: string) {
       pageSize: "1",
       fields: "files(id,name,parents,mimeType,modifiedTime)",
     };
-    const url = "https://www.googleapis.com/drive/v3/files?" + new URLSearchParams(params).toString();
+    const url = `https://www.googleapis.com/drive/v3/files?${new URLSearchParams(params)}`;
     const response = await cacheFetch(url, {
       method: "GET",
       headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
@@ -110,7 +110,7 @@ export async function listFiles() {
       pageSize: "12", // TODO set to something big?
       fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
     };
-    const url = "https://www.googleapis.com/drive/v3/files?" + new URLSearchParams(params).toString();
+    const url = `https://www.googleapis.com/drive/v3/files?${new URLSearchParams(params)}`;
     const response = await cacheFetch(
       url,
       {
@@ -129,11 +129,10 @@ export async function listFiles() {
 
 export async function getBytes(id: string) {
   await waitUntilLoaded();
-  // TODO try without all these .toString()'s
   const params: Record<string, string> = {
     alt: "media",
   };
-  const url = `https://www.googleapis.com/drive/v3/files/${id}?${new URLSearchParams(params).toString()}`;
+  const url = `https://www.googleapis.com/drive/v3/files/${id}?${new URLSearchParams(params)}`;
   const response = await cacheFetch(url, {
     method: "GET",
     headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
@@ -147,7 +146,7 @@ export async function getFile(id: string) {
   const params: Record<string, string> = {
     fields: "id, name, parents, mimeType, modifiedTime",
   };
-  const url = `https://www.googleapis.com/drive/v3/files/${id}?${new URLSearchParams(params).toString()}`;
+  const url = `https://www.googleapis.com/drive/v3/files/${id}?${new URLSearchParams(params)}`;
   const response = await cacheFetch(url, {
     method: "GET",
     headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
