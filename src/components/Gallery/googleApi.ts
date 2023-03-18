@@ -80,6 +80,7 @@ export async function folderExists(name: string) {
 export async function createFolder(name: string) {
   await waitUntilLoaded();
   try {
+    // TODO use the REST API, then probably don't need gapi.client at all
     const response = await gapi.client.drive.files.create({
       resource: {
         name,
@@ -110,10 +111,14 @@ export async function listFiles() {
       fields: "nextPageToken, files(id, name, parents, mimeType, modifiedTime)",
     };
     const url = "https://www.googleapis.com/drive/v3/files?" + new URLSearchParams(params).toString();
-    const response = await cacheFetch(url, {
-      method: "GET",
-      headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
-    });
+    const response = await cacheFetch(
+      url,
+      {
+        method: "GET",
+        headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+      },
+      true
+    );
     const result = await response.json();
     return result.files;
   } catch (err: any) {
@@ -151,8 +156,9 @@ export async function getFile(id: string) {
 
 export async function deleteFile(id: string) {
   await waitUntilLoaded();
-  await cacheFlush() // TODO a bit of overkill to flush the entire cache
+  await cacheFlush(); // TODO a bit of overkill to flush the entire cache
   try {
+    // TODO use the REST API
     const response = await gapi.client.drive.files.delete({
       fileId: id,
       fields: "id, name, parents, mimeType, modifiedTime",
