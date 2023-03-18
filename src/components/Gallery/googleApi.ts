@@ -1,5 +1,6 @@
 import { authState } from "@/services/googleAuthService";
 import { cacheFetch, cacheFlush } from "@/services/cacheService";
+import { result } from "lodash";
 
 export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
@@ -34,8 +35,11 @@ async function googleFileBlob(id: string) {
   return await response.blob();
 }
 
-// TODO give make metadata a proper type
-export async function googleFileUpdate(id: string, file: Blob, metadata: object) {
+async function googleFileUpdate(id: string, name: string, file: Blob) {
+  const metadata = {
+    name,
+    mimeType: "image/png", // TODO this could be automatically found from the blob?
+  };
   const url = googleUrl(id, {
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
@@ -48,10 +52,17 @@ export async function googleFileUpdate(id: string, file: Blob, metadata: object)
     headers: getHeaders(),
     body,
   });
-  return response.json();
+  return (await response.json()) as FileInfo;
 }
 
-export async function googleFileCreate(file: Blob, metadata: object) {
+// TODO give make metadata a proper type
+async function googleFileCreate(folderId: string, id: string, name: string, file: Blob) {
+  const metadata = {
+    name,
+    mimeType: "image/png", // TODO this could be automatically found from the blob?
+    parents: [folderId],
+  };
+
   const url = googleUrl({
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
@@ -64,10 +75,28 @@ export async function googleFileCreate(file: Blob, metadata: object) {
     headers: getHeaders(),
     body,
   });
-  return response.json();
+  return (await response.json()) as FileInfo;
 }
 
-export async function googleFileGet(id: string): Promise<FileInfo> {
+async function googleFolderCreate(name: string) {
+  const params: Record<string, string> = {
+    fields: fileInfoKeys.join(","),
+  };
+  const body = {
+    name,
+    mimeType: "application/vnd.google-apps.folder",
+  };
+
+  const url = googleUrl(params);
+  const response = await fetch(url, {
+    method: "POST",
+    headers: getHeaders(),
+    body: JSON.stringify(body),
+  });
+  return (await response.json()) as FileInfo;
+}
+
+async function googleFileGet(id: string) {
   const url = googleUrl(id, {
     fields: fileInfoKeys.join(","),
   });
@@ -78,7 +107,7 @@ export async function googleFileGet(id: string): Promise<FileInfo> {
   return (await response.json()) as FileInfo;
 }
 
-export async function googleFileDelete(id: string) {
+async function googleFileDelete(id: string) {
   const url = googleUrl(id);
   const response = await fetch(url, {
     method: "DELETE",
@@ -87,9 +116,8 @@ export async function googleFileDelete(id: string) {
   return response.status === 204;
 }
 
-export async function googleFilesGet(params: Record<string, string>, flush?: boolean) {
+async function googleFilesGet(params: Record<string, string>, flush?: boolean) {
   const url = googleUrl(params);
-  console.log('getHeaders()', getHeaders())
   const response = await cacheFetch(
     url,
     {
@@ -98,58 +126,22 @@ export async function googleFilesGet(params: Record<string, string>, flush?: boo
     },
     flush
   );
-  return await response.json();
-}
-
-// TODO type for body?
-export async function googleFilesCreate(params: Record<string, string>, body: object) {
-  const url = googleUrl(params);
-  const response = await fetch(url, {
-    method: "POST",
-    headers: getHeaders(),
-    body: JSON.stringify(body),
-  });
-  return await response.json();
+  const result = await response.json();
+  // TODO there is nextPageToken and files, as requested
+  return result.files as FileInfo[];
 }
 
 export async function folderExists(name: string) {
-  console.log('folderExists')
   const result = await googleFilesGet({
     q: `trashed=false and name='${escapeQuery(name)}' and mimeType='application/vnd.google-apps.folder'`,
     pageSize: "1",
     fields: `files(${fileInfoKeys.join(",")})`,
   });
-  // TODO handle 401
-  //   {
-  //     "error": {
-  //         "code": 401,
-  //         "message": "Request had invalid authentication credentials...
-  //         "errors": [
-  //             {
-  //                 "message": "Invalid Credentials",
-  //                 "domain": "global",
-  //                 "reason": "authError",
-  //                 "location": "Authorization",
-  //                 "locationType": "header"
-  //             }
-  //         ],
-  //         "status": "UNAUTHENTICATED"
-  //     }
-  // }
-  console.log(result);
-  return result.files[0];
+  return result[0];
 }
 
 export async function createFolder(name: string) {
-  return await googleFilesCreate(
-    {
-      fields: fileInfoKeys.join(","),
-    },
-    {
-      name,
-      mimeType: "application/vnd.google-apps.folder",
-    }
-  );
+  return await googleFolderCreate(name);
 }
 
 export async function ensureFolder(name: string) {
@@ -160,7 +152,7 @@ export async function ensureFolder(name: string) {
 
 export async function listFiles() {
   const folder = await ensureFolder("gallery.challen.info");
-  const result = await googleFilesGet(
+  return await googleFilesGet(
     {
       q: `trashed=false and '${escapeQuery(folder.id)}' in parents`,
       pageSize: "12", // TODO set to something big?
@@ -168,7 +160,6 @@ export async function listFiles() {
     },
     true
   );
-  return result.files;
 }
 
 export async function getFileBlob(id: string) {
@@ -184,22 +175,9 @@ export async function deleteFile(id: string) {
   return googleFileDelete(id);
 }
 
-export async function saveFile(id: string, name: string, file: Blob): Promise<{ id: string; name: string; modifiedTime: string }> {
+export async function saveFile(id: string, name: string, file: Blob) {
   await cacheFlush(); // TODO a bit of overkill to flush the entire cache
-
-  // TODO hard coded folder name?
-  const folder = await ensureFolder("gallery.challen.info");
-  if (id) {
-    return await googleFileUpdate(id, file, {
-      name,
-      mimeType: "image/png", // TODO this could be automatic
-      parents: [folder.id],
-    });
-  } else {
-    return await googleFileCreate(file, {
-      name,
-      mimeType: "image/png", // TODO this could be automatic
-      parents: [folder.id],
-    });
-  }
+  const folder = await ensureFolder("gallery.challen.info"); // TODO hard coded folder name?
+  if (id) return await googleFileUpdate(id, name, file);
+  return await googleFileCreate(folder.id, id, name, file);
 }
