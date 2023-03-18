@@ -159,22 +159,25 @@ export async function getFile(id: string) {
 export async function deleteFile(id: string) {
   await waitUntilLoaded();
   await cacheFlush(); // TODO a bit of overkill to flush the entire cache
-  try {
-    // TODO use the REST API
-    const response = await gapi.client.drive.files.delete({
-      fileId: id,
-      fields: "id, name, parents, mimeType, modifiedTime",
-    });
-
-    return response.result;
-  } catch (err: any) {
-    console.error(err.message);
-    return;
+  const params: Record<string, string> = {
+    fields: "id, name, parents, mimeType, modifiedTime",
+  };
+  const url = `https://www.googleapis.com/drive/v3/files/${id}?${new URLSearchParams(params)}`;
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+  });
+  if (response.status === 204) {
+    return true;
+  } else {
+    throw "failed to delete";
   }
 }
 
 export async function saveFile(id: string, name: string, file: Blob): Promise<{ id: string; name: string; modifiedTime: string }> {
   await waitUntilLoaded();
+  await cacheFlush(); // TODO a bit of overkill to flush the entire cache
+
   const folder = await ensureFolder("gallery.challen.info");
   if (id) {
     const metadata = {
