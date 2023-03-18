@@ -20,9 +20,9 @@ export default defineConfig(({ command }) => {
       // mix({
       //   handler: "./gallery-api/src/handler.ts",
       // }),
-      mix({
-        handler: "./api/api.ts",
-      })
+      // mix({
+      //   handler: "./api/api.ts",
+      // })
     );
   }
   return {
