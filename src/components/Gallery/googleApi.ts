@@ -129,8 +129,6 @@ export async function listFiles() {
 
 export async function getBytes(id: string) {
   await waitUntilLoaded();
-  // https://content.googleapis.com/drive/v3/files/12XG2BWDp4EGheg-VNPtUDSS8tNuViH57?alt=media
-
   // TODO try without all these .toString()'s
   const params: Record<string, string> = {
     alt: "media",
@@ -146,12 +144,17 @@ export async function getBytes(id: string) {
 
 export async function getFile(id: string) {
   await waitUntilLoaded();
-  try {
-    return getBytes(id);
-  } catch (err: any) {
-    console.error(err.message);
-    return;
-  }
+  const params: Record<string, string> = {
+    fields: "id, name, parents, mimeType, modifiedTime",
+  };
+  const url = `https://www.googleapis.com/drive/v3/files/${id}?${new URLSearchParams(params).toString()}`;
+  const response = await cacheFetch(url, {
+    method: "GET",
+    headers: new Headers({ Authorization: `Bearer ${gapi.auth.getToken().access_token}` }),
+  });
+  const result = await response.json();
+  console.log(result);
+  return result;
 }
 
 export async function deleteFile(id: string) {
