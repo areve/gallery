@@ -47,6 +47,6 @@ export interface ArtworkError extends Artwork {
   error: string;
 }
 
-export interface ArtworkDeleted extends Artwork {
+export interface ArtworkDeleted extends Omit<Artwork, "name"> {
   status: "deleted";
 }

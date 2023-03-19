@@ -13,11 +13,11 @@
 import { cloneContext, createContextFromImage } from "@/lib/canvas/canvas-utils";
 import artboardService from "@/components/Artboard/artboardService";
 import compositionService, { createLayer } from "@/lib/canvas/composition";
-import galleryApi from "@/components/Gallery/galleryApi";
 import openAiService from "@/components/OpenAi/openAiService";
 import { clone } from "lodash";
 import { openAiPanelState } from "@/components/OpenAi/openAiPanelState";
 import AppWindow from "../AppWindow/AppWindow.vue";
+import { loadGalleryItemById } from "../Gallery/galleryService";
 
 async function generateImage() {
   await openAiService.generate({
@@ -63,7 +63,7 @@ async function outpaintImage() {
   });
 
   if (compositionData && outpaintResult) {
-    const artwork = await galleryApi.getGalleryItem(outpaintResult.id);
+    const artwork = await loadGalleryItemById(outpaintResult.id);
 
     await compositionService.flatten({
       metadata: artwork.metadata,

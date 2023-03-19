@@ -5,7 +5,7 @@ export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 
-const fileInfoKeys = ["id", "name", "modifiedTime"];
+export const fileInfoKeys = ["id", "name", "modifiedTime"];
 interface FileInfo {
   id: string;
   name: string;
@@ -42,7 +42,7 @@ function getHeaders() {
   return new Headers({ Authorization: `Bearer ${authState.value.accessToken}` });
 }
 
-async function googleFileBlob(id: string) {
+export async function googleFileBlob(id: string) {
   const url = googleUrl(id, {
     alt: "media",
   });
@@ -57,7 +57,7 @@ async function googleFileBlob(id: string) {
   return await response.blob();
 }
 
-async function googleFileUpdate(id: string, name: string, file: Blob) {
+export async function googleFileUpdate(id: string, name: string, file: Blob) {
   const url = googleUploadUrl(id, {
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
@@ -77,7 +77,7 @@ async function googleFileUpdate(id: string, name: string, file: Blob) {
   return (await response.json()) as FileInfo;
 }
 
-async function googleFileCreate(folderId: string, id: string, name: string, file: Blob) {
+export async function googleFileCreate(folderId: string, id: string, name: string, file: Blob) {
   const url = googleUploadUrl({
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
@@ -98,7 +98,7 @@ async function googleFileCreate(folderId: string, id: string, name: string, file
   return (await response.json()) as FileInfo;
 }
 
-async function googleFolderCreate(name: string) {
+export async function googleFolderCreate(name: string) {
   const url = googleUrl({
     fields: fileInfoKeys.join(","),
   });
@@ -114,7 +114,7 @@ async function googleFolderCreate(name: string) {
   return (await response.json()) as FileInfo;
 }
 
-async function googleFileGet(id: string) {
+export async function googleFileGet(id: string) {
   const url = googleUrl(id, {
     fields: fileInfoKeys.join(","),
   });
@@ -129,7 +129,7 @@ async function googleFileGet(id: string) {
   return (await response.json()) as FileInfo;
 }
 
-async function googleFileDelete(id: string) {
+export async function googleFileDelete(id: string) {
   const url = googleUrl(id);
   const response = await fetch(url, {
     method: "DELETE",
@@ -138,7 +138,7 @@ async function googleFileDelete(id: string) {
   return response.status === 204;
 }
 
-async function googleFilesGet(params: Record<string, string>, cacheKey: string) {
+export async function googleFilesGet(params: Record<string, string>, cacheKey: string) {
   const url = googleUrl(params);
   const response = await cacheFetch(
     url,
@@ -150,63 +150,4 @@ async function googleFilesGet(params: Record<string, string>, cacheKey: string) 
   );
   const result = await response.json();
   return result.files as FileInfo[];
-}
-
-const rootDirName = "gallery.challen.info"; // TODO hard coded folder name?
-
-export async function folderExists(name: string) {
-  const result = await googleFilesGet(
-    {
-      q: `trashed=false and name='${escapeQuery(name)}' and mimeType='application/vnd.google-apps.folder'`,
-      pageSize: "1",
-      fields: `files(${fileInfoKeys.join(",")})`,
-    },
-    "/"
-  );
-  return result[0];
-}
-
-export async function createFolder(name: string) {
-  return await googleFolderCreate(name);
-}
-
-export async function ensureFolder(name: string) {
-  let folder = await folderExists(name);
-  if (!folder) folder = await createFolder(name);
-  return folder;
-}
-
-export async function listFiles() {
-  const folder = await ensureFolder(rootDirName);
-  return await googleFilesGet(
-    {
-      q: `trashed=false and '${escapeQuery(folder.id)}' in parents`,
-      // TODO support "pageSize"
-      fields: `nextPageToken, files(${fileInfoKeys.join(",")})`,
-    },
-    "/gallery"
-  );
-}
-
-export async function getFileBlob(id: string) {
-  return await googleFileBlob(id);
-}
-
-export async function getFile(id: string) {
-  return await googleFileGet(id);
-}
-
-export async function deleteFile(id: string) {
-  await cacheFlushKeys([`/gallery/${id}`, `/gallery/${id}/metadata`, "/gallery"]);
-  return googleFileDelete(id);
-}
-
-export async function saveFile(id: string, name: string, file: Blob) {
-  const folder = await ensureFolder(rootDirName);
-  if (id) {
-    await cacheFlushKeys([`/gallery/${id}`, `/gallery/${id}/metadata`]);
-    return await googleFileUpdate(id, name, file);
-  }
-  await cacheFlushKeys([`/gallery`]);
-  return await googleFileCreate(folder.id, id, name, file);
 }

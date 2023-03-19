@@ -1,8 +1,21 @@
 import { readMetadata, setMetadata } from "@/services/pngMetadataService";
 import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkInMemory, Artwork, ArtworkImage } from "@/interfaces/Artwork";
 import { clone, loadImage } from "@/lib/utils";
-import { deleteFile, getFileBlob, getFile, listFiles, saveFile } from "./googleApi";
+import {
+  escapeQuery,
+  googleFileBlob,
+  googleFileCreate,
+  googleFileDelete,
+  googleFileGet,
+  googleFilesGet,
+  googleFileUpdate,
+  googleFolderCreate,
+  fileInfoKeys,
+} from "./googleApi";
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata";
+import { cacheFlushKeys } from "@/services/cacheService";
+
+const rootDirName = "gallery.challen.info"; // TODO hard coded folder name?
 
 async function dataUrlToBlob(dataUrl: string) {
   const res = await fetch(dataUrl);
@@ -31,11 +44,11 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   // TODO setMetadata in imageBlob
   // ...
   const imageBlob2 = await setMetadata(imageBlob, item.metadata as any);
-  //const png = await getFileBlob(x.id);
+  //const png = await googleFileBlob(x.id);
   // console.log(item.metadata)
   // throw "whatever"
   const file = await saveFile(item.id, item.name, imageBlob2);
-  return {
+  return <Artwork>{
     id: file.id,
     name: file.name,
     status: "ready",
@@ -45,11 +58,21 @@ async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   };
 }
 
+async function saveFile(id: string, name: string, file: Blob) {
+  const folder = await ensureFolder(rootDirName);
+  if (id) {
+    await cacheFlushKeys([`/gallery/${id}`, `/gallery/${id}/metadata`]);
+    return await googleFileUpdate(id, name, file);
+  }
+  await cacheFlushKeys([`/gallery`]);
+  return await googleFileCreate(folder.id, id, name, file);
+}
+
 async function getGallery(): Promise<Artwork[]> {
   const files = await listFiles();
   const result = await Promise.all(
     files.map(async (x: any) => {
-      const png = await getFileBlob(x.id);
+      const png = await googleFileBlob(x.id);
       return {
         id: x.id,
         name: x.name,
@@ -61,13 +84,12 @@ async function getGallery(): Promise<Artwork[]> {
       } as ArtworkImage;
     })
   );
-  console.log(result);
   return result;
 }
 
 async function getGalleryItem(id: string): Promise<ArtworkImage> {
-  const pngPromise = getFileBlob(id);
-  const filePromise = getFile(id);
+  const pngPromise = googleFileBlob(id);
+  const filePromise = googleFileGet(id);
   const imagePromise = pngPromise.then((png: Blob) => loadImage(png));
   const metadataPromise = pngPromise.then(async (png: any) => metadataToArtworkMetadata(await readMetadata(png)));
   const [image, file, metadata] = await Promise.all([imagePromise, filePromise, metadataPromise]);
@@ -84,19 +106,56 @@ async function getGalleryItem(id: string): Promise<ArtworkImage> {
 async function deleteGalleryItem(id: string) {
   const result: ArtworkDeleted = {
     status: "deleted",
-    name: "",
     id,
     modified: new Date(),
     metadata: { history: [] },
   };
 
-  await deleteFile(id);
+  await cacheFlushKeys([`/gallery/${id}`, `/gallery/${id}/metadata`, "/gallery"]);
+  await googleFileDelete(id);
   return result;
 }
 
-export default {
+interface GalleryAdapter {
+  saveGalleryItem: (item: ArtworkOnCanvas | ArtworkInMemory) => Promise<Artwork>;
+  getGallery: () => Promise<Artwork[]>;
+  getGalleryItem: (id: string) => Promise<ArtworkImage>;
+  deleteGalleryItem: (id: string) => Promise<ArtworkDeleted>;
+}
+
+export default <GalleryAdapter>{
   saveGalleryItem,
   getGallery,
   getGalleryItem,
   deleteGalleryItem,
 };
+
+async function folderExists(name: string) {
+  const result = await googleFilesGet(
+    {
+      q: `trashed=false and name='${escapeQuery(name)}' and mimeType='application/vnd.google-apps.folder'`,
+      pageSize: "1",
+      fields: `files(${fileInfoKeys.join(",")})`,
+    },
+    "/"
+  );
+  return result[0];
+}
+
+async function ensureFolder(name: string) {
+  let folder = await folderExists(name);
+  if (!folder) folder = await googleFolderCreate(name);
+  return folder;
+}
+
+async function listFiles() {
+  const folder = await ensureFolder(rootDirName);
+  return await googleFilesGet(
+    {
+      q: `trashed=false and '${escapeQuery(folder.id)}' in parents`,
+      // TODO support "pageSize"
+      fields: `nextPageToken, files(${fileInfoKeys.join(",")})`,
+    },
+    "/gallery"
+  );
+}

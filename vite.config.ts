@@ -16,14 +16,15 @@ export default defineConfig(({ command }) => {
     ,
   ];
   if (command !== "build") {
-    plugins.push(
+    plugins
+      .push
       // mix({
       //   handler: "./gallery-api/src/handler.ts",
       // }),
       // mix({
       //   handler: "./api/api.ts",
       // })
-    );
+      ();
   }
   return {
     plugins,

@@ -1,7 +1,7 @@
 import type { Artwork, ArtworkOnCanvas, ArtworkInMemory } from "@/interfaces/Artwork";
 import { clone } from "@/lib/utils";
 import { ref } from "vue";
-import galleryApi from "./galleryApi";
+import galleryAdapter from "./googleGalleryAdapter";
 
 export const selectedItem = ref<Artwork | null>(null);
 
@@ -26,14 +26,14 @@ export function selectPreviousArtwork() {
 }
 
 export async function loadGallery() {
-  galleryItems.value = await galleryApi.getGallery();
+  galleryItems.value = await galleryAdapter.getGallery();
 }
 
 export async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
   const itemToSave = clone(item);
   itemToSave.status = "waiting";
   updateGalleryItem(itemToSave);
-  const result = await galleryApi.saveGalleryItem(item);
+  const result = await galleryAdapter.saveGalleryItem(item);
   updateGalleryItem(result);
   return result;
 }
@@ -45,7 +45,7 @@ export async function deleteGalleryItem(item: Artwork) {
   } else {
     itemToDelete.status = "waiting";
     updateGalleryItem(itemToDelete);
-    const result = await galleryApi.deleteGalleryItem(item.id);
+    const result = await galleryAdapter.deleteGalleryItem(item.id);
     if (result.status === "error") {
       updateGalleryItem(result);
     } else {
@@ -55,7 +55,11 @@ export async function deleteGalleryItem(item: Artwork) {
 }
 
 export async function loadGalleryItem(item: Artwork) {
-  return await galleryApi.getGalleryItem(item.id);
+  return await galleryAdapter.getGalleryItem(item.id);
+}
+
+export async function loadGalleryItemById(id: string) {
+  return await galleryAdapter.getGalleryItem(id);
 }
 
 export function updateGalleryItem(updatedItem: Artwork) {
