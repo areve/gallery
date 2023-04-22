@@ -1,6 +1,5 @@
 import type { ArtworkMetadata } from "./ArtworkMetadata";
 import type { Rect } from "./Rect";
-import type { RgbaLayer } from "./RgbaLayer";
 
 type ArtworkStatus = "ready" | "waiting" | "error" | "deleted";
 
@@ -12,19 +11,11 @@ export interface Artwork {
   modified: Date;
 }
 
-export interface ArtworkWithDatesAsIso {
-  status: ArtworkStatus;
-  id: string;
-  name: string;
-  metadata: ArtworkMetadata;
-  modified: string;
-}
-
 export interface ArtworkInMemory extends Artwork {
   dataUrl: string;
 }
 
-export interface ArtworkActive extends Artwork, ArtworkOnCanvas, ArtworkOnRgbaLayer {
+export interface ArtworkActive extends Artwork, ArtworkOnCanvas {
   frame: Rect;
   bounds: Rect;
   overlayContext: CanvasRenderingContext2D;
@@ -32,10 +23,6 @@ export interface ArtworkActive extends Artwork, ArtworkOnCanvas, ArtworkOnRgbaLa
 
 export interface ArtworkOnCanvas extends Artwork {
   context: CanvasRenderingContext2D;
-}
-
-export interface ArtworkOnRgbaLayer extends Artwork {
-  rgbaLayer: RgbaLayer;
 }
 
 export interface ArtworkImage extends Artwork {
