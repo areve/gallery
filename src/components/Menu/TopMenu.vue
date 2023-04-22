@@ -119,18 +119,28 @@ const menu: MenuItem[] = [
 
 addKeysForMenuItems(menu);
 
+const elementsThatNeedArrowKeys = ["TEXTAREA", "INPUT"];
 const galleryMenu: MenuItem[] = [
   {
     label: "Next Artwork",
-    action: () => selectNextArtwork(),
+    action: () => {
+      if (elementsThatNeedArrowKeys.find((x) => x === document.activeElement?.tagName)) return;
+      selectNextArtwork();
+    },
+    keyPreventDefault: false,
     key: "Right",
   },
   {
     label: "Previous Artwork",
-    action: () => selectPreviousArtwork(),
+    action: () => {
+      if (elementsThatNeedArrowKeys.find((x) => x === document.activeElement?.tagName)) return;
+      selectPreviousArtwork();
+    },
+    keyPreventDefault: false,
     key: "Left",
   },
 ];
+
 addKeysForMenuItems(galleryMenu);
 </script>
 

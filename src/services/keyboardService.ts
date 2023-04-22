@@ -163,7 +163,7 @@ function keyDownBinds(keyConfigs: any[]) {
       keyCode: keyConfig.key,
       modifiers: keyConfig.modifiers,
       success: () => null,
-      preventDefault: true,
+      preventDefault: keyConfig.preventDefault === true || keyConfig.preventDefault === false ? keyConfig.preventDefault : true,
     });
   });
 
@@ -208,6 +208,7 @@ function getKeyConfigs(items: MenuItem[]) {
       if (key === undefined) console.error("invalid key config", item.key);
       const keyConfig = {
         key,
+        preventDefault: item.keyPreventDefault,
         modifiers,
         action: item.action,
       };
