@@ -9,6 +9,7 @@ export interface Artwork {
   name: string;
   metadata?: ArtworkMetadata;
   src?: string;
+  context?: CanvasRenderingContext2D;
   modified: Date;
 }
 
@@ -16,7 +17,7 @@ export interface ArtworkInMemory extends Artwork {
   dataUrl: string;
 }
 
-export interface ArtworkActive extends Artwork, ArtworkOnCanvas {
+export interface ArtworkActive extends ArtworkOnCanvas {
   frame: Rect;
   bounds: Rect;
   overlayContext: CanvasRenderingContext2D;

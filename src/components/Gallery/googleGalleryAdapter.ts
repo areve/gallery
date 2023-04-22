@@ -38,23 +38,17 @@ function blobToDataURL(blob: Blob): Promise<string> {
   });
 }
 
-async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
-  const imageBlob = (item as ArtworkInMemory).dataUrl
-    ? await dataUrlToBlob((item as ArtworkInMemory).dataUrl)
-    : (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
-  // TODO setMetadata in imageBlob
-  // ...
-  const imageBlob2 = await setMetadata(imageBlob, item.metadata as any);
-  //const png = await googleFileBlob(x.id);
-  // console.log(item.metadata)
-  // throw "whatever"
-  const file = await saveFile(item.id, item.name, imageBlob2);
+async function saveGalleryItem(item: Artwork) {
+  if (!item.context) throw "saving an artwork without a context is not supported";
+  const imageBlob = (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
+  const imageBlobWithMetadata = await setMetadata(imageBlob, item.metadata as any);
+  const file = await saveFile(item.id, item.name, imageBlobWithMetadata);
   return <Artwork>{
     id: file.id,
     name: file.name,
     status: "ready",
     metadata: item.metadata,
-    dataUrl: await blobToDataURL(imageBlob2),
+    src: URL.createObjectURL(imageBlobWithMetadata),
     modified: new Date(file.modifiedTime),
   };
 }
@@ -69,28 +63,26 @@ async function saveFile(id: string, name: string, file: Blob) {
   return await googleFileCreate(folder.id, id, name, file);
 }
 
-async function loadSrc(item: Artwork) {
+async function loadGalleryItem(item: Artwork) {
   const result = clone(item);
   const png = await googleFileBlob(item.id);
   result.src = URL.createObjectURL(png);
+  result.metadata = metadataToArtworkMetadata(await readMetadata(png));
   return result;
 }
 
 async function getGallery(): Promise<Artwork[]> {
   const files = await listFiles();
-  // TODO shouldn't have to await all these
   const result = files.map((x: FileInfo) => {
-    // const png = await googleFileBlob(x.id);
-    return {
+    return <Artwork>{
       id: x.id,
       name: x.name,
       status: "ready",
-      //metadata: metadataToArtworkMetadata(await readMetadata(png)),
-      //dataUrl: await blobToDataURL(png),
+      metadata: undefined,
       src: undefined,
       image: null! as HTMLImageElement,
       modified: new Date(x.modifiedTime),
-    } as Artwork;
+    };
   });
   return result;
 }
@@ -124,21 +116,15 @@ async function deleteGalleryItem(id: string) {
   return result;
 }
 
-interface GalleryAdapter {
-  saveGalleryItem: (item: ArtworkOnCanvas | ArtworkInMemory) => Promise<Artwork>;
-  getGallery: () => Promise<Artwork[]>;
-  loadSrc: (item: Artwork) => Promise<Artwork>;
-  getGalleryItem: (id: string) => Promise<ArtworkImage>;
-  deleteGalleryItem: (id: string) => Promise<ArtworkDeleted>;
-}
-
-export default <GalleryAdapter>{
+const galleryAdapter = {
   saveGalleryItem,
   getGallery,
-  loadSrc,
+  loadGalleryItem,
   getGalleryItem,
   deleteGalleryItem,
 };
+type GalleryAdapter = typeof galleryAdapter;
+export default <GalleryAdapter>galleryAdapter;
 
 async function folderExists(name: string) {
   const result = await googleFilesGet(

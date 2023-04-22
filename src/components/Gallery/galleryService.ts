@@ -27,14 +27,10 @@ export function selectPreviousArtwork() {
 
 export async function loadGallery() {
   galleryItems.value = await galleryAdapter.getGallery();
-
-  galleryItems.value.map(async (item) => {
-    const result = await galleryAdapter.loadSrc(item);
-    item.src = result.src;
-  });
+  galleryItems.value.map(async (item) => updateGalleryItem(await galleryAdapter.loadGalleryItem(item)));
 }
 
-export async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
+export async function saveGalleryItem(item: Artwork) {
   const itemToSave = clone(item);
   itemToSave.status = "waiting";
   updateGalleryItem(itemToSave);
@@ -68,8 +64,8 @@ export async function loadGalleryItemById(id: string) {
 }
 
 export function updateGalleryItem(updatedItem: Artwork) {
-  if (galleryItems.value.find((item) => item.id === updatedItem.id || item.name === updatedItem.name)) {
-    galleryItems.value = galleryItems.value.map((item) => (item.id === updatedItem.id || item.name === updatedItem.name ? updatedItem : item));
+  if (galleryItems.value.find((item) => item.id === updatedItem.id)) {
+    galleryItems.value = galleryItems.value.map((item) => (item.id === updatedItem.id ? updatedItem : item));
   } else {
     galleryItems.value = [updatedItem, ...galleryItems.value];
   }
