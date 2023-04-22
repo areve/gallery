@@ -21,7 +21,7 @@ export interface ArtworkWithDatesAsIso {
 }
 
 export interface ArtworkInMemory extends Artwork {
-  dataUrl: string;
+  url: string;
 }
 
 export interface ArtworkActive extends Artwork, ArtworkOnCanvas, ArtworkOnRgbaLayer {
@@ -42,7 +42,7 @@ export interface ArtworkImage extends Artwork {
   image: HTMLImageElement;
 }
 
-export interface ArtworkError extends Artwork {
+export interface ArtworkError extends Omit<Artwork, "name"> {
   status: "error";
   error: string;
 }

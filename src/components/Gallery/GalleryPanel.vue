@@ -31,7 +31,7 @@
           <div class="button-text">{{ mostRecentError(item) }}</div>
         </button>
         <button v-else type="button" @click="selectItem(item)" class="gallery-button">
-          <img :src="(item as any).dataUrl || '/downloads/' + item.id + '?' + item.modified.toISOString()" />
+          <img :src="(item as ArtworkInMemory).url" />
         </button>
       </li>
     </ul>
@@ -42,7 +42,7 @@
 import { onMounted } from "vue";
 import { mostRecentError, mostRecentPrompt } from "@/lib/artwork-utils";
 import { deleteGalleryItem, galleryItems, loadGallery, selectedItem } from "@/components/Gallery/galleryService";
-import type { Artwork } from "@/interfaces/Artwork";
+import type { Artwork, ArtworkInMemory } from "@/interfaces/Artwork";
 import { panelStates } from "@/components/EditorApp/panelStates";
 
 onMounted(async () => {

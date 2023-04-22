@@ -1,5 +1,5 @@
 import { readMetadata, setMetadata } from "@/services/pngMetadataService";
-import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkInMemory, Artwork, ArtworkImage } from "@/interfaces/Artwork";
+import type { ArtworkDeleted, ArtworkOnCanvas, ArtworkInMemory, Artwork, ArtworkImage, ArtworkError } from "@/interfaces/Artwork";
 import { clone, loadImage } from "@/lib/utils";
 import {
   escapeQuery,
@@ -38,22 +38,22 @@ function blobToDataURL(blob: Blob): Promise<string> {
 }
 
 async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {
-  const imageBlob = (item as ArtworkInMemory).dataUrl
-    ? await dataUrlToBlob((item as ArtworkInMemory).dataUrl)
+  const imageBlob = (item as ArtworkInMemory).url
+    ? await dataUrlToBlob((item as ArtworkInMemory).url)
     : (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
   // TODO setMetadata in imageBlob
   // ...
-  const imageBlob2 = await setMetadata(imageBlob, item.metadata as any);
+  const png = await setMetadata(imageBlob, item.metadata as any);
   //const png = await googleFileBlob(x.id);
   // console.log(item.metadata)
   // throw "whatever"
-  const file = await saveFile(item.id, item.name, imageBlob2);
+  const file = await saveFile(item.id, item.name, png);
   return <Artwork>{
     id: file.id,
     name: file.name,
     status: "ready",
     metadata: item.metadata,
-    dataUrl: await blobToDataURL(imageBlob2),
+    dataUrl: await blobToDataURL(png),
     modified: new Date(file.modifiedTime),
   };
 }
@@ -73,15 +73,16 @@ async function getGallery(): Promise<Artwork[]> {
   const result = await Promise.all(
     files.map(async (x: any) => {
       const png = await googleFileBlob(x.id);
-      return {
+      return <ArtworkImage>{
         id: x.id,
         name: x.name,
         status: "ready",
         metadata: metadataToArtworkMetadata(await readMetadata(png)),
-        dataUrl: await blobToDataURL(png),
+        //url: URL.createObjectURL(png),
+        url: await blobToDataURL(png),
         image: null! as HTMLImageElement,
         modified: new Date(x.modifiedTime),
-      } as ArtworkImage;
+      };
     })
   );
   return result;
@@ -112,15 +113,18 @@ async function deleteGalleryItem(id: string) {
   };
 
   await cacheFlushKeys([`/gallery/${id}`, `/gallery/${id}/metadata`, "/gallery"]);
-  await googleFileDelete(id);
-  return result;
+  if (await googleFileDelete(id)) {
+    return result;
+  } else {
+    return Object.assign(<ArtworkError>{}, result, { status: "error" }) as ArtworkError;
+  }
 }
 
 interface GalleryAdapter {
   saveGalleryItem: (item: ArtworkOnCanvas | ArtworkInMemory) => Promise<Artwork>;
   getGallery: () => Promise<Artwork[]>;
   getGalleryItem: (id: string) => Promise<ArtworkImage>;
-  deleteGalleryItem: (id: string) => Promise<ArtworkDeleted>;
+  deleteGalleryItem: (id: string) => Promise<ArtworkDeleted | ArtworkError>;
 }
 
 export default <GalleryAdapter>{
