@@ -31,7 +31,7 @@
           <div class="button-text">{{ mostRecentError(item) }}</div>
         </button>
         <button v-else type="button" @click="selectItem(item)" class="gallery-button">
-          <img :src="(item as any).dataUrl || '/downloads/' + item.id + '?' + item.modified.toISOString()" />
+          <img :src="item.src" />
         </button>
       </li>
     </ul>
@@ -45,9 +45,7 @@ import { deleteGalleryItem, galleryItems, loadGallery, selectedItem } from "@/co
 import type { Artwork } from "@/interfaces/Artwork";
 import { panelStates } from "@/components/EditorApp/panelStates";
 
-onMounted(async () => {
-  await loadGallery();
-});
+onMounted(loadGallery);
 
 async function deleteSelected() {
   if (!selectedItem.value) return;

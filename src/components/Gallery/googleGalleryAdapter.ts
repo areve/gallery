@@ -11,6 +11,7 @@ import {
   googleFileUpdate,
   googleFolderCreate,
   fileInfoKeys,
+  type FileInfo,
 } from "./googleApi";
 import type { ArtworkMetadata } from "@/interfaces/ArtworkMetadata";
 import { cacheFlushKeys } from "@/services/cacheService";
@@ -68,22 +69,29 @@ async function saveFile(id: string, name: string, file: Blob) {
   return await googleFileCreate(folder.id, id, name, file);
 }
 
+async function loadSrc(item: Artwork) {
+  const result = clone(item);
+  const png = await googleFileBlob(item.id);
+  result.src = URL.createObjectURL(png);
+  return result;
+}
+
 async function getGallery(): Promise<Artwork[]> {
   const files = await listFiles();
-  const result = await Promise.all(
-    files.map(async (x: any) => {
-      const png = await googleFileBlob(x.id);
-      return {
-        id: x.id,
-        name: x.name,
-        status: "ready",
-        metadata: metadataToArtworkMetadata(await readMetadata(png)),
-        dataUrl: await blobToDataURL(png),
-        image: null! as HTMLImageElement,
-        modified: new Date(x.modifiedTime),
-      } as ArtworkImage;
-    })
-  );
+  // TODO shouldn't have to await all these
+  const result = files.map((x: FileInfo) => {
+    // const png = await googleFileBlob(x.id);
+    return {
+      id: x.id,
+      name: x.name,
+      status: "ready",
+      //metadata: metadataToArtworkMetadata(await readMetadata(png)),
+      //dataUrl: await blobToDataURL(png),
+      src: undefined,
+      image: null! as HTMLImageElement,
+      modified: new Date(x.modifiedTime),
+    } as Artwork;
+  });
   return result;
 }
 
@@ -119,6 +127,7 @@ async function deleteGalleryItem(id: string) {
 interface GalleryAdapter {
   saveGalleryItem: (item: ArtworkOnCanvas | ArtworkInMemory) => Promise<Artwork>;
   getGallery: () => Promise<Artwork[]>;
+  loadSrc: (item: Artwork) => Promise<Artwork>;
   getGalleryItem: (id: string) => Promise<ArtworkImage>;
   deleteGalleryItem: (id: string) => Promise<ArtworkDeleted>;
 }
@@ -126,6 +135,7 @@ interface GalleryAdapter {
 export default <GalleryAdapter>{
   saveGalleryItem,
   getGallery,
+  loadSrc,
   getGalleryItem,
   deleteGalleryItem,
 };

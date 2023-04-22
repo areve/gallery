@@ -7,7 +7,8 @@ export interface Artwork {
   status: ArtworkStatus;
   id: string;
   name: string;
-  metadata: ArtworkMetadata;
+  metadata?: ArtworkMetadata;
+  src?: string;
   modified: Date;
 }
 

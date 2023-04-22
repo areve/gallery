@@ -27,6 +27,11 @@ export function selectPreviousArtwork() {
 
 export async function loadGallery() {
   galleryItems.value = await galleryAdapter.getGallery();
+
+  galleryItems.value.map(async (item) => {
+    const result = await galleryAdapter.loadSrc(item);
+    item.src = result.src;
+  });
 }
 
 export async function saveGalleryItem(item: ArtworkOnCanvas | ArtworkInMemory) {

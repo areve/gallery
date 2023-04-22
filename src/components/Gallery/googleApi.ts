@@ -1,12 +1,12 @@
 import { authState } from "@/services/googleAuthService";
-import { cacheFetch, cacheFlushKeys } from "@/services/cacheService";
+import { cacheFetch } from "@/services/cacheService";
 
 export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 
 export const fileInfoKeys = ["id", "name", "modifiedTime"];
-interface FileInfo {
+export interface FileInfo {
   id: string;
   name: string;
   modifiedTime: string;
