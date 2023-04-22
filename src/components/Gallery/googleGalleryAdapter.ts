@@ -18,11 +18,6 @@ import { cacheFlushKeys } from "@/services/cacheService";
 
 const rootDirName = "gallery.challen.info"; // TODO hard coded folder name?
 
-async function dataUrlToBlob(dataUrl: string) {
-  const res = await fetch(dataUrl);
-  return res.blob();
-}
-
 function metadataToArtworkMetadata(metadata: any) {
   // TODO could also support old style metadata here (filename to name and id, etc)
   return Object.assign({ history: [] }, clone(metadata)) as ArtworkMetadata;

@@ -1,6 +1,6 @@
-import { clone, getDatestamp, last } from "@/lib/utils";
+import { clone, getDatestamp, last, loadImage } from "@/lib/utils";
 import { extendMetadata } from "@/lib/artwork-utils";
-import { imageCountEmptyPixels } from "@/lib/canvas/canvas-utils";
+import { createContextFromImage, imageCountEmptyPixels } from "@/lib/canvas/canvas-utils";
 import { openAiEditImage, openAiGenerateImage, openAiImageVariation } from "@/components/OpenAi/openAiApi";
 import { ref } from "vue";
 import { saveGalleryItem, updateGalleryItem } from "../Gallery/galleryService";
@@ -117,13 +117,20 @@ async function handleImageResult(imageResult: ImageResultError | ImageResultRead
     return errorResult;
   }
 
-  const result = clone(item) as ArtworkInMemory;
+  const result = clone(item);
   last(result.metadata.history).created = imageResult.created.toISOString();
-  result.dataUrl = imageResult.dataUrl;
+  //result.dataUrl = imageResult.dataUrl;
   result.modified = new Date(result.modified);
+  result.context = createContextFromImage(await loadImage(imageResult.dataUrl));
+
+  // const imageBlob = (item as ArtworkInMemory).dataUrl
+  //   ? await dataUrlToBlob((item as ArtworkInMemory).dataUrl)
+  //   : (await new Promise<Blob | null>((resolve) => (item as ArtworkOnCanvas).context.canvas.toBlob(resolve)))!;
+
   const updatedItem = await saveGalleryItem(result);
 
   updateGalleryItem(updatedItem);
+  console.log(updatedItem)
   return updatedItem;
 }
 
