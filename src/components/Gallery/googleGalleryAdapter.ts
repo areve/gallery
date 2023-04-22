@@ -103,17 +103,11 @@ async function getGalleryItem(id: string): Promise<ArtworkImage> {
   };
 }
 
-async function deleteGalleryItem(id: string) {
-  const result: ArtworkDeleted = {
-    status: "deleted",
-    id,
-    modified: new Date(),
-    metadata: { history: [] },
-  };
-
-  await cacheFlushKeys([`/gallery/${id}`, `/gallery/${id}/metadata`, "/gallery"]);
-  await googleFileDelete(id);
-  return result;
+async function deleteGalleryItem(item: Artwork) {
+  const deletedItem = clone(item);
+  await cacheFlushKeys([`/gallery/${deletedItem.id}`, `/gallery/${deletedItem.id}/metadata`, "/gallery"]);
+  await googleFileDelete(deletedItem.id);
+  return deletedItem;
 }
 
 const galleryAdapter = {

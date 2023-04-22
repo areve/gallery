@@ -42,25 +42,30 @@ export async function saveGalleryItem(item: Artwork) {
 export async function deleteGalleryItem(item: Artwork) {
   const itemToDelete = clone(galleryItems.value.filter((i) => i.id === item.id)[0]);
   if (itemToDelete.status === "error") {
-    galleryItems.value = galleryItems.value.filter((i) => i.id !== itemToDelete.id);
+    removeGalleryItem(itemToDelete);
   } else {
     itemToDelete.status = "waiting";
     updateGalleryItem(itemToDelete);
-    const result = await galleryAdapter.deleteGalleryItem(item.id);
+    const result = await galleryAdapter.deleteGalleryItem(item);
     if (result.status === "error") {
       updateGalleryItem(result);
     } else {
-      galleryItems.value = galleryItems.value.filter((i) => i.id !== result.id);
+      removeGalleryItem(result);
     }
   }
 }
 
+// TODO loadGalleryItem and loadGalleryItemById should be combined, possibly merged with other code too
 export async function loadGalleryItem(item: Artwork) {
   return await galleryAdapter.getGalleryItem(item.id);
 }
 
 export async function loadGalleryItemById(id: string) {
   return await galleryAdapter.getGalleryItem(id);
+}
+
+export function removeGalleryItem(removeItem: Artwork) {
+  galleryItems.value = galleryItems.value.filter((i) => i.id !== removeItem.id);
 }
 
 export function updateGalleryItem(updatedItem: Artwork) {
