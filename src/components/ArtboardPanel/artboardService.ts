@@ -1,52 +1,40 @@
-// import { clone, rectanglesIntersect } from "@/lib/utils";
-// import { cloneContext, createContext, autoCropImage } from "@/lib/canvas/canvas-utils";
-// import { ref, watchPostEffect } from "vue";
-// import type { Artwork, ArtworkActive } from "@/interfaces/Artwork";
-// import { usePersistentState } from "../../services/persistenceService";
-// import { loadGalleryItem, saveGalleryItem, updateGalleryItem } from "@/components/Gallery/galleryService";
-
 import { ref } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import type { Rect } from "../../interfaces/Rect";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { oklch2srgb, srgb2oklch } from "@/lib/color/color-oklch";
-import type { Coord } from "@/interfaces/Coord";
 import { createBitmapLayer } from "@/lib/bitmap-layer-convert";
 import { resetAll } from "@/lib/bitmap/bitmap-effects-all-color";
 import { color2srgb } from "@/lib/color/color-string";
 
-const artwork = ref<Artboard>({
-  //   status: "ready",
-  //   name: "",
-  //   id: "",
-  //   modified: new Date(),
-  //   metadata: { history: [] },
-  //   frame: { x: 0, y: 0, width: 1024, height: 1024 },
-  // bounds: Rect,
-  //   context: undefined!,
-  //   overlayContext: undefined!,
+const artboard = ref<Artboard>({
+  context: undefined!,
   bitmapLayer: undefined!,
 });
 
-function render() {
-  if (!artwork.value.context) return;
-  if (!artwork.value.bitmapLayer.dirty.length) return;
+let tempImageData: ImageData | null = null;
 
-  const dirtyTiles = rectsOverlappedByAny(artwork.value.bitmapLayer.tiles, artwork.value.bitmapLayer.dirty);
+function render() {
+  if (!artboard.value.context) return;
+  if (!artboard.value.bitmapLayer.dirty.length) return;
+
+  const dirtyTiles = rectsOverlappedByAny(artboard.value.bitmapLayer.tiles, artboard.value.bitmapLayer.dirty);
   dirtyTiles.forEach(renderRect);
-  artwork.value.bitmapLayer.dirty = [];
+  artboard.value.bitmapLayer.dirty = [];
 }
 
 function renderRect(rect: Rect) {
-  const context = artwork.value.context;
+  const context = artboard.value.context;
   if (!context) return;
 
-  // TODO some performance gain if we don't keep reading this, it doesn't need to be read
-  const imageData = context.getImageData(rect.x, rect.y, rect.width, rect.height);
-  const pixelData = imageData.data;
-  const layerData = artwork.value.bitmapLayer.data;
-  const width = artwork.value.bitmapLayer.width;
-  const channels = artwork.value.bitmapLayer.channels;
+  if (!tempImageData || tempImageData.width != rect.width || tempImageData.height != rect.height) {
+    tempImageData = new ImageData(rect.width, rect.height);
+  }
+
+  const pixelData = tempImageData.data;
+  const layerData = artboard.value.bitmapLayer.data;
+  const width = artboard.value.bitmapLayer.width;
+  const channels = artboard.value.bitmapLayer.channels;
 
   const pixel2srgb = oklch2srgb;
 
@@ -62,24 +50,24 @@ function renderRect(rect: Rect) {
     }
   }
 
-  context.putImageData(imageData, rect.x, rect.y);
+  context.putImageData(tempImageData, rect.x, rect.y);
 }
 
 export function reset() {
-  if (!artwork.value.context) return;
-  const context = artwork.value.context;
+  if (!artboard.value.context) return;
+  const context = artboard.value.context;
 
   const height = context.canvas.height;
   const width = context.canvas.width;
-  artwork.value.bitmapLayer = createBitmapLayer(width, height, "oklch", 32);
-  artwork.value.context.clearRect(0, 0, width, height);
+  artboard.value.bitmapLayer = createBitmapLayer(width, height, "oklch", 32);
+  artboard.value.context.clearRect(0, 0, width, height);
 
-  const color = srgb2oklch(color2srgb("white"))
-  resetAll(artwork.value.bitmapLayer, color);
+  const color = srgb2oklch(color2srgb("white"));
+  resetAll(artboard.value.bitmapLayer, color);
 }
 
 export default {
-  artwork,
+  artboard,
   reset,
   render,
 };

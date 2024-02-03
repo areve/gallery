@@ -16,10 +16,13 @@ let intervalHandle: number | undefined;
 const tools = [useBrushTool()];
 
 onMounted(async () => {
+  resizeCanvasToVisible();
+
   const context = canvas.value.getContext("2d", {
     willReadFrequently: true,
   }) as CanvasRenderingContext2D;
-  artboardService.artwork.value.context = context;
+
+  artboardService.artboard.value.context = context;
   artboardService.reset();
   intervalHandle = setInterval(artboardService.render, 0);
 });
@@ -33,6 +36,11 @@ watchSyncEffect(() => {
   if (!pointerUpEvent.value) return;
   selectedTool().pointerUp(pointerUpEvent.value);
 });
+
+function resizeCanvasToVisible() {
+  canvas.value.width = canvas.value.offsetWidth * window.devicePixelRatio;
+  canvas.value.height = canvas.value.offsetHeight * window.devicePixelRatio;
+}
 
 function pointerDown(event: PointerEvent) {
   selectedTool().pointerDown(event);

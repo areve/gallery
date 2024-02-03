@@ -33,14 +33,14 @@ function pointerDown(_: PointerEvent) {
 
 function pointerMove(pointerEvent: PointerEvent) {
   if (!isPointerDown) return;
-  if (!artboardService.artwork.value.context) return;
+  if (!artboardService.artboard.value.context) return;
 
-  const canvasPoint = getCanvasPoint(artboardService.artwork.value.context, {
+  const canvasPoint = getCanvasPoint(artboardService.artboard.value.context, {
     x: pointerEvent.pageX,
     y: pointerEvent.pageY,
   });
 
-  const bitmapLayer = artboardService.artwork.value.bitmapLayer;
+  const bitmapLayer = artboardService.artboard.value.bitmapLayer;
   if (brushLastPoint) {
     let weight = pointerEvent.pressure ?? 0.1;
     weight = weight * weight;
