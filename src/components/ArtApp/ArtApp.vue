@@ -1,14 +1,14 @@
 <template>
-  <div class="show-left-menu-button" @click="showLeftMenu" :hidden="menuState.showLeftMenu"></div>
-  <div class="cancel-overlay" @click="cancelMenus" :hidden="!menuState.showLeftMenu && !menuState.showRightMenu"></div>
-  <aside class="left-menu" :hidden="!menuState.showLeftMenu">
+  <div class="show-left-menu-button" @click="showLeftMenu" :hidden="appMenuState.showLeftMenu"></div>
+  <div class="cancel-overlay" @click="cancelMenus" :hidden="!appMenuState.showLeftMenu && !appMenuState.showRightMenu"></div>
+  <aside class="left-menu" :hidden="!appMenuState.showLeftMenu">
     <ArtAppToolMenu />
   </aside>
   <main class="art-app">
     <ArtboardPanel />
   </main>
-  <div class="show-right-menu-button" @click="showRightMenu" :hidden="menuState.showRightMenu"></div>
-  <aside class="right-menu" :hidden="!menuState.showRightMenu">
+  <div class="show-right-menu-button" @click="showRightMenu" :hidden="appMenuState.showRightMenu"></div>
+  <aside class="right-menu" :hidden="!appMenuState.showRightMenu">
     <ArtAppMainMenu />
   </aside>
 </template>
@@ -18,12 +18,9 @@ import ArtboardPanel from "@/components/ArtboardPanel/ArtboardPanel.vue";
 import ArtAppToolMenu from "./ArtAppToolMenu.vue";
 import ArtAppMainMenu from "./ArtAppMainMenu.vue";
 import { swipeEdgeEvent } from "@/services/swipeEdgeService";
-import { ref, watchSyncEffect } from "vue";
+import { watchSyncEffect } from "vue";
+import { appMenuState } from "./appMenuState";
 
-const menuState = ref({
-  showLeftMenu: false,
-  showRightMenu: false,
-});
 watchSyncEffect(() => {
   if (!swipeEdgeEvent.value) return;
   console.log("swipeEdgeEvent", swipeEdgeEvent.value);
@@ -35,15 +32,15 @@ watchSyncEffect(() => {
   }
 });
 function cancelMenus() {
-  menuState.value.showLeftMenu = false;
-  menuState.value.showRightMenu = false;
+  appMenuState.value.showLeftMenu = false;
+  appMenuState.value.showRightMenu = false;
   console.log("cancelMenus");
 }
 function showLeftMenu() {
-  menuState.value.showLeftMenu = true;
+  appMenuState.value.showLeftMenu = true;
 }
 function showRightMenu() {
-  menuState.value.showRightMenu = true;
+  appMenuState.value.showRightMenu = true;
 }
 </script>
 
