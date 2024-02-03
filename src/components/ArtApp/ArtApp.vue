@@ -1,16 +1,22 @@
 <template>
   <div class="show-left-menu-button" @click="showLeftMenu" :hidden="menuState.showLeftMenu"></div>
-  <div class="show-right-menu-button" @click="showRightMenu" :hidden="menuState.showRightMenu"></div>
   <div class="cancel-overlay" @click="cancelMenus" :hidden="!menuState.showLeftMenu && !menuState.showRightMenu"></div>
-  <aside class="left-menu" :hidden="!menuState.showLeftMenu">left menu</aside>
+  <aside class="left-menu" :hidden="!menuState.showLeftMenu">
+    <ArtAppToolMenu />
+  </aside>
   <main class="art-app">
     <ArtboardPanel />
   </main>
-  <aside class="right-menu" :hidden="!menuState.showRightMenu">right menu</aside>
+  <div class="show-right-menu-button" @click="showRightMenu" :hidden="menuState.showRightMenu"></div>
+  <aside class="right-menu" :hidden="!menuState.showRightMenu">
+    <ArtAppMainMenu />
+  </aside>
 </template>
 
 <script lang="ts" setup>
 import ArtboardPanel from "@/components/ArtboardPanel/ArtboardPanel.vue";
+import ArtAppToolMenu from "./ArtAppToolMenu.vue";
+import ArtAppMainMenu from "./ArtAppMainMenu.vue";
 import { swipeEdgeEvent } from "@/services/swipeEdgeService";
 import { ref, watchSyncEffect } from "vue";
 
