@@ -80,14 +80,29 @@ function showRightMenu() {
 .left-menu,
 .right-menu {
   position: fixed;
-  width: 45%;
+  width: 20%;
   height: 100%;
   background-color: rgb(127, 127, 127, 0.95);
   cursor: pointer;
   z-index: 100;
+  transition: all 0.2s ease-in-out;
+  overflow: hidden;
 }
 
+.right-menu[hidden],
+.left-menu[hidden] {
+  width: 0%;
+  opacity: 0;
+  display: block !important;
+}
+
+.left-menu {
+  opacity: 1;
+  width: 45%;
+}
 .right-menu {
   right: 0;
+  opacity: 1;
+  width: 45%;
 }
 </style>
