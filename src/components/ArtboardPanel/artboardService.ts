@@ -66,8 +66,22 @@ export function reset() {
   resetAll(artboard.value.bitmapLayer, color);
 }
 
+export function resetOrange() {
+  if (!artboard.value.context) return;
+  const context = artboard.value.context;
+
+  const height = context.canvas.height;
+  const width = context.canvas.width;
+  artboard.value.bitmapLayer = createBitmapLayer(width, height, "oklch", 32);
+  artboard.value.context.clearRect(0, 0, width, height);
+
+  const color = srgb2oklch(color2srgb("orange"));
+  resetAll(artboard.value.bitmapLayer, color);
+}
+
 export default {
   artboard,
   reset,
+  resetOrange,
   render,
 };

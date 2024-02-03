@@ -1,5 +1,6 @@
 <template>
   <button type="button" @click="reset">Reset</button>
+  <button type="button" @click="resetOrange">Reset orange</button>
 </template>
 
 <script lang="ts" setup>
@@ -8,6 +9,10 @@ import { artAppState } from "./artAppState";
 
 function reset() {
   artboardService.reset();
+  artAppState.value.closeMenus();
+}
+function resetOrange() {
+  artboardService.resetOrange();
   artAppState.value.closeMenus();
 }
 </script>
