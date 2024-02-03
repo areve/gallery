@@ -1,4 +1,5 @@
 import type { BitmapLayer } from "@/interfaces/BitmapLayer";
+import type { Rect } from "@/interfaces/Rect";
 
 export function clearCircle(bitmapLayer: BitmapLayer, x: number, y: number, radius: number) {
   const width = bitmapLayer.width;
@@ -18,10 +19,12 @@ export function clearCircle(bitmapLayer: BitmapLayer, x: number, y: number, radi
     }
   }
 
-  bitmapLayer.dirty.push({
+  const dirtRect: Rect = {
     x: x - radius,
     y: y - radius,
-    width: x + radius,
-    height: y + radius,
-  });
+    width: radius * 2,
+    height: radius * 2,
+  };
+
+  bitmapLayer.dirty.push(dirtRect);
 }
