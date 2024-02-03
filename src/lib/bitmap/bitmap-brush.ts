@@ -46,10 +46,10 @@ export async function applyBrush(bitmapLayer: BitmapLayer, from: Coord | null, t
 
     // TODO move this to brushPoint somehow
     bitmapLayer.dirty.push({
-      x: 0, //to.x - brush.width / 2,
-      y: 0, //to.y - brush.height / 2,
-      width: 100, //brush.width,
-      height: 100, //brush.height,
+      x: to.x - brush.width / 2,
+      y: to.y - brush.height / 2,
+      width: brush.width,
+      height: brush.height,
     });
   }
 }

@@ -11,31 +11,34 @@ import { useBrushTool } from "./brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
-let intervalHandle: number | undefined;
+let renderInterval: number | undefined;
 
 const tools = [useBrushTool()];
 
 onMounted(async () => {
   resizeCanvasToVisible();
-
-  const context = canvas.value.getContext("2d", {
-    willReadFrequently: true,
-  }) as CanvasRenderingContext2D;
-
-  artboardService.artboard.value.context = context;
-  artboardService.reset();
-  intervalHandle = setInterval(artboardService.render, 0);
+  initializeArtboard();
+  renderInterval = setInterval(artboardService.render, 0);
 });
 
 onUnmounted(() => {
-  clearInterval(intervalHandle);
-  intervalHandle = undefined;
+  clearInterval(renderInterval);
+  renderInterval = undefined;
 });
 
 watchSyncEffect(() => {
   if (!pointerUpEvent.value) return;
   selectedTool().pointerUp(pointerUpEvent.value);
 });
+
+function initializeArtboard() {
+  const context = canvas.value.getContext("2d", {
+    willReadFrequently: true,
+  }) as CanvasRenderingContext2D;
+
+  artboardService.artboard.value.context = context;
+  artboardService.reset();
+}
 
 function resizeCanvasToVisible() {
   canvas.value.width = canvas.value.offsetWidth * window.devicePixelRatio;
