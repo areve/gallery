@@ -18,7 +18,7 @@ button {
   margin: 0;
   display: block;
   width: 100%;
-  color: inherit;
-  background-color: inherit;
+  color: #fff;
+  background-color: #666;
 }
 </style>
