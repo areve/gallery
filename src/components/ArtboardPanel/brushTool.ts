@@ -14,7 +14,7 @@ const tool: Tool = {
 
 export const useBrushTool = () => tool;
 
-const radius = 3;
+const radius = 5;
 const brush = createBrush(radius, srgb2oklch(color2srgb("black")), "oklch");
 
 let brushLastPoint: { x: number; y: number } | null = null;
