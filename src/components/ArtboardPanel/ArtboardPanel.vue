@@ -84,4 +84,8 @@ function selectedTool() {
   display: flex;
   flex-direction: row;
 }
+
+.canvas {
+  width: 100%;
+}
 </style>
