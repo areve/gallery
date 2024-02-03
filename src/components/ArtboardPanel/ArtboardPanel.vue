@@ -9,10 +9,6 @@ import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
 import artboardService from "@/components/ArtboardPanel/artboardService";
 import { useBrushTool } from "./brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
-import { swipeEdgeEvent } from "@/services/swipeEdgeService";
-import { resetAll } from "@/lib/bitmap/bitmap-effects-all-color";
-import { srgb2oklch } from "@/lib/color/color-oklch";
-import { color2srgb } from "@/lib/color/color-string";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 let renderInterval: number | undefined;
@@ -33,19 +29,6 @@ onUnmounted(() => {
 watchSyncEffect(() => {
   if (!pointerUpEvent.value) return;
   selectedTool().pointerUp(pointerUpEvent.value);
-});
-
-watchSyncEffect(() => {
-  if (!swipeEdgeEvent.value) return;
-  console.log("swipeEdgeEvent", swipeEdgeEvent.value);
-
-  if (swipeEdgeEvent.value.edge === "left") {
-    const red = srgb2oklch(color2srgb("red"));
-    resetAll(artboardService.artboard.value.bitmapLayer, red);
-  } else if (swipeEdgeEvent.value.edge === "right") {
-    const red = srgb2oklch(color2srgb("green"));
-    resetAll(artboardService.artboard.value.bitmapLayer, red);
-  }
 });
 
 function initializeArtboard() {

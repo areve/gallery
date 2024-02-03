@@ -16,7 +16,7 @@ import ArtApp from "@/components/ArtApp/ArtApp.vue";
 .app-wrapper {
   height: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   touch-action: none;
 }
 </style>
