@@ -1,6 +1,7 @@
 <template>
-  <div class="show-left-menu" @click="showLeftMenu"></div>
-  <div class="show-right-menu" @click="showRightMenu"></div>
+  <div class="show-left-menu-button" @click="showLeftMenu" :hidden="menuState.showLeftMenu"></div>
+  <div class="show-right-menu-button" @click="showRightMenu" :hidden="menuState.showRightMenuMenu"></div>
+  <div class="cancel-overlay" @click="cancelMenus" :hidden="!menuState.showLeftMenu && !menuState.showRightMenu"></div>
   <aside class="left-menu" :hidden="!menuState.showLeftMenu">left menu</aside>
   <main class="art-app">
     <ArtboardPanel />
@@ -27,6 +28,11 @@ watchSyncEffect(() => {
     showRightMenu();
   }
 });
+function cancelMenus() {
+  menuState.value.showLeftMenu = false;
+  menuState.value.showRightMenu = false;
+  console.log("cancelMenus");
+}
 function showLeftMenu() {
   menuState.value.showLeftMenu = true;
 }
@@ -38,26 +44,35 @@ function showRightMenu() {
 <style scoped>
 .art-app {
   flex: 1 0;
-  position: relative;
+  position: fixed;
   height: 100%;
   display: flex;
   flex-direction: row;
 }
 
-.show-left-menu,
-.show-right-menu {
+.cancel-overlay {
+  display: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+  cursor: pointer;
+  background-color: rgb(127, 127, 127, 0.1);
+}
+
+.show-left-menu-button,
+.show-right-menu-button {
   position: fixed;
   width: 2em;
   height: 2em;
-  background-color: rgb(0, 0, 0, 0.5);
+  background-color: rgb(127, 127, 127, 0.5);
   cursor: pointer;
   z-index: 100;
 }
 
-.show-left-menu {
+.show-left-menu-button {
   border-bottom-right-radius: 2em;
 }
-.show-right-menu {
+.show-right-menu-button {
   border-bottom-left-radius: 2em;
   right: 0;
 }
