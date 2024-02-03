@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import EditorApp from "./components/EditorApp/EditorApp.vue";
+// import EditorApp from "./components/EditorApp/EditorApp.vue";
 </script>
 
 <template>
   <div class="app-wrapper">
-    <EditorApp />
+    <!-- <EditorApp /> -->
+    Nothing
   </div>
 </template>
 
