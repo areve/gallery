@@ -74,7 +74,7 @@ export function reset() {
   artwork.value.bitmapLayer = createBitmapLayer(width, height, "oklch", 32);
   artwork.value.context.clearRect(0, 0, width, height);
 
-  const color = srgb2oklch(color2srgb("purple"))
+  const color = srgb2oklch(color2srgb("white"))
   resetAll(artwork.value.bitmapLayer, color);
 }
 

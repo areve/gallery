@@ -1,6 +1,5 @@
 import type { Tool } from "@/interfaces/Tool";
 import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
-import { watchPostEffect } from "vue";
 import artboardService from "./artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
 import { srgb2oklch } from "@/lib/color/color-oklch";
@@ -15,15 +14,8 @@ const tool: Tool = {
 
 export const useBrushTool = () => tool;
 
-const radius = 5; // TODO need a better way to set radius
-
-let brush = createBrush(radius, srgb2oklch(color2srgb("black")), "oklch");
-
-watchPostEffect(() => {
-  if (!artboardService.artwork.value.bitmapLayer) return;
-  const color = srgb2oklch(color2srgb("green"));
-  brush = createBrush(radius, color, "oklch");
-});
+const radius = 3;
+const brush = createBrush(radius, srgb2oklch(color2srgb("black")), "oklch");
 
 let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;

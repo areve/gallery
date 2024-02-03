@@ -97,10 +97,10 @@ function brushPoint(bitmapLayer: BitmapLayer, to: Coord, brush: Brush, weight: n
           [brushData[brushR], brushData[brushG], brushData[brushB], brushData[brushA] * weight]
         );
 
-        data[dataR] = 1 // color[0];
-        data[dataG] = 0.5 //gcolor[1];
-        data[dataB] = 180//bcolor[2];
-        data[dataA] = 1// color[3];
+        data[dataR] = color[0];
+        data[dataG] = color[1];
+        data[dataB] = color[2];
+        data[dataA] = color[3];
       }
     }
   }

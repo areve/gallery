@@ -28,5 +28,4 @@ function pixelEffect(bitmapLayer: BitmapLayer, width: number, height: number, tr
       data[i + j] = color[j];
     }
   }
-  console.log(data)
 }
