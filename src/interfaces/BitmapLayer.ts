@@ -1,6 +1,6 @@
 import type { Rect } from "./Rect";
 
-export type ColorSpace = "oklch";
+export type ColorSpace = "oklch" | "srgb";
 
 export interface BitmapLayer {
   data: Float32Array;
@@ -14,4 +14,7 @@ export interface BitmapLayer {
 
 export interface OklchBitmapLayer extends BitmapLayer {
   space: "oklch";
+}
+export interface SrgbBitmapLayer extends BitmapLayer {
+  space: "srgb";
 }

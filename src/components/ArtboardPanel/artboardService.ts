@@ -8,9 +8,10 @@
 import { ref } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import type { Rect } from "../../interfaces/Rect";
-import { createOklchBitmapLayer } from "@/lib/bitmap-layer/OklchBitmapLayer";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { oklch2srgb } from "@/lib/color/color-oklch";
+import type { Coord } from "@/interfaces/Coord";
+import { createBitmapLayer } from "@/lib/bitmap-layer-convert";
 
 const artwork = ref<Artboard>({
   //   status: "ready",
@@ -76,7 +77,7 @@ export function reset() {
 
   const height = context.canvas.height;
   const width = context.canvas.width;
-  artwork.value.bitmapLayer = createOklchBitmapLayer(width, height, 32);
+  artwork.value.bitmapLayer = createBitmapLayer(width, height, "oklch", 32);
   artwork.value.context.clearRect(0, 0, width, height);
 
   // TODO this is not needed in near future

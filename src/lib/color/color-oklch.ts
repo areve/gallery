@@ -3,7 +3,7 @@ import { angleLerp } from "@/lib/lerp";
 import { lerp } from "@/lib/lerp";
 import type { ColorCoord } from "@/interfaces/Color";
 
-export type OklchColorAlphaCoord = [number, number, number, number];
+export type OklchColorCoord = ColorCoord;
 
 // Converts a color from the Oklch color space to the sRGB color space as fast as I could make it go
 export function oklch2srgb(oklch: ColorCoord): ColorCoord {
@@ -74,7 +74,7 @@ export function srgb2oklch(srgb: ColorCoord): ColorCoord {
   return oklch;
 }
 
-export function lerpOklchColor(color1: OklchColorAlphaCoord, color2: OklchColorAlphaCoord): OklchColorAlphaCoord {
+export function lerpOklchColor(color1: OklchColorCoord, color2: OklchColorCoord): OklchColorCoord {
   if (color1[3] === 0) return color2;
   if (color2[3] === 0) return color1;
 

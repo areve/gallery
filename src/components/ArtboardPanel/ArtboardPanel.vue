@@ -1,15 +1,19 @@
 <template>
-  <section class="artboard-panel">
+  <section class="artboard-panel" @pointerdown="pointerDown">
     <canvas ref="canvas" class="canvas"></canvas>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
 import artboardService from "@/components/ArtboardPanel/artboardService";
+import { useBrushTool } from "./brushTool";
+import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 let intervalHandle: number | undefined;
+
+const tools = [useBrushTool()];
 
 onMounted(async () => {
   const context = canvas.value.getContext("2d", {
@@ -24,6 +28,24 @@ onUnmounted(() => {
   clearInterval(intervalHandle);
   intervalHandle = undefined;
 });
+
+watchSyncEffect(() => {
+  if (!pointerUpEvent.value) return;
+  selectedTool().pointerUp(pointerUpEvent.value);
+});
+
+function pointerDown(event: PointerEvent) {
+  selectedTool().pointerDown(event);
+}
+
+watchSyncEffect(() => {
+  if (!pointerMoveEvent.value) return;
+  selectedTool().pointerMove(pointerMoveEvent.value);
+});
+
+function selectedTool() {
+  return tools[0];
+}
 </script>
 
 <style scoped>
