@@ -4,16 +4,14 @@
 </template>
 
 <script lang="ts" setup>
-import artboardService from "../ArtboardPanel/artboardService";
 import { artAppState } from "./artAppState";
 
 function pencil() {
-  artboardService.reset();
+  artAppState.value.selectedTool = "brush";
   artAppState.value.closeMenus();
 }
 function eraser() {
-
-  artboardService.reset();
+  artAppState.value.selectedTool = "eraser";
   artAppState.value.closeMenus();
 }
 </script>
