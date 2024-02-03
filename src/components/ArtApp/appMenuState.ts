@@ -5,7 +5,7 @@ export const appMenuState = ref({
   showRightMenu: false,
 
   close() {
-    this.showLeftMenu = false;
-    this.showRightMenu = false;
+    appMenuState.value.showLeftMenu = false;
+    appMenuState.value.showRightMenu = false;
   },
 });

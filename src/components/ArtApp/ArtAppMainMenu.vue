@@ -12,4 +12,13 @@ function reset() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+button {
+  border-radius: 0;
+  margin: 0;
+  display: block;
+  width: 100%;
+  color: inherit;
+  background-color: inherit;
+}
+</style>
