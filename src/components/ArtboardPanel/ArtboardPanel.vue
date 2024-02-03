@@ -9,11 +9,12 @@ import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
 import artboardService from "@/components/ArtboardPanel/artboardService";
 import { useBrushTool } from "./brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
+import { useEraserTool } from "./eraserTool";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 let renderInterval: number | undefined;
 
-const tools = [useBrushTool()];
+const tools = [useBrushTool(), useEraserTool()];
 
 onMounted(async () => {
   resizeCanvasToVisible();

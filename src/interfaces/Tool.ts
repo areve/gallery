@@ -1,4 +1,4 @@
-export type ToolType = "brush";
+export type ToolType = "brush" | "eraser";
 
 export interface Tool {
   toolType: ToolType;

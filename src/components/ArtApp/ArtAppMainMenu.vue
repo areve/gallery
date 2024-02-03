@@ -4,11 +4,11 @@
 
 <script lang="ts" setup>
 import artboardService from "../ArtboardPanel/artboardService";
-import { appMenuState } from "./appMenuState";
+import { artAppState } from "./artAppState";
 
 function reset() {
   artboardService.reset();
-  appMenuState.value.close();
+  artAppState.value.closeMenus();
 }
 </script>
 
@@ -22,3 +22,4 @@ button {
   background-color: #666;
 }
 </style>
+./artAppState

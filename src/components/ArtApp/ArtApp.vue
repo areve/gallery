@@ -1,14 +1,14 @@
 <template>
-  <div class="show-left-menu-button" @click="showLeftMenu" :hidden="appMenuState.showLeftMenu"></div>
-  <div class="cancel-overlay" @click="cancelMenus" :hidden="!appMenuState.showLeftMenu && !appMenuState.showRightMenu"></div>
-  <aside class="left-menu" :hidden="!appMenuState.showLeftMenu">
+  <div class="show-left-menu-button" @click="showLeftMenu" :hidden="artAppState.showLeftMenu"></div>
+  <div class="cancel-overlay" @click="cancelMenus" :hidden="!artAppState.showLeftMenu && !artAppState.showRightMenu"></div>
+  <aside class="left-menu" :hidden="!artAppState.showLeftMenu">
     <ArtAppToolMenu />
   </aside>
   <main class="art-app">
     <ArtboardPanel />
   </main>
-  <div class="show-right-menu-button" @click="showRightMenu" :hidden="appMenuState.showRightMenu"></div>
-  <aside class="right-menu" :hidden="!appMenuState.showRightMenu">
+  <div class="show-right-menu-button" @click="showRightMenu" :hidden="artAppState.showRightMenu"></div>
+  <aside class="right-menu" :hidden="!artAppState.showRightMenu">
     <ArtAppMainMenu />
   </aside>
 </template>
@@ -19,7 +19,7 @@ import ArtAppToolMenu from "./ArtAppToolMenu.vue";
 import ArtAppMainMenu from "./ArtAppMainMenu.vue";
 import { swipeEdgeEvent } from "@/services/swipeEdgeService";
 import { watchSyncEffect } from "vue";
-import { appMenuState } from "./appMenuState";
+import { artAppState } from "./artAppState";
 
 watchSyncEffect(() => {
   if (!swipeEdgeEvent.value) return;
@@ -32,15 +32,15 @@ watchSyncEffect(() => {
   }
 });
 function cancelMenus() {
-  appMenuState.value.showLeftMenu = false;
-  appMenuState.value.showRightMenu = false;
+  artAppState.value.showLeftMenu = false;
+  artAppState.value.showRightMenu = false;
   console.log("cancelMenus");
 }
 function showLeftMenu() {
-  appMenuState.value.showLeftMenu = true;
+  artAppState.value.showLeftMenu = true;
 }
 function showRightMenu() {
-  appMenuState.value.showRightMenu = true;
+  artAppState.value.showRightMenu = true;
 }
 </script>
 

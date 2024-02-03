@@ -5,15 +5,16 @@
 
 <script lang="ts" setup>
 import artboardService from "../ArtboardPanel/artboardService";
-import { appMenuState } from "./appMenuState";
+import { artAppState } from "./artAppState";
 
 function pencil() {
   artboardService.reset();
-  appMenuState.value.close();
+  artAppState.value.closeMenus();
 }
 function eraser() {
+
   artboardService.reset();
-  appMenuState.value.close();
+  artAppState.value.closeMenus();
 }
 </script>
 
@@ -26,4 +27,5 @@ button {
   color: #fff;
   background-color: #666;
 }
-</style>
+</style>./artartAppMenuState
+./artAppState
