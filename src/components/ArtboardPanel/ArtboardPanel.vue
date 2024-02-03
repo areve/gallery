@@ -22,7 +22,7 @@ const tools = [useBrushTool()];
 onMounted(async () => {
   resizeCanvasToVisible();
   initializeArtboard();
-  renderInterval = setInterval(artboardService.render, 0);
+  renderInterval = setInterval(artboardService.render, 20);
 });
 
 onUnmounted(() => {
