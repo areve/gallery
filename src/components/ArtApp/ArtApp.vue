@@ -1,32 +1,37 @@
 <template>
-  <aside class="show-left-menu" @click="showLeftMenu"></aside>
+  <div class="show-left-menu" @click="showLeftMenu"></div>
+  <div class="show-right-menu" @click="showRightMenu"></div>
+  <aside class="left-menu" :hidden="!menuState.showLeftMenu">left menu</aside>
   <main class="art-app">
     <ArtboardPanel />
   </main>
-  <aside class="show-right-menu" @click="showRightMenu"></aside>
+  <aside class="right-menu" :hidden="!menuState.showRightMenu">right menu</aside>
 </template>
 
 <script lang="ts" setup>
 import ArtboardPanel from "@/components/ArtboardPanel/ArtboardPanel.vue";
 import { swipeEdgeEvent } from "@/services/swipeEdgeService";
-import { watchSyncEffect } from "vue";
+import { ref, watchSyncEffect } from "vue";
+
+const menuState = ref({
+  showLeftMenu: false,
+  showRightMenu: false,
+});
 watchSyncEffect(() => {
   if (!swipeEdgeEvent.value) return;
   console.log("swipeEdgeEvent", swipeEdgeEvent.value);
 
   if (swipeEdgeEvent.value.edge === "left") {
-    //   const red = srgb2oklch(color2srgb("red"));
-    //   resetAll(artboardService.artboard.value.bitmapLayer, red);
+    showLeftMenu();
   } else if (swipeEdgeEvent.value.edge === "right") {
-    //   const red = srgb2oklch(color2srgb("green"));
-    //   resetAll(artboardService.artboard.value.bitmapLayer, red);
+    showRightMenu();
   }
 });
 function showLeftMenu() {
-  console.log("showLeftMenu");
+  menuState.value.showLeftMenu = true;
 }
 function showRightMenu() {
-  console.log("showRightMenu");
+  menuState.value.showRightMenu = true;
 }
 </script>
 
@@ -41,14 +46,33 @@ function showRightMenu() {
 
 .show-left-menu,
 .show-right-menu {
-  flex: 0 0;
-  background-color: grey;
-  min-width: 10px;
-  display: block;
+  position: fixed;
+  width: 2em;
+  height: 2em;
+  background-color: rgb(0, 0, 0, 0.5);
   cursor: pointer;
-  /* position: relative; */
-  /* height: 100%; */
-  /* display: flex; */
-  /* flex-direction: row; */
+  z-index: 100;
+}
+
+.show-left-menu {
+  border-bottom-right-radius: 2em;
+}
+.show-right-menu {
+  border-bottom-left-radius: 2em;
+  right: 0;
+}
+
+.left-menu,
+.right-menu {
+  position: fixed;
+  width: 45%;
+  height: 100%;
+  background-color: rgb(127, 127, 127, 0.95);
+  cursor: pointer;
+  z-index: 100;
+}
+
+.right-menu {
+  right: 0;
 }
 </style>
