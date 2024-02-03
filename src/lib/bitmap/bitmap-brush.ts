@@ -92,15 +92,15 @@ function brushPoint(bitmapLayer: BitmapLayer, to: Coord, brush: Brush, weight: n
 
         const brushR = (bY * brushWidth + bX) * 4;
         const [brushG, brushB, brushA] = [brushR + 1, brushR + 2, brushR + 3];
-        const [r, g, b, a] = mix(
+        const color = mix(
           [data[dataR], data[dataG], data[dataB], data[dataA]],
           [brushData[brushR], brushData[brushG], brushData[brushB], brushData[brushA] * weight]
         );
 
-        data[dataR] = r;
-        data[dataG] = g;
-        data[dataB] = b;
-        data[dataA] = a;
+        data[dataR] = 1 // color[0];
+        data[dataG] = 0.5 //gcolor[1];
+        data[dataB] = 180//bcolor[2];
+        data[dataA] = 1// color[3];
       }
     }
   }

@@ -8,11 +8,7 @@ export type OklchColorCoord = ColorCoord;
 // Converts a color from the Oklch color space to the sRGB color space as fast as I could make it go
 export function oklch2srgb(oklch: ColorCoord): ColorCoord {
   // Convert oklch color to oklab color space
-  const oklab: ColorCoord = [
-    oklch[0],
-    oklch[1] * Math.cos((oklch[2] * Math.PI) / 180),
-    oklch[1] * Math.sin((oklch[2] * Math.PI) / 180),
-  ];
+  const oklab: ColorCoord = [oklch[0], oklch[1] * Math.cos((oklch[2] * Math.PI) / 180), oklch[1] * Math.sin((oklch[2] * Math.PI) / 180), oklch[3]];
 
   // Convert oklab color to linear light color in LMS color space
   const lms: ColorCoord = [
@@ -70,7 +66,7 @@ export function srgb2oklch(srgb: ColorCoord): ColorCoord {
   ];
 
   const hue = (Math.atan2(oklab[2], oklab[1]) * 180) / Math.PI;
-  const oklch: ColorCoord = [oklab[0], Math.sqrt(oklab[1] ** 2 + oklab[2] ** 2), hue >= 0 ? hue : hue + 360];
+  const oklch: ColorCoord = [oklab[0], Math.sqrt(oklab[1] ** 2 + oklab[2] ** 2), hue >= 0 ? hue : hue + 360, srgb[3]];
   return oklch;
 }
 

@@ -1,4 +1,4 @@
-import type { BitmapLayer, ColorSpace, OklchBitmapLayer, SrgbBitmapLayer } from "@/interfaces/BitmapLayer";
+import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import { createTiles } from "@/lib/rect";
 
 export function createBitmapLayer(width: number, height: number, space: ColorSpace, tileSize: number = width): BitmapLayer {
