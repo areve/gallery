@@ -22,4 +22,3 @@ button {
   background-color: #666;
 }
 </style>
-./artAppState

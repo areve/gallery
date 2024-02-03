@@ -1,14 +1,14 @@
 <template>
-  <div class="show-left-menu-button" @click="showLeftMenu" :hidden="artAppState.showLeftMenu"></div>
-  <div class="cancel-overlay" @click="cancelMenus" :hidden="!artAppState.showLeftMenu && !artAppState.showRightMenu"></div>
-  <aside class="left-menu" :hidden="!artAppState.showLeftMenu">
+  <div class="show-left-menu-button" @click="showLeftMenu" :hidden="artAppState.menus.appLeft"></div>
+  <div class="cancel-overlay" @click="cancelMenus" :hidden="!artAppState.menus.appLeft && !artAppState.menus.appRight"></div>
+  <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
     <ArtAppToolMenu />
   </aside>
   <main class="art-app">
     <ArtboardPanel />
   </main>
-  <div class="show-right-menu-button" @click="showRightMenu" :hidden="artAppState.showRightMenu"></div>
-  <aside class="right-menu" :hidden="!artAppState.showRightMenu">
+  <div class="show-right-menu-button" @click="showRightMenu" :hidden="artAppState.menus.appRight"></div>
+  <aside class="right-menu" :hidden="!artAppState.menus.appRight">
     <ArtAppMainMenu />
   </aside>
 </template>
@@ -32,15 +32,14 @@ watchSyncEffect(() => {
   }
 });
 function cancelMenus() {
-  artAppState.value.showLeftMenu = false;
-  artAppState.value.showRightMenu = false;
+  artAppState.value.closeMenus();
   console.log("cancelMenus");
 }
 function showLeftMenu() {
-  artAppState.value.showLeftMenu = true;
+  artAppState.value.menus.appLeft = true;
 }
 function showRightMenu() {
-  artAppState.value.showRightMenu = true;
+  artAppState.value.menus.appRight = true;
 }
 </script>
 

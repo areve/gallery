@@ -27,5 +27,4 @@ button {
   color: #fff;
   background-color: #666;
 }
-</style>./artartAppMenuState
-./artAppState
+</style>
