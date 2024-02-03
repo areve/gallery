@@ -1,6 +1,6 @@
 <template>
   <div class="show-left-menu-button" @click="showLeftMenu" :hidden="menuState.showLeftMenu"></div>
-  <div class="show-right-menu-button" @click="showRightMenu" :hidden="menuState.showRightMenuMenu"></div>
+  <div class="show-right-menu-button" @click="showRightMenu" :hidden="menuState.showRightMenu"></div>
   <div class="cancel-overlay" @click="cancelMenus" :hidden="!menuState.showLeftMenu && !menuState.showRightMenu"></div>
   <aside class="left-menu" :hidden="!menuState.showLeftMenu">left menu</aside>
   <main class="art-app">
