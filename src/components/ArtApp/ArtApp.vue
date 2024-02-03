@@ -62,18 +62,18 @@ function showRightMenu() {
 .show-left-menu-button,
 .show-right-menu-button {
   position: fixed;
-  width: 2em;
-  height: 2em;
+  width: 3em;
+  height: 3em;
   background-color: rgb(127, 127, 127, 0.5);
   cursor: pointer;
   z-index: 100;
 }
 
 .show-left-menu-button {
-  border-bottom-right-radius: 2em;
+  border-bottom-right-radius: 3em;
 }
 .show-right-menu-button {
-  border-bottom-left-radius: 2em;
+  border-bottom-left-radius: 3em;
   right: 0;
 }
 
