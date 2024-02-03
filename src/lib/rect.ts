@@ -1,20 +1,11 @@
 import type { Rect } from "@/interfaces/Rect";
 
 export function rectsOverlappedByAny(a: Rect[], b: Rect[]) {
-  const result: Rect[] = [];
-
-  a.forEach((rect) => {
-    if (rectOverlapsAny(rect, b)) result.push(rect);
-  });
-  return result;
+  return a.filter((rect) => rectOverlapsAny(rect, b));
 }
 
 export function rectOverlapsAny(rectangle: Rect, rects: Rect[]): boolean {
-  for (const rect of rects) {
-    if (rectOverlaps(rectangle, rect)) return true;
-  }
-
-  return false;
+  return !!rects.find((rect) => rectOverlaps(rectangle, rect));
 }
 
 export function rectOverlaps(a: Rect, b: Rect): boolean {
