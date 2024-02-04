@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, watchPostEffect } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import type { Rect } from "../../interfaces/Rect";
 import { rectsOverlappedByAny } from "@/lib/rect";
@@ -6,6 +6,7 @@ import { oklch2srgb, srgb2oklch } from "@/lib/color/color-oklch";
 import { createBitmapLayer } from "@/lib/bitmap-layer";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { color2srgb } from "@/lib/color/color-string";
+import { artboardState } from "./artboardState";
 
 const artboard = ref<Artboard>({
   context: undefined!,
@@ -53,13 +54,17 @@ function renderRect(rect: Rect) {
   context.putImageData(tempImageData, rect.x, rect.y);
 }
 
+watchPostEffect(() => {
+  console.log(artboardState.value.colorSpace);
+});
+
 export function reset() {
   if (!artboard.value.context) return;
   const context = artboard.value.context;
 
   const height = context.canvas.height;
   const width = context.canvas.width;
-  artboard.value.bitmapLayer = createBitmapLayer(width, height, "oklch", 32);
+  artboard.value.bitmapLayer = createBitmapLayer(width, height, artboardState.value.colorSpace, 32);
   artboard.value.context.clearRect(0, 0, width, height);
 
   const color = srgb2oklch(color2srgb("white"));
@@ -72,7 +77,7 @@ export function resetOrange() {
 
   const height = context.canvas.height;
   const width = context.canvas.width;
-  artboard.value.bitmapLayer = createBitmapLayer(width, height, "oklch", 32);
+  artboard.value.bitmapLayer = createBitmapLayer(width, height, artboardState.value.colorSpace, 32);
   artboard.value.context.clearRect(0, 0, width, height);
 
   const color = srgb2oklch(color2srgb("orange"));

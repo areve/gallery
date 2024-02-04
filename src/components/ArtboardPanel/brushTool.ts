@@ -4,6 +4,7 @@ import artboardService from "./artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
 import { srgb2oklch } from "@/lib/color/color-oklch";
 import { color2srgb } from "@/lib/color/color-string";
+import { artboardState } from "./artboardState";
 
 const tool: Tool = {
   toolType: "brush",
@@ -15,7 +16,7 @@ const tool: Tool = {
 export const useBrushTool = () => tool;
 
 const radius = 5;
-const brush = createBrush(radius, srgb2oklch(color2srgb("black")), "oklch");
+const brush = createBrush(radius, srgb2oklch(color2srgb("black")), artboardState.value.colorSpace);
 
 let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
