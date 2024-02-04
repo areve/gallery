@@ -3,7 +3,7 @@ import type { Artboard } from "../../interfaces/Artboard";
 import type { Rect } from "../../interfaces/Rect";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { oklch2srgb, srgb2oklch } from "@/lib/color/color-oklch";
-import { createBitmapLayer } from "@/lib/bitmap-layer-convert";
+import { createBitmapLayer } from "@/lib/bitmap-layer";
 import { resetAll } from "@/lib/bitmap/bitmap-effects-all-color";
 import { color2srgb } from "@/lib/color/color-string";
 

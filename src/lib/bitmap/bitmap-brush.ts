@@ -3,7 +3,7 @@ import type { Brush } from "@/interfaces/Brush";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
 import { lerpOklchColor } from "@/lib/color/color-oklch";
-import { createBitmapLayer } from "@/lib/bitmap-layer-convert";
+import { createBitmapLayer } from "@/lib/bitmap-layer";
 
 export function createBrush(radius: number, color: ColorCoord, space: ColorSpace) {
   const width = radius * 2;

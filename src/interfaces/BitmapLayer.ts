@@ -7,6 +7,7 @@ export interface BitmapLayer {
   width: number;
   height: number;
   channels: number;
+  alphaChannel: number;
   space: ColorSpace;
   dirty: Rect[];
   tiles: Rect[];
