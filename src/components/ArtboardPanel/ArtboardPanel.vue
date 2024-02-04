@@ -9,7 +9,7 @@ import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
 import artboardService from "@/components/ArtboardPanel/artboardService";
 import { useBrushTool } from "@/components/Brush/brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
-import { useEraserTool } from "./eraserTool";
+import { useEraserTool } from "@/components/Eraser/eraserTool";
 import { artboardState } from "./artboardState";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);

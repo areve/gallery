@@ -1,7 +1,7 @@
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 import type { Tool } from "@/interfaces/Tool";
 import { getCanvasPoint } from "@/services/pointerService";
-import artboardService from "./artboardService";
+import artboardService from "../ArtboardPanel/artboardService";
 
 const tool: Tool = {
   toolType: "eraser",
