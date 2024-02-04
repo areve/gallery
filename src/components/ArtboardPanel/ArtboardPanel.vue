@@ -7,7 +7,7 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
 import artboardService from "@/components/ArtboardPanel/artboardService";
-import { useBrushTool } from "./brushTool";
+import { useBrushTool } from "@/components/Brush/brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 import { useEraserTool } from "./eraserTool";
 import { artboardState } from "./artboardState";

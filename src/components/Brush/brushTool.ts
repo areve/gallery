@@ -1,10 +1,11 @@
+import { brushToolState } from "./brushToolState";
 import type { Tool } from "@/interfaces/Tool";
 import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
-import artboardService from "./artboardService";
+import artboardService from "../ArtboardPanel/artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
 import { srgb2oklch } from "@/lib/color/color-oklch";
 import { color2srgb } from "@/lib/color/color-string";
-import { artboardState } from "./artboardState";
+import { artboardState } from "../ArtboardPanel/artboardState";
 
 const tool: Tool = {
   toolType: "brush",
@@ -16,7 +17,7 @@ const tool: Tool = {
 export const useBrushTool = () => tool;
 
 const radius = 5;
-const brush = createBrush(radius, srgb2oklch(color2srgb("black")), artboardState.value.colorSpace);
+const brush = createBrush(radius, srgb2oklch(color2srgb(brushToolState.value.brushColor)), artboardState.value.colorSpace);
 
 let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
