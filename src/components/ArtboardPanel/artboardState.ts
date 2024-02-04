@@ -4,5 +4,5 @@ import { ref } from "vue";
 
 export const artboardState = ref({
   selectedTool: "brush" as ToolType,
-  colorSpace: "srgb" as ColorSpace,
+  colorSpace: "oklch" as ColorSpace,
 });

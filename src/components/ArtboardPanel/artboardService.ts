@@ -5,7 +5,7 @@ import { rectsOverlappedByAny } from "@/lib/rect";
 import { oklch2srgb, srgb2oklch } from "@/lib/color/color-oklch";
 import { createBitmapLayer } from "@/lib/bitmap-layer";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
-import { color2srgb } from "@/lib/color/color-string";
+import { color2srgb, convertColor } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
 
 const artboard = ref<Artboard>({
@@ -37,13 +37,12 @@ function renderRect(rect: Rect) {
   const width = artboard.value.bitmapLayer.width;
   const channels = artboard.value.bitmapLayer.channels;
 
-  const pixel2srgb = oklch2srgb;
-
   for (let y = 0; y < rect.height; y++) {
     for (let x = 0; x < rect.width; x++) {
       const i = ((y + rect.y) * width + x + rect.x) * channels;
       const o = (y * rect.width + x) * channels;
-      const rgb = pixel2srgb([layerData[i + 0], layerData[i + 1], layerData[i + 2]]);
+      // TODO a better way to get the method is needed
+      const rgb = convertColor(artboard.value.bitmapLayer.space, "srgb", [layerData[i + 0], layerData[i + 1], layerData[i + 2]]);
       pixelData[o + 0] = rgb[0] * 255;
       pixelData[o + 1] = rgb[1] * 255;
       pixelData[o + 2] = rgb[2] * 255;
@@ -56,6 +55,12 @@ function renderRect(rect: Rect) {
 
 watchPostEffect(() => {
   console.log(artboardState.value.colorSpace);
+  //reset()
+  if (!artboard.value.context) return;
+  const context = artboard.value.context;
+  const height = context.canvas.height;
+  const width = context.canvas.width;
+  artboard.value.bitmapLayer = createBitmapLayer(width, height, artboardState.value.colorSpace, 32);
 });
 
 export function reset() {

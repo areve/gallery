@@ -1,11 +1,12 @@
+import type { Brush } from "@/interfaces/Brush";
 import { brushToolState } from "./brushToolState";
 import type { Tool } from "@/interfaces/Tool";
 import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
 import artboardService from "../ArtboardPanel/artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
-import { srgb2oklch } from "@/lib/color/color-oklch";
-import { color2srgb } from "@/lib/color/color-string";
+import { color2srgb, convertColor } from "@/lib/color/color";
 import { artboardState } from "../ArtboardPanel/artboardState";
+import { watchPostEffect } from "vue";
 
 const tool: Tool = {
   toolType: "brush",
@@ -16,20 +17,26 @@ const tool: Tool = {
 
 export const useBrushTool = () => tool;
 
-const radius = 5;
-const brush = createBrush(radius, srgb2oklch(color2srgb(brushToolState.value.brushColor)), artboardState.value.colorSpace);
-
+let brush: Brush = undefined!;
 let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
 
+watchPostEffect(() => {
+  brush = createColoredBrush();
+});
+
+
+function createColoredBrush() {
+  const color = convertColor("srgb", "oklch", color2srgb(brushToolState.value.color));
+  return createBrush(brushToolState.value.radius, color, artboardState.value.colorSpace);
+}
+
 function pointerUp(_: PointerEvent) {
-  console.log("brush up");
   brushLastPoint = null;
   isPointerDown = false;
 }
 
 function pointerDown(_: PointerEvent) {
-  console.log("brush down");
   isPointerDown = true;
 }
 
