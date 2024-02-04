@@ -10,7 +10,7 @@ import artboardService from "@/components/ArtboardPanel/artboardService";
 import { useBrushTool } from "./brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 import { useEraserTool } from "./eraserTool";
-import { artAppState } from "../ArtApp/artAppState";
+import { artboardState } from "./artboardState";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 let renderInterval: number | undefined;
@@ -57,8 +57,7 @@ watchSyncEffect(() => {
 });
 
 function selectedTool() {
-  // TODO should this panel really have access to artAppState?
-  return tools.find((x) => x.toolType === artAppState.value.selectedTool) || tools[0];
+  return tools.find((tool) => tool.toolType === artboardState.value.selectedTool) || tools[0];
 }
 </script>
 

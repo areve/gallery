@@ -4,14 +4,15 @@
 </template>
 
 <script lang="ts" setup>
+import { artboardState } from "../ArtboardPanel/artboardState";
 import { artAppState } from "./artAppState";
 
 function pencil() {
-  artAppState.value.selectedTool = "brush";
+  artboardState.value.selectedTool = "brush";
   artAppState.value.closeMenus();
 }
 function eraser() {
-  artAppState.value.selectedTool = "eraser";
+  artboardState.value.selectedTool = "eraser";
   artAppState.value.closeMenus();
 }
 </script>
