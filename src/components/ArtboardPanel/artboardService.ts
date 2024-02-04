@@ -4,7 +4,7 @@ import type { Rect } from "../../interfaces/Rect";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { oklch2srgb, srgb2oklch } from "@/lib/color/color-oklch";
 import { createBitmapLayer } from "@/lib/bitmap-layer";
-import { resetAll } from "@/lib/bitmap/bitmap-effects-all-color";
+import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { color2srgb } from "@/lib/color/color-string";
 
 const artboard = ref<Artboard>({
