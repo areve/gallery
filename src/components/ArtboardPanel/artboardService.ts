@@ -63,8 +63,6 @@ watch(
 export function reset() {
   if (!artboard.value.context) return;
   const context = artboard.value.context;
-
-  console.log("reset");
   const height = context.canvas.height;
   const width = context.canvas.width;
   artboard.value.bitmapLayer = createBitmapLayer(width, height, artboardState.value.colorSpace, 32);

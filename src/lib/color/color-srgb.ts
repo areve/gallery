@@ -6,9 +6,10 @@ export function lerpSrgbColor(color1: ColorCoord, color2: ColorCoord): ColorCoor
   if (color2[3] === 0) return color1;
 
   const alpha = lerp(color1[3], 1, color2[3]);
-  const r = lerp(color1[0], color2[0], alpha);
-  const g = lerp(color1[1], color2[1], alpha);
-  const b = lerp(color1[2], color2[2], alpha);
+  const weight = color2[3] / alpha;
+  const r = lerp(color1[0], color2[0], weight);
+  const g = lerp(color1[1], color2[1], weight);
+  const b = lerp(color1[2], color2[2], weight);
 
   return [r, g, b, alpha];
 }
