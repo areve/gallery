@@ -33,24 +33,8 @@ export function createBrush(radius: number, color: ColorCoord, space: ColorSpace
 export async function applyBrush(bitmapLayer: BitmapLayer, from: Coord | null, to: Coord, brush: Brush, weight: number) {
   if (from) {
     brushLine(bitmapLayer, from, to, brush, weight);
-
-    // TODO move this to brushLine somehow
-    bitmapLayer.dirty.push({
-      x: Math.min(to.x, from.x) - brush.width / 2,
-      y: Math.min(to.y, from.y) - brush.height / 2,
-      width: brush.width + Math.abs(to.x - from.x),
-      height: brush.height + Math.abs(to.y - from.y),
-    });
   } else {
     brushPoint(bitmapLayer, to, brush, weight);
-
-    // TODO move this to brushPoint somehow
-    bitmapLayer.dirty.push({
-      x: to.x - brush.width / 2,
-      y: to.y - brush.height / 2,
-      width: brush.width,
-      height: brush.height,
-    });
   }
 }
 
@@ -103,4 +87,10 @@ function brushPoint(bitmapLayer: BitmapLayer, to: Coord, brush: Brush, weight: n
       }
     }
   }
+  bitmapLayer.dirty.push({
+    x: to.x - brush.width / 2,
+    y: to.y - brush.height / 2,
+    width: brush.width,
+    height: brush.height,
+  });
 }
