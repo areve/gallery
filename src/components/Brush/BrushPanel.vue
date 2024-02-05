@@ -23,6 +23,10 @@
         Black
       </label>
     </div>
+    <div>
+      <strong>Radius</strong>
+      <input type="number" v-model="brushToolState.radius" />
+    </div>
   </section>
 </template>
 

@@ -2,6 +2,7 @@ import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 import type { Tool } from "@/interfaces/Tool";
 import { getCanvasPoint } from "@/services/pointerService";
 import artboardService from "../ArtboardPanel/artboardService";
+import { eraserToolState } from "./eraserToolState";
 
 const tool: Tool = {
   toolType: "eraser",
@@ -26,7 +27,7 @@ function pointerDown(pointerEvent: PointerEvent) {
     y: pointerEvent.pageY,
   });
 
-  clearCircle(artboardService.artboard.value.bitmapLayer, canvasPoint.x, canvasPoint.y, 20);
+  clearCircle(artboardService.artboard.value.bitmapLayer, canvasPoint.x, canvasPoint.y, eraserToolState.value.radius);
 }
 
 function pointerMove(pointerEvents: PointerEvent) {
