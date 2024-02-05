@@ -2,9 +2,8 @@ import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import type { Brush } from "@/interfaces/Brush";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
-import { lerpOklchColor } from "@/lib/color/color-oklch";
 import { createBitmapLayer } from "@/lib/bitmap-layer";
-import { lerpSrgbColor } from "../color/color-srgb";
+import { colorMixer } from "@/lib/color/color";
 
 export function createBrush(radius: number, color: ColorCoord, space: ColorSpace) {
   const width = radius * 2;
@@ -76,10 +75,8 @@ function brushPoint(bitmapLayer: BitmapLayer, to: Coord, brush: Brush, weight: n
   const brushData = brush.data;
   const width = bitmapLayer.width;
   const data = bitmapLayer.data;
+  const mix = colorMixer(bitmapLayer.space);
 
-  // TODO a better way to get the method is needed
-
-  const mix = bitmapLayer.space === "oklch" ? lerpOklchColor : lerpSrgbColor;
   const x = Math.floor(to.x);
   const y = Math.floor(to.y);
 

@@ -1,12 +1,13 @@
+import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import type { Brush } from "@/interfaces/Brush";
 import { brushToolState } from "./brushToolState";
 import type { Tool } from "@/interfaces/Tool";
 import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
 import artboardService from "../ArtboardPanel/artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
-import { color2srgb, convertColor } from "@/lib/color/color";
-import { artboardState } from "../ArtboardPanel/artboardState";
+import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";
+import type { ColorSpace } from "@/interfaces/BitmapLayer";
 
 const tool: Tool = {
   toolType: "brush",
@@ -22,12 +23,11 @@ let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
 
 watchPostEffect(() => {
-  brush = createColoredBrush();
+  brush = createColoredBrush(artboardState.value.colorSpace);
 });
 
-
-function createColoredBrush() {
-  const color = convertColor("srgb", "oklch", color2srgb(brushToolState.value.color));
+function createColoredBrush(colorSpace: ColorSpace) {
+  const color = colorConverter("srgb", colorSpace)(color2srgb(brushToolState.value.color));
   return createBrush(brushToolState.value.radius, color, artboardState.value.colorSpace);
 }
 
