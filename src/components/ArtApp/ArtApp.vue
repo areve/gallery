@@ -33,7 +33,6 @@ watchSyncEffect(() => {
 });
 function cancelMenus() {
   artAppState.value.closeMenus();
-  console.log("cancelMenus");
 }
 function showLeftMenu() {
   artAppState.value.menus.appLeft = true;
