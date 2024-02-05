@@ -32,7 +32,7 @@ export function oklch2srgb(oklch: ColorCoord): ColorCoord {
   ];
 
   // Apply gamma correction to linear light color to get final sRGB color
-  const srgb: ColorCoord = [gammaCorrect(lrgb[0]), gammaCorrect(lrgb[1]), gammaCorrect(lrgb[2])];
+  const srgb: ColorCoord = [gammaCorrect(lrgb[0]), gammaCorrect(lrgb[1]), gammaCorrect(lrgb[2]), oklch[3]];
   return srgb;
 }
 

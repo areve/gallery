@@ -2,7 +2,7 @@ import { ref, watch, watchPostEffect } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import type { Rect } from "../../interfaces/Rect";
 import { rectsOverlappedByAny } from "@/lib/rect";
-import { createBitmapLayer } from "@/lib/bitmap-layer";
+import { convertBitmapLayer, createBitmapLayer } from "@/lib/bitmap-layer";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
@@ -53,14 +53,10 @@ function renderRect(rect: Rect) {
 }
 
 watch(
-  () => artboardState.value.colorSpace as any as ColorSpace,
-  (from: ColorSpace, to: ColorSpace) => {
-    if (from === to) return;
-    reset();
-
-    //     const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
-    // const color = colorConvert(color2srgb("white"));
-    // resetAll(artboard.value.bitmapLayer, color);
+  () => artboardState.value.colorSpace,
+  () => {
+    const bitmapLayer = convertBitmapLayer(artboard.value.bitmapLayer, artboardState.value.colorSpace);
+    artboard.value.bitmapLayer = bitmapLayer;
   }
 );
 
