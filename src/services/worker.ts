@@ -83,7 +83,7 @@ function animate() {
 onmessage = function (ev: MessageEvent) {
   canvas = ev.data.canvas;
   context = canvas.getContext("2d", {
-    willReadFrequently: true,
+    // willReadFrequently: true, //this?
   });
   animate();
 };
