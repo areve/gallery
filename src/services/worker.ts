@@ -2,6 +2,14 @@ let context: OffscreenCanvasRenderingContext2D | null = null;
 let imageData: ImageData;
 let i = 0;
 let start = new Date().getTime();
+
+//    this.boundAnimate = this.animate.bind(this);
+
+requestAnimationFrame(() => {
+  console.log("requestAnimationFrame");
+  timedCount();
+});
+
 function timedCount() {
   if (context) {
     i++;
@@ -24,10 +32,11 @@ function timedCount() {
     }
   }
 
-  setTimeout(timedCount, 10);
+  //setTimeout(timedCount, 10);
+  requestAnimationFrame(timedCount);
 }
 
-timedCount();
+// timedCount();
 
 self.onmessage = function handleMessageFromMain(msg: MessageEvent) {
   const canvas: OffscreenCanvas = msg.data.canvas;
