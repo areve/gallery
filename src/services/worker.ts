@@ -36,3 +36,5 @@ self.onmessage = function handleMessageFromMain(msg: MessageEvent) {
   });
   console.log(canvas);
 };
+
+export {};
