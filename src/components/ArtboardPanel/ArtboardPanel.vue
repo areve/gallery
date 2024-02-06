@@ -99,5 +99,6 @@ function selectedTool() {
   margin-top: -50px;
   margin-left: -150px;
   z-index: 100;
+  border: 2px solid red;
 }
 </style>
