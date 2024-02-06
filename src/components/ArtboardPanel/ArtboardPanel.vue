@@ -93,8 +93,11 @@ function selectedTool() {
 
 .multi-canvas {
   /* background-color: red; */
-  position: fixed;
-  top: 0px;
-  left: 0px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -150px;
+  z-index: 100;
 }
 </style>
