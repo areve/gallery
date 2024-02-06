@@ -6,7 +6,7 @@ let start = new Date().getTime();
 //    this.boundAnimate = this.animate.bind(this);
 
 requestAnimationFrame(() => {
-  console.log("requestAnimationFrame");
+  // console.log("requestAnimationFrame");
   timedCount();
 });
 
@@ -27,7 +27,7 @@ function timedCount() {
       const end = new Date().getTime();
       const duration = end - start;
       const fps = Math.round((frameInterval / duration) * 1000);
-      console.log(`${frameInterval} frames took ${duration}ms, ${fps}fps`);
+      // console.log(`${frameInterval} frames took ${duration}ms, ${fps}fps`);
       start = new Date().getTime();
     }
   }
@@ -43,7 +43,7 @@ self.onmessage = function handleMessageFromMain(msg: MessageEvent) {
   context = canvas.getContext("2d", {
     willReadFrequently: true,
   });
-  console.log(canvas);
+  // console.log(canvas);
 };
 
 export {};
