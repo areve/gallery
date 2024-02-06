@@ -59,7 +59,8 @@ function animate() {
     // was it this?
     i++;
 
-    if (!imageData) imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+    //if (!imageData)  //this?
+    imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
     const data = imageData.data;
 
     for (let i = 0; i < data.length; i++) {
@@ -83,7 +84,7 @@ function animate() {
 onmessage = function (ev: MessageEvent) {
   canvas = ev.data.canvas;
   context = canvas.getContext("2d", {
-    // willReadFrequently: true, //this?
+     willReadFrequently: true, //this?
   });
   animate();
 };
