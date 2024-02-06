@@ -99,7 +99,7 @@ function selectedTool() {
   left: 5%;
   z-index: 100;
   height: 100px;
-  border: 2px solid red;
+  border: 2px solid cyan;
   background: yellow;
 }
 </style>
