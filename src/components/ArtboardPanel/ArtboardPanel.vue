@@ -2,6 +2,9 @@
   <section class="artboard-panel" @pointerdown="pointerDown">
     <canvas ref="canvas" class="canvas"></canvas>
   </section>
+  <div class="multi-canvas">
+    <canvas v-for="(canvas, index) in canvases" ref="canvasRefs" :key="index" width="300" height="100"></canvas>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -11,8 +14,13 @@ import { useBrushTool } from "@/components/Brush/brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
 import { artboardState } from "./artboardState";
+import Worker from "@/services/worker?worker";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
+const canvases = ref(new Array(1));
+const canvasRefs = ref<HTMLCanvasElement[]>([]);
+const workers: Worker[] = [];
+
 let renderInterval: number | undefined;
 
 const tools = [useBrushTool(), useEraserTool()];
@@ -21,11 +29,20 @@ onMounted(async () => {
   resizeCanvasToVisible();
   initializeArtboard();
   renderInterval = setInterval(artboardService.render, 20);
+
+  canvasRefs.value.forEach((canvasRef) => {
+    const worker = new Worker();
+    worker.onmessage = (message: MessageEvent<any>) => console.log(message);
+    const offscreen = canvasRef.transferControlToOffscreen();
+    worker.postMessage({ canvas: offscreen }, [offscreen]);
+    workers.push(worker);
+  });
 });
 
 onUnmounted(() => {
   clearInterval(renderInterval);
   renderInterval = undefined;
+  workers.forEach((worker) => worker.terminate());
 });
 
 watchSyncEffect(() => {
@@ -72,5 +89,12 @@ function selectedTool() {
 
 .canvas {
   width: 100%;
+}
+
+.multi-canvas {
+  /* background-color: red; */
+  position: fixed;
+  top: 0px;
+  left: 0px;
 }
 </style>
