@@ -1,49 +1,19 @@
-let context: OffscreenCanvasRenderingContext2D | null = null;
-let imageData: ImageData;
-let i = 0;
-let start = new Date().getTime();
-
-//    this.boundAnimate = this.animate.bind(this);
-
-requestAnimationFrame(() => {
-  // console.log("requestAnimationFrame");
-  timedCount();
-});
-
-function timedCount() {
-  if (context) {
-    i++;
-    if (!imageData) imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
-    const data = imageData.data;
-
-    for (let i = 0; i < data.length; i++) {
-      data[i] = Math.random() * 255;
-    }
-
-    context.putImageData(imageData, 0, 0);
-
-    const frameInterval = 100;
-    if (i % frameInterval === 0) {
-      const end = new Date().getTime();
-      const duration = end - start;
-      const fps = Math.round((frameInterval / duration) * 1000);
-      // console.log(`${frameInterval} frames took ${duration}ms, ${fps}fps`);
-      start = new Date().getTime();
-    }
+let ctx: any;
+let canvas: any;
+function animate() {
+  const p = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < p.data.length; i++) {
+    p.data[i] = Math.random() * 255;
   }
+  ctx.putImageData(p, 0, 0);
 
-  //setTimeout(timedCount, 10);
-  requestAnimationFrame(timedCount);
+  requestAnimationFrame(animate);
 }
 
-// timedCount();
-
-self.onmessage = function handleMessageFromMain(msg: MessageEvent) {
-  const canvas: OffscreenCanvas = msg.data.canvas;
-  context = canvas.getContext("2d", {
-    willReadFrequently: true,
-  });
-  // console.log(canvas);
+onmessage = function (ev) {
+  canvas = ev.data.canvas;
+  ctx = canvas.getContext("2d");
+  animate();
 };
 
 export {};
