@@ -50,7 +50,7 @@
 
 let context: OffscreenCanvasRenderingContext2D | null = null;
 let canvas: OffscreenCanvas; // was it this?
-let imageData: ImageData;
+let imageData: ImageData | null = null;
 let i = 0;
 let start = new Date().getTime();
 
@@ -59,8 +59,7 @@ function animate() {
     // was it this?
     i++;
 
-    //if (!imageData)  //this?
-    imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
+    if (!imageData) imageData = context.getImageData(0, 0, context.canvas.width, context.canvas.height);
     const data = imageData.data;
 
     for (let i = 0; i < data.length; i++) {
@@ -84,7 +83,7 @@ function animate() {
 onmessage = function (ev: MessageEvent) {
   canvas = ev.data.canvas;
   context = canvas.getContext("2d", {
-     willReadFrequently: true, //this?
+    //willReadFrequently: true, //this?
   });
   animate();
 };
