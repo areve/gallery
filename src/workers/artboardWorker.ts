@@ -86,10 +86,8 @@ onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
     context = canvas.getContext("2d");
     reset();
     requestAnimationFrame(render);
-  }
-
-  if (!bitmapLayer) return;
-  if (event.data.action === "reset") {
+  } else if (!bitmapLayer) return;
+  else if (event.data.action === "reset") {
     resetAll(bitmapLayer, event.data.params.color);
   } else if (event.data.action === "applyBrush") {
     const params = event.data.params;
@@ -97,6 +95,14 @@ onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
       brush = createBrush(params.radius, params.color, colorSpace.value);
     }
     applyBrush(bitmapLayer, params.fromPoint, params.toPoint, brush, params.weight);
+  } else if (event.data.action === "setColorSpace") {
+    // TODO
+    console.log("TODO setColorSpace", event.data.params);
+  } else if (event.data.action === "setBrush") {
+    // TODO
+    console.log("TODO setBrush", event.data.params);
+  } else {
+    throw "artboardWorker unsupported message: " + event.data;
   }
 };
 

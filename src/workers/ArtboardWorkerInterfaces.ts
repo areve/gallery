@@ -35,4 +35,11 @@ export type ArtboardWorkerMessage =
         color: ColorCoord;
         weight: number;
       };
+    }
+  | {
+      action: "setBrush";
+      params: {
+        color: string;
+        radius: number;
+      };
     };

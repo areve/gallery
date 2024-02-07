@@ -1,13 +1,10 @@
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
-import type { Brush } from "@/interfaces/Brush";
 import { brushToolState } from "./brushToolState";
 import type { Tool } from "@/interfaces/Tool";
-import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
 import artboardService from "../ArtboardPanel/artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
 import { color2srgb, colorConverter } from "@/lib/color/color";
-import { watch, watchPostEffect } from "vue";
-import type { ColorSpace } from "@/interfaces/BitmapLayer";
+import { watchPostEffect } from "vue";
 
 const tool: Tool = {
   toolType: "brush",
@@ -18,18 +15,12 @@ const tool: Tool = {
 
 export const useBrushTool = () => tool;
 
-// let brush: Brush = undefined!;
 let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
 
-watch(
-  () => artboardState.value.colorSpace,
-  () => {
-    //const brush = createColoredBrush(artboardState.value.colorSpace);
-    console.log("createColoredBrush");
-    artboardService.createColoredBrush(artboardState.value.colorSpace);
-  }
-);
+watchPostEffect(() => {
+  artboardService.setBrush(brushToolState.value.color, brushToolState.value.radius);
+});
 
 function pointerUp(_: PointerEvent) {
   brushLastPoint = null;
@@ -41,7 +32,6 @@ function pointerDown(_: PointerEvent) {
 }
 
 function pointerMove(pointerEvent: PointerEvent) {
-  // return;
   if (!isPointerDown) return;
   if (!artboardService.artboard.value.canvas) return;
 
@@ -50,7 +40,6 @@ function pointerMove(pointerEvent: PointerEvent) {
     y: pointerEvent.pageY,
   });
 
-  //  const bitmapLayer = artboardService.artboard.value.bitmapLayer;
   if (brushLastPoint) {
     let weight = pointerEvent.pressure ?? 0.1;
     weight = weight * weight;
@@ -60,7 +49,8 @@ function pointerMove(pointerEvent: PointerEvent) {
     const brushMoved = brushLastPoint.x != canvasPoint.x || brushLastPoint.y != canvasPoint.y;
     if (brushMoved) {
       const color = colorConverter("srgb", artboardState.value.colorSpace)(color2srgb(brushToolState.value.color));
-      //applyBrush(bitmapLayer, brushLastPoint, canvasPoint, brush, weight);
+
+      // TODO perhaps call a brushService instead? perhaps artboardService should be called artboardProxy
       artboardService.applyBrush(brushLastPoint, canvasPoint, weight, color, brushToolState.value.radius);
     }
   }

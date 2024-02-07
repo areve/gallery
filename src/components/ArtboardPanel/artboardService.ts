@@ -1,10 +1,9 @@
-import { ref, watch } from "vue";
+import { ref, toRaw, watch } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
 import artboardWorker from "@/workers/artboardWorker?worker";
 import type { Coord } from "@/interfaces/Coord";
-import type { ColorSpace } from "@/interfaces/BitmapLayer";
 import type { ColorCoord } from "@/interfaces/Color";
 import type { ArtboardWorker } from "@/workers/ArtboardWorkerInterfaces";
 
@@ -66,9 +65,15 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
   );
 }
 
-function createColoredBrush(colorSpace: ColorSpace) {
+function setBrush(color: string, radius: number) {
   if (!artboard.value.worker) return;
-  // artboard.value.worker.postMessage({ action: "createColoredBrush", params: { colorSpace } });
+  artboard.value.worker.postMessage({
+    action: "setBrush",
+    params: {
+      color,
+      radius,
+    },
+  });
 }
 
 function applyBrush(brushLastPoint: Coord, canvasPoint: Coord, weight: number, color: ColorCoord, radius: number) {
@@ -88,7 +93,7 @@ function applyBrush(brushLastPoint: Coord, canvasPoint: Coord, weight: number, c
 export default {
   artboard,
   reset,
-  createColoredBrush,
+  setBrush,
   applyBrush,
   resetOrange,
 };
