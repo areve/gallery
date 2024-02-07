@@ -8,6 +8,14 @@ export interface ArtboardWorker extends Worker {
   postMessage(message: ArtboardWorkerMessage, options?: StructuredSerializeOptions): void;
 }
 
+export type ArtboardWorkerMessage2 = {
+  action: "fps";
+  params: {
+    fps: number;
+  };
+}
+
+
 export type ArtboardWorkerMessage =
   | {
       action: "initialize";

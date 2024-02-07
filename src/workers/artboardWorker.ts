@@ -41,7 +41,12 @@ function frameCounter() {
     const end = new Date().getTime();
     const duration = end - start;
     const fps = Math.round((calculateAfterFrames / duration) * 1000);
-    console.log(`${fps}fps`);
+    postMessage({
+      action: "fps",
+      params: {
+        fps,
+      },
+    });
     start = new Date().getTime();
   }
 }

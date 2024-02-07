@@ -5,7 +5,7 @@ import { artboardState } from "./artboardState";
 import artboardWorker from "@/workers/artboardWorker?worker";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
-import type { ArtboardWorker } from "@/workers/ArtboardWorkerInterfaces";
+import type { ArtboardWorker, ArtboardWorkerMessage2 } from "@/workers/ArtboardWorkerInterfaces";
 
 // TODO why ref?
 const artboard = ref<Artboard>({
@@ -46,6 +46,11 @@ export function detachCanvas() {
 export function attachToCanvas(canvas: HTMLCanvasElement) {
   detachCanvas();
   artboard.value.worker = new artboardWorker() as ArtboardWorker;
+  artboard.value.worker.onmessage = (event: MessageEvent<ArtboardWorkerMessage2>) => {
+    if (event.data.action === "fps") {
+      artboardState.value.fps = event.data.params.fps
+    }
+  };
   artboard.value.canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
   artboard.value.worker.postMessage(

@@ -1,5 +1,6 @@
 <template>
   <section class="artboard-panel" @pointerdown="pointerDown">
+    <div class="fps">{{ artboardState.fps }}fps</div>
     <canvas ref="canvas" class="canvas"></canvas>
   </section>
 </template>
@@ -60,5 +61,11 @@ function selectedTool() {
 
 .canvas {
   width: 100%;
+}
+.fps {
+  position: fixed;
+  bottom: 0;
+  left: 0.3em;
+  font-size: 0.8em;
 }
 </style>
