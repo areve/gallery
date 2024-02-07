@@ -1,4 +1,4 @@
-import { ref, watch, watchPostEffect } from "vue";
+import { ref, watch } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import type { Rect } from "../../interfaces/Rect";
 import { rectsOverlappedByAny } from "@/lib/rect";
@@ -6,7 +6,6 @@ import { convertBitmapLayer, createBitmapLayer } from "@/lib/bitmap-layer";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
-import type { ColorSpace } from "colorjs.io/fn";
 
 const artboard = ref<Artboard>({
   context: undefined!,
@@ -14,6 +13,7 @@ const artboard = ref<Artboard>({
 });
 
 let tempImageData: ImageData | null = null;
+let renderInterval: number | undefined;
 
 function render() {
   if (!artboard.value.context) return;
@@ -76,9 +76,19 @@ export function resetOrange() {
   resetAll(artboard.value.bitmapLayer, color);
 }
 
+export function attachToCanvas(canvas: HTMLCanvasElement) {
+  clearInterval(renderInterval);
+  renderInterval = undefined;
+
+  const context = canvas.getContext("2d", {
+    willReadFrequently: true,
+  }) as CanvasRenderingContext2D;
+  artboard.value.context = context;
+  renderInterval = setInterval(render, 20);
+}
+
 export default {
   artboard,
   reset,
   resetOrange,
-  render,
 };

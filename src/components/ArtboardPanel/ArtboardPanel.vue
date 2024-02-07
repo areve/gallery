@@ -9,7 +9,7 @@
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
-import artboardService from "@/components/ArtboardPanel/artboardService";
+import artboardService, { attachToCanvas } from "@/components/ArtboardPanel/artboardService";
 import { useBrushTool } from "@/components/Brush/brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
@@ -21,14 +21,11 @@ const canvases = ref(new Array(1));
 const canvasRefs = ref<HTMLCanvasElement[]>([]);
 const workers: Worker[] = [];
 
-let renderInterval: number | undefined;
-
 const tools = [useBrushTool(), useEraserTool()];
 
 onMounted(async () => {
   resizeCanvasToVisible();
   initializeArtboard();
-  renderInterval = setInterval(artboardService.render, 20);
 
   canvasRefs.value.forEach((canvasRef) => {
     const worker = new Worker();
@@ -40,8 +37,6 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  clearInterval(renderInterval);
-  renderInterval = undefined;
   workers.forEach((worker) => worker.terminate());
 });
 
@@ -51,11 +46,7 @@ watchSyncEffect(() => {
 });
 
 function initializeArtboard() {
-  const context = canvas.value.getContext("2d", {
-    willReadFrequently: true,
-  }) as CanvasRenderingContext2D;
-
-  artboardService.artboard.value.context = context;
+  attachToCanvas(canvas.value);
   artboardService.reset();
 }
 
