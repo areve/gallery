@@ -28,6 +28,7 @@ watchPostEffect(() => {
   bitmapLayer = convertBitmapLayer(bitmapLayer, artboardState.value.colorSpace);
 });
 
+// TODO brush isn't always/ever changing color when space changes
 watchPostEffect(() => {
   const srgb = color2srgb(brushToolState.value.color);
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
