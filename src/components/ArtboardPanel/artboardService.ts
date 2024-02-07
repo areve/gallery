@@ -53,7 +53,7 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
       action: "initialize",
       params: { offscreenCanvas },
     },
-    [offscreenCanvas]
+    [offscreenCanvas] as StructuredSerializeOptions
   );
 }
 
