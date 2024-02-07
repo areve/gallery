@@ -23,13 +23,11 @@ const colorSpace = ref<ColorSpace>("oklch");
 let brush: Brush | undefined = undefined;
 
 watchPostEffect(() => {
-  console.log("change colorspace to", artboardState.value.colorSpace);
   if (!bitmapLayer) return;
   bitmapLayer = convertBitmapLayer(bitmapLayer, artboardState.value.colorSpace);
 });
 
 watchPostEffect(() => {
-  console.log("update brush", brushToolState.value.radius, brushToolState.value.color, artboardState.value.colorSpace);
   const srgb = color2srgb(brushToolState.value.color);
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
@@ -111,7 +109,7 @@ onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
     if (!brush) return;
     applyBrush(bitmapLayer, params.fromPoint, params.toPoint, brush, params.weight);
   } else if (event.data.action === "setColorSpace") {
-    console.log("set colorspace");
+
     artboardState.value.colorSpace = event.data.params.colorSpace;
   } else if (event.data.action === "setBrush") {
     brushToolState.value.color = event.data.params.color;
