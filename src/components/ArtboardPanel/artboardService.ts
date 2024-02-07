@@ -76,10 +76,13 @@ export function resetOrange() {
   resetAll(artboard.value.bitmapLayer, color);
 }
 
-export function attachToCanvas(canvas: HTMLCanvasElement) {
+export function detachCanvas() {
   clearInterval(renderInterval);
   renderInterval = undefined;
+}
 
+export function attachToCanvas(canvas: HTMLCanvasElement) {
+  detachCanvas();
   const context = canvas.getContext("2d", {
     willReadFrequently: true,
   }) as CanvasRenderingContext2D;

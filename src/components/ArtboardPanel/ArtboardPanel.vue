@@ -9,7 +9,7 @@
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
-import artboardService, { attachToCanvas } from "@/components/ArtboardPanel/artboardService";
+import artboardService, { attachToCanvas, detachCanvas } from "@/components/ArtboardPanel/artboardService";
 import { useBrushTool } from "@/components/Brush/brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
@@ -25,7 +25,8 @@ const tools = [useBrushTool(), useEraserTool()];
 
 onMounted(async () => {
   resizeCanvasToVisible();
-  initializeArtboard();
+  attachToCanvas(canvas.value);
+  artboardService.reset();
 
   canvasRefs.value.forEach((canvasRef) => {
     const worker = new Worker();
@@ -38,17 +39,13 @@ onMounted(async () => {
 
 onUnmounted(() => {
   workers.forEach((worker) => worker.terminate());
+  detachCanvas();
 });
 
 watchSyncEffect(() => {
   if (!pointerUpEvent.value) return;
   selectedTool().pointerUp(pointerUpEvent.value);
 });
-
-function initializeArtboard() {
-  attachToCanvas(canvas.value);
-  artboardService.reset();
-}
 
 function resizeCanvasToVisible() {
   canvas.value.width = canvas.value.offsetWidth * window.devicePixelRatio;
