@@ -1,4 +1,4 @@
-import { ref, toRaw, watch } from "vue";
+import { ref, watch, watchPostEffect } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
@@ -7,29 +7,21 @@ import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
 import type { ArtboardWorker } from "@/workers/ArtboardWorkerInterfaces";
 
-// ArtboardWorkerType
 // TODO why ref?
 const artboard = ref<Artboard>({
-  // context: undefined!,
   canvas: undefined,
-  // bitmapLayer: undefined,
   worker: undefined, // TODO keep this private?
 });
 
-watch(
-  () => artboardState.value.colorSpace,
-  () => {
-    if (!artboard.value.worker) return;
-    artboard.value.worker.postMessage({
-      action: "setColorSpace",
-      params: {
-        colorSpace: artboardState.value.colorSpace,
-      },
-    });
-    // const bitmapLayer = convertBitmapLayer(artboard.value.bitmapLayer, artboardState.value.colorSpace);
-    // artboard.value.bitmapLayer = bitmapLayer;
-  }
-);
+watchPostEffect(() => {
+  if (!artboard.value.worker) return;
+  artboard.value.worker.postMessage({
+    action: "setColorSpace",
+    params: {
+      colorSpace: artboardState.value.colorSpace,
+    },
+  });
+});
 
 export function reset() {
   if (!artboard.value.worker) return;

@@ -1,13 +1,15 @@
+import { brushToolState } from "./../components/Brush/brushToolState";
 import type { Rect } from "./../interfaces/Rect";
 import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import type { Brush } from "@/interfaces/Brush";
-import { createBitmapLayer } from "@/lib/bitmap-layer";
+import { convertBitmapLayer, createBitmapLayer } from "@/lib/bitmap-layer";
 import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
-import { colorConverter } from "@/lib/color/color";
+import { color2srgb, colorConverter } from "@/lib/color/color";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { ref, watchPostEffect } from "vue";
 import type { ArtboardWorkerMessage } from "./ArtboardWorkerInterfaces";
+import { artboardState } from "@/components/ArtboardPanel/artboardState";
 
 let context: OffscreenCanvasRenderingContext2D | null = null;
 let canvas: OffscreenCanvas;
@@ -18,6 +20,19 @@ let start = new Date().getTime();
 let bitmapLayer: BitmapLayer | null = null;
 const colorSpace = ref<ColorSpace>("oklch");
 let brush: Brush | undefined = undefined;
+
+watchPostEffect(() => {
+  console.log("change colorspace to", artboardState.value.colorSpace);
+  if (!bitmapLayer) return;
+  bitmapLayer = convertBitmapLayer(bitmapLayer, artboardState.value.colorSpace);
+});
+
+watchPostEffect(() => {
+  console.log("update brush", brushToolState.value.radius, brushToolState.value.color, artboardState.value.colorSpace);
+  const srgb = color2srgb(brushToolState.value.color);
+  const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
+  brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
+});
 
 function frameCounter() {
   const calculateAfterFrames = 60;
@@ -76,10 +91,6 @@ function renderRect(rect: Rect) {
   context.putImageData(tempImageData, rect.x, rect.y);
 }
 
-watchPostEffect(() => {
-  console.log("colorSpace changed", colorSpace.value);
-});
-
 onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
   if (event.data.action === "initialize") {
     canvas = event.data.params.offscreenCanvas;
@@ -91,16 +102,13 @@ onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
     resetAll(bitmapLayer, event.data.params.color);
   } else if (event.data.action === "applyBrush") {
     const params = event.data.params;
-    if (!brush) {
-      brush = createBrush(params.radius, params.color, colorSpace.value);
-    }
     applyBrush(bitmapLayer, params.fromPoint, params.toPoint, brush, params.weight);
   } else if (event.data.action === "setColorSpace") {
-    // TODO
-    console.log("TODO setColorSpace", event.data.params);
+    console.log("set colorspace");
+    artboardState.value.colorSpace = event.data.params.colorSpace;
   } else if (event.data.action === "setBrush") {
-    // TODO
-    console.log("TODO setBrush", event.data.params);
+    brushToolState.value.color = event.data.params.color;
+    brushToolState.value.radius = event.data.params.radius;
   } else {
     throw "artboardWorker unsupported message: " + event.data;
   }
