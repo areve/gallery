@@ -2,43 +2,26 @@
   <section class="artboard-panel" @pointerdown="pointerDown">
     <canvas ref="canvas" class="canvas"></canvas>
   </section>
-  <div class="multi-canvas">
-    <canvas v-for="(canvas, index) in canvases" ref="canvasRefs" :key="index" width="300" height="100"></canvas>
-  </div>
 </template>
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
-import artboardService, { attachToCanvas, detachCanvas } from "@/components/ArtboardPanel/artboardService";
+import { attachToCanvas, detachCanvas } from "@/components/ArtboardPanel/artboardService";
 import { useBrushTool } from "@/components/Brush/brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
 import { artboardState } from "./artboardState";
-import Worker from "@/services/worker?worker";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
-const canvases = ref(new Array(1));
-const canvasRefs = ref<HTMLCanvasElement[]>([]);
-const workers: Worker[] = [];
 
 const tools = [useBrushTool(), useEraserTool()];
 
 onMounted(async () => {
   resizeCanvasToVisible();
   attachToCanvas(canvas.value);
-  // artboardService.reset();
-
-  canvasRefs.value.forEach((canvasRef) => {
-    const worker = new Worker();
-    worker.onmessage = (message: MessageEvent<any>) => console.log(message);
-    const offscreen = canvasRef.transferControlToOffscreen();
-    worker.postMessage({ canvas: offscreen }, [offscreen]);
-    workers.push(worker);
-  });
 });
 
 onUnmounted(() => {
-  workers.forEach((worker) => worker.terminate());
   detachCanvas();
 });
 
@@ -77,15 +60,5 @@ function selectedTool() {
 
 .canvas {
   width: 100%;
-}
-
-.multi-canvas {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  z-index: 100;
-  margin-left: -150px;
-  margin-top: -50px;
-  border: 1px solid purple;
 }
 </style>
