@@ -102,6 +102,7 @@ onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
     resetAll(bitmapLayer, event.data.params.color);
   } else if (event.data.action === "applyBrush") {
     const params = event.data.params;
+    if (!brush) return;
     applyBrush(bitmapLayer, params.fromPoint, params.toPoint, brush, params.weight);
   } else if (event.data.action === "setColorSpace") {
     console.log("set colorspace");
