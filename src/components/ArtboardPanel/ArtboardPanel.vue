@@ -88,18 +88,16 @@ function selectedTool() {
 }
 
 .canvas {
-  display: none;
   width: 100%;
 }
 
 .multi-canvas {
-  /* background-color: red; */
-  position: relative;
-  top: 5%;
-  left: 5%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
   z-index: 100;
-  height: 100px;
-  border: 2px solid purple;
-  background: yellow;
+  margin-left: -150px;
+  margin-top: -50px;
+  border: 1px solid purple;
 }
 </style>
