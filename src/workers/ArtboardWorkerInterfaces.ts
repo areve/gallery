@@ -1,4 +1,3 @@
-import { Coord } from "./../interfaces/Coord";
 import type { ColorSpace } from "@/interfaces/BitmapLayer";
 import type { ColorCoord } from "@/interfaces/Color";
 import type { Coord } from "@/interfaces/Coord";
@@ -8,13 +7,13 @@ export interface ArtboardWorker extends Worker {
   postMessage(message: ArtboardWorkerMessage, options?: StructuredSerializeOptions): void;
 }
 
+// TODO stupid name
 export type ArtboardWorkerMessage2 = {
   action: "fps";
   params: {
     fps: number;
   };
-}
-
+};
 
 export type ArtboardWorkerMessage =
   | {

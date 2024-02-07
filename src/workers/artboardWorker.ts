@@ -12,6 +12,7 @@ import type { ArtboardWorkerMessage } from "./ArtboardWorkerInterfaces";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 
+// TODO rename this to worker.ts? make it a generic dispatcher?
 let context: OffscreenCanvasRenderingContext2D | null = null;
 let canvas: OffscreenCanvas;
 

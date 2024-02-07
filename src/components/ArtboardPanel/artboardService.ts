@@ -7,6 +7,7 @@ import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
 import type { ArtboardWorker, ArtboardWorkerMessage2 } from "@/workers/ArtboardWorkerInterfaces";
 
+// TODO should this know about brushes? or just have the worker
 // TODO why ref?
 const artboard = ref<Artboard>({
   canvas: undefined,
