@@ -1,4 +1,3 @@
-import type { ColorCoord } from "./../interfaces/Color";
 import type { Rect } from "./../interfaces/Rect";
 import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import type { Brush } from "@/interfaces/Brush";
@@ -8,6 +7,7 @@ import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { colorConverter } from "@/lib/color/color";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { ref, watchPostEffect } from "vue";
+import type { ArtboardWorkerMessage } from "./ArtboardWorkerInterfaces";
 
 let context: OffscreenCanvasRenderingContext2D | null = null;
 let canvas: OffscreenCanvas;
@@ -80,33 +80,24 @@ watchPostEffect(() => {
   console.log("colorSpace changed", colorSpace.value);
 });
 
-onmessage = function (event: MessageEvent) {
-  colorSpace.value = event.data.colorSpace || colorSpace.value;
-  if (event.data.canvas) {
-    canvas = event.data.canvas;
+onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
+  if (event.data.action === "initialize") {
+    canvas = event.data.params.offscreenCanvas;
     context = canvas.getContext("2d");
     reset();
-
     requestAnimationFrame(render);
   }
 
-  if (bitmapLayer && event.data.resetAll) {
-    resetAll(bitmapLayer, event.data.resetAll);
-  }
-  if (bitmapLayer && event.data.action) {
-    if (event.data.action === "createColoredBrush") {
-      console.log("createColoredBrush", event.data.params);
-      brush = createColoredBrush(event.data.params.colorSpace, event.data.params.color, event.data.params.radius);
+  if (!bitmapLayer) return;
+  if (event.data.action === "reset") {
+    resetAll(bitmapLayer, event.data.params.color);
+  } else if (event.data.action === "applyBrush") {
+    const params = event.data.params;
+    if (!brush) {
+      brush = createBrush(params.radius, params.color, colorSpace.value);
     }
-    if (event.data.action === "applyBrush") {
-      if (!brush) brush = createColoredBrush(event.data.params.colorSpace, event.data.params.color, event.data.params.radius);
-      applyBrush(bitmapLayer, event.data.params.brushLastPoint, event.data.params.canvasPoint, brush, event.data.params.weight);
-    }
+    applyBrush(bitmapLayer, params.fromPoint, params.toPoint, brush, params.weight);
   }
 };
-
-function createColoredBrush(colorSpace: ColorSpace, color: ColorCoord, radius: number) {
-  return createBrush(radius, color, colorSpace);
-}
 
 export {};

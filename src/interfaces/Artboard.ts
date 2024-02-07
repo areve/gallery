@@ -1,8 +1,6 @@
-import type { BitmapLayer } from "./BitmapLayer";
+import type { ArtboardWorker } from "@/workers/ArtboardWorkerInterfaces";
 
 export interface Artboard {
-  // context?: CanvasRenderingContext2D;
   canvas?: HTMLCanvasElement;
-  // bitmapLayer?: BitmapLayer;
-  worker?: Worker;
+  worker?: ArtboardWorker;
 }
