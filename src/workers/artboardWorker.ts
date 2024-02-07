@@ -10,6 +10,7 @@ import { rectsOverlappedByAny } from "@/lib/rect";
 import { ref, watchPostEffect } from "vue";
 import type { ArtboardWorkerMessage } from "./ArtboardWorkerInterfaces";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
+import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 
 let context: OffscreenCanvasRenderingContext2D | null = null;
 let canvas: OffscreenCanvas;
@@ -110,6 +111,8 @@ onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
   } else if (event.data.action === "setBrush") {
     brushToolState.value.color = event.data.params.color;
     brushToolState.value.radius = event.data.params.radius;
+  } else if (event.data.action === "clearCircle") {
+    clearCircle(bitmapLayer, event.data.params.coord.x, event.data.params.coord.y, event.data.params.radius);
   } else {
     throw "artboardWorker unsupported message: " + event.data;
   }

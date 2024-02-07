@@ -1,3 +1,4 @@
+import { Coord } from "./../interfaces/Coord";
 import type { ColorSpace } from "@/interfaces/BitmapLayer";
 import type { ColorCoord } from "@/interfaces/Color";
 import type { Coord } from "@/interfaces/Coord";
@@ -40,6 +41,13 @@ export type ArtboardWorkerMessage =
       action: "setBrush";
       params: {
         color: string;
+        radius: number;
+      };
+    }
+  | {
+      action: "clearCircle";
+      params: {
+        coord: Coord;
         radius: number;
       };
     };

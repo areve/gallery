@@ -1,4 +1,4 @@
-import { ref, watch, watchPostEffect } from "vue";
+import { ref, watchPostEffect } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
@@ -82,10 +82,21 @@ function applyBrush(brushLastPoint: Coord, canvasPoint: Coord, weight: number, c
   });
 }
 
+function clearCircle(coord: Coord, radius: number) {
+  if (!artboard.value.worker) return;
+  artboard.value.worker.postMessage({
+    action: "clearCircle",
+    params: {
+      coord,
+      radius,
+    },
+  });
+}
 export default {
   artboard,
   reset,
   setBrush,
+  clearCircle,
   applyBrush,
   resetOrange,
 };
