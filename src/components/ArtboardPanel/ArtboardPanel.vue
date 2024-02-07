@@ -26,7 +26,7 @@ const tools = [useBrushTool(), useEraserTool()];
 onMounted(async () => {
   resizeCanvasToVisible();
   attachToCanvas(canvas.value);
-  artboardService.reset();
+  // artboardService.reset();
 
   canvasRefs.value.forEach((canvasRef) => {
     const worker = new Worker();

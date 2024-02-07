@@ -17,10 +17,10 @@ document.onpointerup = function (event: PointerEvent) {
   pointerUpEvent.value = event;
 };
 
-export function getCanvasPoint(context: CanvasRenderingContext2D, eventPoint: Coord): Coord {
-  const domRect = context.canvas.getBoundingClientRect();
+export function getCanvasPoint(canvas: HTMLCanvasElement, eventPoint: Coord): Coord {
+  const domRect = canvas.getBoundingClientRect();
   return {
-    x: ((eventPoint.x - domRect.x) / domRect.width) * context.canvas.width,
-    y: ((eventPoint.y - domRect.y) / domRect.height) * context.canvas.height,
+    x: ((eventPoint.x - domRect.x) / domRect.width) * canvas.width,
+    y: ((eventPoint.y - domRect.y) / domRect.height) * canvas.height,
   };
 }

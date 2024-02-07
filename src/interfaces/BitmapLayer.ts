@@ -11,6 +11,7 @@ export interface BitmapLayer {
   space: ColorSpace;
   dirty: Rect[];
   tiles: Rect[];
+  close: () => void;
 }
 
 export interface OklchBitmapLayer extends BitmapLayer {

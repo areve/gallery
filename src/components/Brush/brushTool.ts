@@ -6,7 +6,7 @@ import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
 import artboardService from "../ArtboardPanel/artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
 import { color2srgb, colorConverter } from "@/lib/color/color";
-import { watchPostEffect } from "vue";
+import { watch, watchPostEffect } from "vue";
 import type { ColorSpace } from "@/interfaces/BitmapLayer";
 
 const tool: Tool = {
@@ -18,18 +18,18 @@ const tool: Tool = {
 
 export const useBrushTool = () => tool;
 
-let brush: Brush = undefined!;
+// let brush: Brush = undefined!;
 let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
 
-watchPostEffect(() => {
-  brush = createColoredBrush(artboardState.value.colorSpace);
-});
-
-function createColoredBrush(colorSpace: ColorSpace) {
-  const color = colorConverter("srgb", colorSpace)(color2srgb(brushToolState.value.color));
-  return createBrush(brushToolState.value.radius, color, artboardState.value.colorSpace);
-}
+watch(
+  () => artboardState.value.colorSpace,
+  () => {
+    //const brush = createColoredBrush(artboardState.value.colorSpace);
+    console.log("createColoredBrush");
+    artboardService.createColoredBrush(artboardState.value.colorSpace);
+  }
+);
 
 function pointerUp(_: PointerEvent) {
   brushLastPoint = null;
@@ -41,15 +41,16 @@ function pointerDown(_: PointerEvent) {
 }
 
 function pointerMove(pointerEvent: PointerEvent) {
+  // return;
   if (!isPointerDown) return;
-  if (!artboardService.artboard.value.context) return;
+  if (!artboardService.artboard.value.canvas) return;
 
-  const canvasPoint = getCanvasPoint(artboardService.artboard.value.context, {
+  const canvasPoint = getCanvasPoint(artboardService.artboard.value.canvas, {
     x: pointerEvent.pageX,
     y: pointerEvent.pageY,
   });
 
-  const bitmapLayer = artboardService.artboard.value.bitmapLayer;
+  //  const bitmapLayer = artboardService.artboard.value.bitmapLayer;
   if (brushLastPoint) {
     let weight = pointerEvent.pressure ?? 0.1;
     weight = weight * weight;
@@ -57,7 +58,11 @@ function pointerMove(pointerEvent: PointerEvent) {
     // brushMoved, allows the brush to be less like an airbrush
     // but tapping doesn't leave a mark
     const brushMoved = brushLastPoint.x != canvasPoint.x || brushLastPoint.y != canvasPoint.y;
-    if (brushMoved) applyBrush(bitmapLayer, brushLastPoint, canvasPoint, brush, weight);
+    if (brushMoved) {
+      const color = colorConverter("srgb", artboardState.value.colorSpace)(color2srgb(brushToolState.value.color));
+      //applyBrush(bitmapLayer, brushLastPoint, canvasPoint, brush, weight);
+      artboardService.applyBrush(brushLastPoint, canvasPoint, weight, color, brushToolState.value.radius);
+    }
   }
 
   brushLastPoint = canvasPoint;

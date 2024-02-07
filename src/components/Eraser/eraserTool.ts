@@ -20,6 +20,7 @@ function pointerUp(_: PointerEvent) {
 }
 
 function pointerDown(pointerEvent: PointerEvent) {
+  return;
   if (!artboardService.artboard.value.context) return;
   isPointerDown = true;
   const canvasPoint = getCanvasPoint(artboardService.artboard.value.context, {
