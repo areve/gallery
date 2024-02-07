@@ -21,14 +21,14 @@ function pointerUp(_: PointerEvent) {
 
 function pointerDown(pointerEvent: PointerEvent) {
   return;
-  if (!artboardService.artboard.value.context) return;
-  isPointerDown = true;
-  const canvasPoint = getCanvasPoint(artboardService.artboard.value.context, {
-    x: pointerEvent.pageX,
-    y: pointerEvent.pageY,
-  });
+  // if (!artboardService.artboard.value.context) return;
+  // isPointerDown = true;
+  // const canvasPoint = getCanvasPoint(artboardService.artboard.value.context, {
+  //   x: pointerEvent.pageX,
+  //   y: pointerEvent.pageY,
+  // });
 
-  clearCircle(artboardService.artboard.value.bitmapLayer, canvasPoint.x, canvasPoint.y, eraserToolState.value.radius);
+  // clearCircle(artboardService.artboard.value.bitmapLayer, canvasPoint.x, canvasPoint.y, eraserToolState.value.radius);
 }
 
 function pointerMove(pointerEvents: PointerEvent) {
