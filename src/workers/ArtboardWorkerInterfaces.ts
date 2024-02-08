@@ -35,15 +35,10 @@ export const actions = [
   },
 ];
 
-//const values = ['A', 'B'] as const
 type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<infer ElementType> ? ElementType : never;
 
-export type ActionsSpec = ElementType<typeof actions>["spec"]; // this is correctly inferred as literal "A" | "B"
+export type ActionsSpec = ElementType<typeof actions>["spec"]; 
 
-// export type Actions = typeof actions;
-// export type ActionName = of Actions;
-// export type ActionSpec = Actions[ActionName];
-// export type ActionSpecParams = ActionSpec["spec"];
 
 export type ArtboardWorkerMessage3 = ActionsSpec;
 
