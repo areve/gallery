@@ -20,25 +20,24 @@ export type ArtboardWorkerMessage2 = {
 
 export const actions = [
   {
-    action: setBrush,
     spec: {
       name: "brushService.setBrush" as const,
       params: undefined as never as [color: string, radius: number],
     },
+    action: setBrush,
   },
   {
-    action: setBrush,
     spec: {
       name: "brushService.haveFun" as const,
       params: undefined as never as [when: string],
     },
+    action: setBrush,
   },
 ];
 
 type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<infer ElementType> ? ElementType : never;
 
-export type ActionsSpec = ElementType<typeof actions>["spec"]; 
-
+export type ActionsSpec = ElementType<typeof actions>["spec"];
 
 export type ArtboardWorkerMessage3 = ActionsSpec;
 
