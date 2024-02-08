@@ -8,9 +8,10 @@ import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { ref, watch, watchPostEffect } from "vue";
-import type { ArtboardWorkerMessage } from "./ArtboardWorkerInterfaces";
+import { actions, type ArtboardWorkerMessage } from "./ArtboardWorkerInterfaces";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
+import { setBrush } from "@/components/Brush/brushService";
 
 // TODO rename this to worker.ts? make it a generic dispatcher?
 let context: OffscreenCanvasRenderingContext2D | null = null;
@@ -105,6 +106,13 @@ onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
   // if (event.data.service === "eraserService") {
   //   eraserService[event.data.action](event.data.params)
   // }
+  const fn = actions.find((x) => x.spec.action === event.data.action);
+  if (fn) {
+    console.log(event.data.action, event.data.params);
+    fn.action.apply(null, event.data.params as any);
+    return;
+  }
+
   if (event.data.action === "initialize") {
     canvas = event.data.params.offscreenCanvas;
     context = canvas.getContext("2d");
@@ -121,8 +129,7 @@ onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
     console.log("setColorSpace", event.data.params.colorSpace);
     artboardState.value.colorSpace = event.data.params.colorSpace;
   } else if (event.data.action === "setBrush") {
-    brushToolState.value.color = event.data.params.color;
-    brushToolState.value.radius = event.data.params.radius;
+    setBrush(event.data.params.color, event.data.params.radius);
   } else if (event.data.action === "clearCircle") {
     clearCircle(bitmapLayer, event.data.params.coord.x, event.data.params.coord.y, event.data.params.radius);
   } else {

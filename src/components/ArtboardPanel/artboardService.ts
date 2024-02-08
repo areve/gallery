@@ -5,7 +5,7 @@ import { artboardState } from "./artboardState";
 import artboardWorker from "@/workers/artboardWorker?worker";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
-import type { ArtboardWorker, ArtboardWorkerMessage2 } from "@/workers/ArtboardWorkerInterfaces";
+import type { ActionName, ActionSpec, ActionSpecParams, ActionsSpec, ArtboardWorker, ArtboardWorkerMessage2 } from "@/workers/ArtboardWorkerInterfaces";
 
 // TODO should this know about brushes? or just have the worker
 // TODO why ref?
@@ -13,6 +13,22 @@ const artboard = ref<Artboard>({
   canvas: undefined,
   worker: undefined, // TODO keep this private?
 });
+
+// export function dispatch<T1, T2>(action: T1, params: T2) {
+//   if (!artboard.value.worker) return false;
+//   // artboard.value.worker.dispatch(...para)
+//   artboard.value.worker.postMessage({
+//     action,
+//     params,
+//   });
+//   return true;
+// }
+
+export function dispatch(actionSpec: ActionsSpec) {
+  if (!artboard.value.worker) return false;
+  artboard.value.worker.postMessage(actionSpec);
+  return true;
+}
 
 watchPostEffect(() => {
   if (!artboard.value.worker) return;
@@ -49,7 +65,7 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
   artboard.value.worker = new artboardWorker() as ArtboardWorker;
   artboard.value.worker.onmessage = (event: MessageEvent<ArtboardWorkerMessage2>) => {
     if (event.data.action === "fps") {
-      artboardState.value.fps = event.data.params.fps
+      artboardState.value.fps = event.data.params.fps;
     }
   };
   artboard.value.canvas = canvas;
@@ -63,16 +79,16 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
   );
 }
 
-function setBrush(color: string, radius: number) {
-  if (!artboard.value.worker) return;
-  artboard.value.worker.postMessage({
-    action: "setBrush",
-    params: {
-      color,
-      radius,
-    },
-  });
-}
+// function setBrush(color: string, radius: number) {
+//   if (!artboard.value.worker) return;
+//   artboard.value.worker.postMessage({
+//     action: "setBrush",
+//     params: {
+//       color,
+//       radius,
+//     },
+//   });
+// }
 
 function applyBrush(brushLastPoint: Coord, canvasPoint: Coord, weight: number, color: ColorCoord, radius: number) {
   if (!artboard.value.worker) return;
@@ -101,7 +117,7 @@ function clearCircle(coord: Coord, radius: number) {
 export default {
   artboard,
   reset,
-  setBrush,
+  // setBrush,
   clearCircle,
   applyBrush,
   resetOrange,

@@ -5,6 +5,7 @@ import artboardService from "../ArtboardPanel/artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";
+import { setBrush } from "./brushService";
 
 const tool: Tool = {
   toolType: "brush",
@@ -19,7 +20,7 @@ let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
 
 watchPostEffect(() => {
-  artboardService.setBrush(brushToolState.value.color, brushToolState.value.radius);
+  setBrush(brushToolState.value.color, brushToolState.value.radius);
   // TODO brushService.setBrush(brushToolState.value.color, brushToolState.value.radius);
   // which will either do-it, or get the other worker to do-it
 });
