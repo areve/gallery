@@ -106,15 +106,11 @@ onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
   // if (event.data.service === "eraserService") {
   //   eraserService[event.data.action](event.data.params)
   // }
-  console.log(
-    "find in",
-    event.data[0],
-    actions.map((x) => x.spec)
-  );
-  const fn = actions.find((x) => x.spec[0] === event.data[0]);
+  
+  const fn = actions.find((x) => x.spec.name === event.data.name);
   if (fn) {
-    console.log("found", event.data[0], event.data[1]);
-    fn.action.apply(null, event.data[1] as any);
+    console.log("found", event.data.name, event.data.params);
+    fn.action.apply(null, event.data.params as any);
     return;
   }
 
