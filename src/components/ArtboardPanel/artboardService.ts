@@ -14,7 +14,7 @@ const artboard = ref<Artboard>({
   worker: undefined, // TODO keep this private?
 });
 
-export function dispatch(...actionSpec: ActionsSpec) {
+export function dispatch(actionSpec: ActionsSpec) {
   if (!artboard.value.worker) return false;
   artboard.value.worker.postMessage(actionSpec);
   return true;

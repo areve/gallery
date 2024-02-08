@@ -21,17 +21,17 @@ export type ArtboardWorkerMessage2 = {
 export const actions = [
   {
     action: setBrush,
-    spec: [
-      "brushService.setBrush" as const, //
-      undefined as never as [color: string, radius: number],
-    ],
+    spec: {
+      name: "brushService.setBrush" as const,
+      params: undefined as never as [color: string, radius: number],
+    },
   },
   {
     action: setBrush,
-    spec: [
-      "brushService.haveFun" as const, //
-      undefined as never as [when: string],
-    ],
+    spec: {
+      name: "brushService.haveFun" as const,
+      params: undefined as never as [when: string],
+    },
   },
 ];
 
