@@ -7,7 +7,7 @@ import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { rectsOverlappedByAny } from "@/lib/rect";
-import { ref, watchPostEffect } from "vue";
+import { ref, watch, watchPostEffect } from "vue";
 import type { ArtboardWorkerMessage } from "./ArtboardWorkerInterfaces";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
@@ -23,12 +23,14 @@ let bitmapLayer: BitmapLayer | null = null;
 const colorSpace = ref<ColorSpace>("oklch");
 let brush: Brush | undefined = undefined;
 
-watchPostEffect(() => {
-  if (!bitmapLayer) return;
-  bitmapLayer = convertBitmapLayer(bitmapLayer, artboardState.value.colorSpace);
-});
+watch(
+  () => artboardState.value.colorSpace,
+  () => {
+    if (!bitmapLayer) return;
+    bitmapLayer = convertBitmapLayer(bitmapLayer, artboardState.value.colorSpace);
+  }
+);
 
-// TODO brush isn't always/ever changing color when space changes
 watchPostEffect(() => {
   const srgb = color2srgb(brushToolState.value.color);
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
@@ -98,6 +100,11 @@ function renderRect(rect: Rect) {
 }
 
 onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
+  // event.data.service === "artboard"
+  // event.data.service === "brush"
+  // if (event.data.service === "eraserService") {
+  //   eraserService[event.data.action](event.data.params)
+  // }
   if (event.data.action === "initialize") {
     canvas = event.data.params.offscreenCanvas;
     context = canvas.getContext("2d");
@@ -111,7 +118,7 @@ onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
     if (!brush) return;
     applyBrush(bitmapLayer, params.fromPoint, params.toPoint, brush, params.weight);
   } else if (event.data.action === "setColorSpace") {
-
+    console.log("setColorSpace", event.data.params.colorSpace);
     artboardState.value.colorSpace = event.data.params.colorSpace;
   } else if (event.data.action === "setBrush") {
     brushToolState.value.color = event.data.params.color;

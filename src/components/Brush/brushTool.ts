@@ -20,6 +20,8 @@ let isPointerDown = false;
 
 watchPostEffect(() => {
   artboardService.setBrush(brushToolState.value.color, brushToolState.value.radius);
+  // TODO brushService.setBrush(brushToolState.value.color, brushToolState.value.radius);
+  // which will either do-it, or get the other worker to do-it
 });
 
 function pointerUp(_: PointerEvent) {
