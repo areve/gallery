@@ -5,7 +5,7 @@ import { artboardState } from "./artboardState";
 import artboardWorker from "@/workers/artboardWorker?worker";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
-import type { ActionName, ActionSpec, ActionSpecParams, ActionsSpec, ArtboardWorker, ArtboardWorkerMessage2 } from "@/workers/ArtboardWorkerInterfaces";
+import type { ActionsSpec, ArtboardWorker, ArtboardWorkerMessage2 } from "@/workers/ArtboardWorkerInterfaces";
 
 // TODO should this know about brushes? or just have the worker
 // TODO why ref?
@@ -14,17 +14,7 @@ const artboard = ref<Artboard>({
   worker: undefined, // TODO keep this private?
 });
 
-// export function dispatch<T1, T2>(action: T1, params: T2) {
-//   if (!artboard.value.worker) return false;
-//   // artboard.value.worker.dispatch(...para)
-//   artboard.value.worker.postMessage({
-//     action,
-//     params,
-//   });
-//   return true;
-// }
-
-export function dispatch(actionSpec: ActionsSpec) {
+export function dispatch(...actionSpec: ActionsSpec) {
   if (!artboard.value.worker) return false;
   artboard.value.worker.postMessage(actionSpec);
   return true;
