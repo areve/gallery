@@ -101,20 +101,10 @@ function renderRect(rect: Rect) {
 }
 
 onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
-  // event.data.service === "artboard"
-  // event.data.service === "brush"
-  // if (event.data.service === "eraserService") {
-  //   eraserService[event.data.action](event.data.params)
-  // }
-  console.log(
-    "find in",
-    event.data[0],
-    actions.map((x) => x.spec)
-  );
-  const fn = actions.find((x) => x.spec[0] === event.data[0]);
+  const fn = actions.find((x) => x[0] === event.data[0]);
   if (fn) {
     console.log("found", event.data[0], event.data[1]);
-    fn.action.apply(null, event.data[1] as any);
+    fn[2].apply(null, event.data[1] as any);
     return;
   }
 

@@ -19,26 +19,22 @@ export type ArtboardWorkerMessage2 = {
 };
 
 export const actions = [
-  {
-    action: setBrush,
-    spec: [
-      "brushService.setBrush" as const, //
-      undefined as never as [color: string, radius: number],
-    ],
-  },
-  {
-    action: setBrush,
-    spec: [
-      "brushService.haveFun" as const, //
-      undefined as never as [when: string],
-    ],
-  },
+  [
+    "brushService.setBrush" as const, //
+    undefined as never as [color: string, radius: number],
+    setBrush,
+  ],
+  [
+    "brushService.haveFun" as const, //
+    undefined as never as [when: string],
+    setBrush,
+  ],
 ];
 
 //const values = ['A', 'B'] as const
 type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<infer ElementType> ? ElementType : never;
 
-export type ActionsSpec = ElementType<typeof actions>["spec"]; // this is correctly inferred as literal "A" | "B"
+export type ActionsSpec = ElementType<typeof actions>; // this is correctly inferred as literal "A" | "B"
 
 // export type Actions = typeof actions;
 // export type ActionName = of Actions;
