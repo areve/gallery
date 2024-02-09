@@ -1,5 +1,5 @@
 import WebWorker from "@/workers/action-worker?worker";
-import type { ActionSpec, ActionWorker } from "@/workers/ActionSpec";
+import type { ActionSpec, ActionWorker } from "@/interfaces/Action";
 
 let actionWorker: ActionWorker | undefined = undefined;
 

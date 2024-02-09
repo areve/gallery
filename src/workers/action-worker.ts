@@ -1,4 +1,4 @@
-import type { ActionRegistry, ActionSpec } from "./ActionSpec";
+import type { ActionRegistry, ActionSpec } from "../interfaces/Action";
 import { registerActions } from "./offscreenArtboardService";
 
 export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: any[]) {

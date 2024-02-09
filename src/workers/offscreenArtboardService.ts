@@ -1,5 +1,5 @@
 import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
-import type { ActionRegistry } from "./ActionSpec";
+import type { ActionRegistry } from "../interfaces/Action";
 import type { Rect } from "@/interfaces/Rect";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
