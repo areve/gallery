@@ -7,14 +7,10 @@ let worker: ArtboardWorker | undefined = undefined;
 
 export function startWorker() {
   worker = new Worker() as ArtboardWorker;
-  //worker.onmessage = (event: MessageEvent<ArtboardWorkerMessage3>) => {
-  // if (event.data.name === "fps") {
-  //   artboardState.value.fps = event.data.params.fps;
-  // }
   worker.onmessage = function (event: MessageEvent<ArtboardWorkerMessage3>) {
     const fn: Function = actions[event.data.name];
     if (fn) {
-      fn(...event.data.params);
+      fn(event.data.params);
       return;
     }
   };
