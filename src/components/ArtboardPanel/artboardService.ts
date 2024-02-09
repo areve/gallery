@@ -71,25 +71,7 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
     },
     [offscreenCanvas]
   );
-  // artboard.value.worker.postMessage(
-  //   {
-  //     action: "initialize",
-  //     params: { offscreenCanvas },
-  //   },
-  //   [offscreenCanvas] as StructuredSerializeOptions
-  // );
 }
-
-// function setBrush(color: string, radius: number) {
-//   if (!artboard.value.worker) return;
-//   artboard.value.worker.postMessage({
-//     action: "setBrush",
-//     params: {
-//       color,
-//       radius,
-//     },
-//   });
-// }
 
 function applyBrush(brushLastPoint: Coord, canvasPoint: Coord, weight: number, color: ColorCoord, radius: number) {
   if (!artboard.value.worker) return;

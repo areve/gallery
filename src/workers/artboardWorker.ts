@@ -8,10 +8,9 @@ import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { ref, watch, watchPostEffect } from "vue";
-import { actions, type ArtboardWorkerMessage, type ArtboardWorkerMessage3 } from "./ArtboardWorkerInterfaces";
+import { actions, type ArtboardWorkerMessage3 } from "./ArtboardWorkerInterfaces";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
-import { setBrush } from "@/components/Brush/brushService";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
 
@@ -46,6 +45,7 @@ function frameCounter() {
     const end = new Date().getTime();
     const duration = end - start;
     const fps = Math.round((calculateAfterFrames / duration) * 1000);
+    // TODO use dispatch
     postMessage({
       action: "fps",
       params: {
@@ -102,20 +102,18 @@ function renderRect(rect: Rect) {
   context.putImageData(tempImageData, rect.x, rect.y);
 }
 
-export function artboardWorkerApplyBrush(fromPoint: Coord, toPoint: Coord, radius: number, color: ColorCoord, weight: number) {
-  console.log("artboardWorkerApplyBrush", bitmapLayer, brush);
+// TODO order of params was easy to get wrong and names are inconstent
+export function artboardWorkerApplyBrush(fromPoint: Coord, toPoint: Coord, weight: number, color: ColorCoord, radius: number) {
   if (!brush) return;
   if (!bitmapLayer) return;
   applyBrush(bitmapLayer, fromPoint, toPoint, brush, weight);
 }
 
 export function artboardWorkerSetColorSpace(colorSpace: ColorSpace) {
-  console.log("setColorSpace", colorSpace);
   artboardState.value.colorSpace = colorSpace;
 }
 
 export function artboardWorkerInitialize(offscreenCanvas: OffscreenCanvas) {
-  console.log("artboardWorkerInitialize", offscreenCanvas);
   canvas = offscreenCanvas;
   context = canvas.getContext("2d");
   reset();
@@ -130,17 +128,9 @@ export function artboardWorkerReset(color: ColorCoord) {
   resetAll(bitmapLayer, color);
 }
 
-// if (event.data.action === "initialize") {
-//   canvas = event.data.offscreenCanvas;
-//   context = canvas.getContext("2d");
-//   reset();
-//   requestAnimationFrame(render);
-// }
-
 onmessage = function (event: MessageEvent<ArtboardWorkerMessage3>) {
   const fn: Function = actions[event.data.name];
   if (fn) {
-    console.log("found", event.data.name, event.data.params, fn);
     fn(...event.data.params);
     return;
   }

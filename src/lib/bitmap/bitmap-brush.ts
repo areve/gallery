@@ -32,7 +32,7 @@ export function createBrush(radius: number, color: ColorCoord, space: ColorSpace
 
 export async function applyBrush(bitmapLayer: BitmapLayer, from: Coord | null, to: Coord, brush: Brush, weight: number) {
   if (from) {
-    brushLine(bitmapLayer, from, to, brush, weight);
+    brushLine(bitmapLayer, from!, to, brush, weight);
   } else {
     brushPoint(bitmapLayer, to, brush, weight);
   }

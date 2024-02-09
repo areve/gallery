@@ -1,7 +1,7 @@
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { brushToolState } from "./brushToolState";
 import type { Tool } from "@/interfaces/Tool";
-import artboardService from "../ArtboardPanel/artboardService";
+import artboardService, { dispatch } from "../ArtboardPanel/artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";
@@ -20,9 +20,14 @@ let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
 
 watchPostEffect(() => {
-  setBrush(brushToolState.value.color, brushToolState.value.radius);
+  // setBrush(brushToolState.value.color, brushToolState.value.radius);
   // TODO brushService.setBrush(brushToolState.value.color, brushToolState.value.radius);
   // which will either do-it, or get the other worker to do-it
+  dispatch({
+    name: "brushService.setBrush",
+    params: [brushToolState.value.color, brushToolState.value.radius],
+  });
+
 });
 
 function pointerUp(_: PointerEvent) {

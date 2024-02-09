@@ -34,7 +34,7 @@ export type ActionSpecs = [
   },
   {
     name: "applyBrush";
-    params: [fromPoint: Coord, toPoint: Coord, radius: number, color: ColorCoord, weight: number];
+    params: [brushLastPoint: Coord, canvasPoint: Coord, weight: number, color: ColorCoord, radius: number];
   },
   {
     name: "brushService.setBrush";
