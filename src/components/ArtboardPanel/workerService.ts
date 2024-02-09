@@ -1,27 +1,33 @@
-import Worker from "@/workers/worker?worker";
-import type { ActionSpec, ArtboardWorker } from "@/workers/ArtboardWorkerInterfaces";
+import WebWorker from "@/workers/action-worker?worker";
+import type { ActionSpec, ActionWorker } from "@/workers/ActionSpec";
 
-// TODO is it an ArtboardWorker? or not
-let worker: ArtboardWorker | undefined = undefined;
+let actionWorker: ActionWorker | undefined = undefined;
+
+const actions: { [k: string]: Function } = {
+  example: (a: any) => console.log("example2", a),
+};
 
 export function startWorker() {
-  worker = new Worker() as ArtboardWorker;
-  // worker.onmessage = function (event: MessageEvent<ArtboardWorkerMessage3>) {
-  //   const fn: Function = actions[event.data.name];
-  //   if (fn) {
-  //     fn(event.data.params);
-  //     return;
-  //   }
-  // };
+  actionWorker = createActionWorker();
 }
 
 export function stopWorker() {
-  worker?.terminate();
-  worker = undefined;
+  actionWorker?.terminate();
+  actionWorker = undefined;
 }
 
 export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: any[]) {
-  if (!worker) return;
-  worker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
+  if (!actionWorker) return;
+  actionWorker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
   return true;
+}
+
+function createActionWorker() {
+  const worker = new WebWorker() as ActionWorker;
+  worker.onmessage = function (event: MessageEvent<ActionSpec>) {
+    const action: Function = actions[event.data.name];
+    if (!action) throw `action not found: ${event.data.name}`;
+    action(...event.data.params);
+  };
+  return worker;
 }

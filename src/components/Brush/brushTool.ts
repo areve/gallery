@@ -20,13 +20,10 @@ let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
 
 watchPostEffect(() => {
-  // setBrush(brushToolState.value.color, brushToolState.value.radius);
-  // TODO brushService.setBrush(brushToolState.value.color, brushToolState.value.radius);
-  // which will either do-it, or get the other worker to do-it
-  // dispatch({
-  //   name: "brushService.setBrush",
-  //   params: [brushToolState.value.color, brushToolState.value.radius],
-  // });
+  dispatch({
+    name: "setBrush",
+    params: [brushToolState.value.color, brushToolState.value.radius],
+  });
 });
 
 function pointerUp(_: PointerEvent) {
@@ -57,10 +54,10 @@ function pointerMove(pointerEvent: PointerEvent) {
     if (brushMoved) {
       const color = colorConverter("srgb", artboardState.value.colorSpace)(color2srgb(brushToolState.value.color));
 
-      // dispatch({
-      //   name: "applyBrush",
-      //   params: [brushLastPoint, canvasPoint, weight, color, brushToolState.value.radius],
-      // });
+      dispatch({
+        name: "applyBrush",
+        params: [brushLastPoint, canvasPoint, weight, color, brushToolState.value.radius],
+      });
     }
   }
 

@@ -14,6 +14,8 @@
 // import type { Coord } from "@/interfaces/Coord";
 // import type { ColorCoord } from "@/interfaces/Color";
 
+import type { ActionRegistry } from "./ActionSpec";
+
 // let context: OffscreenCanvasRenderingContext2D | null = null;
 // let canvas: OffscreenCanvas;
 // let bitmapLayer: BitmapLayer | null = null;
@@ -123,4 +125,13 @@
 //   resetAll(bitmapLayer, color);
 // }
 
-export {};
+// export {};
+
+export function registerActions(actions: ActionRegistry) {
+  actions["setOffscreenCanvas"] = (a: any) => console.log("setOffscreenCanvas", a);
+  actions["setColorSpace"] = (a: any) => console.log("setColorSpace", a);
+  actions["resetCanvas"] = (a: any) => console.log("resetCanvas", a);
+  actions["setBrush"] = (a: any) => console.log("setBrush", a);
+  actions["applyBrush"] = (a: any) => console.log("applyBrush", a);
+  actions["clearCircle"] = (a: any) => console.log("clearCircle", a);
+}

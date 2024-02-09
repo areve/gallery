@@ -11,18 +11,25 @@
 // // } from "./artboardWorkerService";
 // import { updateFps } from "@/components/ArtboardPanel/artboardService";
 
-export interface ArtboardWorker extends Worker {
-  postMessage(message: ArtboardWorkerMessage3, transfer: Transferable[]): void;
-  postMessage(message: ArtboardWorkerMessage3, options?: StructuredSerializeOptions): void;
+export type ActionRegistry = { [k: string]: Function };
+
+export interface ActionWorker extends Worker {
+  postMessage(message: ActionSpec, transfer: Transferable[]): void;
+  postMessage(message: ActionSpec, options?: StructuredSerializeOptions): void;
 }
 
-type ActionName = keyof typeof actions;
-type Action<T> = { name: ActionName; params: T };
-type ActionSpecsType<T extends Action<unknown>[]> = T extends ReadonlyArray<infer T1> ? T1 : never;
+// type ActionName = keyof typeof actions;
+// type Action<T> = { name: ActionName; params: T };
+// type ActionSpecsType<T extends Action<unknown>[]> = T extends ReadonlyArray<infer T1> ? T1 : never;
 
-export type ActionSpec = ActionSpecsType<ActionSpecs>;
+// export type ActionSpec = ActionSpecsType<ActionSpecs>;
 
-export type ActionSpecs = [];
+export type ActionSpec = {
+  name: string;
+  params: any[];
+};
+
+// export type ActionSpecs = [];
 //
 // {
 //   name: "brushService.setBrush";
@@ -57,14 +64,12 @@ export type ActionSpecs = [];
 //   params: [fps: number];
 // }
 
-export const actions = {
-  // initialize: artboardWorkerInitialize,
-  // setColorSpace: artboardWorkerSetColorSpace,
-  // reset: artboardWorkerReset,
-  // applyBrush: artboardWorkerApplyBrush,
-  // "brushService.setBrush": setBrush,
-  // clearCircle: artboardClearCircle,
-  // fps: updateFps,
-};
-
-export type ArtboardWorkerMessage3 = ActionSpec;
+// export const actions = {
+// initialize: artboardWorkerInitialize,
+// setColorSpace: artboardWorkerSetColorSpace,
+// reset: artboardWorkerReset,
+// applyBrush: artboardWorkerApplyBrush,
+// "brushService.setBrush": setBrush,
+// clearCircle: artboardClearCircle,
+// fps: updateFps,
+// };
