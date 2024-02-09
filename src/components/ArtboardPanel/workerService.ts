@@ -14,7 +14,7 @@ export function startWorker() {
   worker.onmessage = function (event: MessageEvent<ArtboardWorkerMessage3>) {
     const fn: Function = actions[event.data.name];
     if (fn) {
-      fn(event.data.params);
+      fn(...event.data.params);
       return;
     }
   };

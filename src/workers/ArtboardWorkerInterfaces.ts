@@ -53,9 +53,7 @@ export type ActionSpecs = [
   },
   {
     name: "fps";
-    params: {
-      fps: number;
-    };
+    params: [fps: number];
   }
 ];
 

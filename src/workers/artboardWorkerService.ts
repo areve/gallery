@@ -53,7 +53,7 @@ function frameCounter() {
     const fps = Math.round((calculateAfterFrames / duration) * 1000);
     dispatch({
       name: "fps",
-      params: { fps },
+      params: [fps],
     });
     start = new Date().getTime();
   }

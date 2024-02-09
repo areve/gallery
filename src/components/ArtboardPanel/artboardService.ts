@@ -54,9 +54,8 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
   );
 }
 
-// TODO any :(
-export function updateFps(params: any) {
-  artboardState.value.fps = params.fps;
+export function updateFps(fps: number) {
+  artboardState.value.fps = fps;
 }
 
 export default {
