@@ -1,19 +1,18 @@
 import Worker from "@/workers/worker?worker";
-import { actions, type ActionSpec, type ArtboardWorkerMessage3 } from "@/workers/ArtboardWorkerInterfaces";
-import type { ArtboardWorker } from "@/workers/ArtboardWorkerInterfaces";
+import type { ActionSpec, ArtboardWorker } from "@/workers/ArtboardWorkerInterfaces";
 
 // TODO is it an ArtboardWorker? or not
 let worker: ArtboardWorker | undefined = undefined;
 
 export function startWorker() {
   worker = new Worker() as ArtboardWorker;
-  worker.onmessage = function (event: MessageEvent<ArtboardWorkerMessage3>) {
-    const fn: Function = actions[event.data.name];
-    if (fn) {
-      fn(event.data.params);
-      return;
-    }
-  };
+  // worker.onmessage = function (event: MessageEvent<ArtboardWorkerMessage3>) {
+  //   const fn: Function = actions[event.data.name];
+  //   if (fn) {
+  //     fn(event.data.params);
+  //     return;
+  //   }
+  // };
 }
 
 export function stopWorker() {

@@ -10,28 +10,28 @@ const artboard = ref<Artboard>({
 });
 
 watchPostEffect(() => {
-  dispatch({
-    name: "setColorSpace",
-    params: [artboardState.value.colorSpace],
-  });
+  // dispatch({
+  //   name: "setColorSpace",
+  //   params: [artboardState.value.colorSpace],
+  // });
 });
 
 export function reset() {
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb("white"));
-  dispatch({
-    name: "reset",
-    params: [color],
-  });
+  // dispatch({
+  //   name: "reset",
+  //   params: [color],
+  // });
 }
 
 export function resetOrange() {
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb("orange"));
-  dispatch({
-    name: "reset",
-    params: [color],
-  });
+  // dispatch({
+  //   name: "reset",
+  //   params: [color],
+  // });
 }
 
 export function detachCanvas() {
@@ -45,13 +45,13 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
 
   artboard.value.canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
-  dispatch(
-    {
-      name: "initialize",
-      params: [offscreenCanvas],
-    },
-    [offscreenCanvas]
-  );
+  // dispatch(
+  //   {
+  //     name: "initialize",
+  //     params: [offscreenCanvas],
+  //   },
+  //   [offscreenCanvas]
+  // );
 }
 
 export function updateFps(fps: number) {

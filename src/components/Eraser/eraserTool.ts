@@ -29,10 +29,10 @@ function pointerDown(pointerEvent: PointerEvent) {
     y: pointerEvent.pageY,
   });
 
-  dispatch({
-    name: "clearCircle",
-    params: [canvasPoint, eraserToolState.value.radius],
-  });
+  // dispatch({
+  //   name: "clearCircle",
+  //   params: [canvasPoint, eraserToolState.value.radius],
+  // });
 }
 
 function pointerMove(pointerEvents: PointerEvent) {
