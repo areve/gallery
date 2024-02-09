@@ -18,10 +18,16 @@ import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import type { ActionRegistry } from "./ActionSpec";
 import { dispatch } from "./action-worker";
 import type { Rect } from "@/interfaces/Rect";
-import { createBitmapLayer } from "@/lib/bitmap-layer";
+import { convertBitmapLayer, createBitmapLayer } from "@/lib/bitmap-layer";
 import { rectsOverlappedByAny } from "@/lib/rect";
-import { colorConverter } from "@/lib/color/color";
-import { ref } from "vue";
+import { color2srgb, colorConverter } from "@/lib/color/color";
+import { ref, watch, watchPostEffect } from "vue";
+import type { Coord } from "@/interfaces/Coord";
+import type { ColorCoord } from "@/interfaces/Color";
+import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
+import { brushToolState } from "@/components/Brush/brushToolState";
+import { artboardState } from "@/components/ArtboardPanel/artboardState";
+import type { Brush } from "@/interfaces/Brush";
 
 let canvas: OffscreenCanvas;
 let context: OffscreenCanvasRenderingContext2D | null = null;
@@ -29,7 +35,7 @@ let bitmapLayer: BitmapLayer | null = null;
 let start = new Date().getTime();
 let frameCount = 0;
 let tempImageData: ImageData | null = null;
-// let brush: Brush | undefined = undefined;
+let brush: Brush | undefined = undefined;
 
 const colorSpace = ref<ColorSpace>("oklch");
 
@@ -100,26 +106,31 @@ function renderRect(rect: Rect) {
   context.putImageData(tempImageData, rect.x, rect.y);
 }
 
-// watch(
-//   () => artboardState.value.colorSpace,
-//   () => {
-//     if (!bitmapLayer) return;
-//     bitmapLayer = convertBitmapLayer(bitmapLayer, artboardState.value.colorSpace);
-//   }
-// );
+watch(
+  () => artboardState.value.colorSpace,
+  () => {
+    if (!bitmapLayer) return;
+    bitmapLayer = convertBitmapLayer(bitmapLayer, artboardState.value.colorSpace);
+  }
+);
 
-// watchPostEffect(() => {
-//   const srgb = color2srgb(brushToolState.value.color);
-//   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
-//   brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
-// });
+watchPostEffect(() => {
+  const srgb = color2srgb(brushToolState.value.color);
+  const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
+  brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
+});
 
-// // TODO order of params was easy to get wrong and names are inconstent
-// export function artboardWorkerApplyBrush(fromPoint: Coord, toPoint: Coord, weight: number, color: ColorCoord, radius: number) {
-//   if (!brush) return;
-//   if (!bitmapLayer) return;
-//   applyBrush(bitmapLayer, fromPoint, toPoint, brush, weight);
-// }
+// TODO order of params was easy to get wrong and names are inconstent
+function onBrushApply(fromPoint: Coord, toPoint: Coord, weight: number, color: ColorCoord, radius: number) {
+  if (!brush) return;
+  if (!bitmapLayer) return;
+  applyBrush(bitmapLayer, fromPoint, toPoint, brush, weight);
+}
+
+function onSetBrush(color: string, radius: number) {
+  brushToolState.value.color = color;
+  brushToolState.value.radius = radius;
+}
 
 // export function artboardWorkerSetColorSpace(colorSpace: ColorSpace) {
 //   artboardState.value.colorSpace = colorSpace;
@@ -137,10 +148,11 @@ function renderRect(rect: Rect) {
 // export {};
 
 export function registerActions(actions: ActionRegistry) {
+  //TODO change to be like normal event listners
   actions["setOffscreenCanvas"] = setOffscreenCanvas;
   actions["setColorSpace"] = (a: any) => console.log("setColorSpace", a);
   actions["resetCanvas"] = (a: any) => console.log("resetCanvas", a);
-  actions["setBrush"] = (a: any) => console.log("setBrush", a);
-  actions["applyBrush"] = (a: any) => console.log("applyBrush", a);
+  actions["setBrush"] = onSetBrush;
+  actions["brush:apply"] = onBrushApply;
   actions["clearCircle"] = (a: any) => console.log("clearCircle", a);
 }

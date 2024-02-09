@@ -55,7 +55,7 @@ function pointerMove(pointerEvent: PointerEvent) {
       const color = colorConverter("srgb", artboardState.value.colorSpace)(color2srgb(brushToolState.value.color));
 
       dispatch({
-        name: "applyBrush",
+        name: "brush:apply",
         params: [brushLastPoint, canvasPoint, weight, color, brushToolState.value.radius],
       });
     }
