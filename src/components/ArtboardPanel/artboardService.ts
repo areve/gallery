@@ -5,7 +5,7 @@ import { artboardState } from "./artboardState";
 import artboardWorker from "@/workers/artboardWorker?worker";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
-import type { ActionsSpec, ArtboardWorker, ArtboardWorkerMessage2 } from "@/workers/ArtboardWorkerInterfaces";
+import type { ActionSpec, ArtboardWorker } from "@/workers/ArtboardWorkerInterfaces";
 
 // TODO should this know about brushes? or just have the worker
 // TODO why ref?
@@ -14,19 +14,17 @@ const artboard = ref<Artboard>({
   worker: undefined, // TODO keep this private?
 });
 
-export function dispatch(actionSpec: ActionsSpec) {
+export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: any[]) {
   if (!artboard.value.worker) return false;
-  artboard.value.worker.postMessage(actionSpec);
+  artboard.value.worker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
   return true;
 }
 
 watchPostEffect(() => {
   if (!artboard.value.worker) return;
-  artboard.value.worker.postMessage({
-    action: "setColorSpace",
-    params: {
-      colorSpace: artboardState.value.colorSpace,
-    },
+  dispatch({
+    name: "setColorSpace",
+    params: [artboardState.value.colorSpace],
   });
 });
 
@@ -34,14 +32,20 @@ export function reset() {
   if (!artboard.value.worker) return;
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb("white"));
-  artboard.value.worker.postMessage({ action: "reset", params: { color } });
+  dispatch({
+    name: "reset",
+    params: [color],
+  });
 }
 
 export function resetOrange() {
   if (!artboard.value.worker) return;
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb("orange"));
-  artboard.value.worker.postMessage({ action: "reset", params: { color } });
+  dispatch({
+    name: "reset",
+    params: [color],
+  });
 }
 
 export function detachCanvas() {
@@ -60,13 +64,20 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
   };
   artboard.value.canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
-  artboard.value.worker.postMessage(
+  dispatch(
     {
-      action: "initialize",
-      params: { offscreenCanvas },
+      name: "initialize",
+      params: [offscreenCanvas],
     },
-    [offscreenCanvas] as StructuredSerializeOptions
+    [offscreenCanvas]
   );
+  // artboard.value.worker.postMessage(
+  //   {
+  //     action: "initialize",
+  //     params: { offscreenCanvas },
+  //   },
+  //   [offscreenCanvas] as StructuredSerializeOptions
+  // );
 }
 
 // function setBrush(color: string, radius: number) {
@@ -82,32 +93,24 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
 
 function applyBrush(brushLastPoint: Coord, canvasPoint: Coord, weight: number, color: ColorCoord, radius: number) {
   if (!artboard.value.worker) return;
-  artboard.value.worker.postMessage({
-    action: "applyBrush",
-    params: {
-      fromPoint: brushLastPoint,
-      toPoint: canvasPoint,
-      weight,
-      color,
-      radius,
-    },
+  // TODO dispatch here would look better not as a tuple perhaps
+  dispatch({
+    name: "applyBrush",
+    params: [brushLastPoint, canvasPoint, weight, color, radius],
   });
 }
 
 function clearCircle(coord: Coord, radius: number) {
   if (!artboard.value.worker) return;
-  artboard.value.worker.postMessage({
-    action: "clearCircle",
-    params: {
-      coord,
-      radius,
-    },
+  dispatch({
+    name: "clearCircle",
+    params: [coord, radius],
   });
 }
+
 export default {
   artboard,
   reset,
-  // setBrush,
   clearCircle,
   applyBrush,
   resetOrange,

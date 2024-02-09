@@ -12,6 +12,8 @@ import { actions, type ArtboardWorkerMessage, type ArtboardWorkerMessage3 } from
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 import { setBrush } from "@/components/Brush/brushService";
+import type { Coord } from "@/interfaces/Coord";
+import type { ColorCoord } from "@/interfaces/Color";
 
 // TODO rename this to worker.ts? make it a generic dispatcher?
 let context: OffscreenCanvasRenderingContext2D | null = null;
@@ -100,35 +102,47 @@ function renderRect(rect: Rect) {
   context.putImageData(tempImageData, rect.x, rect.y);
 }
 
+export function artboardWorkerApplyBrush(fromPoint: Coord, toPoint: Coord, radius: number, color: ColorCoord, weight: number) {
+  console.log("artboardWorkerApplyBrush", bitmapLayer, brush);
+  if (!brush) return;
+  if (!bitmapLayer) return;
+  applyBrush(bitmapLayer, fromPoint, toPoint, brush, weight);
+}
+
+export function artboardWorkerSetColorSpace(colorSpace: ColorSpace) {
+  console.log("setColorSpace", colorSpace);
+  artboardState.value.colorSpace = colorSpace;
+}
+
+export function artboardWorkerInitialize(offscreenCanvas: OffscreenCanvas) {
+  console.log("artboardWorkerInitialize", offscreenCanvas);
+  canvas = offscreenCanvas;
+  context = canvas.getContext("2d");
+  reset();
+  requestAnimationFrame(render);
+}
+export function artboardClearCircle(coord: Coord, radius: number) {
+  if (!bitmapLayer) return;
+  clearCircle(bitmapLayer, coord.x, coord.y, radius);
+}
+export function artboardWorkerReset(color: ColorCoord) {
+  if (!bitmapLayer) return;
+  resetAll(bitmapLayer, color);
+}
+
+// if (event.data.action === "initialize") {
+//   canvas = event.data.offscreenCanvas;
+//   context = canvas.getContext("2d");
+//   reset();
+//   requestAnimationFrame(render);
+// }
+
 onmessage = function (event: MessageEvent<ArtboardWorkerMessage3>) {
   const fn: Function = actions[event.data.name];
   if (fn) {
-    console.log("found", event.data.name, event.data.params);
+    console.log("found", event.data.name, event.data.params, fn);
     fn(...event.data.params);
     return;
-  }
-
-  if (event.data.action === "initialize") {
-    canvas = event.data.params.offscreenCanvas;
-    context = canvas.getContext("2d");
-    reset();
-    requestAnimationFrame(render);
-  } else if (!bitmapLayer) return;
-  else if (event.data.action === "reset") {
-    resetAll(bitmapLayer, event.data.params.color);
-  } else if (event.data.action === "applyBrush") {
-    const params = event.data.params;
-    if (!brush) return;
-    applyBrush(bitmapLayer, params.fromPoint, params.toPoint, brush, params.weight);
-  } else if (event.data.action === "setColorSpace") {
-    console.log("setColorSpace", event.data.params.colorSpace);
-    artboardState.value.colorSpace = event.data.params.colorSpace;
-  } else if (event.data.action === "setBrush") {
-    setBrush(event.data.params.color, event.data.params.radius);
-  } else if (event.data.action === "clearCircle") {
-    clearCircle(bitmapLayer, event.data.params.coord.x, event.data.params.coord.y, event.data.params.radius);
-  } else {
-    throw "artboardWorker unsupported message: " + event.data;
   }
 };
 
