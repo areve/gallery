@@ -1,5 +1,6 @@
 import WebWorker from "@/workers/action-worker?worker";
 import type { ActionSpec, ActionWorker } from "@/interfaces/Action";
+import { bindMessages } from "@/services/actionService";
 
 let actionWorker: ActionWorker | undefined = undefined;
 
@@ -16,6 +17,7 @@ export function stopWorker() {
   actionWorker = undefined;
 }
 
+//TODO make use of getDispatch
 export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: any[]) {
   if (!actionWorker) return;
   actionWorker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
@@ -24,10 +26,7 @@ export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: an
 
 function createActionWorker() {
   const worker = new WebWorker() as ActionWorker;
-  worker.onmessage = function (event: MessageEvent<ActionSpec>) {
-    const action: Function = actions[event.data.name];
-    if (!action) throw `action not found: ${event.data.name}`;
-    action(...event.data.params);
-  };
+  bindMessages(worker, actions);
+
   return worker;
 }
