@@ -10,36 +10,29 @@ export interface ArtboardWorker extends Worker {
   postMessage(message: ArtboardWorkerMessage3, options?: StructuredSerializeOptions): void;
 }
 
-// TODO stupid name
-export type ArtboardWorkerMessage2 = {
-  action: "fps";
-  params: {
-    fps: number;
-  };
-};
+type ActionName = keyof typeof actions extends string ? string : never;
+type Action<T> = { name: ActionName; params: T };
+type ActionSpecsType<T extends Action<unknown>[]> = T extends ReadonlyArray<infer T1> ? T1 : never;
 
-export const actions = [
+export type ActionSpec = ActionSpecsType<ActionSpecs>;
+
+export type ActionSpecs = [
   {
-    spec: {
-      name: "brushService.setBrush" as const,
-      params: undefined as never as [color: string, radius: number],
-    },
-    action: setBrush,
+    name: "brushService.setBrush";
+    params: [color: string, radius: number];
   },
   {
-    spec: {
-      name: "brushService.haveFun" as const,
-      params: undefined as never as [when: string],
-    },
-    action: setBrush,
-  },
+    name: "brushService.haveFun";
+    params: [when: string];
+  }
 ];
 
-type ElementType<T extends ReadonlyArray<unknown>> = T extends ReadonlyArray<infer ElementType> ? ElementType : never;
+export const actions = {
+  "brushService.setBrush": setBrush,
+  "brushService.haveFun": setBrush,
+};
 
-export type ActionsSpec = ElementType<typeof actions>["spec"];
-
-export type ArtboardWorkerMessage3 = ActionsSpec;
+export type ArtboardWorkerMessage3 = ActionSpec;
 
 export type ArtboardWorkerMessage =
   | {

@@ -8,7 +8,7 @@ import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { ref, watch, watchPostEffect } from "vue";
-import { actions, type ArtboardWorkerMessage } from "./ArtboardWorkerInterfaces";
+import { actions, type ArtboardWorkerMessage, type ArtboardWorkerMessage3 } from "./ArtboardWorkerInterfaces";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 import { setBrush } from "@/components/Brush/brushService";
@@ -100,17 +100,11 @@ function renderRect(rect: Rect) {
   context.putImageData(tempImageData, rect.x, rect.y);
 }
 
-onmessage = function (event: MessageEvent<ArtboardWorkerMessage>) {
-  // event.data.service === "artboard"
-  // event.data.service === "brush"
-  // if (event.data.service === "eraserService") {
-  //   eraserService[event.data.action](event.data.params)
-  // }
-  
-  const fn = actions.find((x) => x.spec.name === event.data.name);
+onmessage = function (event: MessageEvent<ArtboardWorkerMessage3>) {
+  const fn: Function = actions[event.data.name];
   if (fn) {
     console.log("found", event.data.name, event.data.params);
-    fn.action.apply(null, event.data.params as any);
+    fn(...event.data.params);
     return;
   }
 
