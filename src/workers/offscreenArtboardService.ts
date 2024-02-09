@@ -1,19 +1,3 @@
-// import { artboardState } from "@/components/ArtboardPanel/artboardState";
-// import { brushToolState } from "@/components/Brush/brushToolState";
-// import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
-// import type { Brush } from "@/interfaces/Brush";
-// import { convertBitmapLayer, createBitmapLayer } from "@/lib/bitmap-layer";
-// import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
-// import { color2srgb, colorConverter } from "@/lib/color/color";
-// import { ref, watch, watchPostEffect } from "vue";
-// import { dispatch } from "./worker";
-// import { rectsOverlappedByAny } from "@/lib/rect";
-// import type { Rect } from "@/interfaces/Rect";
-// import { clearCircle } from "@/lib/bitmap/bitmap-draw";
-// import { resetAll } from "@/lib/bitmap/bitmap-effects";
-// import type { Coord } from "@/interfaces/Coord";
-// import type { ColorCoord } from "@/interfaces/Color";
-
 import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import type { ActionRegistry } from "./ActionSpec";
 import { dispatch } from "./action-worker";
