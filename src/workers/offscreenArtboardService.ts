@@ -1,17 +1,17 @@
 import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import type { ActionRegistry } from "./ActionSpec";
-import { dispatch } from "./action-worker";
 import type { Rect } from "@/interfaces/Rect";
+import type { Coord } from "@/interfaces/Coord";
+import type { ColorCoord } from "@/interfaces/Color";
+import type { Brush } from "@/interfaces/Brush";
+import { dispatch } from "./action-worker";
 import { convertBitmapLayer, createBitmapLayer } from "@/lib/bitmap-layer";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { ref, watch, watchPostEffect } from "vue";
-import type { Coord } from "@/interfaces/Coord";
-import type { ColorCoord } from "@/interfaces/Color";
 import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
 import { brushToolState } from "@/components/Brush/brushToolState";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
-import type { Brush } from "@/interfaces/Brush";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 
@@ -118,16 +118,16 @@ function onSetBrush(color: string, radius: number) {
   brushToolState.value.radius = radius;
 }
 
-export function onSetColorSpace(colorSpace: ColorSpace) {
+function onSetColorSpace(colorSpace: ColorSpace) {
   artboardState.value.colorSpace = colorSpace;
 }
 
-export function onClearCircle(coord: Coord, radius: number) {
+function onClearCircle(coord: Coord, radius: number) {
   if (!bitmapLayer) return;
   clearCircle(bitmapLayer, coord.x, coord.y, radius);
 }
 
-export function onResetCanvas(color: ColorCoord) {
+function onResetCanvas(color: ColorCoord) {
   if (!bitmapLayer) return;
   resetAll(bitmapLayer, color);
 }
