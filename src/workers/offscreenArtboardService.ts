@@ -29,6 +29,7 @@ import { brushToolState } from "@/components/Brush/brushToolState";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import type { Brush } from "@/interfaces/Brush";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
+import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 
 let canvas: OffscreenCanvas;
 let context: OffscreenCanvasRenderingContext2D | null = null;
@@ -137,16 +138,15 @@ export function onSetColorSpace(colorSpace: ColorSpace) {
   artboardState.value.colorSpace = colorSpace;
 }
 
-// export function artboardClearCircle(coord: Coord, radius: number) {
-//   if (!bitmapLayer) return;
-//   clearCircle(bitmapLayer, coord.x, coord.y, radius);
-// }
+export function onClearCircle(coord: Coord, radius: number) {
+  if (!bitmapLayer) return;
+  clearCircle(bitmapLayer, coord.x, coord.y, radius);
+}
+
 export function onResetCanvas(color: ColorCoord) {
   if (!bitmapLayer) return;
   resetAll(bitmapLayer, color);
 }
-
-// export {};
 
 export function registerActions(actions: ActionRegistry) {
   //TODO change to be like normal event listners
@@ -155,5 +155,5 @@ export function registerActions(actions: ActionRegistry) {
   actions["resetCanvas"] = onResetCanvas;
   actions["setBrush"] = onSetBrush;
   actions["brush:apply"] = onBrushApply;
-  actions["clearCircle"] = (a: any) => console.log("clearCircle", a);
+  actions["clearCircle"] = onClearCircle;
 }
