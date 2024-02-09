@@ -2,7 +2,7 @@ import { ref, watchPostEffect } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
-import { dispatch, startWorker, stopWorker } from "./workerService";
+import { actions, dispatch, startWorker, stopWorker } from "./workerService";
 
 // TODO why ref?
 const artboard = ref<Artboard>({
@@ -43,6 +43,9 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
   detachCanvas();
   startWorker();
 
+  //TODO this needs to be more like an add event listner
+  actions["fps:changed"] = onFpsChanged;
+
   artboard.value.canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
   dispatch(
@@ -54,7 +57,7 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
   );
 }
 
-export function updateFps(fps: number) {
+export function onFpsChanged(fps: number) {
   artboardState.value.fps = fps;
 }
 

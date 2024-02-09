@@ -3,7 +3,7 @@ import type { ActionSpec, ActionWorker } from "@/workers/ActionSpec";
 
 let actionWorker: ActionWorker | undefined = undefined;
 
-const actions: { [k: string]: Function } = {
+export const actions: { [k: string]: Function } = {
   example: (a: any) => console.log("example2", a),
 };
 
