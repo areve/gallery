@@ -2,26 +2,14 @@ import { ref, watchPostEffect } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
-import artboardWorker from "@/workers/artboardWorker?worker";
-import type { Coord } from "@/interfaces/Coord";
-import type { ColorCoord } from "@/interfaces/Color";
-import type { ActionSpec, ArtboardWorker, ArtboardWorkerMessage3 } from "@/workers/ArtboardWorkerInterfaces";
+import { dispatch, startWorker, stopWorker } from "./workerService";
 
-// TODO should this know about brushes? or just have the worker
 // TODO why ref?
 const artboard = ref<Artboard>({
   canvas: undefined,
-  worker: undefined, // TODO keep this private?
 });
 
-export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: any[]) {
-  if (!artboard.value.worker) return false;
-  artboard.value.worker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
-  return true;
-}
-
 watchPostEffect(() => {
-  if (!artboard.value.worker) return;
   dispatch({
     name: "setColorSpace",
     params: [artboardState.value.colorSpace],
@@ -29,7 +17,6 @@ watchPostEffect(() => {
 });
 
 export function reset() {
-  if (!artboard.value.worker) return;
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb("white"));
   dispatch({
@@ -39,7 +26,6 @@ export function reset() {
 }
 
 export function resetOrange() {
-  if (!artboard.value.worker) return;
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb("orange"));
   dispatch({
@@ -49,20 +35,14 @@ export function resetOrange() {
 }
 
 export function detachCanvas() {
-  artboard.value.worker?.terminate();
-  artboard.value.worker = undefined;
   artboard.value.canvas = undefined;
+  stopWorker();
 }
 
 export function attachToCanvas(canvas: HTMLCanvasElement) {
   detachCanvas();
-  artboard.value.worker = new artboardWorker() as ArtboardWorker;
-  artboard.value.worker.onmessage = (event: MessageEvent<ArtboardWorkerMessage3>) => {
-    console.log(event.data)
-    if (event.data.name === "fps") {
-      artboardState.value.fps = event.data.params.fps;
-    }
-  };
+  startWorker();
+
   artboard.value.canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
   dispatch(
@@ -74,27 +54,13 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
   );
 }
 
-function applyBrush(brushLastPoint: Coord, canvasPoint: Coord, weight: number, color: ColorCoord, radius: number) {
-  if (!artboard.value.worker) return;
-  // TODO dispatch here would look better not as a tuple perhaps
-  dispatch({
-    name: "applyBrush",
-    params: [brushLastPoint, canvasPoint, weight, color, radius],
-  });
-}
-
-function clearCircle(coord: Coord, radius: number) {
-  if (!artboard.value.worker) return;
-  dispatch({
-    name: "clearCircle",
-    params: [coord, radius],
-  });
+// TODO any :(
+export function updateFps(params: any) {
+  artboardState.value.fps = params.fps;
 }
 
 export default {
   artboard,
   reset,
-  clearCircle,
-  applyBrush,
   resetOrange,
 };

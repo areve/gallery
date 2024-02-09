@@ -1,11 +1,11 @@
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { brushToolState } from "./brushToolState";
 import type { Tool } from "@/interfaces/Tool";
-import artboardService, { dispatch } from "../ArtboardPanel/artboardService";
+import artboardService from "../ArtboardPanel/artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";
-import { setBrush } from "./brushService";
+import { dispatch } from "../ArtboardPanel/workerService";
 
 const tool: Tool = {
   toolType: "brush",
@@ -27,7 +27,6 @@ watchPostEffect(() => {
     name: "brushService.setBrush",
     params: [brushToolState.value.color, brushToolState.value.radius],
   });
-
 });
 
 function pointerUp(_: PointerEvent) {
@@ -58,8 +57,10 @@ function pointerMove(pointerEvent: PointerEvent) {
     if (brushMoved) {
       const color = colorConverter("srgb", artboardState.value.colorSpace)(color2srgb(brushToolState.value.color));
 
-      // TODO perhaps call a brushService instead? perhaps artboardService should be called artboardProxy
-      artboardService.applyBrush(brushLastPoint, canvasPoint, weight, color, brushToolState.value.radius);
+      dispatch({
+        name: "applyBrush",
+        params: [brushLastPoint, canvasPoint, weight, color, brushToolState.value.radius],
+      });
     }
   }
 

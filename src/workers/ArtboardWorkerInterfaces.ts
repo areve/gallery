@@ -2,7 +2,14 @@ import { setBrush } from "@/components/Brush/brushService";
 import type { ColorSpace } from "@/interfaces/BitmapLayer";
 import type { ColorCoord } from "@/interfaces/Color";
 import type { Coord } from "@/interfaces/Coord";
-import { artboardClearCircle, artboardWorkerApplyBrush, artboardWorkerInitialize, artboardWorkerReset, artboardWorkerSetColorSpace } from "./artboardWorker";
+import {
+  artboardClearCircle,
+  artboardWorkerApplyBrush,
+  artboardWorkerInitialize,
+  artboardWorkerReset,
+  artboardWorkerSetColorSpace,
+} from "./artboardWorkerService";
+import { updateFps } from "@/components/ArtboardPanel/artboardService";
 
 export interface ArtboardWorker extends Worker {
   postMessage(message: ArtboardWorkerMessage3, transfer: Transferable[]): void;
@@ -59,7 +66,7 @@ export const actions = {
   applyBrush: artboardWorkerApplyBrush,
   "brushService.setBrush": setBrush,
   clearCircle: artboardClearCircle,
-  fps: () => {}, // TODO really!?
+  fps: updateFps,
 };
 
 export type ArtboardWorkerMessage3 = ActionSpec;

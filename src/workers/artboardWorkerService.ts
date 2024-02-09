@@ -1,29 +1,27 @@
-import { brushToolState } from "./../components/Brush/brushToolState";
-import type { Rect } from "./../interfaces/Rect";
+import { artboardState } from "@/components/ArtboardPanel/artboardState";
+import { brushToolState } from "@/components/Brush/brushToolState";
 import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import type { Brush } from "@/interfaces/Brush";
 import { convertBitmapLayer, createBitmapLayer } from "@/lib/bitmap-layer";
 import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
-import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { color2srgb, colorConverter } from "@/lib/color/color";
-import { rectsOverlappedByAny } from "@/lib/rect";
 import { ref, watch, watchPostEffect } from "vue";
-import { actions, type ActionSpec, type ArtboardWorkerMessage3 } from "./ArtboardWorkerInterfaces";
-import { artboardState } from "@/components/ArtboardPanel/artboardState";
+import { dispatch } from "./worker";
+import { rectsOverlappedByAny } from "@/lib/rect";
+import type { Rect } from "@/interfaces/Rect";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
+import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
 
-// TODO rename this to worker.ts? make it a generic dispatcher?
 let context: OffscreenCanvasRenderingContext2D | null = null;
 let canvas: OffscreenCanvas;
-
+let bitmapLayer: BitmapLayer | null = null;
+let brush: Brush | undefined = undefined;
+const colorSpace = ref<ColorSpace>("oklch");
 let tempImageData: ImageData | null = null;
 let i = 0;
 let start = new Date().getTime();
-let bitmapLayer: BitmapLayer | null = null;
-const colorSpace = ref<ColorSpace>("oklch");
-let brush: Brush | undefined = undefined;
 
 watch(
   () => artboardState.value.colorSpace,
@@ -39,10 +37,12 @@ watchPostEffect(() => {
   brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
 });
 
-// TODO there are two dispatch methods!? perhaps ok...
-function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: any[]) {
-  postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
-  return true;
+function reset() {
+  if (!context) return;
+  const height = context.canvas.height;
+  const width = context.canvas.width;
+  bitmapLayer = createBitmapLayer(width, height, colorSpace.value, 32);
+  context.clearRect(0, 0, width, height);
 }
 
 function frameCounter() {
@@ -57,14 +57,6 @@ function frameCounter() {
     });
     start = new Date().getTime();
   }
-}
-
-function reset() {
-  if (!context) return;
-  const height = context.canvas.height;
-  const width = context.canvas.width;
-  bitmapLayer = createBitmapLayer(width, height, colorSpace.value, 32);
-  context.clearRect(0, 0, width, height);
 }
 
 function render() {
@@ -130,13 +122,3 @@ export function artboardWorkerReset(color: ColorCoord) {
   if (!bitmapLayer) return;
   resetAll(bitmapLayer, color);
 }
-
-onmessage = function (event: MessageEvent<ArtboardWorkerMessage3>) {
-  const fn: Function = actions[event.data.name];
-  if (fn) {
-    fn(...event.data.params);
-    return;
-  }
-};
-
-export {};
