@@ -8,7 +8,7 @@ import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { ref, watch, watchPostEffect } from "vue";
-import { actions, type ArtboardWorkerMessage3 } from "./ArtboardWorkerInterfaces";
+import { actions, type ActionSpec, type ArtboardWorkerMessage3 } from "./ArtboardWorkerInterfaces";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 import type { Coord } from "@/interfaces/Coord";
@@ -39,18 +39,21 @@ watchPostEffect(() => {
   brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
 });
 
+// TODO there are two dispatch methods!? perhaps ok...
+function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: any[]) {
+  postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
+  return true;
+}
+
 function frameCounter() {
   const calculateAfterFrames = 60;
   if (++i % calculateAfterFrames === 0) {
     const end = new Date().getTime();
     const duration = end - start;
     const fps = Math.round((calculateAfterFrames / duration) * 1000);
-    // TODO use dispatch
-    postMessage({
-      action: "fps",
-      params: {
-        fps,
-      },
+    dispatch({
+      name: "fps",
+      params: { fps },
     });
     start = new Date().getTime();
   }

@@ -5,7 +5,7 @@ import { artboardState } from "./artboardState";
 import artboardWorker from "@/workers/artboardWorker?worker";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
-import type { ActionSpec, ArtboardWorker } from "@/workers/ArtboardWorkerInterfaces";
+import type { ActionSpec, ArtboardWorker, ArtboardWorkerMessage3 } from "@/workers/ArtboardWorkerInterfaces";
 
 // TODO should this know about brushes? or just have the worker
 // TODO why ref?
@@ -57,8 +57,9 @@ export function detachCanvas() {
 export function attachToCanvas(canvas: HTMLCanvasElement) {
   detachCanvas();
   artboard.value.worker = new artboardWorker() as ArtboardWorker;
-  artboard.value.worker.onmessage = (event: MessageEvent<ArtboardWorkerMessage2>) => {
-    if (event.data.action === "fps") {
+  artboard.value.worker.onmessage = (event: MessageEvent<ArtboardWorkerMessage3>) => {
+    console.log(event.data)
+    if (event.data.name === "fps") {
       artboardState.value.fps = event.data.params.fps;
     }
   };

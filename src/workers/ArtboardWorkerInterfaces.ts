@@ -43,6 +43,12 @@ export type ActionSpecs = [
   {
     name: "clearCircle";
     params: [coord: Coord, radius: number];
+  },
+  {
+    name: "fps";
+    params: {
+      fps: number;
+    };
   }
 ];
 
@@ -53,6 +59,7 @@ export const actions = {
   applyBrush: artboardWorkerApplyBrush,
   "brushService.setBrush": setBrush,
   clearCircle: artboardClearCircle,
+  fps: () => {}, // TODO really!?
 };
 
 export type ArtboardWorkerMessage3 = ActionSpec;
