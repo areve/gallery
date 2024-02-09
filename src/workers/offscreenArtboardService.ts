@@ -132,9 +132,9 @@ function onSetBrush(color: string, radius: number) {
   brushToolState.value.radius = radius;
 }
 
-// export function artboardWorkerSetColorSpace(colorSpace: ColorSpace) {
-//   artboardState.value.colorSpace = colorSpace;
-// }
+export function onSetColorSpace(colorSpace: ColorSpace) {
+  artboardState.value.colorSpace = colorSpace;
+}
 
 // export function artboardClearCircle(coord: Coord, radius: number) {
 //   if (!bitmapLayer) return;
@@ -150,7 +150,7 @@ function onSetBrush(color: string, radius: number) {
 export function registerActions(actions: ActionRegistry) {
   //TODO change to be like normal event listners
   actions["setOffscreenCanvas"] = setOffscreenCanvas;
-  actions["setColorSpace"] = (a: any) => console.log("setColorSpace", a);
+  actions["setColorSpace"] = onSetColorSpace;
   actions["resetCanvas"] = (a: any) => console.log("resetCanvas", a);
   actions["setBrush"] = onSetBrush;
   actions["brush:apply"] = onBrushApply;
