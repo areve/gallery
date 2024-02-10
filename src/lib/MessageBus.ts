@@ -1,11 +1,11 @@
-import type { ActionSpec } from "@/interfaces/Action";
+export type Message = {
+  name: string;
+  params: any[];
+};
 
 export interface MessageBus {
   subscribe(name: string, callback: Function): void;
-
-  // TODO do I want it called ActionSpec?
-  // TODO the file should be calle MessageBus?
-  publish(actionSpec: ActionSpec, structuredSerializeOptions?: StructuredSerializeOptions | any[]): void;
+  publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): void;
   terminateWorker(): void;
 }
 
@@ -19,28 +19,25 @@ class _MessageBus implements MessageBus {
     this.ensureWorker();
   }
 
-  attachWorker() {
-    if (!this.worker) return;
-    // TODO I think there's a better way than using onmessage
-    this.worker.onmessage = (event: MessageEvent<ActionSpec>) => {
+  setupWorker() {
+    const worker = this.getWorker();
+    if (worker.onmessage) console.warn("onmessage was already bound");
+    worker.onmessage = (event: MessageEvent<Message>) => {
       const subscribers: Function[] = this.registry[event.data.name];
       if (!subscribers) console.warn(`subscribers not found: ${event.data.name}`);
       subscribers?.forEach((subscriber) => subscriber(...event.data.params));
     };
-    this.worker.onerror = (event: ErrorEvent) => {
+    if (worker.onerror) console.warn("onerror was already bound");
+    worker.onerror = (event: ErrorEvent) => {
       console.error(`worker error: ${event.message}`, event);
     };
-  }
-
-  detachWorker() {
-    if (!this.worker) return;
-    this.worker.onmessage = null;
-    this.worker.onerror = null;
+    return worker;
   }
 
   terminateWorker() {
     if (!this.worker) return;
-    this.detachWorker();
+    this.worker.onmessage = null;
+    this.worker.onerror = null;
     if (this.worker.constructor.name === "Worker") {
       (this.worker as Worker).terminate();
     }
@@ -48,10 +45,7 @@ class _MessageBus implements MessageBus {
   }
 
   ensureWorker() {
-    if (!this.worker) {
-      this.worker = this.getWorker();
-      this.attachWorker();
-    }
+    if (!this.worker) this.worker = this.setupWorker();
     return this.worker;
   }
 
@@ -60,8 +54,8 @@ class _MessageBus implements MessageBus {
     this.registry[name].push(callback);
   }
 
-  publish(actionSpec: ActionSpec, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    this.ensureWorker().postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
+  publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
+    this.ensureWorker().postMessage(message, structuredSerializeOptions as StructuredSerializeOptions);
   }
 }
 
