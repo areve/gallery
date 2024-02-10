@@ -1,17 +1,17 @@
-import type { ActionSpec } from "./../interfaces/Action";
+import type { ActionSpec } from "@/interfaces/Action";
 
 export class MessageBus {
-  windowOrWorker: Window | Worker;
+  worker: Window | Worker;
   registry: { [name: string]: Function[] } = {};
 
-  constructor(windowOrWorker: Window | Worker) {
-    this.windowOrWorker = windowOrWorker;
-    this.windowOrWorker.onmessage = (event: MessageEvent<ActionSpec>) => {
+  constructor(worker: Window | Worker) {
+    this.worker = worker;
+    this.worker.onmessage = (event: MessageEvent<ActionSpec>) => {
       const subscribers: Function[] = this.registry[event.data.name];
       if (!subscribers) console.warn(`subscribers not found: ${event.data.name}`);
       subscribers?.forEach((subscriber) => subscriber(...event.data.params));
     };
-    this.windowOrWorker.onerror = (event: ErrorEvent) => {
+    this.worker.onerror = (event: ErrorEvent) => {
       console.error("worker error" + event.message, event);
     };
   }
@@ -22,8 +22,8 @@ export class MessageBus {
   }
 
   publish(actionSpec: ActionSpec, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    if (!this.windowOrWorker) console.error("publish to soon");
-    this.windowOrWorker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
+    if (!this.worker) console.error("publish to soon");
+    this.worker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
     return true;
   }
 }

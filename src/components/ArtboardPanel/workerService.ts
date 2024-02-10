@@ -19,8 +19,6 @@ export function stopWorker() {
 export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: any[]) {
   if (!messageBus) console.error("dispatch too early", actionSpec);
   if (!messageBus) return;
-
-  //actionWorker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
-  messageBus?.publish(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
+  messageBus.publish(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
   return true;
 }

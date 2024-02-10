@@ -43,14 +43,12 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
   detachCanvas();
   startWorker();
 
-  //TODO this needs to be more like an add event listner
   if (!messageBus) throw "messageBus not ready";
   messageBus.subscribe("fps:changed", onFpsChanged);
 
   artboard.value.canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
-
-  messageBus.publish(
+  dispatch(
     {
       name: "setOffscreenCanvas",
       params: [offscreenCanvas],
