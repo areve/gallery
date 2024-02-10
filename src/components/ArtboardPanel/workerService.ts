@@ -6,7 +6,8 @@ export let messageBus: MessageBus | undefined;
 let actionWorker: ActionWorker | undefined = undefined;
 
 export function startWorker() {
-  actionWorker = createActionWorker();
+  actionWorker = new WebWorker() as ActionWorker;
+  messageBus = createMessageBus(actionWorker);
 }
 
 export function stopWorker() {
@@ -22,10 +23,4 @@ export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: an
   //actionWorker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
   messageBus?.publish(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
   return true;
-}
-
-function createActionWorker() {
-  const worker = new WebWorker() as ActionWorker;
-  messageBus = createMessageBus(worker);
-  return worker;
 }
