@@ -5,7 +5,7 @@ import type { Brush } from "@/lib/Brush";
 import { convertBitmapLayer, createBitmapLayer, renderBitmapLayer, type BitmapLayer, type ColorSpace } from "@/lib/BitmapLayer";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { ref, watch, watchPostEffect } from "vue";
-import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";
+import { applyBrush, createBrush } from "@/lib/Brush";
 import { brushToolState } from "@/components/Brush/brushToolState";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
