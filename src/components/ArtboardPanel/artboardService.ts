@@ -2,7 +2,13 @@ import { ref, watchPostEffect } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
-import { dispatch, messageBus } from "./workerService";
+import { createMessageBus } from "@/services/actionService";
+
+// TODO rename it 
+import WebWorker from "@/workers/action-worker?worker";
+
+
+export const messageBus = createMessageBus(() => new WebWorker());
 
 // TODO why ref?
 const artboard = ref<Artboard>({
@@ -10,7 +16,7 @@ const artboard = ref<Artboard>({
 });
 
 watchPostEffect(() => {
-  dispatch({
+  messageBus.publish({
     name: "setColorSpace",
     params: [artboardState.value.colorSpace],
   });
@@ -19,7 +25,7 @@ watchPostEffect(() => {
 export function reset() {
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb("white"));
-  dispatch({
+  messageBus.publish({
     name: "resetCanvas",
     params: [color],
   });
@@ -28,7 +34,7 @@ export function reset() {
 export function resetOrange() {
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb("orange"));
-  dispatch({
+  messageBus.publish({
     name: "resetCanvas",
     params: [color],
   });
@@ -49,7 +55,7 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
 
   artboard.value.canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
-  dispatch(
+  messageBus.publish(
     {
       name: "setOffscreenCanvas",
       params: [offscreenCanvas],

@@ -18,7 +18,6 @@ class _MessageBus implements MessageBus {
 
   attachWorker() {
     if (!this.worker) return;
-    // this.worker = worker;
     // TODO I think there's a better way than using onmessage
     this.worker.onmessage = (event: MessageEvent<ActionSpec>) => {
       const subscribers: Function[] = this.registry[event.data.name];
@@ -46,7 +45,6 @@ class _MessageBus implements MessageBus {
   }
 
   ensureWorker() {
-    console.log("ensureWorker", !!this.worker);
     if (!this.worker) {
       this.worker = this.getWorker();
       this.attachWorker();

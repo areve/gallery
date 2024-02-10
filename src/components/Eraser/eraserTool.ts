@@ -1,8 +1,7 @@
 import type { Tool } from "@/interfaces/Tool";
 import { getCanvasPoint } from "@/services/pointerService";
-import artboardService from "../ArtboardPanel/artboardService";
+import artboardService, { messageBus } from "../ArtboardPanel/artboardService";
 import { eraserToolState } from "./eraserToolState";
-import { dispatch } from "../ArtboardPanel/workerService";
 
 const tool: Tool = {
   toolType: "eraser",
@@ -29,7 +28,7 @@ function pointerDown(pointerEvent: PointerEvent) {
     y: pointerEvent.pageY,
   });
 
-  dispatch({
+  messageBus.publish({
     name: "clearCircle",
     params: [canvasPoint, eraserToolState.value.radius],
   });

@@ -1,11 +1,10 @@
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { brushToolState } from "./brushToolState";
 import type { Tool } from "@/interfaces/Tool";
-import artboardService from "../ArtboardPanel/artboardService";
+import artboardService, { messageBus } from "../ArtboardPanel/artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";
-import { dispatch } from "../ArtboardPanel/workerService";
 
 const tool: Tool = {
   toolType: "brush",
@@ -20,7 +19,7 @@ let brushLastPoint: { x: number; y: number } | null = null;
 let isPointerDown = false;
 
 watchPostEffect(() => {
-  dispatch({
+  messageBus.publish({
     name: "setBrush",
     params: [brushToolState.value.color, brushToolState.value.radius],
   });
@@ -54,7 +53,7 @@ function pointerMove(pointerEvent: PointerEvent) {
     if (brushMoved) {
       const color = colorConverter("srgb", artboardState.value.colorSpace)(color2srgb(brushToolState.value.color));
 
-      dispatch({
+      messageBus.publish({
         name: "brush:apply",
         params: [brushLastPoint, canvasPoint, weight, color, brushToolState.value.radius],
       });
