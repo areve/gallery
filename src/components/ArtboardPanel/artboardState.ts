@@ -1,4 +1,4 @@
-import type { ToolType } from "@/interfaces/Tool";
+import type { ToolType } from "@/lib/Tool";
 import type { ColorSpace } from "@/lib/BitmapLayer";
 import { ref } from "vue";
 

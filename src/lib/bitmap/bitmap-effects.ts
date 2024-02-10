@@ -1,4 +1,4 @@
-import type { ColorCoord } from "@/interfaces/Color";
+import type { ColorCoord } from "@/lib/Color";
 import type { BitmapLayer } from "../BitmapLayer";
 
 export function resetAll(bitmapLayer: BitmapLayer, color: ColorCoord) {

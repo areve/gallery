@@ -1,4 +1,4 @@
-import type { Coord } from "@/interfaces/Coord";
+import type { Coord } from "@/lib/Coord";
 import type { Rect } from "@/lib/Rect";
 import { ref } from "vue";
 

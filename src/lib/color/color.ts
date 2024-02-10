@@ -1,4 +1,4 @@
-import type { ColorCoord } from "@/interfaces/Color";
+import type { ColorCoord } from "@/lib/Color";
 import Color from "colorjs.io";
 import { lerpOklchColor, oklch2srgb, srgb2oklch } from "./color-oklch";
 import { lerpSrgbColor } from "./color-srgb";

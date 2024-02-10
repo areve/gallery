@@ -1,4 +1,4 @@
-import type { Tool } from "@/interfaces/Tool";
+import type { Tool } from "@/lib/Tool";
 import { getCanvasPoint } from "@/services/pointerService";
 import artboardService, { messageBus } from "../ArtboardPanel/artboardService";
 import { eraserToolState } from "./eraserToolState";

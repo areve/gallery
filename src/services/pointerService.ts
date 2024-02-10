@@ -1,4 +1,4 @@
-import type { Coord } from "@/interfaces/Coord";
+import type { Coord } from "@/lib/Coord";
 import { ref } from "vue";
 
 export const pointerUpEvent = ref<PointerEvent | null>(null);

@@ -1,6 +1,6 @@
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { brushToolState } from "./brushToolState";
-import type { Tool } from "@/interfaces/Tool";
+import type { Tool } from "@/lib/Tool";
 import artboardService, { messageBus } from "../ArtboardPanel/artboardService";
 import { getCanvasPoint } from "@/services/pointerService";
 import { color2srgb, colorConverter } from "@/lib/color/color";

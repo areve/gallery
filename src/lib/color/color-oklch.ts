@@ -1,7 +1,7 @@
 /* eslint-disable no-loss-of-precision */
 import { angleLerp } from "@/lib/lerp";
 import { lerp } from "@/lib/lerp";
-import type { ColorCoord } from "@/interfaces/Color";
+import type { ColorCoord } from "@/lib/Color";
 
 export type OklchColorCoord = ColorCoord;
 

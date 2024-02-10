@@ -1,5 +1,5 @@
 import { watchPostEffect } from "vue";
-import type { Artboard } from "../../interfaces/Artboard";
+import type { Artboard } from "../../lib/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
 import { createMessageBus } from "@/lib/MessageBus";

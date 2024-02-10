@@ -1,4 +1,4 @@
-import type { ColorCoord } from "@/interfaces/Color";
+import type { ColorCoord } from "@/lib/Color";
 import { lerp } from "../lerp";
 
 export function lerpSrgbColor(color1: ColorCoord, color2: ColorCoord): ColorCoord {
