@@ -19,11 +19,11 @@ function pointerUp(_: PointerEvent) {
 }
 
 function pointerDown(pointerEvent: PointerEvent) {
-  if (!artboardService.artboard.value.canvas) return;
+  if (!artboardService.artboard.canvas) return;
 
   isPointerDown = true;
 
-  const canvasPoint = getCanvasPoint(artboardService.artboard.value.canvas, {
+  const canvasPoint = getCanvasPoint(artboardService.artboard.canvas, {
     x: pointerEvent.pageX,
     y: pointerEvent.pageY,
   });
