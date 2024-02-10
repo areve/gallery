@@ -4,11 +4,9 @@ import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
 import { createMessageBus } from "@/services/actionService";
 
-// TODO rename it 
-import WebWorker from "@/workers/action-worker?worker";
+import ArtboardWorker from "@/workers/ArtboardWorker?worker";
 
-
-export const messageBus = createMessageBus(() => new WebWorker());
+export const messageBus = createMessageBus(() => new ArtboardWorker());
 
 // TODO why ref?
 const artboard = ref<Artboard>({
