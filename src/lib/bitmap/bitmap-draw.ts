@@ -1,4 +1,4 @@
-import type { Rect } from "@/interfaces/Rect";
+import type { Rect } from "@/lib/Rect";
 import type { BitmapLayer } from "../BitmapLayer";
 
 export function clearCircle(bitmapLayer: BitmapLayer, x: number, y: number, radius: number) {

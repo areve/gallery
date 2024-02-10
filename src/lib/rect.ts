@@ -1,4 +1,9 @@
-import type { Rect } from "@/interfaces/Rect";
+export interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 export function rectsOverlappedByAny(a: Rect[], b: Rect[]) {
   return a.filter((rect) => rectOverlapsAny(rect, b));

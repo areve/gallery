@@ -1,5 +1,5 @@
 import type { Coord } from "@/interfaces/Coord";
-import type { Rect } from "@/interfaces/Rect";
+import type { Rect } from "@/lib/Rect";
 import { ref } from "vue";
 
 type SwipeEdge = "right" | "left";

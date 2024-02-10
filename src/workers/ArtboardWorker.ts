@@ -11,7 +11,6 @@ import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 
-
 let canvas: OffscreenCanvas;
 let context: OffscreenCanvasRenderingContext2D | null = null;
 let bitmapLayer: BitmapLayer | null = null;
@@ -20,13 +19,18 @@ let frameCount = 0;
 let brush: Brush | undefined = undefined;
 const colorSpace = ref<ColorSpace>("oklch");
 
-export const messageBus = createMessageBus(() => self);
-messageBus.subscribe("setOffscreenCanvas", setOffscreenCanvas);
-messageBus.subscribe("setColorSpace", onSetColorSpace);
-messageBus.subscribe("resetCanvas", onResetCanvas);
-messageBus.subscribe("setBrush", onSetBrush);
-messageBus.subscribe("brush:apply", onBrushApply);
-messageBus.subscribe("clearCircle", onClearCircle);
+export const messageBus = setupMessageBus();
+
+function setupMessageBus() {
+  const messageBus = createMessageBus(() => self);
+  messageBus.subscribe("setOffscreenCanvas", setOffscreenCanvas);
+  messageBus.subscribe("setColorSpace", onSetColorSpace);
+  messageBus.subscribe("resetCanvas", onResetCanvas);
+  messageBus.subscribe("setBrush", onSetBrush);
+  messageBus.subscribe("brush:apply", onBrushApply);
+  messageBus.subscribe("clearCircle", onClearCircle);
+  return messageBus;
+}
 
 function setOffscreenCanvas(offscreenCanvas: OffscreenCanvas) {
   canvas = offscreenCanvas;

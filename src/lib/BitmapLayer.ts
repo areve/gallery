@@ -1,6 +1,5 @@
-import { createTiles, rectsOverlappedByAny } from "@/lib/rect";
+import { createTiles, rectsOverlappedByAny, type Rect } from "@/lib/Rect";
 import { colorConverter } from "./color/color";
-import type { Rect } from "@/interfaces/Rect";
 
 export type ColorSpace = "oklch" | "srgb";
 
