@@ -1,4 +1,4 @@
-import { createMessageBus } from "@/services/actionService";
+import { createMessageBus } from "@/lib/MessageBus";
 import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";

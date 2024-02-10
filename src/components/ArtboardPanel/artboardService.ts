@@ -2,7 +2,7 @@ import { watchPostEffect } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
-import { createMessageBus } from "@/services/actionService";
+import { createMessageBus } from "@/lib/MessageBus";
 
 import ArtboardWorker from "@/workers/ArtboardWorker?worker";
 

@@ -2,6 +2,9 @@ import type { ActionSpec } from "@/interfaces/Action";
 
 export interface MessageBus {
   subscribe(name: string, callback: Function): void;
+
+  // TODO do I want it called ActionSpec?
+  // TODO the file should be calle MessageBus?
   publish(actionSpec: ActionSpec, structuredSerializeOptions?: StructuredSerializeOptions | any[]): void;
   terminateWorker(): void;
 }
