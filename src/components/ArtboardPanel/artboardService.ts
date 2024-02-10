@@ -8,10 +8,9 @@ import ArtboardWorker from "@/workers/ArtboardWorker?worker";
 
 export const messageBus = createMessageBus(() => new ArtboardWorker());
 
-// TODO why ref?
-const artboard = ref<Artboard>({
+const artboard: Artboard = {
   canvas: undefined,
-});
+};
 
 watchPostEffect(() => {
   messageBus.publish({
@@ -40,18 +39,18 @@ export function resetOrange() {
 
 export function detachCanvas() {
   console.log("detachCanvas");
-  artboard.value.canvas = undefined;
+  artboard.canvas = undefined;
   messageBus.terminateWorker();
 }
 
 export function attachToCanvas(canvas: HTMLCanvasElement) {
   console.log("attachToCanvas");
-  if (artboard.value.canvas) detachCanvas();
+  if (artboard.canvas) detachCanvas();
 
   if (!messageBus) throw "messageBus not ready";
   messageBus.subscribe("fps:changed", onFpsChanged);
 
-  artboard.value.canvas = canvas;
+  artboard.canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
   messageBus.publish(
     {

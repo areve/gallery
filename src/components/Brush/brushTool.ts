@@ -36,9 +36,9 @@ function pointerDown(_: PointerEvent) {
 
 function pointerMove(pointerEvent: PointerEvent) {
   if (!isPointerDown) return;
-  if (!artboardService.artboard.value.canvas) return;
+  if (!artboardService.artboard.canvas) return;
 
-  const canvasPoint = getCanvasPoint(artboardService.artboard.value.canvas, {
+  const canvasPoint = getCanvasPoint(artboardService.artboard.canvas, {
     x: pointerEvent.pageX,
     y: pointerEvent.pageY,
   });
