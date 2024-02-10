@@ -9,6 +9,7 @@ export interface MessageBus {
   terminateWorker(): void;
 }
 
+//TODO this is my only class? why is that? is it a service? what's the difference?
 class _MessageBus implements MessageBus {
   getWorker: () => Worker | Window;
   worker?: Window | Worker;
