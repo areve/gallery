@@ -25,7 +25,7 @@ class _MessageBus implements MessageBus {
       subscribers?.forEach((subscriber) => subscriber(...event.data.params));
     };
     this.worker.onerror = (event: ErrorEvent) => {
-      console.error("worker error" + event.message, event);
+      console.error(`worker error: ${event.message}`, event);
     };
   }
 

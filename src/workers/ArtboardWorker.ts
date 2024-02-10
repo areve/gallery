@@ -95,7 +95,7 @@ function onSetBrush(color: string, radius: number) {
 function onSetColorSpace(colorSpace: ColorSpace) {
   artboardState.value.colorSpace = colorSpace;
 }
-G
+
 function onClearCircle(coord: Coord, radius: number) {
   if (!bitmapLayer) return;
   clearCircle(bitmapLayer, coord.x, coord.y, radius);
