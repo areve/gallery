@@ -38,13 +38,11 @@ export function resetOrange() {
 }
 
 export function detachCanvas() {
-  console.log("detachCanvas");
   artboard.canvas = undefined;
   messageBus.terminateWorker();
 }
 
 export function attachToCanvas(canvas: HTMLCanvasElement) {
-  console.log("attachToCanvas");
   if (artboard.canvas) detachCanvas();
 
   if (!messageBus) throw "messageBus not ready";

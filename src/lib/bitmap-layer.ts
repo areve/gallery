@@ -1,6 +1,9 @@
 import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
-import { createTiles } from "@/lib/rect";
+import { createTiles, rectsOverlappedByAny } from "@/lib/rect";
 import { colorConverter } from "./color/color";
+import type { Rect } from "@/interfaces/Rect";
+
+let tempImageData: ImageData | null = null;
 
 export function createBitmapLayer(width: number, height: number, space: ColorSpace, tileSize: number = width): BitmapLayer {
   const channels = 4;
@@ -48,4 +51,38 @@ export function convertBitmapLayer(source: BitmapLayer, space: ColorSpace) {
   });
 
   return dest;
+}
+
+export function renderBitmapLayer(bitmapLayer: BitmapLayer, context: OffscreenCanvasRenderingContext2D) {
+  const dirtyTiles = rectsOverlappedByAny(bitmapLayer.tiles, bitmapLayer.dirty);
+  dirtyTiles.forEach((rect: Rect) => renderRect(bitmapLayer, context, rect));
+  bitmapLayer.dirty = [];
+}
+
+function renderRect(bitmapLayer: BitmapLayer, context: OffscreenCanvasRenderingContext2D, rect: Rect) {
+  if (!context) return;
+  if (!bitmapLayer) return;
+
+  if (!tempImageData || tempImageData.width != rect.width || tempImageData.height != rect.height) {
+    tempImageData = new ImageData(rect.width, rect.height);
+  }
+
+  const pixelData = tempImageData.data;
+  const layerData = bitmapLayer.data;
+  const width = bitmapLayer.width;
+  const channels = bitmapLayer.channels;
+  const convert = colorConverter(bitmapLayer.space, "srgb");
+  for (let y = 0; y < rect.height; y++) {
+    for (let x = 0; x < rect.width; x++) {
+      const i = ((y + rect.y) * width + x + rect.x) * channels;
+      const o = (y * rect.width + x) * channels;
+      const rgb = convert([layerData[i + 0], layerData[i + 1], layerData[i + 2]]);
+      pixelData[o + 0] = rgb[0] * 255;
+      pixelData[o + 1] = rgb[1] * 255;
+      pixelData[o + 2] = rgb[2] * 255;
+      pixelData[o + 3] = layerData[i + 3] * 255;
+    }
+  }
+
+  context.putImageData(tempImageData, rect.x, rect.y);
 }
