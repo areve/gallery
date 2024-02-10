@@ -2,7 +2,7 @@ import { ref, watchPostEffect } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
-import { dispatch, messageBus, startWorker, stopWorker } from "./workerService";
+import { dispatch, messageBus } from "./workerService";
 
 // TODO why ref?
 const artboard = ref<Artboard>({
@@ -35,11 +35,13 @@ export function resetOrange() {
 }
 
 export function detachCanvas() {
+  console.log("detachCanvas");
   artboard.value.canvas = undefined;
-  stopWorker();
+  messageBus.terminateWorker();
 }
 
 export function attachToCanvas(canvas: HTMLCanvasElement) {
+  console.log("attachToCanvas");
   if (artboard.value.canvas) detachCanvas();
 
   if (!messageBus) throw "messageBus not ready";
