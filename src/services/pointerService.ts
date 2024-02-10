@@ -5,6 +5,7 @@ export const pointerUpEvent = ref<PointerEvent | null>(null);
 export const pointerDownEvent = ref<PointerEvent | null>(null);
 export const pointerMoveEvent = ref<PointerEvent | null>(null);
 
+//TODO PointerEvent is really handy if you don't care about touch or mouse specifically, but I do!?
 document.onpointerdown = function (event: PointerEvent) {
   pointerDownEvent.value = event;
 };
