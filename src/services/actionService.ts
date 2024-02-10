@@ -1,10 +1,17 @@
 import type { ActionSpec } from "@/interfaces/Action";
 
-export class MessageBus {
-  worker: Window | Worker;
+export interface MessageBus {
+  addWorker(worker: Window | Worker): void;
+  subscribe(name: string, callback: Function): void;
+  publish(actionSpec: ActionSpec, structuredSerializeOptions?: StructuredSerializeOptions | any[]): void;
+  terminateWorker(): void;
+}
+
+class _MessageBus implements MessageBus {
+  worker?: Window | Worker;
   registry: { [name: string]: Function[] } = {};
 
-  constructor(worker: Window | Worker) {
+  addWorker(worker: Window | Worker) {
     this.worker = worker;
     this.worker.onmessage = (event: MessageEvent<ActionSpec>) => {
       const subscribers: Function[] = this.registry[event.data.name];
@@ -22,12 +29,16 @@ export class MessageBus {
   }
 
   publish(actionSpec: ActionSpec, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    if (!this.worker) console.error("publish to soon");
+    if (!this.worker) return console.error("publish to soon");
     this.worker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
-    return true;
+  }
+
+  terminateWorker() {
+    (this.worker as Worker)?.terminate();
+    this.worker = undefined;
   }
 }
 
-export function createMessageBus(worker: Window | Worker) {
-  return new MessageBus(worker);
+export function createMessageBus() {
+  return new _MessageBus() as MessageBus;
 }

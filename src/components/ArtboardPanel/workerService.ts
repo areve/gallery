@@ -1,24 +1,26 @@
 import WebWorker from "@/workers/action-worker?worker";
-import type { ActionSpec, ActionWorker } from "@/interfaces/Action";
+import type { ActionSpec } from "@/interfaces/Action";
 import { createMessageBus, type MessageBus } from "@/services/actionService";
 
-export let messageBus: MessageBus | undefined;
-let actionWorker: ActionWorker | undefined = undefined;
+export const messageBus = createMessageBus()
+startWorker();
 
 export function startWorker() {
-  actionWorker = new WebWorker() as ActionWorker;
-  messageBus = createMessageBus(actionWorker);
+  console.log("startWorker", );
+  // TODO
+  messageBus.addWorker(new WebWorker());
+  return messageBus;
 }
 
 export function stopWorker() {
-  actionWorker?.terminate();
-  actionWorker = undefined;
+  console.log("stopWorker");
+  messageBus?.terminateWorker();
 }
 
 // TODO call directly?
 export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: any[]) {
-  if (!messageBus) console.error("dispatch too early", actionSpec);
-  if (!messageBus) return;
+  // if (!messageBus) console.error("dispatch too early", actionSpec);
+  // if (!messageBus) return;
   messageBus.publish(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
   return true;
 }

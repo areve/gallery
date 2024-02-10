@@ -40,8 +40,7 @@ export function detachCanvas() {
 }
 
 export function attachToCanvas(canvas: HTMLCanvasElement) {
-  detachCanvas();
-  startWorker();
+  if (artboard.value.canvas) detachCanvas();
 
   if (!messageBus) throw "messageBus not ready";
   messageBus.subscribe("fps:changed", onFpsChanged);
