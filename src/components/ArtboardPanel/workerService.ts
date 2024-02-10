@@ -5,10 +5,6 @@ import { createMessageBus, type MessageBus } from "@/services/actionService";
 export let messageBus: MessageBus | undefined;
 let actionWorker: ActionWorker | undefined = undefined;
 
-export const actions: { [k: string]: Function } = {
-  example: (a: any) => console.log("example2", a),
-};
-
 export function startWorker() {
   actionWorker = createActionWorker();
 }
@@ -31,7 +27,5 @@ export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: an
 function createActionWorker() {
   const worker = new WebWorker() as ActionWorker;
   messageBus = createMessageBus(worker);
-  console.log("here#1", worker);
-
   return worker;
 }

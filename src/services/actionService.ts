@@ -5,11 +5,8 @@ export class MessageBus {
   registry: { [name: string]: Function[] } = {};
 
   constructor(windowOrWorker: Window | Worker) {
-    console.log("new MessageBus");
     this.windowOrWorker = windowOrWorker;
     this.windowOrWorker.onmessage = (event: MessageEvent<ActionSpec>) => {
-      console.log("onmessage", event);
-
       const subscribers: Function[] = this.registry[event.data.name];
       if (!subscribers) console.warn(`subscribers not found: ${event.data.name}`);
       subscribers?.forEach((subscriber) => subscriber(...event.data.params));
