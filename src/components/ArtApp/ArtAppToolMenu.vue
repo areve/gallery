@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import { artboardState } from "../ArtboardPanel/artboardState";
+import { artboardState } from "@/components/Artboard/artboardState";
 import { artAppState } from "./artAppState";
 import BrushPanel from "@/components/Brush/BrushPanel.vue";
 import EraserPanel from "@/components/Eraser/EraserPanel.vue";
@@ -31,3 +31,4 @@ button {
   background-color: #666;
 }
 </style>
+../Artboard/artboardState

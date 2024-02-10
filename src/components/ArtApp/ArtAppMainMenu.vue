@@ -15,9 +15,9 @@
 </template>
 
 <script lang="ts" setup>
-import artboardService from "../ArtboardPanel/artboardService";
+import artboardService from "@/components/Artboard/artboardService";
 import { artAppState } from "./artAppState";
-import { artboardState } from "@/components/ArtboardPanel/artboardState";
+import { artboardState } from "@/components/Artboard/artboardState";
 
 function reset() {
   artboardService.reset();
@@ -39,3 +39,4 @@ button {
   background-color: #666;
 }
 </style>
+../Artboard/artboardService@/components/Artboard/artboardState

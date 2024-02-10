@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-import ArtboardPanel from "@/components/ArtboardPanel/ArtboardPanel.vue";
+import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
 import ArtAppToolMenu from "./ArtAppToolMenu.vue";
 import ArtAppMainMenu from "./ArtAppMainMenu.vue";
 import { swipeEdgeEvent } from "@/services/swipeEdgeService";

@@ -3,9 +3,9 @@ import type { Artboard } from "../../lib/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
 import { createMessageBus } from "@/lib/MessageBus";
+import ArtboardWorker from "./ArtboardWorker?worker";
 
-import ArtboardWorker from "@/workers/ArtboardWorker?worker";
-
+// TODO this file is call artboardService, is that right?
 export const messageBus = createMessageBus(() => new ArtboardWorker());
 
 const artboard: Artboard = {
