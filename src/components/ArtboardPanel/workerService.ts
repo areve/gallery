@@ -1,7 +1,8 @@
 import WebWorker from "@/workers/action-worker?worker";
 import type { ActionSpec, ActionWorker } from "@/interfaces/Action";
-import { bindMessages } from "@/services/actionService";
+import { createMessageBus, type MessageBus } from "@/services/actionService";
 
+export let messageBus: MessageBus | undefined;
 let actionWorker: ActionWorker | undefined = undefined;
 
 export const actions: { [k: string]: Function } = {
@@ -17,16 +18,20 @@ export function stopWorker() {
   actionWorker = undefined;
 }
 
-//TODO make use of getDispatch
+// TODO call directly?
 export function dispatch(actionSpec: ActionSpec, structuredSerializeOptions?: any[]) {
-  if (!actionWorker) return;
-  actionWorker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
+  if (!messageBus) console.error("dispatch too early", actionSpec);
+  if (!messageBus) return;
+
+  //actionWorker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
+  messageBus?.publish(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
   return true;
 }
 
 function createActionWorker() {
   const worker = new WebWorker() as ActionWorker;
-  bindMessages(worker, actions);
+  messageBus = createMessageBus(worker);
+  console.log("here#1", worker);
 
   return worker;
 }

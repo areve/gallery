@@ -1,9 +1,10 @@
-import { bindMessages, getDispatch } from "@/services/actionService";
-import type { ActionRegistry } from "../interfaces/Action";
+import { createMessageBus } from "@/services/actionService";
 import { registerActions } from "./offscreenArtboardService";
 
-const actions: ActionRegistry = {};
-export const dispatch = getDispatch(self);
-bindMessages(self, actions);
+console.log("hello from worker#1");
 
-registerActions(actions);
+export const messageBus = createMessageBus(self);
+
+registerActions(messageBus);
+export {};
+console.log("hello from worker#2");

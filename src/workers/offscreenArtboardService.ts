@@ -1,10 +1,8 @@
 import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
-import type { ActionRegistry } from "../interfaces/Action";
 import type { Rect } from "@/interfaces/Rect";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
 import type { Brush } from "@/interfaces/Brush";
-import { dispatch } from "./action-worker";
 import { convertBitmapLayer, createBitmapLayer } from "@/lib/bitmap-layer";
 import { rectsOverlappedByAny } from "@/lib/rect";
 import { color2srgb, colorConverter } from "@/lib/color/color";
@@ -14,6 +12,7 @@ import { brushToolState } from "@/components/Brush/brushToolState";
 import { artboardState } from "@/components/ArtboardPanel/artboardState";
 import { resetAll } from "@/lib/bitmap/bitmap-effects";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
+import type { MessageBus } from "@/services/actionService";
 
 let canvas: OffscreenCanvas;
 let context: OffscreenCanvasRenderingContext2D | null = null;
@@ -22,7 +21,7 @@ let start = new Date().getTime();
 let frameCount = 0;
 let tempImageData: ImageData | null = null;
 let brush: Brush | undefined = undefined;
-
+let _messageBus: MessageBus | null = null;
 const colorSpace = ref<ColorSpace>("oklch");
 
 function setOffscreenCanvas(offscreenCanvas: OffscreenCanvas) {
@@ -56,7 +55,7 @@ function frameCounter() {
     const end = new Date().getTime();
     const duration = end - start;
     const fps = Math.round((calculateAfterFrames / duration) * 1000);
-    dispatch({
+    _messageBus?.publish({
       name: "fps:changed",
       params: [fps],
     });
@@ -132,12 +131,15 @@ function onResetCanvas(color: ColorCoord) {
   resetAll(bitmapLayer, color);
 }
 
-export function registerActions(actions: ActionRegistry) {
-  //TODO change to be like normal event listners
-  actions["setOffscreenCanvas"] = setOffscreenCanvas;
-  actions["setColorSpace"] = onSetColorSpace;
-  actions["resetCanvas"] = onResetCanvas;
-  actions["setBrush"] = onSetBrush;
-  actions["brush:apply"] = onBrushApply;
-  actions["clearCircle"] = onClearCircle;
+export function registerActions(messageBus: MessageBus) {
+  //TODO caching _messageBus, is this best?
+
+  _messageBus = messageBus;
+  messageBus.subscribe("setOffscreenCanvas", setOffscreenCanvas);
+  messageBus.subscribe("setOffscreenCanvas", setOffscreenCanvas);
+  messageBus.subscribe("setColorSpace", onSetColorSpace);
+  messageBus.subscribe("resetCanvas", onResetCanvas);
+  messageBus.subscribe("setBrush", onSetBrush);
+  messageBus.subscribe("brush:apply", onBrushApply);
+  messageBus.subscribe("clearCircle", onClearCircle);
 }

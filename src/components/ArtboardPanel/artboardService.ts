@@ -2,7 +2,7 @@ import { ref, watchPostEffect } from "vue";
 import type { Artboard } from "../../interfaces/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
-import { actions, dispatch, startWorker, stopWorker } from "./workerService";
+import { actions, dispatch, messageBus, startWorker, stopWorker } from "./workerService";
 
 // TODO why ref?
 const artboard = ref<Artboard>({
@@ -44,11 +44,14 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
   startWorker();
 
   //TODO this needs to be more like an add event listner
+  if (!messageBus) throw "messageBus not ready";
+  messageBus.subscribe("fps:changed", onFpsChanged);
   actions["fps:changed"] = onFpsChanged;
 
   artboard.value.canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
-  dispatch(
+
+  messageBus.publish(
     {
       name: "setOffscreenCanvas",
       params: [offscreenCanvas],
