@@ -12,7 +12,7 @@ export class MessageBus {
       subscribers?.forEach((subscriber) => subscriber(...event.data.params));
     };
     this.windowOrWorker.onerror = (event: ErrorEvent) => {
-      console.error(event.message, event);
+      console.error("worker error" + event.message, event);
     };
   }
 
@@ -22,7 +22,7 @@ export class MessageBus {
   }
 
   publish(actionSpec: ActionSpec, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    // warning Window.postMessage has more overrides available
+    if (!this.windowOrWorker) console.error("publish to soon");
     this.windowOrWorker.postMessage(actionSpec, structuredSerializeOptions as StructuredSerializeOptions);
     return true;
   }

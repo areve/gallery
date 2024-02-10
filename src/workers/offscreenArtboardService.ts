@@ -136,7 +136,6 @@ export function registerActions(messageBus: MessageBus) {
 
   _messageBus = messageBus;
   messageBus.subscribe("setOffscreenCanvas", setOffscreenCanvas);
-  messageBus.subscribe("setOffscreenCanvas", setOffscreenCanvas);
   messageBus.subscribe("setColorSpace", onSetColorSpace);
   messageBus.subscribe("resetCanvas", onResetCanvas);
   messageBus.subscribe("setBrush", onSetBrush);
