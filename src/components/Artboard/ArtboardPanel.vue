@@ -7,7 +7,7 @@
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
-import { attachToCanvas, detachCanvas } from "@/components/Artboard/artboardService";
+import { attachToCanvas, detachCanvas } from "@/components/Artboard/Artboard";
 import { useBrushTool } from "@/components/Brush/brushTool";
 import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
@@ -69,4 +69,3 @@ function selectedTool() {
   font-size: 0.8em;
 }
 </style>
-@/components/Artboard/artboardService

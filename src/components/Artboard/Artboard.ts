@@ -1,12 +1,14 @@
 import { watchPostEffect } from "vue";
-import type { Artboard } from "../../lib/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
 import { createMessageBus } from "@/lib/MessageBus";
 import ArtboardWorker from "./ArtboardWorker?worker";
 
-// TODO this file is call artboardService, is that right?
 export const messageBus = createMessageBus(() => new ArtboardWorker());
+
+export interface Artboard {
+  canvas?: HTMLCanvasElement;
+}
 
 const artboard: Artboard = {
   canvas: undefined,
@@ -63,7 +65,8 @@ export function onFpsChanged(fps: number) {
   artboardState.value.fps = fps;
 }
 
-export default {
+// TODO is this really needed?
+export const artboardService = {
   artboard,
   reset,
   resetOrange,

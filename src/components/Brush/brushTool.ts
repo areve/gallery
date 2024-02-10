@@ -1,7 +1,7 @@
 import { artboardState } from "@/components/Artboard/artboardState";
 import { brushToolState } from "./brushToolState";
 import type { Tool } from "@/lib/Tool";
-import artboardService, { messageBus } from "../Artboard/artboardService";
+import { artboardService, messageBus } from "../Artboard/Artboard";
 import { getCanvasPoint } from "@/services/pointerService";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";

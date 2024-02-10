@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import artboardService from "@/components/Artboard/artboardService";
+import { artboardService } from "@/components/Artboard/Artboard";
 import { artAppState } from "./artAppState";
 import { artboardState } from "@/components/Artboard/artboardState";
 
@@ -39,4 +39,3 @@ button {
   background-color: #666;
 }
 </style>
-../Artboard/artboardService@/components/Artboard/artboardState

@@ -1,6 +1,6 @@
 import type { Tool } from "@/lib/Tool";
 import { getCanvasPoint } from "@/services/pointerService";
-import artboardService, { messageBus } from "../Artboard/artboardService";
+import { artboardService, messageBus } from "../Artboard/Artboard";
 import { eraserToolState } from "./eraserToolState";
 
 const tool: Tool = {
