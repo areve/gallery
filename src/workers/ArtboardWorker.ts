@@ -1,9 +1,8 @@
 import { createMessageBus } from "@/lib/MessageBus";
-import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
 import type { Brush } from "@/interfaces/Brush";
-import { convertBitmapLayer, createBitmapLayer, renderBitmapLayer } from "@/lib/bitmap-layer";
+import { convertBitmapLayer, createBitmapLayer, renderBitmapLayer, type BitmapLayer, type ColorSpace } from "@/lib/BitmapLayer";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { ref, watch, watchPostEffect } from "vue";
 import { applyBrush, createBrush } from "@/lib/bitmap/bitmap-brush";

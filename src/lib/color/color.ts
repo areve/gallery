@@ -1,8 +1,8 @@
-import type { ColorSpace } from "@/interfaces/BitmapLayer";
 import type { ColorCoord } from "@/interfaces/Color";
 import Color from "colorjs.io";
 import { lerpOklchColor, oklch2srgb, srgb2oklch } from "./color-oklch";
 import { lerpSrgbColor } from "./color-srgb";
+import type { ColorSpace } from "../BitmapLayer";
 
 export function color2srgb(value: string) {
   const color = new Color(value);

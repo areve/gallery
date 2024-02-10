@@ -1,8 +1,7 @@
-import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import type { Brush } from "@/interfaces/Brush";
 import type { Coord } from "@/interfaces/Coord";
 import type { ColorCoord } from "@/interfaces/Color";
-import { createBitmapLayer } from "@/lib/bitmap-layer";
+import { createBitmapLayer, type ColorSpace, type BitmapLayer } from "@/lib/BitmapLayer";
 import { colorMixer } from "@/lib/color/color";
 
 export function createBrush(radius: number, color: ColorCoord, space: ColorSpace) {

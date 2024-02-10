@@ -1,5 +1,5 @@
-import type { ColorSpace } from "@/interfaces/BitmapLayer";
 import type { ToolType } from "@/interfaces/Tool";
+import type { ColorSpace } from "@/lib/BitmapLayer";
 import { ref } from "vue";
 
 export const artboardState = ref({

@@ -1,5 +1,5 @@
-import type { BitmapLayer } from "@/interfaces/BitmapLayer";
 import type { ColorCoord } from "@/interfaces/Color";
+import type { BitmapLayer } from "../BitmapLayer";
 
 export function resetAll(bitmapLayer: BitmapLayer, color: ColorCoord) {
   pixelEffect(bitmapLayer, bitmapLayer.width, bitmapLayer.height, (_) => color);

@@ -1,7 +1,26 @@
-import type { BitmapLayer, ColorSpace } from "@/interfaces/BitmapLayer";
 import { createTiles, rectsOverlappedByAny } from "@/lib/rect";
 import { colorConverter } from "./color/color";
 import type { Rect } from "@/interfaces/Rect";
+
+export type ColorSpace = "oklch" | "srgb";
+
+export interface BitmapLayer {
+  data: Float32Array;
+  width: number;
+  height: number;
+  channels: number;
+  alphaChannel: number;
+  space: ColorSpace;
+  dirty: Rect[];
+  tiles: Rect[];
+}
+
+export interface OklchBitmapLayer extends BitmapLayer {
+  space: "oklch";
+}
+export interface SrgbBitmapLayer extends BitmapLayer {
+  space: "srgb";
+}
 
 let tempImageData: ImageData | null = null;
 
@@ -59,7 +78,7 @@ export function renderBitmapLayer(bitmapLayer: BitmapLayer, context: OffscreenCa
   bitmapLayer.dirty = [];
 }
 
-function renderRect(bitmapLayer: BitmapLayer, context: OffscreenCanvasRenderingContext2D, rect: Rect) {
+export function renderRect(bitmapLayer: BitmapLayer, context: OffscreenCanvasRenderingContext2D, rect: Rect) {
   if (!context) return;
   if (!bitmapLayer) return;
 

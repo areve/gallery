@@ -1,5 +1,5 @@
-import type { BitmapLayer } from "@/interfaces/BitmapLayer";
 import type { Rect } from "@/interfaces/Rect";
+import type { BitmapLayer } from "../BitmapLayer";
 
 export function clearCircle(bitmapLayer: BitmapLayer, x: number, y: number, radius: number) {
   const width = bitmapLayer.width;
