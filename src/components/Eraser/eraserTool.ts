@@ -1,6 +1,6 @@
 import type { Tool } from "@/lib/Tool";
 import { getCanvasPoint } from "@/services/pointerService";
-import { artboardService, messageBus } from "../Artboard/Artboard";
+import { artboard, messageBus } from "../Artboard/Artboard";
 import { eraserToolState } from "./eraserToolState";
 
 const tool: Tool = {
@@ -19,11 +19,11 @@ function pointerUp(_: PointerEvent) {
 }
 
 function pointerDown(pointerEvent: PointerEvent) {
-  if (!artboardService.artboard.canvas) return;
+  if (!artboard.canvas) return;
 
   isPointerDown = true;
 
-  const canvasPoint = getCanvasPoint(artboardService.artboard.canvas, {
+  const canvasPoint = getCanvasPoint(artboard.canvas, {
     x: pointerEvent.pageX,
     y: pointerEvent.pageY,
   });

@@ -1,5 +1,4 @@
 import { watchPostEffect } from "vue";
-import { color2srgb, colorConverter } from "@/lib/color/color";
 import { artboardState } from "./artboardState";
 import { createMessageBus } from "@/lib/MessageBus";
 import ArtboardWorker from "./ArtboardWorker?worker";
@@ -10,7 +9,10 @@ export interface Artboard {
   canvas?: HTMLCanvasElement;
 }
 
-const artboard: Artboard = {
+// TODO is this not the same as artboardState?
+// TODO a static variable here is not good perhaps?
+// TODO perhaps this and the messageBus should just go to the Panel?
+export const artboard: Artboard = {
   canvas: undefined,
 };
 
@@ -20,24 +22,6 @@ watchPostEffect(() => {
     params: [artboardState.value.colorSpace],
   });
 });
-
-export function reset() {
-  const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
-  const color = colorConvert(color2srgb("white"));
-  messageBus.publish({
-    name: "resetCanvas",
-    params: [color],
-  });
-}
-
-export function resetOrange() {
-  const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
-  const color = colorConvert(color2srgb("orange"));
-  messageBus.publish({
-    name: "resetCanvas",
-    params: [color],
-  });
-}
 
 export function detachCanvas() {
   artboard.canvas = undefined;
@@ -64,10 +48,3 @@ export function attachToCanvas(canvas: HTMLCanvasElement) {
 export function onFpsChanged(fps: number) {
   artboardState.value.fps = fps;
 }
-
-// TODO is this really needed?
-export const artboardService = {
-  artboard,
-  reset,
-  resetOrange,
-};

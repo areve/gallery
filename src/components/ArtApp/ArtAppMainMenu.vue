@@ -1,5 +1,5 @@
 <template>
-  <button type="button" @click="reset">Reset</button>
+  <button type="button" @click="resetWhite">Reset</button>
   <button type="button" @click="resetOrange">Reset orange</button>
   <div>
     <strong>Color space</strong>
@@ -15,16 +15,31 @@
 </template>
 
 <script lang="ts" setup>
-import { artboardService } from "@/components/Artboard/Artboard";
+import { messageBus } from "@/components/Artboard/Artboard";
 import { artAppState } from "./artAppState";
 import { artboardState } from "@/components/Artboard/artboardState";
+import { color2srgb, colorConverter } from "@/lib/color/color";
 
-function reset() {
-  artboardService.reset();
+function resetWhite() {
+  const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
+  const color = colorConvert(color2srgb("white"));
+  //TODO is this actually artboardMessageBus?
+  // and if it is then does it not need to hide publish inside a method?
+  messageBus.publish({
+    name: "resetCanvas",
+    params: [color],
+  });
   artAppState.value.closeMenus();
 }
+
 function resetOrange() {
-  artboardService.resetOrange();
+  const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
+  const color = colorConvert(color2srgb("orange"));
+  //TODO is this actually artboardMessageBus?
+  messageBus.publish({
+    name: "resetCanvas",
+    params: [color],
+  });
   artAppState.value.closeMenus();
 }
 </script>

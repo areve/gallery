@@ -1,7 +1,7 @@
 import { artboardState } from "@/components/Artboard/artboardState";
 import { brushToolState } from "./brushToolState";
 import type { Tool } from "@/lib/Tool";
-import { artboardService, messageBus } from "../Artboard/Artboard";
+import { artboard, messageBus } from "../Artboard/Artboard";
 import { getCanvasPoint } from "@/services/pointerService";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";
@@ -36,9 +36,9 @@ function pointerDown(_: PointerEvent) {
 
 function pointerMove(pointerEvent: PointerEvent) {
   if (!isPointerDown) return;
-  if (!artboardService.artboard.canvas) return;
+  if (!artboard.canvas) return;
 
-  const canvasPoint = getCanvasPoint(artboardService.artboard.canvas, {
+  const canvasPoint = getCanvasPoint(artboard.canvas, {
     x: pointerEvent.pageX,
     y: pointerEvent.pageY,
   });
