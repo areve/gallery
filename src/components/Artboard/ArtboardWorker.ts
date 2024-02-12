@@ -83,8 +83,7 @@ watchPostEffect(() => {
   brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
 });
 
-// TODO order of params was easy to get wrong and names are inconstent
-function onBrushApply(fromPoint: Coord, toPoint: Coord, weight: number, color: ColorCoord, radius: number) {
+function onBrushApply(fromPoint: Coord | undefined, toPoint: Coord, weight: number) {
   if (!brush) return;
   if (!bitmapLayer) return;
   applyBrush(bitmapLayer, fromPoint, toPoint, brush, weight);

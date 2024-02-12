@@ -30,7 +30,7 @@ export function createBrush(radius: number, color: ColorCoord, space: ColorSpace
   return brush;
 }
 
-export async function applyBrush(bitmapLayer: BitmapLayer, from: Coord | null, to: Coord, brush: Brush, weight: number) {
+export async function applyBrush(bitmapLayer: BitmapLayer, from: Coord | undefined, to: Coord, brush: Brush, weight: number) {
   if (from) {
     brushLine(bitmapLayer, from!, to, brush, weight);
   } else {
@@ -43,7 +43,6 @@ function brushLine(bitmapLayer: BitmapLayer, from: Coord, to: Coord, brush: Brus
   const dy = from.y - to.y;
   const d = Math.sqrt(dy * dy + dx * dx);
 
-  // TODO need to know speed as well as weight to calculate this better
   const brushRadius = Math.min(brush.width, brush.height) / 2;
 
   for (let i = 0; i < d; i += brushRadius) {
