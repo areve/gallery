@@ -45,7 +45,7 @@ function showRightMenu() {
   height: 100%;
   z-index: 99;
   cursor: pointer;
-  background-color: rgb(127, 127, 127, 0.1);
+  background-color: rgb(127, 127, 127, 0.5);
 }
 
 .show-left-menu-button,

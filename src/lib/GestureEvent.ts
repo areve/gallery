@@ -1,8 +1,6 @@
 import type { Coord } from "@/lib/Coord";
 import { ref } from "vue";
 
-
-
 export interface ScreenEvent {
   pointerType: string;
   isPrimary: boolean;
@@ -18,12 +16,15 @@ export interface ScreenEvent {
   type: string;
   page: Coord;
   screen: Coord;
+  target: EventTarget | null;
 }
 
 export interface GestureEvent {
+  firstEvent: ScreenEvent;
   currentEvent: ScreenEvent;
   previousEvent?: ScreenEvent;
 }
+
 // TODO saving this file breaks vue hot reload, don't know why
 export const gestureAnyEvent = ref<GestureEvent | undefined>(undefined);
 
@@ -66,6 +67,7 @@ function pointerEventToGestureEvent(type: string, event: PointerEvent) {
   }
 
   const currentGestureEvent: GestureEvent = {
+    firstEvent: prevGestureEvent ? prevGestureEvent.firstEvent : screenEvent,
     currentEvent: screenEvent,
     previousEvent: prevGestureEvent ? prevGestureEvent.currentEvent : undefined,
   };
@@ -78,6 +80,7 @@ function pointerEventToScreenEvent(type: string, event: PointerEvent): ScreenEve
   const screenEvent: ScreenEvent = {
     type,
     buttons: event.buttons,
+    target: event.target,
     width: event.width,
     height: event.height,
     pressure: event.pressure,

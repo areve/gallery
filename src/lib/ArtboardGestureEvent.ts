@@ -2,6 +2,7 @@ import type { Coord } from "./Coord";
 import type { GestureEvent, ScreenEvent } from "./GestureEvent";
 
 export interface ArtboardGestureEvent extends GestureEvent {
+  firstEvent: ArtboardEvent;
   currentEvent: ArtboardEvent;
   previousEvent?: ArtboardEvent;
 }
@@ -14,6 +15,7 @@ export function gestureEventToArtboardGestureEvent(canvas: HTMLCanvasElement, ge
   const current = gestureEvent.currentEvent;
   const previous = gestureEvent.previousEvent;
   return {
+    firstEvent: { at: getCanvasPoint(canvas, current.page), ...current },
     currentEvent: { at: getCanvasPoint(canvas, current.page), ...current },
     previousEvent: previous ? { at: getCanvasPoint(canvas, previous.page), ...previous } : undefined,
   };

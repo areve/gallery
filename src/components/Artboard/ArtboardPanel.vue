@@ -1,23 +1,28 @@
 <template>
   <section class="artboard-panel">
     <div class="fps">{{ artboardState.fps }}fps</div>
-    <canvas ref="canvas" class="canvas"></canvas>
+    <canvas ref="canvas" class="canvas" @dragstart="ignoreEvent"></canvas>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, toRaw, watchSyncEffect } from "vue";
+import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
 import { attachToCanvas, detachCanvas } from "@/components/Artboard/Artboard";
 import { useBrushTool } from "@/components/Brush/brushTool";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
 import { artboardState } from "./artboardState";
-import type { Coord } from "@/lib/Coord";
-import { gestureAnyEvent, type GestureEvent, type ScreenEvent } from "@/lib/GestureEvent";
+import { gestureAnyEvent } from "@/lib/GestureEvent";
 import { gestureEventToArtboardGestureEvent } from "@/lib/ArtboardGestureEvent";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 
 const tools = [useBrushTool(), useEraserTool()];
+
+function ignoreEvent(ev: DragEvent) {
+  ev.preventDefault();
+  ev.stopPropagation();
+  ev.dataTransfer?.clearData();
+}
 
 onMounted(async () => {
   resizeCanvasToVisible();
@@ -33,12 +38,11 @@ function resizeCanvasToVisible() {
   canvas.value.height = canvas.value.offsetHeight * window.devicePixelRatio;
 }
 
-// TODO sometimes when I drag it says no
 watchSyncEffect(() => {
   if (!gestureAnyEvent.value) return;
   if (!canvas.value) return;
+  if (gestureAnyEvent.value.firstEvent.target !== canvas.value) return;
   const gestureEvent = gestureEventToArtboardGestureEvent(canvas.value, gestureAnyEvent.value);
-  // TODO clicking on a button or outside the canvas shouldn't trigger
   selectedTool().gesture(gestureEvent);
 });
 
