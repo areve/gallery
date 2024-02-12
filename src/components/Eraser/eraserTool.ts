@@ -1,7 +1,7 @@
 import type { Tool } from "@/lib/Tool";
 import { artboard, messageBus } from "../Artboard/Artboard";
 import { eraserToolState } from "./eraserToolState";
-import type { GestureEvent } from "@/services/pointerService";
+import type { GestureEvent } from "@/services/GestureEvent";
 
 const tool: Tool = {
   toolType: "eraser",

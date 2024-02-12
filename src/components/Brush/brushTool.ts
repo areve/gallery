@@ -4,7 +4,7 @@ import type { Tool } from "@/lib/Tool";
 import { artboard, messageBus } from "../Artboard/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";
-import type { GestureEvent } from "@/services/pointerService";
+import type { GestureEvent } from "@/services/GestureEvent";
 import type { Coord } from "@/lib/Coord";
 
 const tool: Tool = {

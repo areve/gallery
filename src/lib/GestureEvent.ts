@@ -27,58 +27,31 @@ export const gestureUpEvent = ref<GestureEvent | null>(null);
 export const gestureDownEvent = ref<GestureEvent | null>(null);
 export const gestureMoveEvent = ref<GestureEvent | null>(null);
 
+const pointerScreenEvents: { [k: number]: ScreenEvent[] } = {};
+
 document.onpointerdown = function (event: PointerEvent) {
-  const gestureEvent = handle("pointerdown", event);
+  const gestureEvent = pointerEventToGestureEvent("pointerdown", event);
   gestureDownEvent.value = gestureEvent;
-  //dispatchToListners(gestureEvent);
 };
 
 document.onpointermove = function (event: PointerEvent) {
-  const gestureEvent = handle("pointermove", event);
+  const gestureEvent = pointerEventToGestureEvent("pointermove", event);
   gestureMoveEvent.value = gestureEvent;
-  //dispatchToListners(gestureEvent);
 };
 
 document.onpointerup = function (event: PointerEvent) {
-  const gestureEvent = handle("pointerup", event);
+  const gestureEvent = pointerEventToGestureEvent("pointerup", event);
   gestureUpEvent.value = gestureEvent;
   delete pointerScreenEvents[event.pointerId];
-  //dispatchToListners(gestureEvent);
 };
 
 document.onpointercancel = function (event: PointerEvent) {
-  const gestureEvent = handle("pointercancel", event);
+  const gestureEvent = pointerEventToGestureEvent("pointercancel", event);
   gestureUpEvent.value = gestureEvent;
   delete pointerScreenEvents[event.pointerId];
-  //dispatchToListners(gestureEvent);
 };
 
-// function //dispatchToListners(gestureEvent: GestureEvent) {
-//   Object.keys(registry).forEach((k) => {
-//     registry[k].forEach((listener: any) => {
-//       const el = listener.element();
-//       const domRect = el.getBoundingClientRect();
-//       gestureEvent.at = {
-//         x: gestureEvent.screen.x - domRect.x,
-//         y: gestureEvent.screen.y - domRect.y,
-//       };
-//       listener.callback(gestureEvent);
-//     });
-//   });
-// }
-
-export type EventType = "screen";
-// const registry: { [k: string]: any } = {};
-
-const pointerScreenEvents: { [k: number]: ScreenEvent[] } = {};
-// export const gesture = {
-//   addEventListener(element: () => HTMLElement, event: EventType, callback: (event: ScreenEvent) => void) {
-//     if (!registry[event]) registry[event] = [];
-//     registry[event].push({ element, callback });
-//   },
-// };
-
-function handle(type: string, event: PointerEvent) {
+function pointerEventToGestureEvent(type: string, event: PointerEvent) {
   const screenEvent = pointerEventToScreenEvent(type, event);
   if (screenEvent.buttons !== 0) {
     if (!pointerScreenEvents[screenEvent.pointerId]) pointerScreenEvents[screenEvent.pointerId] = [];

@@ -9,10 +9,10 @@
 import { onMounted, onUnmounted, ref, toRaw, watchSyncEffect } from "vue";
 import { attachToCanvas, detachCanvas } from "@/components/Artboard/Artboard";
 import { useBrushTool } from "@/components/Brush/brushTool";
-import { gestureMoveEvent, type GestureEvent, gestureUpEvent, gestureDownEvent, stringifyEvent } from "@/services/pointerService";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
 import { artboardState } from "./artboardState";
 import type { Coord } from "@/lib/Coord";
+import { gestureDownEvent, gestureMoveEvent, gestureUpEvent } from "@/lib/GestureEvent";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 
@@ -91,3 +91,4 @@ function getCanvasPoint(canvas: HTMLCanvasElement, eventPoint: Coord): Coord {
   font-size: 0.8em;
 }
 </style>
+@/services/GestureEvent
