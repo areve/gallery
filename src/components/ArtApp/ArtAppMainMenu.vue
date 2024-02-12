@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { messageBus } from "@/components/Artboard/Artboard";
+import { artboardMessageBus } from "@/components/Artboard/Artboard";
 import { artAppState } from "./artAppState";
 import { artboardState } from "@/components/Artboard/artboardState";
 import { color2srgb, colorConverter } from "@/lib/color/color";
@@ -23,9 +23,7 @@ import { color2srgb, colorConverter } from "@/lib/color/color";
 function resetWhite() {
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb("white"));
-  //TODO is this actually artboardMessageBus?
-  // and if it is then does it not need to hide publish inside a method?
-  messageBus.publish({
+  artboardMessageBus.publish({
     name: "resetCanvas",
     params: [color],
   });
@@ -35,8 +33,7 @@ function resetWhite() {
 function resetOrange() {
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb("orange"));
-  //TODO is this actually artboardMessageBus?
-  messageBus.publish({
+  artboardMessageBus.publish({
     name: "resetCanvas",
     params: [color],
   });

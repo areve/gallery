@@ -3,7 +3,8 @@ import { artboardState } from "./artboardState";
 import { createMessageBus } from "@/lib/MessageBus";
 import ArtboardWorker from "./ArtboardWorker?worker";
 
-export const messageBus = createMessageBus(() => new ArtboardWorker());
+// TODO instead of exporting this perhaps export a wrapper class?
+export const artboardMessageBus = createMessageBus(() => new ArtboardWorker());
 
 export interface Artboard {
   canvas?: HTMLCanvasElement;
@@ -17,7 +18,7 @@ export const artboard: Artboard = {
 };
 
 watchPostEffect(() => {
-  messageBus.publish({
+  artboardMessageBus.publish({
     name: "setColorSpace",
     params: [artboardState.value.colorSpace],
   });
@@ -25,18 +26,18 @@ watchPostEffect(() => {
 
 export function detachCanvas() {
   artboard.canvas = undefined;
-  messageBus.terminateWorker();
+  artboardMessageBus.terminateWorker();
 }
 
 export function attachToCanvas(canvas: HTMLCanvasElement) {
   if (artboard.canvas) detachCanvas();
 
-  if (!messageBus) throw "messageBus not ready";
-  messageBus.subscribe("fps:changed", onFpsChanged);
+  if (!artboardMessageBus) throw "messageBus not ready";
+  artboardMessageBus.subscribe("fps:changed", onFpsChanged);
 
   artboard.canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
-  messageBus.publish(
+  artboardMessageBus.publish(
     {
       name: "setOffscreenCanvas",
       params: [offscreenCanvas],
