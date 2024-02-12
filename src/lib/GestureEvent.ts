@@ -25,7 +25,6 @@ export interface GestureEvent {
   previousEvent?: ScreenEvent;
 }
 
-// TODO saving this file breaks vue hot reload, don't know why
 export const gestureAnyEvent = ref<GestureEvent | undefined>(undefined);
 
 const pointerScreenEvents: { [k: number]: GestureEvent } = {};
