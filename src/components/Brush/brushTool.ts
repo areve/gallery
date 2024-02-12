@@ -46,6 +46,7 @@ function pointerMove(gestureEvent: GestureEvent) {
     // brushMoved, allows the brush to be less like an airbrush
     // but tapping doesn't leave a mark
     // TODO better last point is in the gesture event:)
+    // TODO ... but it doesn't have the required relative .at.x & .at.y property
     const brushMoved = brushLastPoint.x != gestureEvent.at?.x || brushLastPoint.y != gestureEvent.at?.y;
     if (brushMoved) {
       const color = colorConverter("srgb", artboardState.value.colorSpace)(color2srgb(brushToolState.value.color));
