@@ -23,7 +23,7 @@ export const useBrushTool = (messageBus: MessageBus) => {
     let weight = gestureEvent.currentEvent.pressure ?? 0.1;
     weight = weight * weight;
     messageBus.publish({
-      name: "brush:apply",
+      name: "applyBrush",
       params: [gestureEvent.previousEvent?.at, gestureEvent.currentEvent.at, weight],
     });
   }

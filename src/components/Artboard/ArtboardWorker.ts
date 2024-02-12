@@ -19,25 +19,27 @@ let frameCount = 0;
 let brush: Brush | undefined = undefined;
 const colorSpace = ref<ColorSpace>("oklch");
 
-export const messageBus = setupMessageBus();
+export const messageBus = createMessageBus(() => self);
+messageBus.subscribe("setOffscreenCanvas", onSetOffscreenCanvas);
+messageBus.subscribe("setColorSpace", onSetColorSpace);
+messageBus.subscribe("resetCanvas", onResetCanvas);
+messageBus.subscribe("setBrush", onSetBrush);
+messageBus.subscribe("applyBrush", onApplyBrush);
+messageBus.subscribe("clearCircle", onClearCircle);
 
-function setupMessageBus() {
-  const messageBus = createMessageBus(() => self);
-  messageBus.subscribe("setOffscreenCanvas", setOffscreenCanvas);
-  messageBus.subscribe("setColorSpace", onSetColorSpace);
-  messageBus.subscribe("resetCanvas", onResetCanvas);
-  messageBus.subscribe("setBrush", onSetBrush);
-  messageBus.subscribe("brush:apply", onBrushApply);
-  messageBus.subscribe("clearCircle", onClearCircle);
-  return messageBus;
-}
+watch(
+  () => artboardState.value.colorSpace,
+  () => {
+    if (!bitmapLayer) return;
+    bitmapLayer = convertBitmapLayer(bitmapLayer, artboardState.value.colorSpace);
+  }
+);
 
-function setOffscreenCanvas(offscreenCanvas: OffscreenCanvas) {
-  canvas = offscreenCanvas;
-  context = canvas.getContext("2d");
-  reset();
-  requestAnimationFrame(render);
-}
+watchPostEffect(() => {
+  const srgb = color2srgb(brushToolState.value.color);
+  const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
+  brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
+});
 
 function reset() {
   if (!context) return;
@@ -69,21 +71,14 @@ function frameCounter() {
   }
 }
 
-watch(
-  () => artboardState.value.colorSpace,
-  () => {
-    if (!bitmapLayer) return;
-    bitmapLayer = convertBitmapLayer(bitmapLayer, artboardState.value.colorSpace);
-  }
-);
+function onSetOffscreenCanvas(offscreenCanvas: OffscreenCanvas) {
+  canvas = offscreenCanvas;
+  context = canvas.getContext("2d");
+  reset();
+  requestAnimationFrame(render);
+}
 
-watchPostEffect(() => {
-  const srgb = color2srgb(brushToolState.value.color);
-  const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
-  brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
-});
-
-function onBrushApply(fromPoint: Coord | undefined, toPoint: Coord, weight: number) {
+function onApplyBrush(fromPoint: Coord | undefined, toPoint: Coord, weight: number) {
   if (!brush) return;
   if (!bitmapLayer) return;
   applyBrush(bitmapLayer, fromPoint, toPoint, brush, weight);
