@@ -17,20 +17,8 @@
 import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
 import ArtAppToolMenu from "./ArtAppToolMenu.vue";
 import ArtAppMainMenu from "./ArtAppMainMenu.vue";
-import { swipeEdgeEvent } from "@/services/swipeEdgeService";
-import { watchSyncEffect } from "vue";
 import { artAppState } from "./artAppState";
 
-watchSyncEffect(() => {
-  if (!swipeEdgeEvent.value) return;
-  console.log("swipeEdgeEvent", swipeEdgeEvent.value);
-
-  if (swipeEdgeEvent.value.edge === "left") {
-    showLeftMenu();
-  } else if (swipeEdgeEvent.value.edge === "right") {
-    showRightMenu();
-  }
-});
 function cancelMenus() {
   artAppState.value.closeMenus();
 }
