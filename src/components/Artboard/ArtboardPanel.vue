@@ -6,12 +6,13 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
+import { onMounted, onUnmounted, ref, toRaw, watchSyncEffect } from "vue";
 import { attachToCanvas, detachCanvas } from "@/components/Artboard/Artboard";
 import { useBrushTool } from "@/components/Brush/brushTool";
-import { pointerMoveEvent, pointerUpEvent } from "@/services/pointerService";
+import { gestureMoveEvent, type GestureEvent, gestureUpEvent, gestureDownEvent, stringifyEvent } from "@/services/pointerService";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
 import { artboardState } from "./artboardState";
+import type { Coord } from "@/lib/Coord";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 
@@ -27,8 +28,8 @@ onUnmounted(() => {
 });
 
 watchSyncEffect(() => {
-  if (!pointerUpEvent.value) return;
-  selectedTool().pointerUp(pointerUpEvent.value);
+  if (!gestureUpEvent.value) return;
+  selectedTool().pointerUp(gestureUpEvent.value);
 });
 
 function resizeCanvasToVisible() {
@@ -37,16 +38,37 @@ function resizeCanvasToVisible() {
 }
 
 function pointerDown(event: PointerEvent) {
-  selectedTool().pointerDown(event);
+  //   selectedTool().pointerDown(event);
 }
 
 watchSyncEffect(() => {
-  if (!pointerMoveEvent.value) return;
-  selectedTool().pointerMove(pointerMoveEvent.value);
+  if (!gestureDownEvent.value) return;
+  // console.log("down", stringifyEvent(gestureDownEvent.value));
+  // TODO modifying the event is a bad ideas!
+  // TODO need to check the down event is even actually on the canvas
+  const gestureEvent = toRaw(gestureDownEvent.value);
+  gestureEvent.at = getCanvasPoint(canvas.value, gestureEvent.page);
+  selectedTool().pointerDown(gestureEvent);
+});
+
+watchSyncEffect(() => {
+  if (!gestureMoveEvent.value) return;
+  // TODO modifying the event is a bad ideas!
+  const gestureEvent = toRaw(gestureMoveEvent.value);
+  gestureEvent.at = getCanvasPoint(canvas.value, gestureEvent.page);
+  selectedTool().pointerMove(gestureEvent);
 });
 
 function selectedTool() {
   return tools.find((tool) => tool.toolType === artboardState.value.selectedTool) || tools[0];
+}
+
+function getCanvasPoint(canvas: HTMLCanvasElement, eventPoint: Coord): Coord {
+  const domRect = canvas.getBoundingClientRect();
+  return {
+    x: ((eventPoint.x - domRect.x) / domRect.width) * canvas.width,
+    y: ((eventPoint.y - domRect.y) / domRect.height) * canvas.height,
+  };
 }
 </script>
 

@@ -2,9 +2,10 @@ import { artboardState } from "@/components/Artboard/artboardState";
 import { brushToolState } from "./brushToolState";
 import type { Tool } from "@/lib/Tool";
 import { artboard, messageBus } from "../Artboard/Artboard";
-import { getCanvasPoint } from "@/services/pointerService";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";
+import type { GestureEvent } from "@/services/pointerService";
+import type { Coord } from "@/lib/Coord";
 
 const tool: Tool = {
   toolType: "brush",
@@ -15,7 +16,7 @@ const tool: Tool = {
 
 export const useBrushTool = () => tool;
 
-let brushLastPoint: { x: number; y: number } | null = null;
+let brushLastPoint: Coord | undefined = undefined;
 let isPointerDown = false;
 
 watchPostEffect(() => {
@@ -25,40 +26,36 @@ watchPostEffect(() => {
   });
 });
 
-function pointerUp(_: PointerEvent) {
-  brushLastPoint = null;
+function pointerUp(_: GestureEvent) {
+  brushLastPoint = undefined;
   isPointerDown = false;
 }
 
-function pointerDown(_: PointerEvent) {
+function pointerDown(_: GestureEvent) {
   isPointerDown = true;
 }
 
-function pointerMove(pointerEvent: PointerEvent) {
+function pointerMove(gestureEvent: GestureEvent) {
   if (!isPointerDown) return;
   if (!artboard.canvas) return;
 
-  const canvasPoint = getCanvasPoint(artboard.canvas, {
-    x: pointerEvent.pageX,
-    y: pointerEvent.pageY,
-  });
-
   if (brushLastPoint) {
-    let weight = pointerEvent.pressure ?? 0.1;
+    let weight = gestureEvent.pressure ?? 0.1;
     weight = weight * weight;
 
     // brushMoved, allows the brush to be less like an airbrush
     // but tapping doesn't leave a mark
-    const brushMoved = brushLastPoint.x != canvasPoint.x || brushLastPoint.y != canvasPoint.y;
+    // TODO better last point is in the gesture event:)
+    const brushMoved = brushLastPoint.x != gestureEvent.at?.x || brushLastPoint.y != gestureEvent.at?.y;
     if (brushMoved) {
       const color = colorConverter("srgb", artboardState.value.colorSpace)(color2srgb(brushToolState.value.color));
 
       messageBus.publish({
         name: "brush:apply",
-        params: [brushLastPoint, canvasPoint, weight, color, brushToolState.value.radius],
+        params: [brushLastPoint, gestureEvent.at, weight, color, brushToolState.value.radius],
       });
     }
   }
 
-  brushLastPoint = canvasPoint;
+  brushLastPoint = gestureEvent.at;
 }

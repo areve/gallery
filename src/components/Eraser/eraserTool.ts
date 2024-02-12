@@ -1,7 +1,7 @@
 import type { Tool } from "@/lib/Tool";
-import { getCanvasPoint } from "@/services/pointerService";
 import { artboard, messageBus } from "../Artboard/Artboard";
 import { eraserToolState } from "./eraserToolState";
+import type { GestureEvent } from "@/services/pointerService";
 
 const tool: Tool = {
   toolType: "eraser",
@@ -14,27 +14,23 @@ export const useEraserTool = () => tool;
 
 let isPointerDown = false;
 
-function pointerUp(_: PointerEvent) {
+function pointerUp(_: GestureEvent) {
   isPointerDown = false;
 }
 
-function pointerDown(pointerEvent: PointerEvent) {
+function pointerDown(gestureEvent: GestureEvent) {
   if (!artboard.canvas) return;
 
   isPointerDown = true;
 
-  const canvasPoint = getCanvasPoint(artboard.canvas, {
-    x: pointerEvent.pageX,
-    y: pointerEvent.pageY,
-  });
 
   messageBus.publish({
     name: "clearCircle",
-    params: [canvasPoint, eraserToolState.value.radius],
+    params: [gestureEvent.at, eraserToolState.value.radius],
   });
 }
 
-function pointerMove(pointerEvents: PointerEvent) {
+function pointerMove(pointerEvents: GestureEvent) {
   if (!isPointerDown) return;
   pointerDown(pointerEvents);
 }
