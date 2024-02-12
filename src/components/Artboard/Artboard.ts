@@ -6,16 +6,9 @@ import ArtboardWorker from "./ArtboardWorker?worker";
 // TODO instead of exporting this perhaps export a wrapper class?
 export const artboardMessageBus = createMessageBus(() => new ArtboardWorker());
 
-export interface Artboard {
-  canvas?: HTMLCanvasElement;
-}
-
-// TODO is this not the same as artboardState?
 // TODO a static variable here is not good perhaps?
 // TODO perhaps this and the messageBus should just go to the Panel?
-export const artboard: Artboard = {
-  canvas: undefined,
-};
+let _canvas: HTMLCanvasElement | undefined;
 
 watchPostEffect(() => {
   artboardMessageBus.publish({
@@ -25,17 +18,17 @@ watchPostEffect(() => {
 });
 
 export function detachCanvas() {
-  artboard.canvas = undefined;
+  _canvas = undefined;
   artboardMessageBus.terminateWorker();
 }
 
 export function attachToCanvas(canvas: HTMLCanvasElement) {
-  if (artboard.canvas) detachCanvas();
+  if (_canvas) detachCanvas();
 
   if (!artboardMessageBus) throw "messageBus not ready";
   artboardMessageBus.subscribe("fps:changed", onFpsChanged);
 
-  artboard.canvas = canvas;
+  _canvas = canvas;
   const offscreenCanvas = canvas.transferControlToOffscreen();
   artboardMessageBus.publish(
     {
