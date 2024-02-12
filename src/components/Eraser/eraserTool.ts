@@ -1,7 +1,7 @@
 import type { Tool } from "@/lib/Tool";
 import { messageBus } from "../Artboard/Artboard";
 import { eraserToolState } from "./eraserToolState";
-import type { GestureEvent } from "@/lib/GestureEvent";
+import type { ArtboardGestureEvent } from "@/lib/ArtboardGestureEvent";
 
 const tool: Tool = {
   toolType: "eraser",
@@ -10,7 +10,7 @@ const tool: Tool = {
 
 export const useEraserTool = () => tool;
 
-function gesture(gestureEvent: GestureEvent) {
+function gesture(gestureEvent: ArtboardGestureEvent) {
   messageBus.publish({
     name: "clearCircle",
     params: [gestureEvent.currentEvent.at, eraserToolState.value.radius],

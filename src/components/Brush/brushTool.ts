@@ -4,8 +4,7 @@ import type { Tool } from "@/lib/Tool";
 import { messageBus } from "../Artboard/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";
-import type { GestureEvent } from "@/lib/GestureEvent";
-
+import type { ArtboardGestureEvent } from "@/lib/ArtboardGestureEvent";
 const tool: Tool = {
   toolType: "brush",
   gesture,
@@ -20,7 +19,7 @@ watchPostEffect(() => {
   });
 });
 
-function gesture(gestureEvent: GestureEvent) {
+function gesture(gestureEvent: ArtboardGestureEvent) {
   let weight = gestureEvent.currentEvent.pressure ?? 0.1;
   weight = weight * weight;
   const color = colorConverter("srgb", artboardState.value.colorSpace)(color2srgb(brushToolState.value.color));

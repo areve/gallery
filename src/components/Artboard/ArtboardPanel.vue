@@ -1,6 +1,6 @@
 <template>
   <section class="artboard-panel">
-    
+    <div class="fps">{{ artboardState.fps }}fps</div>
     <canvas ref="canvas" class="canvas"></canvas>
   </section>
 </template>
@@ -12,9 +12,9 @@ import { useBrushTool } from "@/components/Brush/brushTool";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
 import { artboardState } from "./artboardState";
 import type { Coord } from "@/lib/Coord";
-import { gestureAnyEvent } from "@/lib/GestureEvent";
+import { gestureAnyEvent, type GestureEvent, type ScreenEvent } from "@/lib/GestureEvent";
+import { gestureEventToArtboardGestureEvent } from "@/lib/ArtboardGestureEvent";
 
-//TODO make the fps display a statusbar, and not selectable
 const canvas = ref<HTMLCanvasElement>(undefined!);
 
 const tools = [useBrushTool(), useEraserTool()];
@@ -33,26 +33,17 @@ function resizeCanvasToVisible() {
   canvas.value.height = canvas.value.offsetHeight * window.devicePixelRatio;
 }
 
+// TODO sometimes when I drag it says no
 watchSyncEffect(() => {
   if (!gestureAnyEvent.value) return;
   if (!canvas.value) return;
-  const gestureEvent = toRaw(gestureAnyEvent.value);
-  // TODO modifying the event is a bad ideas!
-  gestureEvent.currentEvent.at = getCanvasPoint(canvas.value, gestureEvent.currentEvent.page);
-  if (gestureEvent.previousEvent) gestureEvent.previousEvent.at = getCanvasPoint(canvas.value, gestureEvent.previousEvent.page);
+  const gestureEvent = gestureEventToArtboardGestureEvent(canvas.value, gestureAnyEvent.value);
+  // TODO clicking on a button or outside the canvas shouldn't trigger
   selectedTool().gesture(gestureEvent);
 });
 
 function selectedTool() {
   return tools.find((tool) => tool.toolType === artboardState.value.selectedTool) || tools[0];
-}
-
-function getCanvasPoint(canvas: HTMLCanvasElement, eventPoint: Coord): Coord {
-  const domRect = canvas.getBoundingClientRect();
-  return {
-    x: ((eventPoint.x - domRect.x) / domRect.width) * canvas.width,
-    y: ((eventPoint.y - domRect.y) / domRect.height) * canvas.height,
-  };
 }
 </script>
 
@@ -73,6 +64,7 @@ function getCanvasPoint(canvas: HTMLCanvasElement, eventPoint: Coord): Coord {
   bottom: 0;
   left: 0.3em;
   font-size: 0.8em;
+  user-select: none;
 }
 </style>
 @/services/GestureEvent

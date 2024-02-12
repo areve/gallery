@@ -1,6 +1,8 @@
 import type { Coord } from "@/lib/Coord";
 import { ref } from "vue";
 
+
+
 export interface ScreenEvent {
   pointerType: string;
   isPrimary: boolean;
@@ -14,7 +16,6 @@ export interface ScreenEvent {
   azimuthAngle: number;
   altitudeAngle: number;
   type: string;
-  at?: Coord; //TODO temporary, it's never set in this file
   page: Coord;
   screen: Coord;
 }
