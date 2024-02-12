@@ -8,7 +8,7 @@ import { watchPostEffect } from "vue";
 import ArtboardWorker from "./ArtboardWorker?worker";
 
 const messageBus = createMessageBus(() => new ArtboardWorker());
-messageBus.subscribe("fps:changed", (fps: number) => (artboardState.value.fps = fps));
+messageBus.subscribe("reportFps", (fps: number) => (artboardState.value.fps = fps));
 const tools = [useBrushTool(messageBus), useEraserTool(messageBus)];
 
 watchPostEffect(() => {

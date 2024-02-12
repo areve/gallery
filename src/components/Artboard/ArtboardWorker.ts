@@ -64,7 +64,7 @@ function frameCounter() {
     const duration = end - start;
     const fps = Math.round((calculateAfterFrames / duration) * 1000);
     messageBus.publish({
-      name: "fps:changed",
+      name: "reportFps",
       params: [fps],
     });
     start = new Date().getTime();
