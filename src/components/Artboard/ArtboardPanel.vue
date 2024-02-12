@@ -55,6 +55,7 @@ watchSyncEffect(() => {
 .canvas {
   width: 100%;
 }
+
 .fps {
   position: fixed;
   bottom: 0;

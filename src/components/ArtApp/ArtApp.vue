@@ -1,13 +1,13 @@
 <template>
-  <div class="show-left-menu-button" @click="showLeftMenu" :hidden="artAppState.menus.appLeft"></div>
-  <div class="cancel-overlay" @click="cancelMenus" :hidden="!artAppState.menus.appLeft && !artAppState.menus.appRight"></div>
+  <div class="show-left-menu-button" @click="showLeftMenu"></div>
+  <!-- <div class="cancel-overlay" @click="cancelMenus" :hidden="!artAppState.menus.appLeft && !artAppState.menus.appRight"></div> -->
   <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
     <ArtAppToolMenu />
   </aside>
   <main class="art-app">
     <ArtboardPanel />
   </main>
-  <div class="show-right-menu-button" @click="showRightMenu" :hidden="artAppState.menus.appRight"></div>
+  <div class="show-right-menu-button" @click="showRightMenu"></div>
   <aside class="right-menu" :hidden="!artAppState.menus.appRight">
     <ArtAppMainMenu />
   </aside>
@@ -28,10 +28,10 @@ function cancelMenus() {
   artAppState.value.closeMenus();
 }
 function showLeftMenu() {
-  artAppState.value.menus.appLeft = true;
+  artAppState.value.menus.appLeft = !artAppState.value.menus.appLeft;
 }
 function showRightMenu() {
-  artAppState.value.menus.appRight = true;
+  artAppState.value.menus.appRight = !artAppState.value.menus.appRight;
 }
 </script>
 
@@ -44,14 +44,14 @@ function showRightMenu() {
   flex-direction: row;
 }
 
-.cancel-overlay {
+/* .cancel-overlay {
   display: fixed;
   width: 100%;
   height: 100%;
   z-index: 99;
   cursor: pointer;
   background-color: rgb(127, 127, 127, 0.5);
-}
+} */
 
 .show-left-menu-button,
 .show-right-menu-button {
@@ -65,10 +65,13 @@ function showRightMenu() {
 
 .show-left-menu-button {
   border-bottom-right-radius: 3em;
+  left: 0;
+  /* z-index: 100; */
 }
 .show-right-menu-button {
   border-bottom-left-radius: 3em;
   right: 0;
+  /* z-index: 100; */
 }
 
 .left-menu,
@@ -78,19 +81,25 @@ function showRightMenu() {
   height: 100%;
   background-color: rgb(127, 127, 127, 0.95);
   cursor: pointer;
-  z-index: 100;
+  z-index: 50;
   transition: all 0.2s ease-in-out;
   overflow: hidden;
 }
 
-.right-menu[hidden],
 .left-menu[hidden] {
-  width: 0%;
+  left: -45%;
+  opacity: 0.5;
+  display: block !important;
+}
+
+.right-menu[hidden] {
+  right: -45%;
   opacity: 0;
   display: block !important;
 }
 
 .left-menu {
+  left: 0;
   opacity: 1;
   width: 45%;
 }
