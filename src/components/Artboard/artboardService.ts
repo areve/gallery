@@ -9,6 +9,7 @@ import ArtboardWorker from "./ArtboardWorker?worker";
 const messageBus = createMessageBus(() => new ArtboardWorker());
 messageBus.subscribe("reportFps", (fps: number) => (artboardState.value.fps = fps));
 const tools = [useBrushTool(messageBus), useEraserTool(messageBus)];
+let _canvas: HTMLCanvasElement | undefined;
 
 watchPostEffect(() => {
   messageBus.publish({
@@ -28,10 +29,12 @@ export function resetCanvas(colorString: string) {
 
 export function detachCanvas() {
   messageBus.terminateWorker();
+  _canvas = undefined;
 }
 
 export function attachCanvas(canvas: HTMLCanvasElement) {
   const offscreenCanvas = canvas.transferControlToOffscreen();
+  _canvas = canvas;
   messageBus.publish(
     {
       name: "setOffscreenCanvas",
@@ -43,4 +46,14 @@ export function attachCanvas(canvas: HTMLCanvasElement) {
 
 export function selectedTool() {
   return tools.find((tool) => tool.toolType === artboardState.value.selectedTool) || tools[0];
+}
+
+export async function getAsBlob() {
+  // TODO too many forced types below
+  const imageBlob = (await new Promise<Blob | null>((resolve) => _canvas?.toBlob(resolve)))!;
+  return imageBlob;
+}
+
+export async function loadBlob(blob: Blob) {
+  console.error("TODO load blob to artboard not supported yet", blob);
 }

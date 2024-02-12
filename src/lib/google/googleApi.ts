@@ -1,4 +1,4 @@
-import { cacheFetch } from "./cacheService";
+//import { cacheFetch } from "./cacheService";
 import { authState } from "./googleAuthService";
 
 export function escapeQuery(value: string) {
@@ -46,13 +46,13 @@ export async function googleFileBlob(id: string) {
   const url = googleUrl(id, {
     alt: "media",
   });
-  const response = await cacheFetch(
+  const response = await fetch(
     url,
     {
       method: "GET",
       headers: getHeaders(),
     },
-    `/gallery/${id}`
+    // `/gallery/${id}`
   );
   return await response.blob();
 }
@@ -77,7 +77,7 @@ export async function googleFileUpdate(id: string, name: string, file: Blob) {
   return (await response.json()) as FileInfo;
 }
 
-export async function googleFileCreate(folderId: string, id: string, name: string, file: Blob) {
+export async function googleFileCreate(folderId: string, name: string, file: Blob) {
   const url = googleUploadUrl({
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
@@ -118,13 +118,13 @@ export async function googleFileGet(id: string) {
   const url = googleUrl(id, {
     fields: fileInfoKeys.join(","),
   });
-  const response = await cacheFetch(
+  const response = await fetch(
     url,
     {
       method: "GET",
       headers: getHeaders(),
     },
-    `/gallery/${id}/metadata`
+    // `/gallery/${id}/metadata`
   );
   return (await response.json()) as FileInfo;
 }
@@ -138,15 +138,15 @@ export async function googleFileDelete(id: string) {
   return response.status === 204;
 }
 
-export async function googleFilesGet(params: Record<string, string>, cacheKey: string) {
+export async function googleFilesGet(params: Record<string, string>) {
   const url = googleUrl(params);
-  const response = await cacheFetch(
+  const response = await fetch(
     url,
     {
       method: "GET",
       headers: getHeaders(),
     },
-    cacheKey
+    // cacheKey
   );
   const result = await response.json();
   return result.files as FileInfo[];

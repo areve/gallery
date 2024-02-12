@@ -60,19 +60,19 @@ function loadFromHash() {
 }
 
 async function onScriptLoaded() {
-  console.log("onScriptLoaded");
   isScriptLoaded = true;
   await waitUntilLoaded();
   google.accounts.id.initialize({
     client_id,
     // ux_mode=redirect this worked, but it needs a server-side login_uri to receive the POST
     scope: all_scope,
+    // TODO make auto_select an option
+    // TODO auto sign in again if we get 401 from googleApi
     auto_select: false,
     callback: (response: any) => {
-      //
       authState.value.idToken = response.credential;
+      console.log(parseJwt(response.credential))
       const hint = parseJwt(response.credential).email;
-      console.log(hint);
       getToken("token", hint);
     },
   });
@@ -90,7 +90,7 @@ function waitUntilLoaded() {
   return new Promise(test);
 }
 
-function parseJwt(token: string) {
+export function parseJwt(token: string) {
   const base64Url = token.split(".")[1];
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
   const jsonPayload = decodeURIComponent(
@@ -153,7 +153,6 @@ function getAuthState(): AuthStateState {
 
 // useGoogleAuth is only required for signOut, renderButton and showPrompt
 export function useGoogleAuth() {
-  console.log("useGoogleAuth");
   if (isScriptAdded) return;
   isScriptAdded = true;
   addScript("https://accounts.google.com/gsi/client", () => onScriptLoaded());
