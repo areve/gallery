@@ -9,22 +9,25 @@ export interface MessageBus {
   terminateWorker(): void;
 }
 
-//TODO this is my only class? why is that? is it a service? what's the difference?
-class _MessageBus implements MessageBus {
-  getWorker: () => Worker | Window;
-  worker?: Window | Worker;
-  registry: { [name: string]: Function[] } = {};
+export function createMessageBus(getWorker: () => Worker | Window) {
+  let worker: Worker | Window | undefined;
+  const registry: { [name: string]: Function[] } = {};
 
-  constructor(getWorker: () => Worker | Window) {
-    this.getWorker = getWorker;
-    this.ensureWorker();
-  }
+  const messageBus: MessageBus = {
+    subscribe,
+    publish,
+    terminateWorker,
+  };
 
-  setupWorker() {
-    const worker = this.getWorker();
+  ensureWorker();
+
+  return messageBus;
+
+  function setupWorker() {
+    const worker = getWorker();
     if (worker.onmessage) console.warn("onmessage was already bound");
     worker.onmessage = (event: MessageEvent<Message>) => {
-      const subscribers: Function[] = this.registry[event.data.name];
+      const subscribers: Function[] = registry[event.data.name];
       if (!subscribers) console.warn(`subscribers not found: ${event.data.name}`);
       subscribers?.forEach((subscriber) => subscriber(...event.data.params));
     };
@@ -35,31 +38,27 @@ class _MessageBus implements MessageBus {
     return worker;
   }
 
-  terminateWorker() {
-    if (!this.worker) return;
-    this.worker.onmessage = null;
-    this.worker.onerror = null;
-    if (this.worker.constructor.name === "Worker") {
-      (this.worker as Worker).terminate();
+  function terminateWorker() {
+    if (!worker) return;
+    worker.onmessage = null;
+    worker.onerror = null;
+    if (worker.constructor.name === "Worker") {
+      (worker as Worker).terminate();
     }
-    this.worker = undefined;
+    worker = undefined;
   }
 
-  ensureWorker() {
-    if (!this.worker) this.worker = this.setupWorker();
-    return this.worker;
+  function ensureWorker() {
+    if (!worker) worker = setupWorker();
+    return worker;
   }
 
-  subscribe(name: string, callback: Function) {
-    if (!this.registry[name]) this.registry[name] = [];
-    this.registry[name].push(callback);
+  function subscribe(name: string, callback: Function) {
+    if (!registry[name]) registry[name] = [];
+    registry[name].push(callback);
   }
 
-  publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    this.ensureWorker().postMessage(message, structuredSerializeOptions as StructuredSerializeOptions);
+  function publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
+    ensureWorker().postMessage(message, structuredSerializeOptions as StructuredSerializeOptions);
   }
-}
-
-export function createMessageBus(getWorker: () => Worker | Window) {
-  return new _MessageBus(getWorker) as MessageBus;
 }
