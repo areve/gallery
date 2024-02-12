@@ -14,6 +14,7 @@ import { artboardState } from "./artboardState";
 import type { Coord } from "@/lib/Coord";
 import { gestureDownEvent, gestureMoveEvent, gestureUpEvent } from "@/lib/GestureEvent";
 
+//TODO make the fps display a statusbar, and not selectable
 const canvas = ref<HTMLCanvasElement>(undefined!);
 
 const tools = [useBrushTool(), useEraserTool()];
