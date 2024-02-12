@@ -20,67 +20,57 @@ export interface ScreenEvent {
 }
 
 export interface GestureEvent {
-  firstEvent: ScreenEvent;
-  eventCount: number;
   currentEvent: ScreenEvent;
   previousEvent?: ScreenEvent;
 }
-
-// TODO rename to just one gesture? or many?
-export const gestureUpEvent = ref<GestureEvent | undefined>(undefined);
-export const gestureDownEvent = ref<GestureEvent | undefined>(undefined);
-export const gestureMoveEvent = ref<GestureEvent | undefined>(undefined);
+// TODO saving this file breaks vue hot reload, don't know why
+export const gestureAnyEvent = ref<GestureEvent | undefined>(undefined);
 
 const pointerScreenEvents: { [k: number]: GestureEvent } = {};
 
 document.onpointerdown = function (event: PointerEvent) {
   const gestureEvent = pointerEventToGestureEvent("pointerdown", event);
-  gestureDownEvent.value = gestureEvent;
+  gestureAnyEvent.value = gestureEvent;
 };
 
 document.onpointermove = function (event: PointerEvent) {
   const gestureEvent = pointerEventToGestureEvent("pointermove", event);
-  gestureMoveEvent.value = gestureEvent;
+  gestureAnyEvent.value = gestureEvent;
 };
 
 document.onpointerup = function (event: PointerEvent) {
   const gestureEvent = pointerEventToGestureEvent("pointerup", event);
-  gestureUpEvent.value = gestureEvent;
+  gestureAnyEvent.value = gestureEvent;
   delete pointerScreenEvents[event.pointerId];
 };
 
 document.onpointercancel = function (event: PointerEvent) {
   const gestureEvent = pointerEventToGestureEvent("pointercancel", event);
-  gestureUpEvent.value = gestureEvent;
+  gestureAnyEvent.value = gestureEvent;
   delete pointerScreenEvents[event.pointerId];
 };
 
 function pointerEventToGestureEvent(type: string, event: PointerEvent) {
   const screenEvent = pointerEventToScreenEvent(type, event);
-  if (screenEvent.buttons !== 0 || type !== "pointermove") {
-    if (!pointerScreenEvents[screenEvent.pointerId]) {
-      pointerScreenEvents[screenEvent.pointerId] = {
-        firstEvent: screenEvent,
-        previousEvent: undefined,
-        currentEvent: screenEvent,
-        eventCount: 1,
-      };
-    } else {
-      const state = pointerScreenEvents[screenEvent.pointerId];
-      pointerScreenEvents[screenEvent.pointerId] = {
-        currentEvent: screenEvent,
-        previousEvent: state.currentEvent,
-        firstEvent: state.firstEvent,
-        eventCount: state.eventCount + 1,
-      };
+  const prevGestureEvent = pointerScreenEvents[screenEvent.pointerId] as GestureEvent | undefined;
+  if (screenEvent.type === "pointermove") {
+    if (screenEvent.buttons === 0) return;
+    if (
+      prevGestureEvent &&
+      prevGestureEvent.currentEvent.screen.x === screenEvent.screen.x &&
+      prevGestureEvent.currentEvent.screen.y === screenEvent.screen.y
+    ) {
+      return;
     }
-
-    return pointerScreenEvents[screenEvent.pointerId];
-    //TODO keeping all events like this will cause bother eventually
-    //TODO soon gathering stats like number of points, distance travelled, ink used etc, and preserve first and previous pointo only
-  } else {
-    return undefined;
   }
+
+  const currentGestureEvent: GestureEvent = {
+    currentEvent: screenEvent,
+    previousEvent: prevGestureEvent ? prevGestureEvent.currentEvent : undefined,
+  };
+  pointerScreenEvents[screenEvent.pointerId] = currentGestureEvent;
+
+  return currentGestureEvent;
 }
 
 function pointerEventToScreenEvent(type: string, event: PointerEvent): ScreenEvent {

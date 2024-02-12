@@ -1,6 +1,6 @@
 <template>
   <section class="artboard-panel">
-    <div class="fps">{{ artboardState.fps }}fps</div>
+    
     <canvas ref="canvas" class="canvas"></canvas>
   </section>
 </template>
@@ -12,7 +12,7 @@ import { useBrushTool } from "@/components/Brush/brushTool";
 import { useEraserTool } from "@/components/Eraser/eraserTool";
 import { artboardState } from "./artboardState";
 import type { Coord } from "@/lib/Coord";
-import { gestureDownEvent, gestureMoveEvent, gestureUpEvent } from "@/lib/GestureEvent";
+import { gestureAnyEvent } from "@/lib/GestureEvent";
 
 //TODO make the fps display a statusbar, and not selectable
 const canvas = ref<HTMLCanvasElement>(undefined!);
@@ -34,10 +34,10 @@ function resizeCanvasToVisible() {
 }
 
 watchSyncEffect(() => {
-  if (!gestureMoveEvent.value) return;
+  if (!gestureAnyEvent.value) return;
   if (!canvas.value) return;
+  const gestureEvent = toRaw(gestureAnyEvent.value);
   // TODO modifying the event is a bad ideas!
-  const gestureEvent = toRaw(gestureMoveEvent.value);
   gestureEvent.currentEvent.at = getCanvasPoint(canvas.value, gestureEvent.currentEvent.page);
   if (gestureEvent.previousEvent) gestureEvent.previousEvent.at = getCanvasPoint(canvas.value, gestureEvent.previousEvent.page);
   selectedTool().gesture(gestureEvent);
