@@ -23,6 +23,11 @@ export function createMessageBus(getWorker: () => Worker | Window) {
 
   return messageBus;
 
+  function ensureWorker() {
+    if (!worker) worker = setupWorker();
+    return worker;
+  }
+
   function setupWorker() {
     const worker = getWorker();
     if (worker.onmessage) console.warn("onmessage was already bound");
@@ -38,6 +43,15 @@ export function createMessageBus(getWorker: () => Worker | Window) {
     return worker;
   }
 
+  function subscribe(name: string, callback: Function) {
+    if (!registry[name]) registry[name] = [];
+    registry[name].push(callback);
+  }
+
+  function publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
+    ensureWorker().postMessage(message, structuredSerializeOptions as StructuredSerializeOptions);
+  }
+
   function terminateWorker() {
     if (!worker) return;
     worker.onmessage = null;
@@ -46,19 +60,5 @@ export function createMessageBus(getWorker: () => Worker | Window) {
       (worker as Worker).terminate();
     }
     worker = undefined;
-  }
-
-  function ensureWorker() {
-    if (!worker) worker = setupWorker();
-    return worker;
-  }
-
-  function subscribe(name: string, callback: Function) {
-    if (!registry[name]) registry[name] = [];
-    registry[name].push(callback);
-  }
-
-  function publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    ensureWorker().postMessage(message, structuredSerializeOptions as StructuredSerializeOptions);
   }
 }
