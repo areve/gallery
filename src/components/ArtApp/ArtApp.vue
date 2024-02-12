@@ -19,6 +19,11 @@ import ArtAppToolMenu from "./ArtAppToolMenu.vue";
 import ArtAppMainMenu from "./ArtAppMainMenu.vue";
 import { artAppState } from "./artAppState";
 
+document.oncontextmenu = () => {
+  console.warn("oncontextmenu disabled");
+  return false;
+};
+
 function cancelMenus() {
   artAppState.value.closeMenus();
 }
