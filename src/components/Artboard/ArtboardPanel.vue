@@ -28,26 +28,10 @@ onUnmounted(() => {
   detachCanvas();
 });
 
-watchSyncEffect(() => {
-  if (!gestureUpEvent.value) return;
-  selectedTool().pointerUp(gestureUpEvent.value);
-});
-
 function resizeCanvasToVisible() {
   canvas.value.width = canvas.value.offsetWidth * window.devicePixelRatio;
   canvas.value.height = canvas.value.offsetHeight * window.devicePixelRatio;
 }
-
-watchSyncEffect(() => {
-  if (!gestureDownEvent.value) return;
-  if (!canvas.value) return;
-  // console.log("down", stringifyEvent(gestureDownEvent.value));
-  // TODO modifying the event is a bad ideas!
-  // TODO need to check the down event is even actually on the canvas
-  const gestureEvent = toRaw(gestureDownEvent.value);
-  gestureEvent.currentEvent.at = getCanvasPoint(canvas.value, gestureEvent.currentEvent.page);
-  selectedTool().pointerDown(gestureEvent);
-});
 
 watchSyncEffect(() => {
   if (!gestureMoveEvent.value) return;
@@ -55,7 +39,8 @@ watchSyncEffect(() => {
   // TODO modifying the event is a bad ideas!
   const gestureEvent = toRaw(gestureMoveEvent.value);
   gestureEvent.currentEvent.at = getCanvasPoint(canvas.value, gestureEvent.currentEvent.page);
-  selectedTool().pointerMove(gestureEvent);
+  if (gestureEvent.previousEvent) gestureEvent.previousEvent.at = getCanvasPoint(canvas.value, gestureEvent.previousEvent.page);
+  selectedTool().gesture(gestureEvent);
 });
 
 function selectedTool() {

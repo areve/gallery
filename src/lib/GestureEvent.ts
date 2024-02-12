@@ -26,6 +26,7 @@ export interface GestureEvent {
   previousEvent?: ScreenEvent;
 }
 
+// TODO rename to just one gesture? or many?
 export const gestureUpEvent = ref<GestureEvent | undefined>(undefined);
 export const gestureDownEvent = ref<GestureEvent | undefined>(undefined);
 export const gestureMoveEvent = ref<GestureEvent | undefined>(undefined);
