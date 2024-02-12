@@ -1,5 +1,5 @@
 <template>
-  <section class="artboard-panel" @pointerdown="pointerDown">
+  <section class="artboard-panel">
     <div class="fps">{{ artboardState.fps }}fps</div>
     <canvas ref="canvas" class="canvas"></canvas>
   </section>
@@ -38,25 +38,23 @@ function resizeCanvasToVisible() {
   canvas.value.height = canvas.value.offsetHeight * window.devicePixelRatio;
 }
 
-function pointerDown(event: PointerEvent) {
-  //   selectedTool().pointerDown(event);
-}
-
 watchSyncEffect(() => {
   if (!gestureDownEvent.value) return;
+  if (!canvas.value) return;
   // console.log("down", stringifyEvent(gestureDownEvent.value));
   // TODO modifying the event is a bad ideas!
   // TODO need to check the down event is even actually on the canvas
   const gestureEvent = toRaw(gestureDownEvent.value);
-  gestureEvent.at = getCanvasPoint(canvas.value, gestureEvent.page);
+  gestureEvent.currentEvent.at = getCanvasPoint(canvas.value, gestureEvent.currentEvent.page);
   selectedTool().pointerDown(gestureEvent);
 });
 
 watchSyncEffect(() => {
   if (!gestureMoveEvent.value) return;
+  if (!canvas.value) return;
   // TODO modifying the event is a bad ideas!
   const gestureEvent = toRaw(gestureMoveEvent.value);
-  gestureEvent.at = getCanvasPoint(canvas.value, gestureEvent.page);
+  gestureEvent.currentEvent.at = getCanvasPoint(canvas.value, gestureEvent.currentEvent.page);
   selectedTool().pointerMove(gestureEvent);
 });
 

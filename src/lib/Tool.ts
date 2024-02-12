@@ -1,4 +1,4 @@
-import type { GestureEvent } from "@/services/GestureEvent";
+import type { GestureEvent } from "./GestureEvent";
 export type ToolType = "brush" | "eraser";
 
 export interface Tool {

@@ -4,8 +4,8 @@ import type { Tool } from "@/lib/Tool";
 import { artboard, messageBus } from "../Artboard/Artboard";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { watchPostEffect } from "vue";
-import type { GestureEvent } from "@/services/GestureEvent";
 import type { Coord } from "@/lib/Coord";
+import type { GestureEvent } from "@/lib/GestureEvent";
 
 const tool: Tool = {
   toolType: "brush",
@@ -26,12 +26,15 @@ watchPostEffect(() => {
   });
 });
 
+
+// TODO I only need these to track pointer up down state, gesture should alredy be  doing this
 function pointerUp(_: GestureEvent) {
   brushLastPoint = undefined;
   isPointerDown = false;
 }
 
 function pointerDown(_: GestureEvent) {
+  console.log("brush down")
   isPointerDown = true;
 }
 
@@ -40,23 +43,24 @@ function pointerMove(gestureEvent: GestureEvent) {
   if (!artboard.canvas) return;
 
   if (brushLastPoint) {
-    let weight = gestureEvent.pressure ?? 0.1;
+    let weight = gestureEvent.currentEvent.pressure ?? 0.1;
     weight = weight * weight;
+    console.log("brush move")
 
     // brushMoved, allows the brush to be less like an airbrush
     // but tapping doesn't leave a mark
     // TODO better last point is in the gesture event:)
     // TODO ... but it doesn't have the required relative .at.x & .at.y property
-    const brushMoved = brushLastPoint.x != gestureEvent.at?.x || brushLastPoint.y != gestureEvent.at?.y;
+    const brushMoved = brushLastPoint.x != gestureEvent.currentEvent.at?.x || brushLastPoint.y != gestureEvent.currentEvent.at?.y;
     if (brushMoved) {
       const color = colorConverter("srgb", artboardState.value.colorSpace)(color2srgb(brushToolState.value.color));
 
       messageBus.publish({
         name: "brush:apply",
-        params: [brushLastPoint, gestureEvent.at, weight, color, brushToolState.value.radius],
+        params: [brushLastPoint, gestureEvent.currentEvent.at, weight, color, brushToolState.value.radius],
       });
     }
   }
 
-  brushLastPoint = gestureEvent.at;
+  brushLastPoint = gestureEvent.currentEvent.at;
 }

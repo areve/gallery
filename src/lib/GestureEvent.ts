@@ -14,20 +14,23 @@ export interface ScreenEvent {
   azimuthAngle: number;
   altitudeAngle: number;
   type: string;
-  at?: Coord;
+  at?: Coord; //TODO temporary, it's never set in this file
   page: Coord;
   screen: Coord;
 }
 
-export interface GestureEvent extends ScreenEvent {
-  coalescedEvents: ScreenEvent[];
+export interface GestureEvent {
+  firstEvent: ScreenEvent;
+  eventCount: number;
+  currentEvent: ScreenEvent;
+  previousEvent?: ScreenEvent;
 }
 
-export const gestureUpEvent = ref<GestureEvent | null>(null);
-export const gestureDownEvent = ref<GestureEvent | null>(null);
-export const gestureMoveEvent = ref<GestureEvent | null>(null);
+export const gestureUpEvent = ref<GestureEvent | undefined>(undefined);
+export const gestureDownEvent = ref<GestureEvent | undefined>(undefined);
+export const gestureMoveEvent = ref<GestureEvent | undefined>(undefined);
 
-const pointerScreenEvents: { [k: number]: ScreenEvent[] } = {};
+const pointerScreenEvents: { [k: number]: GestureEvent } = {};
 
 document.onpointerdown = function (event: PointerEvent) {
   const gestureEvent = pointerEventToGestureEvent("pointerdown", event);
@@ -53,17 +56,30 @@ document.onpointercancel = function (event: PointerEvent) {
 
 function pointerEventToGestureEvent(type: string, event: PointerEvent) {
   const screenEvent = pointerEventToScreenEvent(type, event);
-  if (screenEvent.buttons !== 0) {
-    if (!pointerScreenEvents[screenEvent.pointerId]) pointerScreenEvents[screenEvent.pointerId] = [];
+  if (screenEvent.buttons !== 0 || type !== "pointermove") {
+    if (!pointerScreenEvents[screenEvent.pointerId]) {
+      pointerScreenEvents[screenEvent.pointerId] = {
+        firstEvent: screenEvent,
+        previousEvent: undefined,
+        currentEvent: screenEvent,
+        eventCount: 1,
+      };
+    } else {
+      const state = pointerScreenEvents[screenEvent.pointerId];
+      pointerScreenEvents[screenEvent.pointerId] = {
+        currentEvent: screenEvent,
+        previousEvent: state.currentEvent,
+        firstEvent: state.firstEvent,
+        eventCount: state.eventCount + 1,
+      };
+    }
+
+    return pointerScreenEvents[screenEvent.pointerId];
     //TODO keeping all events like this will cause bother eventually
     //TODO soon gathering stats like number of points, distance travelled, ink used etc, and preserve first and previous pointo only
-    pointerScreenEvents[screenEvent.pointerId].push(screenEvent);
+  } else {
+    return undefined;
   }
-
-  const gestureEvent: GestureEvent = Object.assign({}, screenEvent, {
-    coalescedEvents: pointerScreenEvents[screenEvent.pointerId],
-  });
-  return gestureEvent;
 }
 
 function pointerEventToScreenEvent(type: string, event: PointerEvent): ScreenEvent {

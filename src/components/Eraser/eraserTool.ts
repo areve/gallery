@@ -1,7 +1,7 @@
 import type { Tool } from "@/lib/Tool";
 import { artboard, messageBus } from "../Artboard/Artboard";
 import { eraserToolState } from "./eraserToolState";
-import type { GestureEvent } from "@/services/GestureEvent";
+import type { GestureEvent } from "@/lib/GestureEvent";
 
 const tool: Tool = {
   toolType: "eraser",
@@ -26,7 +26,7 @@ function pointerDown(gestureEvent: GestureEvent) {
 
   messageBus.publish({
     name: "clearCircle",
-    params: [gestureEvent.at, eraserToolState.value.radius],
+    params: [gestureEvent.currentEvent.at, eraserToolState.value.radius],
   });
 }
 
