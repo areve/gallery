@@ -15,30 +15,11 @@
 </template>
 
 <script lang="ts" setup>
-import { artboardMessageBus } from "@/components/Artboard/Artboard";
-import { artAppState } from "./artAppState";
-import { artboardState } from "@/components/Artboard/artboardState";
-import { color2srgb, colorConverter } from "@/lib/color/color";
+import { resetCanvas } from "../Artboard/artboardService";
+import { artboardState } from "../Artboard/artboardState";
 
-function resetWhite() {
-  const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
-  const color = colorConvert(color2srgb("white"));
-  artboardMessageBus.publish({
-    name: "resetCanvas",
-    params: [color],
-  });
-  artAppState.value.closeMenus();
-}
-
-function resetOrange() {
-  const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
-  const color = colorConvert(color2srgb("orange"));
-  artboardMessageBus.publish({
-    name: "resetCanvas",
-    params: [color],
-  });
-  artAppState.value.closeMenus();
-}
+const resetWhite = () => resetCanvas("white");
+const resetOrange = () => resetCanvas("orange");
 </script>
 
 <style scoped>

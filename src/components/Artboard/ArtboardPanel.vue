@@ -7,26 +7,22 @@
 
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, watchSyncEffect } from "vue";
-import { attachToCanvas, detachCanvas } from "@/components/Artboard/Artboard";
-import { useBrushTool } from "@/components/Brush/brushTool";
-import { useEraserTool } from "@/components/Eraser/eraserTool";
 import { artboardState } from "./artboardState";
 import { gestureAnyEvent } from "@/lib/GestureEvent";
 import { gestureEventToArtboardGestureEvent } from "@/lib/ArtboardGestureEvent";
+import { attachCanvas, detachCanvas, selectedTool } from "./artboardService";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 
-const tools = [useBrushTool(), useEraserTool()];
-
-function ignoreEvent(ev: DragEvent) {
-  ev.preventDefault();
-  ev.stopPropagation();
-  ev.dataTransfer?.clearData();
+function ignoreEvent(event: DragEvent) {
+  event.preventDefault();
+  event.stopPropagation();
+  event.dataTransfer?.clearData();
 }
 
 onMounted(async () => {
   resizeCanvasToVisible();
-  attachToCanvas(canvas.value);
+  attachCanvas(canvas.value);
 });
 
 onUnmounted(() => {
@@ -45,10 +41,6 @@ watchSyncEffect(() => {
   const gestureEvent = gestureEventToArtboardGestureEvent(canvas.value, gestureAnyEvent.value);
   selectedTool().gesture(gestureEvent);
 });
-
-function selectedTool() {
-  return tools.find((tool) => tool.toolType === artboardState.value.selectedTool) || tools[0];
-}
 </script>
 
 <style scoped>
@@ -71,4 +63,3 @@ function selectedTool() {
   user-select: none;
 }
 </style>
-@/services/GestureEvent
