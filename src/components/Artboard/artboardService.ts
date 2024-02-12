@@ -1,4 +1,3 @@
-import { artAppState } from "../ArtApp/artAppState";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { createMessageBus } from "@/lib/MessageBus";
 import { artboardState } from "./artboardState";
@@ -25,7 +24,6 @@ export function resetCanvas(colorString: string) {
     name: "resetCanvas",
     params: [color],
   });
-  artAppState.value.closeMenus();
 }
 
 export function detachCanvas() {

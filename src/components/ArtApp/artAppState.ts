@@ -5,8 +5,4 @@ export const artAppState = ref({
     appLeft: false,
     appRight: false,
   },
-  closeMenus() {
-    artAppState.value.menus.appLeft = false;
-    artAppState.value.menus.appRight = false;
-  },
 });

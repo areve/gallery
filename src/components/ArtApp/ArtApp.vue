@@ -1,6 +1,6 @@
 <template>
   <div class="show-left-menu-button" @click="showLeftMenu"></div>
-  <!-- <div class="cancel-overlay" @click="cancelMenus" :hidden="!artAppState.menus.appLeft && !artAppState.menus.appRight"></div> -->
+  <div class="cancel-overlay" @click="cancelMenus" :hidden="!artAppState.menus.appRight"></div>
   <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
     <ArtAppToolMenu />
   </aside>
@@ -25,7 +25,7 @@ document.oncontextmenu = (_: UIEvent) => {
 };
 
 function cancelMenus() {
-  artAppState.value.closeMenus();
+  artAppState.value.menus.appRight = false;
 }
 function showLeftMenu() {
   artAppState.value.menus.appLeft = !artAppState.value.menus.appLeft;
@@ -44,14 +44,14 @@ function showRightMenu() {
   flex-direction: row;
 }
 
-/* .cancel-overlay {
+.cancel-overlay {
   display: fixed;
   width: 100%;
   height: 100%;
-  z-index: 99;
+  z-index: 45;
   cursor: pointer;
   background-color: rgb(127, 127, 127, 0.5);
-} */
+}
 
 .show-left-menu-button,
 .show-right-menu-button {
@@ -66,12 +66,10 @@ function showRightMenu() {
 .show-left-menu-button {
   border-bottom-right-radius: 3em;
   left: 0;
-  /* z-index: 100; */
 }
 .show-right-menu-button {
   border-bottom-left-radius: 3em;
   right: 0;
-  /* z-index: 100; */
 }
 
 .left-menu,
