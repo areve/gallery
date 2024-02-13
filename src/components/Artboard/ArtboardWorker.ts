@@ -98,7 +98,9 @@ function onClearCircle(coord: Coord, radius: number) {
   clearCircle(bitmapLayer, coord.x, coord.y, radius);
 }
 
-function onResetCanvas(color: ColorCoord) {
+function onResetCanvas(dimensions: Coord, color: ColorCoord) {
   if (!bitmapLayer) return;
+  // TODO resize to dimensions
+  console.log("TODO resize to dimensions", dimensions);
   resetAll(bitmapLayer, color);
 }

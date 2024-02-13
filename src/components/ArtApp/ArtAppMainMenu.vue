@@ -2,9 +2,9 @@
   <div class="reset-dimensions">
     <div>color and dimensions</div>
     <input type="color" v-model="resetColor" />
-    <input type="number" v-model="resetWidth" class="dimension" min="1" max="2000" />
+    <input type="number" v-model="resetDimensions.x" class="dimension" min="1" max="2000" />
     x
-    <input type="number" v-model="resetHeight" class="dimension" min="1" max="2000" />
+    <input type="number" v-model="resetDimensions.y" class="dimension" min="1" max="2000" />
   </div>
   <div>
     <button type="button" @click="sizeFromAvailable">Size from available</button>
@@ -40,19 +40,22 @@ import { getAsBlob, loadBlob, resetCanvas } from "../Artboard/artboardService";
 import { artboardState } from "../Artboard/artboardState";
 import { authState, signIn as googleSignIn, signOut as googleSignOut, useGoogleAuth } from "@/lib/google/googleAuthService";
 import { readFile, writeFile } from "@/lib/FileStorage";
-import { ref } from "vue";
+import { ref, toRaw } from "vue";
+import type { Coord } from "@/lib/Coord";
 
 useGoogleAuth();
 
 const resetColor = ref<string>("#ffffff");
-const resetWidth = ref<number>(1024);
-const resetHeight = ref<number>(1024);
-const resetToColor = () => resetCanvas(resetColor.value);
-const resetToTransparent = () => resetCanvas(resetColor.value);
+const resetDimensions = ref<Coord>({ x: 1024, y: 1024 });
+
+const resetToColor = () => resetCanvas(toRaw(resetDimensions.value), resetColor.value);
+const resetToTransparent = () => resetCanvas(toRaw(resetDimensions.value), "transparent");
 const sizeFromAvailable = () => {
   const body = document.body;
-  resetWidth.value = body.clientWidth;
-  resetHeight.value = body.clientHeight;
+  resetDimensions.value = {
+    x: body.clientWidth,
+    y: body.clientHeight,
+  };
 };
 
 const signIn = async () => {

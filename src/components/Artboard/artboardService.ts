@@ -5,6 +5,7 @@ import { useBrushTool } from "../Brush/brushTool";
 import { useEraserTool } from "../Eraser/eraserTool";
 import { watchPostEffect } from "vue";
 import ArtboardWorker from "./ArtboardWorker?worker";
+import type { Coord } from "@/lib/Coord";
 
 const messageBus = createMessageBus(() => new ArtboardWorker());
 messageBus.subscribe("reportFps", (fps: number) => (artboardState.value.fps = fps));
@@ -18,12 +19,12 @@ watchPostEffect(() => {
   });
 });
 
-export function resetCanvas(colorString: string) {
+export function resetCanvas(dimensions: Coord, colorString: string) {
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb(colorString));
   messageBus.publish({
     name: "resetCanvas",
-    params: [color],
+    params: [dimensions, color],
   });
 }
 
