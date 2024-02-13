@@ -4,14 +4,14 @@
       <div
         class="artboard"
         :style="{
-          'aspect-ratio': dimensions.x + ' / ' + dimensions.y,
+          'aspect-ratio': artboardState.dimensions.x + ' / ' + artboardState.dimensions.y,
         }"
       >
         <canvas ref="canvas" class="canvas" @dragstart="ignoreEvent"></canvas>
       </div>
     </div>
   </section>
-  <div class="status-bar">{{ artboardState.fps }}fps {{ dimensions }}</div>
+  <div class="status-bar">{{ artboardState.fps }}fps {{ artboardState.dimensions }}</div>
 </template>
 
 <script lang="ts" setup>
@@ -21,9 +21,10 @@ import { gestureAnyEvent } from "@/lib/GestureEvent";
 import { gestureEventToArtboardGestureEvent } from "@/lib/ArtboardGestureEvent";
 import { attachCanvas, detachCanvas, selectedTool } from "./artboardService";
 import type { Coord } from "@/lib/Coord";
+import { getAvailableSize } from "@/lib/utils";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
-const dimensions = ref<Coord>({ x: 1024, y: 1024 });
+//const dimensions = ref<Coord>({ x: 1024, y: 1024 });
 
 function ignoreEvent(event: DragEvent) {
   event.preventDefault();
@@ -32,25 +33,13 @@ function ignoreEvent(event: DragEvent) {
 }
 
 onMounted(async () => {
-  resizeCanvasToVisible();
+  resizeArtboardToAvailable();
   attachCanvas(canvas.value);
 });
 
 onUnmounted(() => {
   detachCanvas();
 });
-
-function resizeCanvasToVisible() {
-  // TODO I had a nice margin like "artboard-wrap { margin: 0.4em; }" but removed it because of this method of setting the canvas size on start
-  const body = document.body;
-
-  canvas.value.width = body.offsetWidth * window.devicePixelRatio;
-  canvas.value.height = body.offsetHeight * window.devicePixelRatio;
-  dimensions.value = {
-    x: canvas.value.width,
-    y: canvas.value.height,
-  };
-}
 
 watchSyncEffect(() => {
   if (!gestureAnyEvent.value) return;
@@ -59,6 +48,10 @@ watchSyncEffect(() => {
   const gestureEvent = gestureEventToArtboardGestureEvent(canvas.value, gestureAnyEvent.value);
   selectedTool().gesture(gestureEvent);
 });
+
+function resizeArtboardToAvailable() {
+  artboardState.value.dimensions = getAvailableSize();
+}
 </script>
 
 <style scoped>

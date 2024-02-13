@@ -3,14 +3,14 @@ import { createMessageBus } from "@/lib/MessageBus";
 import { artboardState } from "./artboardState";
 import { useBrushTool } from "../Brush/brushTool";
 import { useEraserTool } from "../Eraser/eraserTool";
-import { watchPostEffect } from "vue";
+import { watchPostEffect, watchSyncEffect } from "vue";
 import ArtboardWorker from "./ArtboardWorker?worker";
 import type { Coord } from "@/lib/Coord";
 
 const messageBus = createMessageBus(() => new ArtboardWorker());
 messageBus.subscribe("reportFps", (fps: number) => (artboardState.value.fps = fps));
 const tools = [useBrushTool(messageBus), useEraserTool(messageBus)];
-let _canvas: HTMLCanvasElement | undefined;
+let currentCanvas: HTMLCanvasElement | undefined;
 
 watchPostEffect(() => {
   messageBus.publish({
@@ -19,9 +19,19 @@ watchPostEffect(() => {
   });
 });
 
+watchSyncEffect(setCanvasDimensions);
+
+function setCanvasDimensions() {
+  if (!currentCanvas) return;
+  currentCanvas.width = artboardState.value.dimensions.x;
+  currentCanvas.height = artboardState.value.dimensions.y;
+}
+
 export function resetCanvas(dimensions: Coord, colorString: string) {
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb(colorString));
+
+  artboardState.value.dimensions = dimensions;
   messageBus.publish({
     name: "resetCanvas",
     params: [dimensions, color],
@@ -30,12 +40,13 @@ export function resetCanvas(dimensions: Coord, colorString: string) {
 
 export function detachCanvas() {
   messageBus.terminateWorker();
-  _canvas = undefined;
+  currentCanvas = undefined;
 }
 
 export function attachCanvas(canvas: HTMLCanvasElement) {
+  currentCanvas = canvas;
+  setCanvasDimensions();
   const offscreenCanvas = canvas.transferControlToOffscreen();
-  _canvas = canvas;
   messageBus.publish(
     {
       name: "setOffscreenCanvas",
@@ -52,7 +63,7 @@ export function selectedTool() {
 export async function getAsBlob() {
   // TODO too many forced types in the line below
   // TODO I'm suprised this worked after send to offscreen, better to save in a thread anyway?
-  const imageBlob = (await new Promise<Blob | null>((resolve) => _canvas?.toBlob(resolve)))!;
+  const imageBlob = (await new Promise<Blob | null>((resolve) => currentCanvas?.toBlob(resolve)))!;
   return imageBlob;
 }
 

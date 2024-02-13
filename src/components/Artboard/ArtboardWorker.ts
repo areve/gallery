@@ -42,7 +42,9 @@ watchPostEffect(() => {
 });
 
 function reset() {
+  console.log("reset");
   if (!context) return;
+  console.log("reset", context.canvas.width, context.canvas.height);
   const height = context.canvas.height;
   const width = context.canvas.width;
   bitmapLayer = createBitmapLayer(width, height, colorSpace.value, 32);
@@ -100,7 +102,10 @@ function onClearCircle(coord: Coord, radius: number) {
 
 function onResetCanvas(dimensions: Coord, color: ColorCoord) {
   if (!bitmapLayer) return;
-  // TODO resize to dimensions
-  console.log("TODO resize to dimensions", dimensions);
+  // TODo foo
+  canvas.width = dimensions.x;
+  canvas.height = dimensions.y;
+  context = canvas.getContext("2d");
+  reset();
   resetAll(bitmapLayer, color);
 }

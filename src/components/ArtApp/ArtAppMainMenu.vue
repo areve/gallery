@@ -42,21 +42,16 @@ import { authState, signIn as googleSignIn, signOut as googleSignOut, useGoogleA
 import { readFile, writeFile } from "@/lib/FileStorage";
 import { ref, toRaw } from "vue";
 import type { Coord } from "@/lib/Coord";
+import { getAvailableSize } from "@/lib/utils";
 
 useGoogleAuth();
 
 const resetColor = ref<string>("#ffffff");
-const resetDimensions = ref<Coord>({ x: 1024, y: 1024 });
+const resetDimensions = ref<Coord>(getAvailableSize());
 
 const resetToColor = () => resetCanvas(toRaw(resetDimensions.value), resetColor.value);
 const resetToTransparent = () => resetCanvas(toRaw(resetDimensions.value), "transparent");
-const sizeFromAvailable = () => {
-  const body = document.body;
-  resetDimensions.value = {
-    x: body.clientWidth,
-    y: body.clientHeight,
-  };
-};
+const sizeFromAvailable = () => (resetDimensions.value = getAvailableSize());
 
 const signIn = async () => {
   googleSignIn();
