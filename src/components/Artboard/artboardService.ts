@@ -6,6 +6,7 @@ import { useEraserTool } from "../Eraser/eraserTool";
 import { watchPostEffect, watchSyncEffect } from "vue";
 import ArtboardWorker from "./ArtboardWorker?worker";
 import type { Coord } from "@/lib/Coord";
+import { blobToImage } from "@/lib/utils";
 
 const messageBus = createMessageBus(() => new ArtboardWorker());
 messageBus.subscribe("reportFps", (fps: number) => (artboardState.value.fps = fps));
@@ -70,4 +71,6 @@ export async function getAsBlob() {
 export async function loadBlob(blob: Blob) {
   // TODO load to blob is also going to need to set the canvas size!?
   console.error("TODO load blob to artboard not supported yet", blob);
+  const image = await blobToImage(blob);
+  console.error("TODO load blob to artboard not supported yet", image);
 }

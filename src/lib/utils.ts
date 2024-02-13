@@ -10,6 +10,20 @@ import { cloneDeep } from "lodash";
 //   return result || "Unknown Error";
 // }
 
+// TODO move this function somewhere else
+export function blobToImage(blob: Blob): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => {
+      resolve(image);
+    };
+    image.onerror = (e) => {
+      reject(e);
+    };
+    image.src = URL.createObjectURL(blob);
+  });
+}
+
 // export function loadImage(dataUrl: string | Blob): Promise<HTMLImageElement> {
 //   return new Promise((resolve, reject) => {
 //     const tempImage = new Image();
@@ -27,7 +41,6 @@ import { cloneDeep } from "lodash";
 //     }
 //   });
 // }
-
 // export function getDatestamp() {
 //   return new Date()
 //     .toISOString()
