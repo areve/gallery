@@ -38,7 +38,6 @@ function showRightMenu() {
 <style scoped>
 .art-app {
   flex: 1 0;
-  position: fixed;
   height: 100%;
   display: flex;
   flex-direction: row;

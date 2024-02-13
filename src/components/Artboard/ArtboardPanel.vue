@@ -1,8 +1,17 @@
 <template>
   <section class="artboard-panel">
-    <div class="fps">{{ artboardState.fps }}fps</div>
-    <canvas ref="canvas" class="canvas" @dragstart="ignoreEvent"></canvas>
+    <div class="artboard-wrap">
+      <div
+        class="artboard"
+        :style="{
+          'aspect-ratio': dimensions.x + ' / ' + dimensions.y,
+        }"
+      >
+        <canvas ref="canvas" class="canvas" @dragstart="ignoreEvent"></canvas>
+      </div>
+    </div>
   </section>
+  <div class="status-bar">{{ artboardState.fps }}fps {{ dimensions }}</div>
 </template>
 
 <script lang="ts" setup>
@@ -11,8 +20,10 @@ import { artboardState } from "./artboardState";
 import { gestureAnyEvent } from "@/lib/GestureEvent";
 import { gestureEventToArtboardGestureEvent } from "@/lib/ArtboardGestureEvent";
 import { attachCanvas, detachCanvas, selectedTool } from "./artboardService";
+import type { Coord } from "@/lib/Coord";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
+const dimensions = ref<Coord>({ x: 1024, y: 1024 });
 
 function ignoreEvent(event: DragEvent) {
   event.preventDefault();
@@ -30,8 +41,15 @@ onUnmounted(() => {
 });
 
 function resizeCanvasToVisible() {
-  canvas.value.width = canvas.value.offsetWidth * window.devicePixelRatio;
-  canvas.value.height = canvas.value.offsetHeight * window.devicePixelRatio;
+  // TODO I had a nice margin like "artboard-wrap { margin: 0.4em; }" but removed it because of this method of setting the canvas size on start
+  const body = document.body;
+
+  canvas.value.width = body.offsetWidth * window.devicePixelRatio;
+  canvas.value.height = body.offsetHeight * window.devicePixelRatio;
+  dimensions.value = {
+    x: canvas.value.width,
+    y: canvas.value.height,
+  };
 }
 
 watchSyncEffect(() => {
@@ -50,22 +68,28 @@ watchSyncEffect(() => {
   height: 100%;
   display: flex;
   flex-direction: row;
+  background-color: black;
 }
 
 .canvas {
+  position: absolute;
   width: 100%;
+  height: 100%;
 }
 
-.fps {
+.status-bar {
   position: fixed;
   bottom: 0;
   left: 0.3em;
   font-size: 0.8em;
   user-select: none;
+  background-color: rgb(0, 0, 0, 0.5);
+  border-radius: 0.5em;
+  padding: 0 0.5em;
+  color: white;
 }
 
 .artboard-wrap {
-  margin: 0.4em;
   position: absolute;
   top: 0;
   bottom: 0;
