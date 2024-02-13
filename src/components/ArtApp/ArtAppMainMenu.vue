@@ -1,7 +1,15 @@
 <template>
-  <div class="reset-to-color">
+  <div class="reset-dimensions">
+    <div>color and dimensions</div>
     <input type="color" v-model="resetColor" />
+    <input type="number" v-model="resetWidth" class="dimension" min="1" max="2000" />
+    x
+    <input type="number" v-model="resetHeight" class="dimension" min="1" max="2000" />
+  </div>
+  <div>
+    <button type="button" @click="sizeFromAvailable">Size from available</button>
     <button type="button" @click="resetToColor">Reset to colour</button>
+    <button type="button" @click="resetToTransparent">Reset to transparent</button>
   </div>
 
   <div>
@@ -37,7 +45,15 @@ import { ref } from "vue";
 useGoogleAuth();
 
 const resetColor = ref<string>("#ffffff");
+const resetWidth = ref<number>(1024);
+const resetHeight = ref<number>(1024);
 const resetToColor = () => resetCanvas(resetColor.value);
+const resetToTransparent = () => resetCanvas(resetColor.value);
+const sizeFromAvailable = () => {
+  const body = document.body;
+  resetWidth.value = body.clientWidth;
+  resetHeight.value = body.clientHeight;
+};
 
 const signIn = async () => {
   googleSignIn();
@@ -75,7 +91,8 @@ button {
   color: #fff;
   background-color: #666;
 }
-.reset-to-color {
-  display: flex;
+
+.dimension {
+  width: 4em;
 }
 </style>
