@@ -66,8 +66,8 @@ async function onScriptLoaded() {
     client_id,
     // ux_mode=redirect this worked, but it needs a server-side login_uri to receive the POST
     scope: all_scope,
-    // TODO make auto_select an option
-    // TODO auto sign in again if we get 401 from googleApi
+    // TODO make auto_select an option passed in to useGoogleAuth
+    // TODO auto sign in again if we get 401 from googleApi and silent refresh!?
     auto_select: false,
     callback: (response: any) => {
       authState.value.idToken = response.credential;

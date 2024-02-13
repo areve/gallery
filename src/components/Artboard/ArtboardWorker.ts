@@ -100,7 +100,7 @@ function onClearCircle(coord: Coord, radius: number) {
 
 function onResetCanvas(dimensions: Coord, color: ColorCoord) {
   if (!bitmapLayer) return;
-  // TODo foo
+  // TODO duplicated lines and confusing reset/resetAll names
   canvas.width = dimensions.x;
   canvas.height = dimensions.y;
   context = canvas.getContext("2d");
