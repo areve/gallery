@@ -1,6 +1,9 @@
 <template>
-  <button type="button" @click="resetWhite">Reset</button>
-  <button type="button" @click="resetOrange">Reset orange</button>
+  <div class="reset-to-color">
+    <input type="color" v-model="resetColor" />
+    <button type="button" @click="resetToColor">Reset to colour</button>
+  </div>
+
   <div>
     <strong>Color space</strong>
     <label>
@@ -20,7 +23,7 @@
     <button type="button" @click="save">Save</button>
     <button type="button" @click="load">Load</button>
     <hr />
-    <button type="button" @click="signOut">Sign Out</button>
+    <button type="button" @click="signOut">Sign out</button>
   </div>
 </template>
 
@@ -28,12 +31,13 @@
 import { getAsBlob, loadBlob, resetCanvas } from "../Artboard/artboardService";
 import { artboardState } from "../Artboard/artboardState";
 import { authState, signIn as googleSignIn, signOut as googleSignOut, useGoogleAuth } from "@/lib/google/googleAuthService";
-import { readDir, readFile, writeFile } from "@/lib/FileStorage";
+import { readFile, writeFile } from "@/lib/FileStorage";
+import { ref } from "vue";
 
 useGoogleAuth();
 
-const resetWhite = () => resetCanvas("white");
-const resetOrange = () => resetCanvas("orange");
+const resetColor = ref<string>("#ffffff");
+const resetToColor = () => resetCanvas(resetColor.value);
 
 const signIn = async () => {
   googleSignIn();
@@ -70,5 +74,8 @@ button {
   width: 100%;
   color: #fff;
   background-color: #666;
+}
+.reset-to-color {
+  display: flex;
 }
 </style>

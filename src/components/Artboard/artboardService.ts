@@ -49,11 +49,13 @@ export function selectedTool() {
 }
 
 export async function getAsBlob() {
-  // TODO too many forced types below
+  // TODO too many forced types in the line below
+  // TODO I'm suprised this worked after send to offscreen, better to save in a thread anyway?
   const imageBlob = (await new Promise<Blob | null>((resolve) => _canvas?.toBlob(resolve)))!;
   return imageBlob;
 }
 
 export async function loadBlob(blob: Blob) {
+  // TODO load to blob is also going to need to set the canvas size!?
   console.error("TODO load blob to artboard not supported yet", blob);
 }
