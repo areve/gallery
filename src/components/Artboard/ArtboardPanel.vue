@@ -80,7 +80,8 @@ watchSyncEffect(() => {
 .status-bar {
   position: fixed;
   bottom: 0;
-  left: 0.3em;
+  left: 0.2em;
+  bottom: 0.2em;
   font-size: 0.8em;
   user-select: none;
   background-color: rgb(0, 0, 0, 0.5);
