@@ -42,9 +42,7 @@ watchPostEffect(() => {
 });
 
 function reset() {
-  console.log("reset");
   if (!context) return;
-  console.log("reset", context.canvas.width, context.canvas.height);
   const height = context.canvas.height;
   const width = context.canvas.width;
   bitmapLayer = createBitmapLayer(width, height, colorSpace.value, 32);
