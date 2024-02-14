@@ -20,14 +20,6 @@ watchPostEffect(() => {
   });
 });
 
-watchSyncEffect(setCanvasDimensions);
-
-function setCanvasDimensions() {
-  if (!currentCanvas) return;
-  currentCanvas.width = artboardState.value.dimensions.x;
-  currentCanvas.height = artboardState.value.dimensions.y;
-}
-
 export function resetCanvas(dimensions: Coord, colorString: string) {
   const colorConvert = colorConverter("srgb", artboardState.value.colorSpace);
   const color = colorConvert(color2srgb(colorString));
@@ -46,14 +38,15 @@ export function detachCanvas() {
 
 export function attachCanvas(canvas: HTMLCanvasElement) {
   currentCanvas = canvas;
-  setCanvasDimensions();
+  currentCanvas.width = artboardState.value.dimensions.x;
+  currentCanvas.height = artboardState.value.dimensions.y;
   const offscreenCanvas = canvas.transferControlToOffscreen();
   messageBus.publish(
     {
       name: "setOffscreenCanvas",
       params: [offscreenCanvas],
     },
-    [offscreenCanvas]
+    [offscreenCanvas],
   );
 }
 
@@ -69,8 +62,19 @@ export async function getAsBlob() {
 }
 
 export async function loadBlob(blob: Blob) {
-  // TODO load to blob is also going to need to set the canvas size!?
+  // TODO load to blob
   console.error("TODO load blob to artboard not supported yet", blob);
   const image = await blobToImage(blob);
-  console.error("TODO load blob to artboard not supported yet", image);
+  // console.error("TODO load blob to artboard not supported yet", image);
+  const dimensions = {
+    x: image.width,
+    y: image.height,
+  };
+  console.log(artboardState.value.dimensions)
+  artboardState.value.dimensions = dimensions;
+
+  messageBus.publish({
+    name: "loadBlob",
+    params: [blob],
+  });
 }

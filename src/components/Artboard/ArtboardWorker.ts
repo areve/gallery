@@ -8,7 +8,7 @@ import { ref, watch, watchPostEffect } from "vue";
 import { applyBrush, createBrush } from "@/lib/Brush";
 import { brushToolState } from "@/components/Brush/brushToolState";
 import { artboardState } from "@/components/Artboard/artboardState";
-import { resetAll } from "@/lib/bitmap/bitmap-effects";
+import { contextToBitmapLayer, resetAll } from "@/lib/bitmap/bitmap-effects";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 
 let canvas: OffscreenCanvas;
@@ -26,13 +26,14 @@ messageBus.subscribe("resetCanvas", onResetCanvas);
 messageBus.subscribe("setBrush", onSetBrush);
 messageBus.subscribe("applyBrush", onApplyBrush);
 messageBus.subscribe("clearCircle", onClearCircle);
+messageBus.subscribe("loadBlob", onLoadBlob);
 
 watch(
   () => artboardState.value.colorSpace,
   () => {
     if (!bitmapLayer) return;
     bitmapLayer = convertBitmapLayer(bitmapLayer, artboardState.value.colorSpace);
-  }
+  },
 );
 
 watchPostEffect(() => {
@@ -105,5 +106,20 @@ function onResetCanvas(dimensions: Coord, color: ColorCoord) {
   canvas.height = dimensions.y;
   context = canvas.getContext("2d");
   reset();
+
   resetAll(bitmapLayer, color);
+}
+
+async function onLoadBlob(src: Blob) {
+  if (!context) return;
+  console.log(src, colorSpace.value);
+  const image = await createImageBitmap(src);
+  canvas.width = image.width;
+  canvas.height = image.height;
+  context = canvas.getContext("2d")!;
+  context.drawImage(image, 0, 0);
+  // TODO now make a new artboard from this canvas
+  
+  bitmapLayer = createBitmapLayer(canvas.width, canvas.height, colorSpace.value, 32);
+  contextToBitmapLayer(context, bitmapLayer);
 }
