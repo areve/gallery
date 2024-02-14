@@ -2,9 +2,9 @@
   <div class="reset-dimensions">
     <div>color and dimensions</div>
     <input type="color" v-model="resetColor" />
-    <input type="number" v-model="resetDimensions.x" class="dimension" min="1" max="2000" />
+    <input type="number" v-model="resetDimensions.x" class="dimension" min="1" max="5120" />
     x
-    <input type="number" v-model="resetDimensions.y" class="dimension" min="1" max="2000" />
+    <input type="number" v-model="resetDimensions.y" class="dimension" min="1" max="5120" />
   </div>
   <div>
     <button type="button" @click="sizeFromAvailable">Size from available</button>
