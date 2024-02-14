@@ -23,7 +23,7 @@
         White
       </label>
 <label>
-        <input type="radio" name="color" value="rgb(0,0,0,0.3)" v-model="brushToolState.color" />
+        <input type="radio" name="color" value="rgb(0,0,0,0.1)" v-model="brushToolState.color" />
         Soft Black
       </label>
 
