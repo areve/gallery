@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 // import vue3GoogleLogin from "vue3-google-login";
 import "./assets/main.css";
+import "./serviceWorker";
 
 const app = createApp(App);
 // app.use(vue3GoogleLogin, {

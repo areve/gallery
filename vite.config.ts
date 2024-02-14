@@ -2,7 +2,8 @@ import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import mix from "vite-plugin-mix";
+// import mix from "vite-plugin-mix";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ command }) => {
   const plugins = [
@@ -14,6 +15,7 @@ export default defineConfig(({ command }) => {
       },
     }),
     ,
+    VitePWA({ registerType: "autoUpdate" }),
   ];
   if (command !== "build") {
     plugins
