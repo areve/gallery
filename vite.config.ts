@@ -14,8 +14,39 @@ export default defineConfig(({ command }) => {
         },
       },
     }),
-    ,
-    VitePWA({ registerType: "autoUpdate" }),
+    VitePWA({
+      includeAssets: ["/icons/favicon.ico", "/icons/apple-touch-icon.png"],
+      manifest: {
+        name: "Gallery",
+        short_name: "Gallery",
+        description: "A drawing app",
+        theme_color: "#000000",
+        icons: [
+          {
+            src: "/icons/pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "/icons/pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "/icons/pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/icons/pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+      },
+    }),
   ];
   if (command !== "build") {
     plugins

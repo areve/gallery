@@ -1,6 +1,11 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
+  "include": [
+    "env.d.ts", 
+    "src/**/*.ts", 
+    "src/**/*.vue",
+    "node_modules/**/*.d.ts"
+  ],
   "exclude": ["src/_archive/**/*"],
   "lib": ["es2019", "dom", "dom.iterable"],
   "compilerOptions": {
@@ -8,9 +13,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": ["offscreencanvas", "node"]
+    "types": ["offscreencanvas"]
   },
-
   "references": [
     {
       "path": "./tsconfig.config.json"
