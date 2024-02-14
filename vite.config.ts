@@ -15,7 +15,11 @@ export default defineConfig(({ command }) => {
       },
     }),
     VitePWA({
+      registerType: "autoUpdate",
       includeAssets: ["/icons/favicon.ico", "/icons/apple-touch-icon.png"],
+      devOptions: {
+        enabled: true,
+      },
       manifest: {
         name: "Gallery",
         short_name: "Gallery",

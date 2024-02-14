@@ -11,6 +11,12 @@ registerSW({
   onOfflineReady() {
     console.log("onOfflineReady");
   },
+  onRegisteredSW() {
+    console.log("onRegisteredSW");
+  },
+  onRegisterError() {
+    console.log("onRegisterError");
+  },
 });
 
 const app = createApp(App);
