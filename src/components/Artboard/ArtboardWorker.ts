@@ -8,7 +8,7 @@ import { ref, watch, watchPostEffect } from "vue";
 import { applyBrush, createBrush } from "@/lib/Brush";
 import { brushToolState } from "@/components/Brush/brushToolState";
 import { artboardState } from "@/components/Artboard/artboardState";
-import { contextToBitmapLayer, resetAll } from "@/lib/bitmap/bitmap-effects";
+import { loadFromContext, resetAll } from "@/lib/bitmap/bitmap-effects";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 
 let canvas: OffscreenCanvas;
@@ -112,14 +112,11 @@ function onResetCanvas(dimensions: Coord, color: ColorCoord) {
 
 async function onLoadBlob(src: Blob) {
   if (!context) return;
-  console.log(src, colorSpace.value);
   const image = await createImageBitmap(src);
   canvas.width = image.width;
   canvas.height = image.height;
   context = canvas.getContext("2d")!;
   context.drawImage(image, 0, 0);
-  // TODO now make a new artboard from this canvas
-  
   bitmapLayer = createBitmapLayer(canvas.width, canvas.height, colorSpace.value, 32);
-  contextToBitmapLayer(context, bitmapLayer);
+  loadFromContext(bitmapLayer, context);
 }

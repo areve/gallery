@@ -32,25 +32,16 @@ function pixelEffect(bitmapLayer: BitmapLayer, width: number, height: number, tr
   }
 }
 
-export function contextToBitmapLayer(context: OffscreenCanvasRenderingContext2D, bitmapLayer: BitmapLayer) {
+export function loadFromContext(bitmapLayer: BitmapLayer, context: OffscreenCanvasRenderingContext2D) {
   const channels = bitmapLayer.channels;
+  const rgbChannels = 4;
   const last = bitmapLayer.width * bitmapLayer.height * channels;
   const data = bitmapLayer.data;
   const sourceData = context.getImageData(0, 0, bitmapLayer.width, bitmapLayer.height).data;
 
   const convert = colorConverter("srgb", bitmapLayer.space);
-  for (let i = 0; i < last; i += channels) {
-    // const source = [];
-    // for (let j = 0; j < channels; j++) {
-    //   source.push(sourceData[i + j]);
-    // }
-    const color = convert([
-      //
-      sourceData[i + 0],
-      sourceData[i + 1],
-      sourceData[i + 2],
-      1//sourceData[i + 3],
-    ]);
+  for (let i = 0; i < last; i += rgbChannels) {
+    const color = convert([sourceData[i + 0] / 255, sourceData[i + 1] / 255, sourceData[i + 2] / 255, sourceData[i + 3] / 255]);
     for (let j = 0; j < channels; j++) {
       data[i + j] = color[j];
     }
