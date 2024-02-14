@@ -1,3 +1,5 @@
+// TODO this file is unused
+
 export async function cacheFlushKeys(keys: string[]) {
   const cache = await caches.open("cache");
   const allKeys = await cache.keys();
@@ -23,6 +25,7 @@ export async function cacheFetch(input: RequestInfo | URL, initOrCacheKey?: Requ
     init = initOrCacheKey;
   }
   const cache = await caches.open("cache");
+  // TODO hardcoded url
   const key = new Request(`http://gallery.local${cacheKey}`);
   let cacheResponse = await cache.match(key);
   if (!cacheResponse) {
