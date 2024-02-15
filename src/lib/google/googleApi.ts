@@ -1,5 +1,5 @@
 //import { cacheFetch } from "./cacheService";
-import { authState } from "./googleAuthServiceManual";
+import { authState } from "./googleAuthService";
 
 export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");

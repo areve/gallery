@@ -32,20 +32,17 @@
     <button type="button" @click="load">Load</button>
     <hr />
     <button type="button" @click="signOut">Sign out</button>
-    <button type="button" @click="refreshToken">Refresh token</button>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { getAsBlob, loadBlob, resetCanvas } from "../Artboard/artboardService";
 import { artboardState } from "../Artboard/artboardState";
-import { authState, signIn as googleSignIn, signOut as googleSignOut, useGoogleAuth, refreshToken } from "@/lib/google/googleAuthServiceManual";
+import { authState, signIn as googleSignIn, signOut as googleSignOut } from "@/lib/google/googleAuthService";
 import { readFile, writeFile } from "@/lib/FileStorage";
 import { ref } from "vue";
 import type { Coord } from "@/lib/Coord";
 import { clone, getAvailableSize } from "@/lib/utils";
-
-useGoogleAuth();
 
 const resetColor = ref<string>("#ffffff");
 const resetDimensions = ref<Coord>(getAvailableSize());
