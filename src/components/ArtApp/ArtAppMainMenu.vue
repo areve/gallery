@@ -39,7 +39,7 @@
 <script lang="ts" setup>
 import { getAsBlob, loadBlob, resetCanvas } from "../Artboard/artboardService";
 import { artboardState } from "../Artboard/artboardState";
-import { authState, signIn as googleSignIn, signOut as googleSignOut, useGoogleAuth, refreshToken } from "@/lib/google/googleAuthService";
+import { authState, signIn as googleSignIn, signOut as googleSignOut, useGoogleAuth, refreshToken } from "@/lib/google/googleAuthServiceManual";
 import { readFile, writeFile } from "@/lib/FileStorage";
 import { ref } from "vue";
 import type { Coord } from "@/lib/Coord";
