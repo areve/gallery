@@ -1,5 +1,5 @@
 //import { cacheFetch } from "./cacheService";
-import { authState } from "./googleAuthService";
+import { googleAuthState } from "./GoogleAuth";
 
 export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
@@ -39,7 +39,7 @@ function googleUploadUrl(idOrParams: string | Record<string, string>, params?: R
 }
 
 function getHeaders() {
-  return new Headers({ Authorization: `Bearer ${authState.value.accessToken}` });
+  return new Headers({ Authorization: `Bearer ${googleAuthState.value.accessToken}` });
 }
 
 export async function googleFileBlob(id: string) {

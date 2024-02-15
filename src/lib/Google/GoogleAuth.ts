@@ -13,8 +13,8 @@ export interface AuthState {
   state: AuthStateState;
 }
 
-export const authState = ref<AuthState>(defaultAuthState());
-usePersistentState("googleAuthState", authState);
+export const googleAuthState = ref<AuthState>(defaultAuthState());
+usePersistentState("googleAuthState", googleAuthState);
 
 handleTokensInUrlHash();
 
@@ -56,24 +56,20 @@ function handleTokensInUrlHash() {
 }
 
 function getAuth2Url(type: "id_token token" | "id_token" | "token", hint?: string) {
-  authState.value.oauthState = uuid();
+  googleAuthState.value.oauthState = uuid();
   let url =
     "https://accounts.google.com/o/oauth2/v2/auth" +
     "?gsiwebsdk=3" +
     "&select_account=true" +
     "&access_type=online" +
     `&response_type=${encodeURIComponent(type)}` +
-    `&state=${authState.value.oauthState}` +
+    `&state=${googleAuthState.value.oauthState}` +
     `&client_id=${encodeURIComponent(googleAuthConfig.clientId)}` +
     `&redirect_uri=${encodeURIComponent(document.location.origin)}` +
     (hint ? `&login_hint=${encodeURIComponent(hint)}` : "") +
-    "&enable_serial_consent=true";
-  if (type.split(" ").find((x) => x === "token")) {
-    url += "&include_granted_scopes=true";
-    url += `&scope=${encodeURIComponent(googleAuthConfig.clientId + " " + googleAuthConfig.accessScope)}`;
-  } else {
-    url += `&scope=${encodeURIComponent(googleAuthConfig.clientId)}`;
-  }
+    "&enable_serial_consent=true" +
+    `&scope=${encodeURIComponent(`${googleAuthConfig.idScope} ${googleAuthConfig.accessScope}`.trim())}`;
+  if (type.split(" ").find((x) => x === "token")) url += "&include_granted_scopes=true";
   if (type.split(" ").find((x) => x === "id_token")) url += `&nonce=${uuid()}`;
   return url;
 }
@@ -83,15 +79,15 @@ function loadTokensFromHashObject(hash: { [value: string]: string }) {
   if (hash.state) {
     if (hash.error) {
       console.error("error:", hash.error);
-      authState.value = defaultAuthState();
+      googleAuthState.value = defaultAuthState();
       refreshInterval = undefined;
     } else {
-      if (hash.state === authState.value.oauthState) {
-        if (hash.access_token) authState.value.accessToken = hash.access_token;
-        if (hash.id_token) authState.value.idToken = hash.id_token;
+      if (hash.state === googleAuthState.value.oauthState) {
+        if (hash.access_token) googleAuthState.value.accessToken = hash.access_token;
+        if (hash.id_token) googleAuthState.value.idToken = hash.id_token;
       }
-      authState.value.oauthState = null;
-      authState.value.state = "signedIn";
+      googleAuthState.value.oauthState = null;
+      googleAuthState.value.state = "signedIn";
       refreshInterval = setInterval(refreshTokens, (parseInt(hash.expires_in) * 1000) / 5);
     }
   }
@@ -123,7 +119,7 @@ async function revokeAccess(token: string) {
 async function refreshTokens() {
   console.log("refreshing token");
   const type = "id_token token";
-  const hint = authState.value.idToken ? parseJwt(authState.value.idToken).email : undefined;
+  const hint = googleAuthState.value.idToken ? parseJwt(googleAuthState.value.idToken).email : undefined;
 
   const iframe = createHiddenIframe();
   document.body.appendChild(iframe);
@@ -152,8 +148,8 @@ export function signIn() {
 }
 
 export async function signOut() {
-  if (authState.value.accessToken) await revokeAccess(authState.value.accessToken);
-  authState.value = defaultAuthState();
+  if (googleAuthState.value.accessToken) await revokeAccess(googleAuthState.value.accessToken);
+  googleAuthState.value = defaultAuthState();
   clearInterval(refreshInterval);
   refreshInterval = undefined;
 }

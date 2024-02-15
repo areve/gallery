@@ -24,10 +24,10 @@
     </label>
   </div>
 
-  <div v-if="authState.state == 'signedOut'">
+  <div v-if="googleAuthState.state == 'signedOut'">
     <button type="button" @click="signIn">Sign In</button>
   </div>
-  <div v-if="authState.state == 'signedIn'">
+  <div v-if="googleAuthState.state == 'signedIn'">
     <button type="button" @click="save">Save</button>
     <button type="button" @click="load">Load</button>
     <hr />
@@ -38,7 +38,7 @@
 <script lang="ts" setup>
 import { getAsBlob, loadBlob, resetCanvas } from "../Artboard/artboardService";
 import { artboardState } from "../Artboard/artboardState";
-import { authState, signIn as googleSignIn, signOut as googleSignOut } from "@/lib/google/googleAuthService";
+import { googleAuthState, signIn as googleSignIn, signOut as googleSignOut } from "@/lib/Google/GoogleAuth";
 import { readFile, writeFile } from "@/lib/FileStorage";
 import { ref } from "vue";
 import type { Coord } from "@/lib/Coord";
@@ -92,4 +92,3 @@ button {
   width: 4em;
 }
 </style>
-@/lib/google_/googleAuthService
