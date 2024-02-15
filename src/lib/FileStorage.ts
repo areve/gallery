@@ -7,7 +7,7 @@ import {
   googleFileCreate,
   googleFileUpdate,
   googleFileBlob,
-} from "./google/googleApi";
+} from "./google_/googleApi";
 import { parse } from "path-browserify";
 
 export async function readFile(filePath: string) {
