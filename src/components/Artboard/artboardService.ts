@@ -62,17 +62,12 @@ export async function getAsBlob() {
 }
 
 export async function loadBlob(blob: Blob) {
-  // TODO load to blob
-  console.error("TODO load blob to artboard not supported yet", blob);
   const image = await blobToImage(blob);
-  // console.error("TODO load blob to artboard not supported yet", image);
   const dimensions = {
     x: image.width,
     y: image.height,
   };
-  console.log(artboardState.value.dimensions)
   artboardState.value.dimensions = dimensions;
-
   messageBus.publish({
     name: "loadBlob",
     params: [blob],
