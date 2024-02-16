@@ -29,9 +29,11 @@
       <button type="button" @click="signIn">Sign In</button>
     </div>
     <div v-if="googleAuthState.state == 'signedIn'">
+      <input v-model="artAppState.fileName" />
       <button type="button" @click="save">Save</button>
       <button type="button" @click="load">Load</button>
       <hr />
+      advanced buttons
       <button type="button" @click="signOut">Sign out</button>
       <button type="button" @click="refreshTokens">refreshTokens</button>
     </div>
@@ -46,6 +48,8 @@ import { readFile, writeFile } from "@/lib/FileStorage";
 import { ref } from "vue";
 import type { Coord } from "@/lib/Coord";
 import { clone, getAvailableSize } from "@/lib/utils";
+import { artAppState } from "./artAppState";
+
 
 const resetColor = ref<string>("#ffffff");
 const resetDimensions = ref<Coord>(getAvailableSize());
@@ -53,6 +57,7 @@ const resetDimensions = ref<Coord>(getAvailableSize());
 const resetToColor = () => resetCanvas(clone(resetDimensions.value), resetColor.value);
 const resetToTransparent = () => resetCanvas(clone(resetDimensions.value), "transparent");
 const sizeFromAvailable = () => (resetDimensions.value = getAvailableSize());
+
 
 const signIn = async () => {
   googleSignIn();
@@ -65,18 +70,16 @@ const signOut = async () => {
 const rootDirName = "gallery.challen.info/v2"; // TODO hard coded folder name?
 
 const save = async () => {
-  console.log("save");
   const blob = await getAsBlob();
-  const file = await writeFile(rootDirName + "/hello.png", blob);
-  console.log(file);
+  // TODO if it exists indicate it when I choose the name
+  // TODO if it fails notify the user
+  // TODO add a way to browse images
+  await writeFile(rootDirName + "/" + artAppState.value.fileName, blob);
 };
 
 const load = async () => {
-  console.log("load");
-  // const files = await readDir(rootDirName);
-  const blob = await readFile(rootDirName + "/hello.png");
-  // const file = "";
-  console.log(blob);
+  // TODO if it fails notify the user
+  const blob = await readFile(rootDirName + "/" + artAppState.value.fileName);
   if (blob) await loadBlob(blob);
 };
 </script>

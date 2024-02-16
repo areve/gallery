@@ -1,3 +1,4 @@
+import { usePersistentState } from "@/lib/PersistentState";
 import { ref } from "vue";
 
 export const artAppState = ref({
@@ -5,4 +6,6 @@ export const artAppState = ref({
     appLeft: false,
     appRight: false,
   },
+  fileName: "Hello",
 });
+usePersistentState("artAppState", artAppState);
