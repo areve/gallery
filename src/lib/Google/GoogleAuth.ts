@@ -3,13 +3,13 @@ import { v4 as uuid } from "uuid";
 import { usePersistentState } from "../PersistentState";
 import { googleAuthConfig } from "./googleAuthConfig";
 
-let refreshInterval: NodeJS.Timeout | undefined;
 type AuthStateState = "inProgress" | "signedIn" | "signedOut";
 
 export interface AuthState {
   idToken: string | null;
   accessToken: string | null;
   oauthState: string | null;
+  expiresAt: Date | null;
   state: AuthStateState;
 }
 
@@ -18,11 +18,14 @@ usePersistentState("googleAuthState", googleAuthState);
 
 handleTokensInUrlHash();
 
+setTimeout(checkTokenExpiry, 1000);
+
 function defaultAuthState() {
   return <AuthState>{
     idToken: null,
     accessToken: null,
     oauthState: null,
+    expiresAt: null,
     state: "signedOut",
   };
 }
@@ -75,12 +78,10 @@ function getAuth2Url(type: "id_token token" | "id_token" | "token", hint?: strin
 }
 
 function loadTokensFromHashObject(hash: { [value: string]: string }) {
-  clearInterval(refreshInterval);
   if (hash.state) {
     if (hash.error) {
       console.error("error:", hash.error);
       googleAuthState.value = defaultAuthState();
-      refreshInterval = undefined;
     } else {
       if (hash.state === googleAuthState.value.oauthState) {
         if (hash.access_token) googleAuthState.value.accessToken = hash.access_token;
@@ -88,7 +89,7 @@ function loadTokensFromHashObject(hash: { [value: string]: string }) {
       }
       googleAuthState.value.oauthState = null;
       googleAuthState.value.state = "signedIn";
-      refreshInterval = setInterval(refreshTokens, (parseInt(hash.expires_in) * 1000) / 5);
+      googleAuthState.value.expiresAt = new Date(new Date().getTime() + parseInt(hash.expires_in) * 1000);
     }
   }
 }
@@ -116,7 +117,17 @@ async function revokeAccess(token: string) {
   console.assert(repsonse.status === 200, `revoke failed with status: ${repsonse.status}`);
 }
 
-async function refreshTokens() {
+async function checkTokenExpiry() {
+  //TODO this functionality needs to go to the usePersistentState function I guess
+  if (typeof googleAuthState.value.expiresAt === "string") googleAuthState.value.expiresAt = new Date(Date.parse(googleAuthState.value.expiresAt));
+  const expiresInLessThanTenMinutes = googleAuthState.value.expiresAt && new Date().getTime() + 600000 > googleAuthState.value.expiresAt.getTime();
+  if (expiresInLessThanTenMinutes) await refreshTokens();
+
+  // TODO if this file changes in hot reload this loop ends up happening more than once
+  setTimeout(checkTokenExpiry, 1000);
+}
+
+export async function refreshTokens() {
   console.log("refreshing token");
   const type = "id_token token";
   const hint = googleAuthState.value.idToken ? parseJwt(googleAuthState.value.idToken).email : undefined;
@@ -124,7 +135,8 @@ async function refreshTokens() {
   const iframe = createHiddenIframe();
   document.body.appendChild(iframe);
 
-  (window as any).completeSilentRefresh = function (hashObject: { [value: string]: string }) {
+  // TODO what if it fails, need to handle it
+  (window as any).completeSilentRefresh = (hashObject: { [value: string]: string }) => {
     loadTokensFromHashObject(hashObject);
     console.log("refreshing token complete", hashObject);
     iframe.parentElement?.removeChild(iframe);
@@ -150,6 +162,4 @@ export function signIn() {
 export async function signOut() {
   if (googleAuthState.value.accessToken) await revokeAccess(googleAuthState.value.accessToken);
   googleAuthState.value = defaultAuthState();
-  clearInterval(refreshInterval);
-  refreshInterval = undefined;
 }

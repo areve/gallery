@@ -1,44 +1,47 @@
 <template>
-  <div class="reset-dimensions">
-    <div>color and dimensions</div>
-    <input type="color" v-model="resetColor" />
-    <input type="number" v-model="resetDimensions.x" class="dimension" min="1" max="5120" />
-    x
-    <input type="number" v-model="resetDimensions.y" class="dimension" min="1" max="5120" />
-  </div>
-  <div>
-    <button type="button" @click="sizeFromAvailable">Size from available</button>
-    <button type="button" @click="resetToColor">Reset to colour</button>
-    <button type="button" @click="resetToTransparent">Reset to transparent</button>
-  </div>
+  <div class="menu">
+    <div class="reset-dimensions">
+      <div>color and dimensions</div>
+      <input type="color" v-model="resetColor" />
+      <input type="number" v-model="resetDimensions.x" class="dimension" min="1" max="5120" />
+      x
+      <input type="number" v-model="resetDimensions.y" class="dimension" min="1" max="5120" />
+    </div>
+    <div>
+      <button type="button" @click="sizeFromAvailable">Size from available</button>
+      <button type="button" @click="resetToColor">Reset to colour</button>
+      <button type="button" @click="resetToTransparent">Reset to transparent</button>
+    </div>
 
-  <div>
-    <strong>Color space</strong>
-    <label>
-      <input type="radio" name="colorSpace" value="srgb" v-model="artboardState.colorSpace" />
-      srgb
-    </label>
-    <label>
-      <input type="radio" name="colorSpace" value="oklch" v-model="artboardState.colorSpace" />
-      oklch
-    </label>
-  </div>
+    <div>
+      <strong>Color space</strong>
+      <label>
+        <input type="radio" name="colorSpace" value="srgb" v-model="artboardState.colorSpace" />
+        srgb
+      </label>
+      <label>
+        <input type="radio" name="colorSpace" value="oklch" v-model="artboardState.colorSpace" />
+        oklch
+      </label>
+    </div>
 
-  <div v-if="googleAuthState.state == 'signedOut'">
-    <button type="button" @click="signIn">Sign In</button>
-  </div>
-  <div v-if="googleAuthState.state == 'signedIn'">
-    <button type="button" @click="save">Save</button>
-    <button type="button" @click="load">Load</button>
-    <hr />
-    <button type="button" @click="signOut">Sign out</button>
+    <div v-if="googleAuthState.state == 'signedOut'">
+      <button type="button" @click="signIn">Sign In</button>
+    </div>
+    <div v-if="googleAuthState.state == 'signedIn'">
+      <button type="button" @click="save">Save</button>
+      <button type="button" @click="load">Load</button>
+      <hr />
+      <button type="button" @click="signOut">Sign out</button>
+      <button type="button" @click="refreshTokens">refreshTokens</button>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { getAsBlob, loadBlob, resetCanvas } from "../Artboard/artboardService";
 import { artboardState } from "../Artboard/artboardState";
-import { googleAuthState, signIn as googleSignIn, signOut as googleSignOut } from "@/lib/Google/GoogleAuth";
+import { googleAuthState, signIn as googleSignIn, signOut as googleSignOut, refreshTokens } from "@/lib/Google/GoogleAuth";
 import { readFile, writeFile } from "@/lib/FileStorage";
 import { ref } from "vue";
 import type { Coord } from "@/lib/Coord";
@@ -90,5 +93,30 @@ button {
 
 .dimension {
   width: 4em;
+}
+.menu {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 0.3em;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #000;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #999;
+  border-radius: 0.3em;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
 }
 </style>
