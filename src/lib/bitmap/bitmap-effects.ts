@@ -13,7 +13,6 @@ export function colorAll(bitmapLayer: BitmapLayer, color: ColorCoord) {
   });
 }
 
-// TODO can this use pixelEffect too
 export function loadFromContext(bitmapLayer: BitmapLayer, context: OffscreenCanvasRenderingContext2D) {
   const channels = bitmapLayer.channels;
   const rgbChannels = 4;
