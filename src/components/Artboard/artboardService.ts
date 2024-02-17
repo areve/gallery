@@ -3,7 +3,7 @@ import { createMessageBus } from "@/lib/MessageBus";
 import { artboardState } from "./artboardState";
 import { useBrushTool } from "../Brush/brushTool";
 import { useEraserTool } from "../Eraser/eraserTool";
-import { watchPostEffect, watchSyncEffect } from "vue";
+import { watchPostEffect } from "vue";
 import ArtboardWorker from "./ArtboardWorker?worker";
 import type { Coord } from "@/lib/Coord";
 import { blobToImage } from "@/lib/utils";
@@ -54,11 +54,8 @@ export function selectedTool() {
   return tools.find((tool) => tool.toolType === artboardState.value.selectedTool) || tools[0];
 }
 
-export async function getAsBlob() {
-  // TODO too many forced types in the line below
-  // TODO I'm suprised this worked after send to offscreen, better to save in a thread anyway?
-  const imageBlob = (await new Promise<Blob | null>((resolve) => currentCanvas?.toBlob(resolve)))!;
-  return imageBlob;
+export async function asBlob() {
+  return new Promise<Blob | null>((resolve) => currentCanvas?.toBlob(resolve));
 }
 
 export async function loadBlob(blob: Blob) {

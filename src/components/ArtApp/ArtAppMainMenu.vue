@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getAsBlob, loadBlob, resetCanvas } from "../Artboard/artboardService";
+import { asBlob, loadBlob, resetCanvas } from "../Artboard/artboardService";
 import { artboardState } from "../Artboard/artboardState";
 import { googleAuthState, signIn as googleSignIn, signOut as googleSignOut, refreshTokens } from "@/lib/Google/GoogleAuth";
 import { readFile, writeFile } from "@/lib/FileStorage";
@@ -71,7 +71,7 @@ const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps)
 const rootDirName = "gallery.challen.info/v2"; // TODO hard coded folder name?
 
 const save = async () => {
-  const blob = await getAsBlob();
+  const blob = await asBlob();
   // TODO if it exists indicate it when I choose the name
   // TODO if it fails notify the user
   // TODO add a way to browse images
