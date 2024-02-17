@@ -8,7 +8,7 @@ import { ref, watch, watchPostEffect } from "vue";
 import { applyBrush, createBrush } from "@/lib/Brush";
 import { brushToolState } from "@/components/Brush/brushToolState";
 import { artboardState } from "@/components/Artboard/artboardState";
-import { loadFromContext, resetAll } from "@/lib/bitmap/bitmap-effects";
+import { loadFromContext, colorAll } from "@/lib/bitmap/bitmap-effects";
 import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 
 let canvas: OffscreenCanvas;
@@ -42,14 +42,6 @@ watchPostEffect(() => {
   brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
 });
 
-function reset() {
-  if (!context) return;
-  const height = context.canvas.height;
-  const width = context.canvas.width;
-  bitmapLayer = createBitmapLayer(width, height, colorSpace.value, 32);
-  context.clearRect(0, 0, width, height);
-}
-
 function render() {
   if (!context) return;
   if (!bitmapLayer) return;
@@ -74,9 +66,33 @@ function frameCounter() {
 
 function onSetOffscreenCanvas(offscreenCanvas: OffscreenCanvas) {
   canvas = offscreenCanvas;
-  context = canvas.getContext("2d");
-  reset();
+  setupFromCanvas(canvas);
   requestAnimationFrame(render);
+}
+
+function onResetCanvas(dimensions: Coord, color: ColorCoord) {
+  if (!bitmapLayer) return;
+  canvas.width = dimensions.x;
+  canvas.height = dimensions.y;
+  setupFromCanvas(canvas);
+  colorAll(bitmapLayer, color);
+}
+
+function setupFromCanvas(canvas: OffscreenCanvas) {
+  context = canvas.getContext("2d")!;
+  const height = canvas.height;
+  const width = canvas.width;
+  bitmapLayer = createBitmapLayer(width, height, colorSpace.value, 32);
+}
+
+async function onLoadBlob(src: Blob) {
+  if (!context) return;
+  const image = await createImageBitmap(src);
+  canvas.width = image.width;
+  canvas.height = image.height;
+  setupFromCanvas(canvas);
+  context.drawImage(image, 0, 0);
+  loadFromContext(bitmapLayer!, context);
 }
 
 function onApplyBrush(fromPoint: Coord | undefined, toPoint: Coord, weight: number) {
@@ -97,26 +113,4 @@ function onSetColorSpace(colorSpace: ColorSpace) {
 function onClearCircle(coord: Coord, radius: number) {
   if (!bitmapLayer) return;
   clearCircle(bitmapLayer, coord.x, coord.y, radius);
-}
-
-function onResetCanvas(dimensions: Coord, color: ColorCoord) {
-  if (!bitmapLayer) return;
-  // TODO duplicated lines and confusing reset/resetAll names
-  canvas.width = dimensions.x;
-  canvas.height = dimensions.y;
-  context = canvas.getContext("2d");
-  reset();
-
-  resetAll(bitmapLayer, color);
-}
-
-async function onLoadBlob(src: Blob) {
-  if (!context) return;
-  const image = await createImageBitmap(src);
-  canvas.width = image.width;
-  canvas.height = image.height;
-  context = canvas.getContext("2d")!;
-  context.drawImage(image, 0, 0);
-  bitmapLayer = createBitmapLayer(canvas.width, canvas.height, colorSpace.value, 32);
-  loadFromContext(bitmapLayer, context);
 }

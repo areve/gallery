@@ -2,7 +2,7 @@ import type { ColorCoord } from "@/lib/Color";
 import type { BitmapLayer } from "../BitmapLayer";
 import { colorConverter } from "../color/color";
 
-export function resetAll(bitmapLayer: BitmapLayer, color: ColorCoord) {
+export function colorAll(bitmapLayer: BitmapLayer, color: ColorCoord) {
   // TODO reset using tiles becaue it's slow
   pixelEffect(bitmapLayer, bitmapLayer.width, bitmapLayer.height, (_) => color);
   bitmapLayer.dirty.push({
