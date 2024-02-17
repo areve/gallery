@@ -1,37 +1,18 @@
 import type { ColorCoord } from "@/lib/Color";
 import type { BitmapLayer } from "../BitmapLayer";
 import { colorConverter } from "../color/color";
-
-export function colorAll(bitmapLayer: BitmapLayer, color: ColorCoord) {
-  // TODO reset using tiles becaue it's slow
-  pixelEffect(bitmapLayer, bitmapLayer.width, bitmapLayer.height, (_) => color);
-  bitmapLayer.dirty.push({
-    x: 0,
-    y: 0,
-    width: bitmapLayer.width,
-    height: bitmapLayer.height,
-  });
-}
+import type { Rect } from "../Rect";
 
 type ColorTransform = (color: ColorCoord) => ColorCoord;
 
-function pixelEffect(bitmapLayer: BitmapLayer, width: number, height: number, transform: ColorTransform) {
-  const channels = bitmapLayer.channels;
-  const last = width * height * channels;
-  const data = bitmapLayer.data;
-
-  for (let i = 0; i < last; i += channels) {
-    const source = [];
-    for (let j = 0; j < channels; j++) {
-      source.push(data[i + j]);
-    }
-    const color = transform(source);
-    for (let j = 0; j < channels; j++) {
-      data[i + j] = color[j];
-    }
-  }
+export function colorAll(bitmapLayer: BitmapLayer, color: ColorCoord) {
+  bitmapLayer.tiles.forEach((rect: Rect) => {
+    pixelEffect(bitmapLayer, rect, (_) => color);
+    bitmapLayer.dirty.push(rect);
+  });
 }
 
+// TODO can this use pixelEffect too
 export function loadFromContext(bitmapLayer: BitmapLayer, context: OffscreenCanvasRenderingContext2D) {
   const channels = bitmapLayer.channels;
   const rgbChannels = 4;
@@ -53,4 +34,25 @@ export function loadFromContext(bitmapLayer: BitmapLayer, context: OffscreenCanv
     width: bitmapLayer.width,
     height: bitmapLayer.height,
   });
+}
+
+function pixelEffect(bitmapLayer: BitmapLayer, rect: Rect, transform: ColorTransform) {
+  const channels = bitmapLayer.channels;
+  const width = bitmapLayer.width;
+  const data = bitmapLayer.data;
+
+  for (let y = 0; y < rect.height; y++) {
+    for (let x = 0; x < rect.width; x++) {
+      const i = ((y + rect.y) * width + x + rect.x) * channels;
+
+      const source = [];
+      for (let j = 0; j < channels; j++) {
+        source.push(data[i + j]);
+      }
+      const color = transform(source);
+      for (let j = 0; j < channels; j++) {
+        data[i + j] = color[j];
+      }
+    }
+  }
 }
