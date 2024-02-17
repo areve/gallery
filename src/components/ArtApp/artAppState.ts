@@ -7,5 +7,6 @@ export const artAppState = ref({
     appRight: false,
   },
   fileName: "Hello",
+  showFps: false,
 });
 usePersistentState("artAppState", artAppState);

@@ -35,7 +35,8 @@
       <hr />
       advanced buttons
       <button type="button" @click="signOut">Sign out</button>
-      <button type="button" @click="refreshTokens">refreshTokens</button>
+      <button type="button" @click="refreshTokens">Refresh tokens</button>
+      <button type="button" @click="toggleFps">Toggle FPS</button>
     </div>
   </div>
 </template>
@@ -50,14 +51,12 @@ import type { Coord } from "@/lib/Coord";
 import { clone, getAvailableSize } from "@/lib/utils";
 import { artAppState } from "./artAppState";
 
-
 const resetColor = ref<string>("#ffffff");
 const resetDimensions = ref<Coord>(getAvailableSize());
 
 const resetToColor = () => resetCanvas(clone(resetDimensions.value), resetColor.value);
 const resetToTransparent = () => resetCanvas(clone(resetDimensions.value), "transparent");
 const sizeFromAvailable = () => (resetDimensions.value = getAvailableSize());
-
 
 const signIn = async () => {
   googleSignIn();
@@ -66,6 +65,8 @@ const signIn = async () => {
 const signOut = async () => {
   googleSignOut();
 };
+
+const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
 
 const rootDirName = "gallery.challen.info/v2"; // TODO hard coded folder name?
 

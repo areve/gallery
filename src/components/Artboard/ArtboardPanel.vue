@@ -11,7 +11,7 @@
       </div>
     </div>
   </section>
-  <div class="status-bar">{{ artboardState.fps }}fps {{ artboardState.dimensions }}</div>
+  <div v-if="artAppState.showFps" class="status-bar">{{ artboardState.fps }}fps {{ artboardState.dimensions }}</div>
 </template>
 
 <script lang="ts" setup>
@@ -20,11 +20,10 @@ import { artboardState } from "./artboardState";
 import { gestureAnyEvent } from "@/lib/GestureEvent";
 import { gestureEventToArtboardGestureEvent } from "@/lib/ArtboardGestureEvent";
 import { attachCanvas, detachCanvas, selectedTool } from "./artboardService";
-import type { Coord } from "@/lib/Coord";
 import { getAvailableSize } from "@/lib/utils";
+import { artAppState } from "../ArtApp/artAppState";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
-//const dimensions = ref<Coord>({ x: 1024, y: 1024 });
 
 function ignoreEvent(event: DragEvent) {
   event.preventDefault();
@@ -105,7 +104,11 @@ function resizeArtboardToAvailable() {
   background-image: linear-gradient(45deg, #ddd 25%, transparent 25%), linear-gradient(135deg, #ddd 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, #ddd 75%), linear-gradient(135deg, transparent 75%, #ddd 75%);
   background-size: 20px 20px;
-  background-position: 0 0, 10px 0, 10px -10px, 0px 10px;
+  background-position:
+    0 0,
+    10px 0,
+    10px -10px,
+    0px 10px;
   background-repeat: repeat;
 }
 </style>
