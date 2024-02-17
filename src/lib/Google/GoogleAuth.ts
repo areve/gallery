@@ -118,8 +118,6 @@ async function revokeAccess(token: string) {
 }
 
 async function checkTokenExpiry() {
-  //TODO this functionality needs to go to the usePersistentState function I guess
-  if (typeof googleAuthState.value.expiresAt === "string") googleAuthState.value.expiresAt = new Date(Date.parse(googleAuthState.value.expiresAt));
   const expiresInLessThanTenMinutes = googleAuthState.value.expiresAt && new Date().getTime() + 600000 > googleAuthState.value.expiresAt.getTime();
   if (expiresInLessThanTenMinutes) await refreshTokens();
 
