@@ -6,7 +6,7 @@ import { useEraserTool } from "../Eraser/eraserTool";
 import { watchPostEffect } from "vue";
 import ArtboardWorker from "./ArtboardWorker?worker";
 import type { Coord } from "@/lib/Coord";
-import { blobToImage } from "@/lib/utils";
+import { blobToImage } from "@/lib/Blob";
 
 const messageBus = createMessageBus(() => new ArtboardWorker());
 messageBus.subscribe("reportFps", (fps: number) => (artboardState.value.fps = fps));

@@ -48,8 +48,9 @@ import { googleAuthState, signIn as googleSignIn, signOut as googleSignOut, refr
 import { readFile, writeFile } from "@/lib/FileStorage";
 import { ref } from "vue";
 import type { Coord } from "@/lib/Coord";
-import { clone, getAvailableSize } from "@/lib/utils";
+import { clone } from "@/lib/utils";
 import { artAppState } from "./artAppState";
+import { getAvailableSize } from "@/lib/Window";
 
 const resetColor = ref<string>("#ffffff");
 const resetDimensions = ref<Coord>(getAvailableSize());

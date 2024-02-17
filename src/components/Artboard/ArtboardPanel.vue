@@ -19,7 +19,7 @@ import { artboardState } from "./artboardState";
 import { gestureAnyEvent } from "@/lib/GestureEvent";
 import { gestureEventToArtboardGestureEvent } from "@/lib/ArtboardGestureEvent";
 import { attachCanvas, detachCanvas, selectedTool } from "./artboardService";
-import { getAvailableSize } from "@/lib/utils";
+import { getAvailableSize } from "@/lib/Window";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 
