@@ -11,7 +11,6 @@
       </div>
     </div>
   </section>
-  <div v-if="artAppState.showFps" class="status-bar">{{ artboardState.fps }}fps {{ artboardState.dimensions }}</div>
 </template>
 
 <script lang="ts" setup>
@@ -21,7 +20,6 @@ import { gestureAnyEvent } from "@/lib/GestureEvent";
 import { gestureEventToArtboardGestureEvent } from "@/lib/ArtboardGestureEvent";
 import { attachCanvas, detachCanvas, selectedTool } from "./artboardService";
 import { getAvailableSize } from "@/lib/utils";
-import { artAppState } from "../ArtApp/artAppState";
 
 const canvas = ref<HTMLCanvasElement>(undefined!);
 
@@ -67,19 +65,6 @@ function resizeArtboardToAvailable() {
   position: absolute;
   width: 100%;
   height: 100%;
-}
-
-.status-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0.2em;
-  bottom: 0.2em;
-  font-size: 0.8em;
-  user-select: none;
-  background-color: rgb(0, 0, 0, 0.5);
-  border-radius: 0.5em;
-  padding: 0 0.5em;
-  color: white;
 }
 
 .artboard-wrap {

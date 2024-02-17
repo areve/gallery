@@ -5,6 +5,7 @@
   </aside>
   <main class="art-app">
     <ArtboardPanel />
+    <div v-if="artAppState.showFps" class="status-bar">{{ artboardState.fps }}fps {{ artboardState.dimensions }}</div>
   </main>
   <div class="show-right-menu-button" @click="showRightMenu"></div>
   <aside class="right-menu" :hidden="!artAppState.menus.appRight">
@@ -17,6 +18,7 @@ import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
 import ArtAppToolMenu from "./ArtAppToolMenu.vue";
 import ArtAppMainMenu from "./ArtAppMainMenu.vue";
 import { artAppState } from "./artAppState";
+import { artboardState } from "../Artboard/artboardState";
 
 document.oncontextmenu = (_: UIEvent) => {
   console.warn("oncontextmenu disabled");
@@ -91,5 +93,17 @@ function showRightMenu() {
   right: 0;
   opacity: 1;
   width: 45%;
+}
+.status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0.2em;
+  bottom: 0.2em;
+  font-size: 0.8em;
+  user-select: none;
+  background-color: rgb(0, 0, 0, 0.5);
+  border-radius: 0.5em;
+  padding: 0 0.5em;
+  color: white;
 }
 </style>
