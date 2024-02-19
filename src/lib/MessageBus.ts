@@ -9,7 +9,9 @@ export type Message = {
 export interface MessageBus {
   unsubscribe(name: string, callback: Function): void;
   subscribe(name: string, callback: Function): void;
-  publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[], callback?: Function): void;
+
+  //TODO use generic instead of any?
+  publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<any>;
   terminateWorker(): void;
 }
 
@@ -67,19 +69,18 @@ export function createMessageBus(getWorker: () => Worker | Window) {
     if (index !== -1) registry[name].splice(index, 1);
   }
 
-  function publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[], callback?: Function) {
-    if (callback) {
+  function publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
+    return new Promise((resolve, reject) => {
+      // if (callback) {
       const callbackId = `callback:${uuid()}`;
       const callbackWrapper = (result: any) => {
         unsubscribe(callbackId, callbackWrapper);
-        callback(result);
+        resolve(result);
       };
       // TODO handle exceptions and pass them back
       subscribe(callbackId, callbackWrapper);
       ensureWorker().postMessage({ ...message, callbackId }, structuredSerializeOptions as StructuredSerializeOptions);
-    } else {
-      ensureWorker().postMessage(message, structuredSerializeOptions as StructuredSerializeOptions);
-    }
+    });
   }
 
   function terminateWorker() {

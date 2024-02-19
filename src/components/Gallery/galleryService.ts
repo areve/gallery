@@ -9,24 +9,12 @@ import type { Artwork } from "./Artwork";
 const messageBus = createMessageBus(() => new GalleryWorker());
 messageBus.subscribe("updateProgress", onUpdateProgress);
 
-export function load(artwork: Artwork) {
-  console.log("galleryService:load");
-
-  // TODO if it fails notify the user
-  //  const blob = await readFile(rootDirName + "/" + artAppState.value.fileName);
-  //  if (blob) await loadBlob(blob);
-
-  messageBus.publish(
-    {
-      name: "loadBlob",
-      params: [artwork],
-    },
-    undefined,
-    (blob: Blob) => {
-      console.log("woot", blob);
-      loadBlob(blob);
-    },
-  );
+export async function load(artwork: Artwork) {
+  const blob = await messageBus.publish({
+    name: "loadBlob",
+    params: [artwork],
+  });
+  await loadBlob(blob);
 }
 
 watchPostEffect(() => {

@@ -72,7 +72,6 @@ const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps)
 const load = async () => {
   // TODO if it fails notify the user
   galleryLoad({
-    id: null,
     name: artAppState.value.fileName,
     path: "/foobar/baz",
   });
@@ -85,7 +84,6 @@ const save = async () => {
   const blob = await asBlob();
   gallerySave({
     blob,
-    id: null,
     name: artAppState.value.fileName,
     path: "/foobar/baz",
   });

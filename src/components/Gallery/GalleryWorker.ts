@@ -10,10 +10,9 @@ import {
 } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
 import type { ProgressState } from "../Progress/progressState";
-import { ref, toRaw, watch, watchPostEffect } from "vue";
+import { ref, watch } from "vue";
 import { clone } from "@/lib/utils";
 import type { Artwork } from "./Artwork";
-// import { parse } from "path-browserify";
 
 export const messageBus = createMessageBus(() => self);
 messageBus.subscribe("saveBlob", onSaveBlob);
@@ -42,8 +41,6 @@ watch(
 );
 
 async function onLoadBlob(artwork: Artwork) {
-  //
-  console.log("TODO load blob", artwork);
   if (!accessToken) throw "accessToken not set";
 
   progressState.value = {
@@ -61,8 +58,7 @@ async function onLoadBlob(artwork: Artwork) {
   progressState.value.message = "finding file";
   progressState.value.value = 3;
 
-  let file = await getFile(artwork.name, folder.id);
-
+  const file = await getFile(artwork.name, folder.id);
   if (!file) {
     progressState.value.error = "file not found";
     return;

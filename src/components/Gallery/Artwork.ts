@@ -1,6 +1,8 @@
 export interface Artwork {
-  blob: Blob;
-  id: null | string;
+  blob?: Blob;
+  id?: string;
   name: string;
   path: string;
 }
+
+
