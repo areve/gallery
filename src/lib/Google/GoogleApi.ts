@@ -12,10 +12,10 @@ export interface FileInfo {
   modifiedTime: string;
 }
 
-function googleUrl(id: string): string;
-function googleUrl(params: Record<string, string>): string;
-function googleUrl(id: string, params: Record<string, string>): string;
-function googleUrl(idOrParams: string | Record<string, string>, params?: Record<string, string>) {
+function driveFilesUrl(id: string): string;
+function driveFilesUrl(params: Record<string, string>): string;
+function driveFilesUrl(id: string, params: Record<string, string>): string;
+function driveFilesUrl(idOrParams: string | Record<string, string>, params?: Record<string, string>) {
   if (typeof idOrParams === "object") {
     const params = idOrParams;
     return `https://www.googleapis.com/drive/v3/files?${new URLSearchParams(params)}`;
@@ -25,10 +25,10 @@ function googleUrl(idOrParams: string | Record<string, string>, params?: Record<
   return `https://www.googleapis.com/drive/v3/files/${id}`;
 }
 
-function googleUploadUrl(id: string): string;
-function googleUploadUrl(params: Record<string, string>): string;
-function googleUploadUrl(id: string, params: Record<string, string>): string;
-function googleUploadUrl(idOrParams: string | Record<string, string>, params?: Record<string, string>) {
+function uploadDriveFilesUrl(id: string): string;
+function uploadDriveFilesUrl(params: Record<string, string>): string;
+function uploadDriveFilesUrl(id: string, params: Record<string, string>): string;
+function uploadDriveFilesUrl(idOrParams: string | Record<string, string>, params?: Record<string, string>) {
   if (typeof idOrParams === "object") {
     const params = idOrParams;
     return `https://www.googleapis.com/upload/drive/v3/files?${new URLSearchParams(params)}`;
@@ -38,28 +38,23 @@ function googleUploadUrl(idOrParams: string | Record<string, string>, params?: R
   return `https://www.googleapis.com/upload/drive/v3/files/${id}`;
 }
 
-// TODO I only made it optional temporarily, it is needed!
-function getHeaders(accessToken?: string) {
+function getHeaders(accessToken: string) {
   return new Headers({ Authorization: `Bearer ${accessToken}` });
 }
 
 export async function googleFileBlob(id: string, accessToken: string) {
-  const url = googleUrl(id, {
+  const url = driveFilesUrl(id, {
     alt: "media",
   });
-  const response = await fetch(
-    url,
-    {
-      method: "GET",
-      headers: getHeaders(accessToken),
-    },
-    // `/gallery/${id}`
-  );
+  const response = await fetch(url, {
+    method: "GET",
+    headers: getHeaders(accessToken),
+  });
   return await response.blob();
 }
 
 export async function googleFileUpdate(id: string, name: string, file: Blob, accessToken: string) {
-const url = googleUploadUrl(id, {
+  const url = uploadDriveFilesUrl(id, {
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
   });
@@ -79,14 +74,13 @@ const url = googleUploadUrl(id, {
 }
 
 export async function googleFileCreate(folderId: string, name: string, file: Blob, accessToken: string) {
-  const url = googleUploadUrl({
+  const url = uploadDriveFilesUrl({
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
   });
   const metadata = {
     name,
     mimeType: "image/png",
-    // spaces: "appDataFolder",
     parents: [folderId],
   };
   const body = new FormData();
@@ -101,13 +95,11 @@ export async function googleFileCreate(folderId: string, name: string, file: Blo
 }
 
 export async function googleFolderCreate(name: string, folderId: string | undefined, accessToken: string) {
-  const url = googleUrl({
-    // spaces: "appDataFolder",
+  const url = driveFilesUrl({
     fields: fileInfoKeys.join(","),
   });
   const body = {
     name,
-    // spaces: "appDataFolder",
     parents: [folderId],
     mimeType: "application/vnd.google-apps.folder",
   };
@@ -119,32 +111,32 @@ export async function googleFolderCreate(name: string, folderId: string | undefi
   return (await response.json()) as FileInfo;
 }
 
-export async function googleFileGet(id: string) {
-  const url = googleUrl(id, {
-    fields: fileInfoKeys.join(","),
-  });
-  const response = await fetch(
-    url,
-    {
-      method: "GET",
-      headers: getHeaders(),
-    },
-    // `/gallery/${id}/metadata`
-  );
-  return (await response.json()) as FileInfo;
-}
+// export async function googleFileGet(id: string) {
+//   const url = googleUrl(id, {
+//     fields: fileInfoKeys.join(","),
+//   });
+//   const response = await fetch(
+//     url,
+//     {
+//       method: "GET",
+//       headers: getHeaders(),
+//     },
+//     // `/gallery/${id}/metadata`
+//   );
+//   return (await response.json()) as FileInfo;
+// }
 
-export async function googleFileDelete(id: string) {
-  const url = googleUrl(id);
-  const response = await fetch(url, {
-    method: "DELETE",
-    headers: getHeaders(),
-  });
-  return response.status === 204;
-}
+// export async function googleFileDelete(id: string) {
+//   const url = googleUrl(id);
+//   const response = await fetch(url, {
+//     method: "DELETE",
+//     headers: getHeaders(),
+//   });
+//   return response.status === 204;
+// }
 
 export async function googleFilesGet(params: Record<string, string>, accessToken: string) {
-  const url = googleUrl(params);
+  const url = driveFilesUrl(params);
   const response = await fetch(
     url,
     {

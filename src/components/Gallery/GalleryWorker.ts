@@ -12,6 +12,7 @@ import { createMessageBus } from "@/lib/MessageBus";
 import type { ProgressState } from "../Progress/progressState";
 import { ref, toRaw, watch, watchPostEffect } from "vue";
 import { clone } from "@/lib/utils";
+import type { Artwork } from "./Artwork";
 // import { parse } from "path-browserify";
 
 export const messageBus = createMessageBus(() => self);
@@ -40,14 +41,9 @@ watch(
   },
 );
 
-async function onLoadBlob(metadata: {
+async function onLoadBlob(artwork: Artwork) {
   //
-  id: string;
-  name: string;
-  path: string;
-}) {
-  //
-  console.log("TODO load blob", metadata);
+  console.log("TODO load blob", artwork);
   if (!accessToken) throw "accessToken not set";
 
   progressState.value = {
@@ -57,7 +53,7 @@ async function onLoadBlob(metadata: {
   };
 
   // TODO don't use makePath in this "read" method
-  const folders = await makePath(rootDirName + "/" + metadata.path);
+  const folders = await makePath(rootDirName + "/" + artwork.path);
   progressState.value.value = 2;
 
   const folder = folders[folders.length - 1];
@@ -65,7 +61,7 @@ async function onLoadBlob(metadata: {
   progressState.value.message = "finding file";
   progressState.value.value = 3;
 
-  let file = await getFile(metadata.name, folder.id);
+  let file = await getFile(artwork.name, folder.id);
 
   if (!file) {
     progressState.value.error = "file not found";
@@ -74,19 +70,12 @@ async function onLoadBlob(metadata: {
 
   // TODO when I passed no accessToken I got json back but no exception!?
   const blob = await googleFileBlob(file.id, accessToken);
-  console.log('blob here', blob)
+  console.log("blob here", blob);
   progressState.value.value = 4;
   return blob;
 }
 
-async function onSaveBlob(
-  blob: Blob,
-  metadata: {
-    id: string;
-    name: string;
-    path: string;
-  },
-) {
+async function onSaveBlob(artwork: Artwork) {
   if (!accessToken) throw "accessToken not set";
 
   progressState.value = {
@@ -95,7 +84,7 @@ async function onSaveBlob(
     value: 1,
   };
 
-  const folders = await makePath(rootDirName + "/" + metadata.path);
+  const folders = await makePath(rootDirName + "/" + artwork.path);
   progressState.value.value = 2;
 
   const folder = folders[folders.length - 1];
@@ -103,11 +92,11 @@ async function onSaveBlob(
   progressState.value.message = "finding file";
   progressState.value.value = 3;
 
-  let file = await getFile(metadata.name, folder.id);
+  let file = await getFile(artwork.name, folder.id);
 
   progressState.value.message = "uploading file";
-  if (file) file = await googleFileUpdate(file.id, metadata.name, blob, accessToken);
-  else file = await googleFileCreate(folder.id, metadata.name, blob, accessToken);
+  if (file) file = await googleFileUpdate(file.id, artwork.name, artwork.blob, accessToken);
+  else file = await googleFileCreate(folder.id, artwork.name, artwork.blob, accessToken);
 
   progressState.value.value = 4;
   return file;

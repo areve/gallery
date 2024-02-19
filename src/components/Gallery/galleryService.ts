@@ -4,16 +4,12 @@ import { watchPostEffect } from "vue";
 import { googleAuthState } from "@/lib/Google/GoogleAuth";
 import { progressState, type ProgressState } from "../Progress/progressState";
 import { loadBlob } from "../Artboard/artboardService";
+import type { Artwork } from "./Artwork";
 
 const messageBus = createMessageBus(() => new GalleryWorker());
 messageBus.subscribe("updateProgress", onUpdateProgress);
 
-export function load(metadata: {
-  //
-  id: null | string;
-  name: string;
-  path: string;
-}) {
+export function load(artwork: Artwork) {
   console.log("galleryService:load");
 
   // TODO if it fails notify the user
@@ -23,7 +19,7 @@ export function load(metadata: {
   messageBus.publish(
     {
       name: "loadBlob",
-      params: [metadata],
+      params: [artwork],
     },
     undefined,
     (blob: Blob) => {
@@ -39,17 +35,11 @@ watchPostEffect(() => {
     params: [googleAuthState.value.accessToken],
   });
 });
-export function save(
-  blob: Blob,
-  metadata: {
-    id: null | string;
-    name: string;
-    path: string;
-  },
-) {
+
+export function save(artwork: Artwork) {
   messageBus.publish({
     name: "saveBlob",
-    params: [blob, metadata],
+    params: [artwork],
   });
 }
 

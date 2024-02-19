@@ -83,7 +83,8 @@ const save = async () => {
   // TODO if it fails notify the user
   // TODO add a way to browse images
   const blob = await asBlob();
-  gallerySave(blob, {
+  gallerySave({
+    blob,
     id: null,
     name: artAppState.value.fileName,
     path: "/foobar/baz",
