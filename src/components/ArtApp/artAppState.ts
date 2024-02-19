@@ -8,5 +8,11 @@ export const artAppState = ref({
   },
   fileName: "Hello",
   showFps: false,
+  progress: {
+    max: 100,
+    value: 32,
+    message: "saving",
+    error: "something bad happened",
+  },
 });
 usePersistentState("artAppState", artAppState);

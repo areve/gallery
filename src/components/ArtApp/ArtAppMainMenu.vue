@@ -42,15 +42,15 @@
 </template>
 
 <script lang="ts" setup>
-import { asBlob, loadBlob, resetCanvas } from "../Artboard/artboardService";
+import { asBlob, resetCanvas } from "../Artboard/artboardService";
 import { artboardState } from "../Artboard/artboardState";
 import { googleAuthState, signIn as googleSignIn, signOut as googleSignOut, refreshTokens } from "@/lib/Google/GoogleAuth";
-import { readFile, writeFile } from "@/lib/FileStorage";
 import { ref } from "vue";
 import type { Coord } from "@/lib/Coord";
 import { clone } from "@/lib/utils";
 import { artAppState } from "./artAppState";
 import { getAvailableSize } from "@/lib/Window";
+import { load as galleryLoad, save as gallerySave } from "@/components/Gallery/galleryService";
 
 const resetColor = ref<string>("#ffffff");
 const resetDimensions = ref<Coord>(getAvailableSize());
@@ -69,20 +69,25 @@ const signOut = async () => {
 
 const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
 
-const rootDirName = "gallery.challen.info/v2"; // TODO hard coded folder name?
+const load = async () => {
+  // TODO if it fails notify the user
+  galleryLoad({
+    id: null,
+    name: artAppState.value.fileName,
+    path: "/foobar/baz",
+  });
+};
 
 const save = async () => {
-  const blob = await asBlob();
   // TODO if it exists indicate it when I choose the name
   // TODO if it fails notify the user
   // TODO add a way to browse images
-  await writeFile(rootDirName + "/" + artAppState.value.fileName, blob);
-};
-
-const load = async () => {
-  // TODO if it fails notify the user
-  const blob = await readFile(rootDirName + "/" + artAppState.value.fileName);
-  if (blob) await loadBlob(blob);
+  const blob = await asBlob();
+  gallerySave(blob, {
+    id: null,
+    name: artAppState.value.fileName,
+    path: "/foobar/baz",
+  });
 };
 </script>
 

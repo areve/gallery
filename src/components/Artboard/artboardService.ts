@@ -55,10 +55,16 @@ export function selectedTool() {
 }
 
 export async function asBlob() {
-  return new Promise<Blob | null>((resolve) => currentCanvas?.toBlob(resolve));
+  return new Promise<Blob>((resolve, reject) => {
+    currentCanvas?.toBlob((blob) => {
+      if (!blob) return reject("blob was null");
+      resolve(blob);
+    });
+  });
 }
 
 export async function loadBlob(blob: Blob) {
+  console.log("blbl", URL.createObjectURL(blob), blob);
   const image = await blobToImage(blob);
   const dimensions = {
     x: image.width,

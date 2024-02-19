@@ -1,5 +1,5 @@
 //import { cacheFetch } from "./cacheService";
-import { googleAuthState } from "./GoogleAuth";
+// import { googleAuthState } from "./GoogleAuth";
 
 export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
@@ -38,11 +38,12 @@ function googleUploadUrl(idOrParams: string | Record<string, string>, params?: R
   return `https://www.googleapis.com/upload/drive/v3/files/${id}`;
 }
 
-function getHeaders() {
-  return new Headers({ Authorization: `Bearer ${googleAuthState.value.accessToken}` });
+// TODO I only made it optional temporarily, it is needed!
+function getHeaders(accessToken?: string) {
+  return new Headers({ Authorization: `Bearer ${accessToken}` });
 }
 
-export async function googleFileBlob(id: string) {
+export async function googleFileBlob(id: string, accessToken: string) {
   const url = googleUrl(id, {
     alt: "media",
   });
@@ -50,15 +51,15 @@ export async function googleFileBlob(id: string) {
     url,
     {
       method: "GET",
-      headers: getHeaders(),
+      headers: getHeaders(accessToken),
     },
     // `/gallery/${id}`
   );
   return await response.blob();
 }
 
-export async function googleFileUpdate(id: string, name: string, file: Blob) {
-  const url = googleUploadUrl(id, {
+export async function googleFileUpdate(id: string, name: string, file: Blob, accessToken: string) {
+const url = googleUploadUrl(id, {
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
   });
@@ -71,13 +72,13 @@ export async function googleFileUpdate(id: string, name: string, file: Blob) {
   body.append("file", file);
   const response = await fetch(url, {
     method: "PATCH",
-    headers: getHeaders(),
+    headers: getHeaders(accessToken),
     body,
   });
   return (await response.json()) as FileInfo;
 }
 
-export async function googleFileCreate(folderId: string, name: string, file: Blob) {
+export async function googleFileCreate(folderId: string, name: string, file: Blob, accessToken: string) {
   const url = googleUploadUrl({
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
@@ -85,6 +86,7 @@ export async function googleFileCreate(folderId: string, name: string, file: Blo
   const metadata = {
     name,
     mimeType: "image/png",
+    // spaces: "appDataFolder",
     parents: [folderId],
   };
   const body = new FormData();
@@ -92,23 +94,26 @@ export async function googleFileCreate(folderId: string, name: string, file: Blo
   body.append("file", file);
   const response = await fetch(url, {
     method: "POST",
-    headers: getHeaders(),
+    headers: getHeaders(accessToken),
     body,
   });
   return (await response.json()) as FileInfo;
 }
 
-export async function googleFolderCreate(name: string) {
+export async function googleFolderCreate(name: string, folderId: string | undefined, accessToken: string) {
   const url = googleUrl({
+    // spaces: "appDataFolder",
     fields: fileInfoKeys.join(","),
   });
   const body = {
     name,
+    // spaces: "appDataFolder",
+    parents: [folderId],
     mimeType: "application/vnd.google-apps.folder",
   };
   const response = await fetch(url, {
     method: "POST",
-    headers: getHeaders(),
+    headers: getHeaders(accessToken),
     body: JSON.stringify(body),
   });
   return (await response.json()) as FileInfo;
@@ -138,13 +143,13 @@ export async function googleFileDelete(id: string) {
   return response.status === 204;
 }
 
-export async function googleFilesGet(params: Record<string, string>) {
+export async function googleFilesGet(params: Record<string, string>, accessToken: string) {
   const url = googleUrl(params);
   const response = await fetch(
     url,
     {
       method: "GET",
-      headers: getHeaders(),
+      headers: getHeaders(accessToken),
     },
     // TODO purge this file of cache
     // TODO tidy this file

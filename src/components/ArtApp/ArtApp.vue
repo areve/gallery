@@ -4,6 +4,7 @@
     <ArtAppToolMenu />
   </aside>
   <main class="art-app">
+    <ProgressPanel />
     <ArtboardPanel />
     <div v-if="artAppState.showFps" class="status-bar">{{ artboardState.fps }}fps {{ artboardState.dimensions }}</div>
   </main>
@@ -15,6 +16,7 @@
 
 <script lang="ts" setup>
 import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
+import ProgressPanel from "@/components/Progress/ProgressPanel.vue";
 import ArtAppToolMenu from "./ArtAppToolMenu.vue";
 import ArtAppMainMenu from "./ArtAppMainMenu.vue";
 import { artAppState } from "./artAppState";
@@ -48,7 +50,7 @@ function showRightMenu() {
   height: 3em;
   background-color: rgb(127, 127, 127, 0.5);
   cursor: pointer;
-  z-index: 100;
+  z-index: 90;
 }
 
 .show-left-menu-button {
@@ -94,6 +96,7 @@ function showRightMenu() {
   opacity: 1;
   width: 45%;
 }
+
 .status-bar {
   position: fixed;
   bottom: 0;
