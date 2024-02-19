@@ -10,9 +10,9 @@ import {
 } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
 import type { ProgressState } from "../Progress/progressState";
-import { ref, watch } from "vue";
+import { ref, watchPostEffect } from "vue";
 import { clone } from "@/lib/utils";
-import type { Artwork } from "./Artwork";
+import type { Artwork, ArtworkWithBlob } from "./Artwork";
 
 export const messageBus = createMessageBus(() => self);
 messageBus.subscribe("saveBlob", onSaveBlob);
@@ -33,74 +33,62 @@ const progressState = ref<ProgressState>({
   value: 0,
 });
 
-watch(
-  () => clone(progressState.value),
-  (state: ProgressState) => {
-    messageBus.publish({ name: "updateProgress", params: [state] });
-  },
-);
+watchPostEffect(() => messageBus.publish({ name: "updateProgress", params: [clone(progressState.value)] }));
+
+function notifyError(message: string) {
+  progressState.value.error = message;
+}
+
+function notifyProgress(message: string, remaining?: number) {
+  if (typeof remaining === "number") {
+    progressState.value.error = undefined;
+    progressState.value.value = 0;
+    progressState.value.max = remaining;
+  }
+
+  progressState.value.value++;
+  progressState.value.message = message;
+}
 
 async function onLoadBlob(artwork: Artwork) {
   if (!accessToken) throw "accessToken not set";
 
-  progressState.value = {
-    message: "finding folders",
-    max: 4,
-    value: 1,
-  };
-
-  // TODO don't use makePath in this "read" method
-  const folders = await makePath(rootDirName + "/" + artwork.path);
-  progressState.value.value = 2;
-
+  notifyProgress("finding folders", 4);
+  const folders = await readPath(rootDirName + "/" + artwork.path);
   const folder = folders[folders.length - 1];
+  if (!folder) return notifyError("folder not found");
 
-  progressState.value.message = "finding file";
-  progressState.value.value = 3;
-
+  notifyProgress("finding file");
   const file = await getFile(artwork.name, folder.id);
-  if (!file) {
-    progressState.value.error = "file not found";
-    return;
-  }
+  if (!file) return notifyError("file not found");
 
+  notifyProgress("loading file");
   // TODO when I passed no accessToken I got json back but no exception!?
   const blob = await googleFileBlob(file.id, accessToken);
-  console.log("blob here", blob);
-  progressState.value.value = 4;
+
+  notifyProgress("file loaded");
   return blob;
 }
 
-async function onSaveBlob(artwork: Artwork) {
+async function onSaveBlob(artwork: ArtworkWithBlob) {
   if (!accessToken) throw "accessToken not set";
 
-  progressState.value = {
-    message: "finding folders",
-    max: 4,
-    value: 1,
-  };
-
+  notifyProgress("finding folders", 4);
   const folders = await makePath(rootDirName + "/" + artwork.path);
-  progressState.value.value = 2;
-
   const folder = folders[folders.length - 1];
 
-  progressState.value.message = "finding file";
-  progressState.value.value = 3;
-
+  notifyProgress("finding file");
   let file = await getFile(artwork.name, folder.id);
 
-  progressState.value.message = "uploading file";
+  notifyProgress("saving file");
   if (file) file = await googleFileUpdate(file.id, artwork.name, artwork.blob, accessToken);
   else file = await googleFileCreate(folder.id, artwork.name, artwork.blob, accessToken);
 
-  progressState.value.value = 4;
+  notifyProgress("file saved");
   return file;
 }
 
-console.log("Hello from gallery worker");
-
-async function makePath(path: string) {
+async function makePath(path: string, readonly: boolean = false) {
   const splitPath = path.split("/").filter((p) => p !== "");
 
   const foldersInPath = [];
@@ -108,13 +96,18 @@ async function makePath(path: string) {
   for (let i = 0; i < splitPath.length; i++) {
     let folder = await getFolder(splitPath[i], folderId);
 
-    if (!folder) folder = await makeFolder(splitPath[i], folderId);
+    if (!folder && !readonly) folder = await makeFolder(splitPath[i], folderId);
 
     folderId = folder?.id;
     foldersInPath.push(folder);
+    if (!folder) return foldersInPath;
   }
 
   return foldersInPath;
+}
+
+async function readPath(path: string) {
+  return makePath(path, true);
 }
 
 async function getFolder(name: string, folderId?: string): Promise<FileInfo | undefined> {

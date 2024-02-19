@@ -4,17 +4,17 @@ import { watchPostEffect } from "vue";
 import { googleAuthState } from "@/lib/Google/GoogleAuth";
 import { progressState, type ProgressState } from "../Progress/progressState";
 import { loadBlob } from "../Artboard/artboardService";
-import type { Artwork } from "./Artwork";
+import type { Artwork, ArtworkWithBlob } from "./Artwork";
 
 const messageBus = createMessageBus(() => new GalleryWorker());
 messageBus.subscribe("updateProgress", onUpdateProgress);
 
 export async function load(artwork: Artwork) {
-  const blob = await messageBus.publish({
+  const blob = await messageBus.publish<Blob | undefined>({
     name: "loadBlob",
     params: [artwork],
   });
-  await loadBlob(blob);
+  if (blob) await loadBlob(blob);
 }
 
 watchPostEffect(() => {
@@ -24,7 +24,7 @@ watchPostEffect(() => {
   });
 });
 
-export function save(artwork: Artwork) {
+export function save(artwork: ArtworkWithBlob) {
   messageBus.publish({
     name: "saveBlob",
     params: [artwork],
@@ -32,6 +32,5 @@ export function save(artwork: Artwork) {
 }
 
 function onUpdateProgress(update: ProgressState) {
-  console.log("onUpdateProgress", update);
   progressState.value = update;
 }

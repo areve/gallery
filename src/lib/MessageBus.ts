@@ -11,7 +11,7 @@ export interface MessageBus {
   subscribe(name: string, callback: Function): void;
 
   //TODO use generic instead of any?
-  publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<any>;
+  publish<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
   terminateWorker(): void;
 }
 
@@ -69,8 +69,8 @@ export function createMessageBus(getWorker: () => Worker | Window) {
     if (index !== -1) registry[name].splice(index, 1);
   }
 
-  function publish(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    return new Promise((resolve, reject) => {
+  function publish<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
+    return new Promise<T>((resolve, reject) => {
       // if (callback) {
       const callbackId = `callback:${uuid()}`;
       const callbackWrapper = (result: any) => {

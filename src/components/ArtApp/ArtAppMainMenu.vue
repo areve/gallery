@@ -71,6 +71,7 @@ const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps)
 
 const load = async () => {
   // TODO if it fails notify the user
+  // TODO test this with an invalid path
   galleryLoad({
     name: artAppState.value.fileName,
     path: "/foobar/baz",

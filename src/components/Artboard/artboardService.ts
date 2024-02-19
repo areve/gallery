@@ -64,7 +64,6 @@ export async function asBlob() {
 }
 
 export async function loadBlob(blob: Blob) {
-  console.log("blbl", URL.createObjectURL(blob), blob);
   const image = await blobToImage(blob);
   const dimensions = {
     x: image.width,

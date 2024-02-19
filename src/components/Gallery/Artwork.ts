@@ -5,4 +5,6 @@ export interface Artwork {
   path: string;
 }
 
-
+export interface ArtworkWithBlob extends Artwork {
+  blob: Blob;
+}
