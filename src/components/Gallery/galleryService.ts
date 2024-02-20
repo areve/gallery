@@ -25,8 +25,8 @@ watchPostEffect(() => {
   });
 });
 
-export function save(artwork: ArtworkWithBlob) {
-  messageBus.publish({
+export async function save(artwork: ArtworkWithBlob) {
+  await messageBus.publish({
     name: "saveBlob",
     params: [artwork],
   });

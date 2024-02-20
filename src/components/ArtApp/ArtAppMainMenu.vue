@@ -70,9 +70,7 @@ const signOut = async () => {
 const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
 
 const load = async () => {
-  // TODO if it fails notify the user
-  // TODO test this with an invalid path
-  galleryLoad({
+  await galleryLoad({
     name: artAppState.value.fileName,
     path: "/v2",
   });
@@ -80,10 +78,9 @@ const load = async () => {
 
 const save = async () => {
   // TODO if it exists indicate it when I choose the name
-  // TODO if it fails notify the user
   // TODO add a way to browse images
   const blob = await asBlob();
-  gallerySave({
+  await gallerySave({
     blob,
     name: artAppState.value.fileName,
     path: "/v2",
