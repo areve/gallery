@@ -56,6 +56,7 @@ import { artAppState } from "./artAppState";
 import { getAvailableSize } from "@/lib/Window";
 import { load as galleryLoad, save as gallerySave } from "@/components/Gallery/galleryService";
 import { googleAuthState } from "@/lib/Google/googleAuthState";
+import { progressMessage } from "../Progress/progressState";
 
 const resetColor = ref<string>("#ffffff");
 const resetDimensions = ref<Coord>(getAvailableSize());
@@ -69,6 +70,7 @@ const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps)
 const toggleDebug = () => (showDebugButtons.value = !showDebugButtons.value);
 
 const load = async () => {
+  progressMessage("requesting load", 5);
   await galleryLoad({
     name: artAppState.value.fileName,
     path: "/v2",
@@ -78,7 +80,10 @@ const load = async () => {
 const save = async () => {
   // TODO if it exists indicate it when I choose the name
   // TODO add a way to browse images
+  progressMessage("converting canvas to blob", 6);
   const blob = await asBlob();
+
+  progressMessage("saving blob");
   await gallerySave({
     blob,
     name: artAppState.value.fileName,
