@@ -74,7 +74,7 @@ const load = async () => {
   // TODO test this with an invalid path
   galleryLoad({
     name: artAppState.value.fileName,
-    path: "/foobar/baz",
+    path: "/v2",
   });
 };
 
@@ -86,7 +86,7 @@ const save = async () => {
   gallerySave({
     blob,
     name: artAppState.value.fileName,
-    path: "/foobar/baz",
+    path: "/v2",
   });
 };
 </script>

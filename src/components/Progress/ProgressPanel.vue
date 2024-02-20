@@ -1,5 +1,11 @@
 <template>
-  <div v-if="showProgress" class="progress-panel">
+  <div
+    v-if="showProgress"
+    class="progress-panel"
+    :class="{
+      error: isError,
+    }"
+  >
     <label for="background">{{ progressState.error || progressState.message }}</label>
     <progress id="background" :value="progressState.value" :max="progressState.max">{{ progressState.value }}</progress>
   </div>
@@ -11,6 +17,9 @@ import { progressState } from "./progressState";
 
 const showProgress = computed(() => {
   return !!progressState.value.error || progressState.value.max != progressState.value.value;
+});
+const isError = computed(() => {
+  return !!progressState.value.error;
 });
 </script>
 
@@ -25,6 +34,9 @@ const showProgress = computed(() => {
   display: flex;
   flex-direction: column-reverse;
   opacity: 1;
+}
+.progress-panel.error {
+  background-color: rgb(255, 0, 0, 0.8);
 }
 progress {
   appearance: none;

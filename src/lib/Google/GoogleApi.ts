@@ -147,6 +147,8 @@ export async function googleFilesGet(params: Record<string, string>, accessToken
     // TODO tidy this file
     // cacheKey
   );
+  // TODO needed in more places, should I raise exception instead?
+  console.assert(response.status === 200, `unexpected status: ${response.status}`);
   const result = await response.json();
   return result.files as FileInfo[];
 }
