@@ -63,9 +63,7 @@ async function onLoadBlob(artwork: Artwork) {
   if (!file) return notifyError("file not found");
 
   notifyProgress("loading file");
-  // TODO when I passed no accessToken I got json back but no exception!?
   const blob = await googleFileBlob(file.id, accessToken);
-
   notifyProgress("file loaded");
   return blob;
 }

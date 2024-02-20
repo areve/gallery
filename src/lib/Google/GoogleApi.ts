@@ -50,6 +50,8 @@ export async function googleFileBlob(id: string, accessToken: string) {
     method: "GET",
     headers: getHeaders(accessToken),
   });
+  // TODO check status responses for all
+  if (response.status !== 200) throw `googleFileBlob unexpected status: ${response.status}`;
   return await response.blob();
 }
 

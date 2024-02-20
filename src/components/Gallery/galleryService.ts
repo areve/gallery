@@ -14,6 +14,7 @@ export async function load(artwork: Artwork) {
     name: "loadBlob",
     params: [artwork],
   });
+  console.log(blob)
   if (blob) await loadBlob(blob);
 }
 

@@ -9,8 +9,6 @@ export type Message = {
 export interface MessageBus {
   unsubscribe(name: string, callback: Function): void;
   subscribe(name: string, callback: Function): void;
-
-  //TODO use generic instead of any?
   publish<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
   terminateWorker(): void;
 }
@@ -42,13 +40,20 @@ export function createMessageBus(getWorker: () => Worker | Window) {
       const subscribers: Function[] = registry[event.data.name];
       if (!subscribers) console.warn(`subscribers not found: ${event.data.name}`);
       subscribers?.forEach(async (subscriber) => {
-        // TODO wrap with try catch so callbackId can be called
-        const result = await subscriber(...event.data.params);
-        if (event.data.callbackId)
+        let result: any;
+        let error: any;
+        try {
+          result = await subscriber(...event.data.params);
+        } catch (e: any) {
+          error = e;
+        }
+
+        if (event.data.callbackId) {
           messageBus.publish({
             name: event.data.callbackId,
-            params: [result],
+            params: [error, result],
           });
+        }
       });
     };
     if (worker.onerror) console.warn("onerror was already bound");
@@ -71,13 +76,12 @@ export function createMessageBus(getWorker: () => Worker | Window) {
 
   function publish<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
     return new Promise<T>((resolve, reject) => {
-      // if (callback) {
       const callbackId = `callback:${uuid()}`;
-      const callbackWrapper = (result: any) => {
+      const callbackWrapper = (error: any, result: any) => {
         unsubscribe(callbackId, callbackWrapper);
+        if (error) return reject(error);
         resolve(result);
       };
-      // TODO handle exceptions and pass them back
       subscribe(callbackId, callbackWrapper);
       ensureWorker().postMessage({ ...message, callbackId }, structuredSerializeOptions as StructuredSerializeOptions);
     });
