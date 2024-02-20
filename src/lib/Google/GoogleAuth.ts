@@ -26,7 +26,7 @@ function handleTokensInUrlHash() {
   const isLoadedInIframe = window.parent !== window;
   const windowParentAny = window.parent as any;
   if (isLoadedInIframe && windowParentAny.completeSilentRefresh) {
-    window.parent.completeSilentRefresh(hashObject);
+    windowParentAny.completeSilentRefresh(hashObject);
     document.location = "about:blank";
     return;
   }
