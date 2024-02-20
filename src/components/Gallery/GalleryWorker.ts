@@ -1,17 +1,4 @@
-import {
-  escapeQuery,
-  googleFilesGet,
-  type FileInfo,
-  fileInfoKeys,
-  googleFolderCreate,
-  googleFileUpdate,
-  googleFileCreate,
-  googleFileBlob,
-  googleFolderGet,
-  googlePathGetOrCreate,
-  googleFileGet,
-  googlePathGet,
-} from "@/lib/Google/GoogleApi";
+import { googleFileUpdate, googleFileCreate, googleFileBlob, googlePathGetOrCreate, googleFileGet, googlePathGet } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
 import type { ProgressState } from "../Progress/progressState";
 import { ref, watchPostEffect } from "vue";
@@ -68,6 +55,7 @@ async function onLoadBlob(artwork: Artwork) {
 
   notifyProgress("loading file");
   const blob = await googleFileBlob(file.id, accessToken);
+
   notifyProgress("file loaded");
   return blob;
 }
