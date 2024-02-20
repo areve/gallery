@@ -24,7 +24,8 @@ function handleTokensInUrlHash() {
   const hashObject = getHashObject();
 
   const isLoadedInIframe = window.parent !== window;
-  if (isLoadedInIframe && window.parent.completeSilentRefresh) {
+  const windowParentAny = window.parent as any;
+  if (isLoadedInIframe && windowParentAny.completeSilentRefresh) {
     window.parent.completeSilentRefresh(hashObject);
     document.location = "about:blank";
     return;
@@ -128,7 +129,8 @@ export async function refreshTokens() {
     }
   }, 5000);
 
-  window.completeSilentRefresh = (hashObject: { [value: string]: string }) => {
+  const windowAny = window as any;
+  windowAny.completeSilentRefresh = (hashObject: { [value: string]: string }) => {
     silentRefreshCompleted = !!hashObject.access_token;
     loadTokensFromHashObject(hashObject);
     clearTimeout(silentRefreshTimeout);
