@@ -44,7 +44,7 @@
 <script lang="ts" setup>
 import { asBlob, resetCanvas } from "../Artboard/artboardService";
 import { artboardState } from "../Artboard/artboardState";
-import { signIn as googleSignIn, signOut as googleSignOut, refreshTokens } from "@/lib/Google/GoogleAuth";
+import { signIn, signOut, refreshTokens } from "@/lib/Google/GoogleAuth";
 import { ref } from "vue";
 import type { Coord } from "@/lib/Coord";
 import { clone } from "@/lib/utils";
@@ -59,14 +59,6 @@ const resetDimensions = ref<Coord>(getAvailableSize());
 const resetToColor = () => resetCanvas(clone(resetDimensions.value), resetColor.value);
 const resetToTransparent = () => resetCanvas(clone(resetDimensions.value), "transparent");
 const sizeFromAvailable = () => (resetDimensions.value = getAvailableSize());
-
-const signIn = async () => {
-  googleSignIn();
-};
-
-const signOut = async () => {
-  googleSignOut();
-};
 
 const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
 
