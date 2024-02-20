@@ -7,6 +7,10 @@ import {
   googleFileUpdate,
   googleFileCreate,
   googleFileBlob,
+  googleFolderGet,
+  googlePathGetOrCreate,
+  googleFileGet,
+  googlePathGet,
 } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
 import type { ProgressState } from "../Progress/progressState";
@@ -54,12 +58,12 @@ async function onLoadBlob(artwork: Artwork) {
   if (!accessToken) throw "accessToken not set";
 
   notifyProgress("finding folders", 4);
-  const folders = await readPath(rootDirName + "/" + artwork.path);
+  const folders = await googlePathGet(rootDirName + "/" + artwork.path, accessToken);
   const folder = folders[folders.length - 1];
   if (!folder) return notifyError("folder not found");
 
   notifyProgress("finding file");
-  const file = await getFile(artwork.name, folder.id);
+  const file = await googleFileGet(artwork.name, folder.id, accessToken);
   if (!file) return notifyError("file not found");
 
   notifyProgress("loading file");
@@ -72,11 +76,12 @@ async function onSaveBlob(artwork: ArtworkWithBlob) {
   if (!accessToken) throw "accessToken not set";
 
   notifyProgress("finding folders", 4);
-  const folders = await makePath(rootDirName + "/" + artwork.path);
+  const folders = await googlePathGetOrCreate(rootDirName + "/" + artwork.path, accessToken);
   const folder = folders[folders.length - 1];
+  if (!folder) return notifyError("folder not found");
 
   notifyProgress("finding file");
-  let file = await getFile(artwork.name, folder.id);
+  let file = await googleFileGet(artwork.name, folder.id, accessToken);
 
   notifyProgress("saving file");
   if (file) file = await googleFileUpdate(file.id, artwork.name, artwork.blob, accessToken);
@@ -84,60 +89,4 @@ async function onSaveBlob(artwork: ArtworkWithBlob) {
 
   notifyProgress("file saved");
   return file;
-}
-
-async function makePath(path: string, readonly: boolean = false) {
-  const splitPath = path.split("/").filter((p) => p !== "");
-
-  const foldersInPath = [];
-  let folderId: string | undefined;
-  for (let i = 0; i < splitPath.length; i++) {
-    let folder = await getFolder(splitPath[i], folderId);
-
-    if (!folder && !readonly) folder = await makeFolder(splitPath[i], folderId);
-
-    folderId = folder?.id;
-    foldersInPath.push(folder);
-    if (!folder) return foldersInPath;
-  }
-
-  return foldersInPath;
-}
-
-async function readPath(path: string) {
-  return makePath(path, true);
-}
-
-async function getFolder(name: string, folderId?: string): Promise<FileInfo | undefined> {
-  if (!accessToken) throw "accessToken not set";
-  const parentsClause = folderId ? ` and '${escapeQuery(folderId)}' in parents ` : "";
-  const result = await googleFilesGet(
-    {
-      q: `trashed=false and name='${escapeQuery(name)}' and mimeType='application/vnd.google-apps.folder' ${parentsClause}`,
-      pageSize: "1",
-      fields: `files(${fileInfoKeys.join(",")})`,
-    },
-    accessToken,
-  );
-  return result[0];
-}
-
-export async function makeFolder(name: string, folderId?: string): Promise<FileInfo> {
-  if (!accessToken) throw "accessToken not set";
-  let folder = await getFolder(name, folderId);
-  if (!folder) folder = await googleFolderCreate(name, folderId, accessToken);
-  return folder;
-}
-
-async function getFile(name: string, folderId: string): Promise<FileInfo | undefined> {
-  if (!accessToken) throw "accessToken not set";
-  return (
-    await googleFilesGet(
-      {
-        q: `trashed=false and '${escapeQuery(folderId)}' in parents and name='${escapeQuery(name)}'`,
-        fields: `nextPageToken, files(${fileInfoKeys.join(",")})`,
-      },
-      accessToken,
-    )
-  )[0];
 }

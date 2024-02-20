@@ -1,6 +1,3 @@
-//import { cacheFetch } from "./cacheService";
-// import { googleAuthState } from "./GoogleAuth";
-
 export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
@@ -12,10 +9,10 @@ export interface FileInfo {
   modifiedTime: string;
 }
 
-function driveFilesUrl(id: string): string;
-function driveFilesUrl(params: Record<string, string>): string;
-function driveFilesUrl(id: string, params: Record<string, string>): string;
-function driveFilesUrl(idOrParams: string | Record<string, string>, params?: Record<string, string>) {
+function googleDriveFilesUrl(id: string): string;
+function googleDriveFilesUrl(params: Record<string, string>): string;
+function googleDriveFilesUrl(id: string, params: Record<string, string>): string;
+function googleDriveFilesUrl(idOrParams: string | Record<string, string>, params?: Record<string, string>) {
   if (typeof idOrParams === "object") {
     const params = idOrParams;
     return `https://www.googleapis.com/drive/v3/files?${new URLSearchParams(params)}`;
@@ -25,10 +22,10 @@ function driveFilesUrl(idOrParams: string | Record<string, string>, params?: Rec
   return `https://www.googleapis.com/drive/v3/files/${id}`;
 }
 
-function uploadDriveFilesUrl(id: string): string;
-function uploadDriveFilesUrl(params: Record<string, string>): string;
-function uploadDriveFilesUrl(id: string, params: Record<string, string>): string;
-function uploadDriveFilesUrl(idOrParams: string | Record<string, string>, params?: Record<string, string>) {
+function googleDriveFilesUploadUrl(id: string): string;
+function googleDriveFilesUploadUrl(params: Record<string, string>): string;
+function googleDriveFilesUploadUrl(id: string, params: Record<string, string>): string;
+function googleDriveFilesUploadUrl(idOrParams: string | Record<string, string>, params?: Record<string, string>) {
   if (typeof idOrParams === "object") {
     const params = idOrParams;
     return `https://www.googleapis.com/upload/drive/v3/files?${new URLSearchParams(params)}`;
@@ -42,21 +39,32 @@ function getHeaders(accessToken: string) {
   return new Headers({ Authorization: `Bearer ${accessToken}` });
 }
 
+export async function googleFileGet(name: string, folderId: string, accessToken: string): Promise<FileInfo | undefined> {
+  return (
+    await googleFilesGet(
+      {
+        q: `trashed=false and '${escapeQuery(folderId)}' in parents and name='${escapeQuery(name)}'`,
+        fields: `nextPageToken, files(${fileInfoKeys.join(",")})`,
+      },
+      accessToken,
+    )
+  )[0];
+}
+
 export async function googleFileBlob(id: string, accessToken: string) {
-  const url = driveFilesUrl(id, {
+  const url = googleDriveFilesUrl(id, {
     alt: "media",
   });
   const response = await fetch(url, {
     method: "GET",
     headers: getHeaders(accessToken),
   });
-  // TODO check status responses for all
   if (response.status !== 200) throw `googleFileBlob unexpected status: ${response.status}`;
   return await response.blob();
 }
 
 export async function googleFileUpdate(id: string, name: string, file: Blob, accessToken: string) {
-  const url = uploadDriveFilesUrl(id, {
+  const url = googleDriveFilesUploadUrl(id, {
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
   });
@@ -72,11 +80,12 @@ export async function googleFileUpdate(id: string, name: string, file: Blob, acc
     headers: getHeaders(accessToken),
     body,
   });
+  if (response.status !== 200) throw `googleFileUpdate unexpected status: ${response.status}`;
   return (await response.json()) as FileInfo;
 }
 
 export async function googleFileCreate(folderId: string, name: string, file: Blob, accessToken: string) {
-  const url = uploadDriveFilesUrl({
+  const url = googleDriveFilesUploadUrl({
     uploadType: "multipart",
     fields: fileInfoKeys.join(","),
   });
@@ -93,11 +102,23 @@ export async function googleFileCreate(folderId: string, name: string, file: Blo
     headers: getHeaders(accessToken),
     body,
   });
+  if (response.status !== 200) throw `googleFileCreate unexpected status: ${response.status}`;
   return (await response.json()) as FileInfo;
 }
 
+export async function googleFilesGet(params: Record<string, string>, accessToken: string) {
+  const url = googleDriveFilesUrl(params);
+  const response = await fetch(url, {
+    method: "GET",
+    headers: getHeaders(accessToken),
+  });
+  if (response.status !== 200) throw `googleFilesGet unexpected status: ${response.status}`;
+  const result = await response.json();
+  return result.files as FileInfo[];
+}
+
 export async function googleFolderCreate(name: string, folderId: string | undefined, accessToken: string) {
-  const url = driveFilesUrl({
+  const url = googleDriveFilesUrl({
     fields: fileInfoKeys.join(","),
   });
   const body = {
@@ -110,7 +131,51 @@ export async function googleFolderCreate(name: string, folderId: string | undefi
     headers: getHeaders(accessToken),
     body: JSON.stringify(body),
   });
+  if (response.status !== 200) throw `googleFolderCreate unexpected status: ${response.status}`;
   return (await response.json()) as FileInfo;
+}
+
+export async function googleFolderGet(name: string, folderId: string | undefined, accessToken: string): Promise<FileInfo | undefined> {
+  const parentsClause = folderId ? ` and '${escapeQuery(folderId)}' in parents ` : "";
+  const result = await googleFilesGet(
+    {
+      q: `trashed=false and name='${escapeQuery(name)}' and mimeType='application/vnd.google-apps.folder' ${parentsClause}`,
+      pageSize: "1",
+      fields: `files(${fileInfoKeys.join(",")})`,
+    },
+    accessToken,
+  );
+  return result[0];
+}
+
+async function googleMakePath(path: string, readonly: boolean, accessToken: string) {
+  const splitPath = path.split("/").filter((p) => p !== "");
+
+  const foldersInPath = [];
+  let folderId: string | undefined;
+  for (let i = 0; i < splitPath.length; i++) {
+    let folder = await googleFolderGet(splitPath[i], folderId, accessToken);
+    if (!folder && !readonly) folder = await googleFolderGetOrCreate(splitPath[i], folderId, accessToken);
+    folderId = folder?.id;
+    foldersInPath.push(folder);
+    if (!folder) return foldersInPath;
+  }
+
+  return foldersInPath;
+}
+
+export async function googlePathGetOrCreate(path: string, accessToken: string) {
+  return googleMakePath(path, false, accessToken);
+}
+
+export async function googlePathGet(path: string, accessToken: string) {
+  return googleMakePath(path, true, accessToken);
+}
+
+export async function googleFolderGetOrCreate(name: string, folderId: string | undefined, accessToken: string): Promise<FileInfo> {
+  let folder = await googleFolderGet(name, folderId, accessToken);
+  if (!folder) folder = await googleFolderCreate(name, folderId, accessToken);
+  return folder;
 }
 
 // export async function googleFileGet(id: string) {
@@ -125,6 +190,7 @@ export async function googleFolderCreate(name: string, folderId: string | undefi
 //     },
 //     // `/gallery/${id}/metadata`
 //   );
+// if (response.status !== 200) throw `googleFileGet unexpected status: ${response.status}`;
 //   return (await response.json()) as FileInfo;
 // }
 
@@ -134,23 +200,6 @@ export async function googleFolderCreate(name: string, folderId: string | undefi
 //     method: "DELETE",
 //     headers: getHeaders(),
 //   });
+// if (response.status !== 200) throw `googleFileDelete unexpected status: ${response.status}`;
 //   return response.status === 204;
 // }
-
-export async function googleFilesGet(params: Record<string, string>, accessToken: string) {
-  const url = driveFilesUrl(params);
-  const response = await fetch(
-    url,
-    {
-      method: "GET",
-      headers: getHeaders(accessToken),
-    },
-    // TODO purge this file of cache
-    // TODO tidy this file
-    // cacheKey
-  );
-  // TODO needed in more places, should I raise exception instead?
-  console.assert(response.status === 200, `unexpected status: ${response.status}`);
-  const result = await response.json();
-  return result.files as FileInfo[];
-}
