@@ -1,6 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { googleAuthConfig } from "./googleAuthConfig";
 import { defaultAuthState, googleAuthState } from "./googleAuthState";
+import { progressError } from "@/components/Progress/progressState";
 
 type AuthStateState = "inProgress" | "signedIn" | "signedOut";
 
@@ -14,14 +15,17 @@ export interface AuthState {
 
 handleTokensInUrlHash();
 
-setTimeout(checkTokenExpiry, 1000);
+const intervalHandle = setInterval(checkTokenExpiry, 1000);
+if (import.meta.hot) {
+  import.meta.hot.accept(() => clearInterval(intervalHandle));
+}
 
 function handleTokensInUrlHash() {
   const hashObject = getHashObject();
 
   const isLoadedInIframe = window.parent !== window;
-  if (isLoadedInIframe) {
-    (window.parent as any).completeSilentRefresh(hashObject);
+  if (isLoadedInIframe && window.parent.completeSilentRefresh) {
+    window.parent.completeSilentRefresh(hashObject);
     document.location = "about:blank";
     return;
   }
@@ -106,23 +110,28 @@ async function revokeAccess(token: string) {
 async function checkTokenExpiry() {
   const expiresInLessThanTenMinutes = googleAuthState.value.expiresAt && new Date().getTime() + 600000 > googleAuthState.value.expiresAt.getTime();
   if (expiresInLessThanTenMinutes) await refreshTokens();
-
-  // TODO if this file changes in hot reload this loop ends up happening more than once
-  setTimeout(checkTokenExpiry, 1000);
 }
 
 export async function refreshTokens() {
-  console.log("refreshing token");
   const type = "id_token token";
   const hint = googleAuthState.value.idToken ? parseJwt(googleAuthState.value.idToken).email : undefined;
 
   const iframe = createHiddenIframe();
   document.body.appendChild(iframe);
+  progressError(undefined);
 
-  // TODO what if it fails, need to handle it
-  (window as any).completeSilentRefresh = (hashObject: { [value: string]: string }) => {
+  let silentRefreshCompleted = false;
+  const silentRefreshTimeout = setTimeout(() => {
+    if (!silentRefreshCompleted) {
+      console.error("completeSilentRefresh did not return within 5 seconds");
+      progressError("refreshing tokens failed");
+    }
+  }, 5000);
+
+  window.completeSilentRefresh = (hashObject: { [value: string]: string }) => {
+    silentRefreshCompleted = !!hashObject.access_token;
     loadTokensFromHashObject(hashObject);
-    console.log("refreshing token complete", hashObject);
+    clearTimeout(silentRefreshTimeout);
     iframe.parentElement?.removeChild(iframe);
   };
 

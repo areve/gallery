@@ -1,6 +1,6 @@
 import { googleFileUpdate, googleFileCreate, googleFileBlob, googlePathGetOrCreate, googleFileGet, googlePathGet } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
-import { notifyError as progressError, notifyProgress as progressMessage, progressState } from "../Progress/progressState";
+import { progressError, progressMessage, progressState } from "../Progress/progressState";
 import { watchPostEffect } from "vue";
 import { clone } from "@/lib/utils";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
