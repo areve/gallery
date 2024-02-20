@@ -44,13 +44,14 @@
 <script lang="ts" setup>
 import { asBlob, resetCanvas } from "../Artboard/artboardService";
 import { artboardState } from "../Artboard/artboardState";
-import { googleAuthState, signIn as googleSignIn, signOut as googleSignOut, refreshTokens } from "@/lib/Google/GoogleAuth";
+import { signIn as googleSignIn, signOut as googleSignOut, refreshTokens } from "@/lib/Google/GoogleAuth";
 import { ref } from "vue";
 import type { Coord } from "@/lib/Coord";
 import { clone } from "@/lib/utils";
 import { artAppState } from "./artAppState";
 import { getAvailableSize } from "@/lib/Window";
 import { load as galleryLoad, save as gallerySave } from "@/components/Gallery/galleryService";
+import { googleAuthState } from "@/lib/Google/googleAuthState";
 
 const resetColor = ref<string>("#ffffff");
 const resetDimensions = ref<Coord>(getAvailableSize());

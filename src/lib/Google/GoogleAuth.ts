@@ -1,7 +1,6 @@
-import { ref } from "vue";
 import { v4 as uuid } from "uuid";
-import { usePersistentState } from "../PersistentState";
 import { googleAuthConfig } from "./googleAuthConfig";
+import { defaultAuthState, googleAuthState } from "./googleAuthState";
 
 type AuthStateState = "inProgress" | "signedIn" | "signedOut";
 
@@ -13,22 +12,9 @@ export interface AuthState {
   state: AuthStateState;
 }
 
-export const googleAuthState = ref<AuthState>(defaultAuthState());
-usePersistentState("googleAuthState", googleAuthState);
-
 handleTokensInUrlHash();
 
 setTimeout(checkTokenExpiry, 1000);
-
-function defaultAuthState() {
-  return <AuthState>{
-    idToken: null,
-    accessToken: null,
-    oauthState: null,
-    expiresAt: null,
-    state: "signedOut",
-  };
-}
 
 function handleTokensInUrlHash() {
   const hashObject = getHashObject();
