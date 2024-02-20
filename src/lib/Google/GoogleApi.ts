@@ -40,6 +40,7 @@ function getHeaders(accessToken: string) {
 }
 
 export async function googleFileGet(name: string, folderId: string, accessToken: string): Promise<FileInfo | undefined> {
+  // TODO pages and nextPageToken are not supported anywhere in this file
   return (
     await googleFilesGet(
       {
