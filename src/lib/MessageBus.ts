@@ -10,6 +10,7 @@ export interface MessageBus {
   unsubscribe(name: string, callback: Function): void;
   subscribe(name: string, callback: Function): void;
   publish<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
+  publish2<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
   terminateWorker(): void;
 }
 
@@ -21,6 +22,7 @@ export function createMessageBus(getWorker: () => Worker | Window) {
     subscribe,
     unsubscribe,
     publish,
+    publish2,
     terminateWorker,
   };
 
@@ -72,6 +74,10 @@ export function createMessageBus(getWorker: () => Worker | Window) {
     if (!registry[name]) registry[name] = [];
     const index = registry[name].indexOf(callback);
     if (index !== -1) registry[name].splice(index, 1);
+  }
+
+  function publish2<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
+    return publish<T>({ name, params }, structuredSerializeOptions);
   }
 
   function publish<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {

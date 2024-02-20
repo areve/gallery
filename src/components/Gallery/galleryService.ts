@@ -10,26 +10,16 @@ const messageBus = createMessageBus(() => new GalleryWorker());
 messageBus.subscribe("updateProgress", onUpdateProgress);
 
 export async function load(artwork: Artwork) {
-  const blob = await messageBus.publish<Blob | undefined>({
-    name: "loadBlob",
-    params: [artwork],
-  });
-  console.log(blob)
+  const blob = await messageBus.publish2<Blob | undefined>("loadBlob", [artwork]);
   if (blob) await loadBlob(blob);
 }
 
 watchPostEffect(() => {
-  messageBus.publish({
-    name: "setAccessToken",
-    params: [googleAuthState.value.accessToken],
-  });
+  messageBus.publish2("setAccessToken", [googleAuthState.value.accessToken]);
 });
 
 export async function save(artwork: ArtworkWithBlob) {
-  await messageBus.publish({
-    name: "saveBlob",
-    params: [artwork],
-  });
+  await messageBus.publish2("saveBlob", [artwork]);
 }
 
 function onUpdateProgress(update: ProgressState) {
