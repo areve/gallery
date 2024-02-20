@@ -25,18 +25,22 @@
       </label>
     </div>
 
-    <div v-if="googleAuthState.state == 'signedOut'">
+    <div :hidden="googleAuthState.state == 'signedIn'">
       <button type="button" @click="signIn">Sign In</button>
     </div>
-    <div v-if="googleAuthState.state == 'signedIn'">
+    <div :hidden="googleAuthState.state == 'signedOut'">
       <input v-model="artAppState.fileName" />
       <button type="button" @click="save">Save</button>
       <button type="button" @click="load">Load</button>
-      <hr />
-      advanced buttons
-      <button type="button" @click="signOut">Sign out</button>
-      <button type="button" @click="refreshTokens">Refresh tokens</button>
-      <button type="button" @click="toggleFps">Toggle FPS</button>
+
+      <div :hidden="!showDebugButtons">
+        <hr />
+        debug buttons
+        <button type="button" @click="signOut">Sign out</button>
+        <button type="button" @click="refreshTokens">Refresh tokens</button>
+        <button type="button" @click="toggleFps">Toggle FPS</button>
+      </div>
+      <button type="button" @click="toggleDebug">{{ showDebugButtons ? "Hide" : "Show" }} debug</button>
     </div>
   </div>
 </template>
@@ -55,12 +59,14 @@ import { googleAuthState } from "@/lib/Google/googleAuthState";
 
 const resetColor = ref<string>("#ffffff");
 const resetDimensions = ref<Coord>(getAvailableSize());
+const showDebugButtons = ref<boolean>(false);
 
 const resetToColor = () => resetCanvas(clone(resetDimensions.value), resetColor.value);
 const resetToTransparent = () => resetCanvas(clone(resetDimensions.value), "transparent");
 const sizeFromAvailable = () => (resetDimensions.value = getAvailableSize());
 
 const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
+const toggleDebug = () => (showDebugButtons.value = !showDebugButtons.value);
 
 const load = async () => {
   await galleryLoad({
