@@ -1,6 +1,6 @@
 import { googleFileUpdate, googleFileCreate, googleFileBlob, googlePathGetOrCreate, googleFileGet, googlePathGet } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
-import type { ProgressState } from "../Progress/progressState";
+import { notifyError as progressError, notifyProgress as progressMessage, progressState, type ProgressState } from "../Progress/progressState";
 import { ref, watchPostEffect } from "vue";
 import { clone } from "@/lib/utils";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
@@ -17,64 +17,47 @@ async function onSetAccessToken(newAccessToken: string) {
   accessToken = newAccessToken;
 }
 
-const progressState = ref<ProgressState>({
-  message: undefined,
-  error: undefined,
-  max: 0,
-  value: 0,
-});
-
-watchPostEffect(() => messageBus.publish({ name: "updateProgress", params: [clone(progressState.value)] }));
-
-function notifyError(message: string) {
-  progressState.value.error = message;
-}
-
-function notifyProgress(message: string, remaining?: number) {
-  if (typeof remaining === "number") {
-    progressState.value.error = undefined;
-    progressState.value.value = 0;
-    progressState.value.max = remaining;
-  }
-
-  progressState.value.value++;
-  progressState.value.message = message;
-}
+watchPostEffect(() =>
+  messageBus.publish({
+    name: "updateProgress",
+    params: [clone(progressState.value)],
+  }),
+);
 
 async function onLoadBlob(artwork: Artwork) {
   if (!accessToken) throw "accessToken not set";
 
-  notifyProgress("finding folders", 4);
+  progressMessage("finding folders", 4);
   const folders = await googlePathGet(rootDirName + "/" + artwork.path, accessToken);
   const folder = folders[folders.length - 1];
-  if (!folder) return notifyError("folder not found");
+  if (!folder) return progressError("folder not found");
 
-  notifyProgress("finding file");
+  progressMessage("finding file");
   const file = await googleFileGet(artwork.name, folder.id, accessToken);
-  if (!file) return notifyError("file not found");
+  if (!file) return progressError("file not found");
 
-  notifyProgress("loading file");
+  progressMessage("loading file");
   const blob = await googleFileBlob(file.id, accessToken);
 
-  notifyProgress("file loaded");
+  progressMessage("file loaded");
   return blob;
 }
 
 async function onSaveBlob(artwork: ArtworkWithBlob) {
   if (!accessToken) throw "accessToken not set";
 
-  notifyProgress("finding folders", 4);
+  progressMessage("finding folders", 4);
   const folders = await googlePathGetOrCreate(rootDirName + "/" + artwork.path, accessToken);
   const folder = folders[folders.length - 1];
-  if (!folder) return notifyError("folder not found");
+  if (!folder) return progressError("folder not found");
 
-  notifyProgress("finding file");
+  progressMessage("finding file");
   let file = await googleFileGet(artwork.name, folder.id, accessToken);
 
-  notifyProgress("saving file");
+  progressMessage("saving file");
   if (file) file = await googleFileUpdate(file.id, artwork.name, artwork.blob, accessToken);
   else file = await googleFileCreate(folder.id, artwork.name, artwork.blob, accessToken);
 
-  notifyProgress("file saved");
+  progressMessage("file saved");
   return file;
 }

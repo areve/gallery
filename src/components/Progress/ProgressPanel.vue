@@ -7,7 +7,7 @@
     }"
   >
     <label for="background">{{ progressState.error || progressState.message }}</label>
-    <progress id="background" :value="progressState.value" :max="progressState.max">{{ progressState.value }}</progress>
+    <progress id="background" :value="progressState.completedSteps" :max="progressState.totalSteps">{{ progressState.completedSteps }}</progress>
   </div>
 </template>
 
@@ -16,7 +16,7 @@ import { computed } from "vue";
 import { progressState } from "./progressState";
 
 const showProgress = computed(() => {
-  return !!progressState.value.error || progressState.value.max != progressState.value.value;
+  return !!progressState.value.error || progressState.value.totalSteps != progressState.value.completedSteps;
 });
 const isError = computed(() => {
   return !!progressState.value.error;
