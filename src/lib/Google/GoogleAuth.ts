@@ -124,6 +124,7 @@ export async function refreshTokens() {
   let silentRefreshCompleted = false;
   const silentRefreshTimeout = setTimeout(() => {
     if (!silentRefreshCompleted) {
+      // TODO this fired after I opened my laptop... perhaps it would, but I feel value.expiresAt was updated!?
       console.error("completeSilentRefresh did not return within 5 seconds");
       progressError("refreshing tokens failed");
     }

@@ -40,6 +40,7 @@
         <button type="button" @click="refreshTokens">Refresh tokens</button>
         <button type="button" @click="toggleFps">Toggle FPS</button>
       </div>
+      <GalleryPanel />
       <button type="button" @click="toggleDebug">{{ showDebugButtons ? "Hide" : "Show" }} debug</button>
     </div>
   </div>
@@ -57,6 +58,7 @@ import { getAvailableSize } from "@/lib/Window";
 import { load as galleryLoad, save as gallerySave } from "@/components/Gallery/galleryService";
 import { googleAuthState } from "@/lib/Google/googleAuthState";
 import { progressMessage } from "../Progress/progressState";
+import GalleryPanel from "@/components/Gallery/GalleryPanel.vue";
 
 const resetColor = ref<string>("#ffffff");
 const resetDimensions = ref<Coord>(getAvailableSize());
@@ -73,7 +75,7 @@ const load = async () => {
   progressMessage("requesting load", 5);
   await galleryLoad({
     name: artAppState.value.fileName,
-    path: "/v2",
+    path: "/",
   });
 };
 
@@ -87,7 +89,7 @@ const save = async () => {
   await gallerySave({
     blob,
     name: artAppState.value.fileName,
-    path: "/v2",
+    path: "/",
   });
 };
 </script>
