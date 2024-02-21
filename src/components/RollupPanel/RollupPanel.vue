@@ -44,6 +44,7 @@ import { cloneExtend } from "@/lib/utils";
 // import type { PanelState } from "../EditorApp/panelStates";
 // import { moveToTop, registerZIndex } from "./zIndexService";
 // import { v4 as uuid } from "uuid";
+// TODO messy file, don't like the name either, it should be ToolPanel or something
 
 interface Props {
   title: string;
