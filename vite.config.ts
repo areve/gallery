@@ -15,7 +15,7 @@ export default defineConfig(({ command }) => {
       },
     }),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       includeAssets: ["/icons/favicon.ico", "/icons/apple-touch-icon.png"],
       devOptions: {
         enabled: true,
