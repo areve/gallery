@@ -1,5 +1,6 @@
 <template>
   <div class="show-left-menu-button" @click="showLeftMenu"></div>
+  <EdgeButton />
   <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
     <ArtAppToolMenu />
   </aside>
@@ -17,6 +18,7 @@
 <script lang="ts" setup>
 import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
 import ProgressPanel from "@/components/Progress/ProgressPanel.vue";
+import EdgeButton from "@/components/EdgeButton/EdgeButton.vue";
 import ArtAppToolMenu from "./ArtAppToolMenu.vue";
 import ArtAppMainMenu from "./ArtAppMainMenu.vue";
 import { artAppState } from "./artAppState";
