@@ -68,7 +68,6 @@ function showRightMenu() {
   width: 20%;
   height: 100%;
   background-color: rgb(127, 127, 127, 0.95);
-  cursor: pointer;
   z-index: 50;
   transition: all 0.2s ease-in-out;
   overflow: hidden;

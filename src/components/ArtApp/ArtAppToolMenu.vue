@@ -7,17 +7,14 @@
 
 <script lang="ts" setup>
 import { artboardState } from "@/components/Artboard/artboardState";
-// import { artAppState } from "./artAppState";
 import BrushPanel from "@/components/Brush/BrushPanel.vue";
 import EraserPanel from "@/components/Eraser/EraserPanel.vue";
 
 function pencil() {
   artboardState.value.selectedTool = "brush";
-  // artAppState.value.closeMenus();
 }
 function eraser() {
   artboardState.value.selectedTool = "eraser";
-  // artAppState.value.closeMenus();
 }
 </script>
 
