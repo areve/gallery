@@ -1,24 +1,24 @@
 <template>
-  ArtAppDebugButtonsPanel
-  <div :hidden="!showDebugButtons">
-    <hr />
-    debug buttons
+  <RollupPanel title="Debug" v-model:panelState="artAppDebugButtonsPanelState">
     <button type="button" @click="signOut">Sign out</button>
     <button type="button" @click="refreshTokens">Refresh tokens</button>
     <button type="button" @click="toggleFps">Toggle FPS</button>
-  </div>
-  <button type="button" @click="toggleDebug">{{ showDebugButtons ? "Hide" : "Show" }} debug</button>
+  </RollupPanel>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
 import { artAppState } from "./artAppState";
 import { signOut, refreshTokens } from "@/lib/Google/GoogleAuth";
-
-const showDebugButtons = ref<boolean>(false);
+import type { PanelState } from "../RollupPanel/PanelState";
+import { usePersistentState } from "@/lib/PersistentState";
+import RollupPanel from "@/components/RollupPanel/RollupPanel.vue";
+const artAppDebugButtonsPanelState = ref<PanelState>({
+  rolled: true,
+});
+usePersistentState("artAppDebugButtonsPanelState", artAppDebugButtonsPanelState);
 
 const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
-const toggleDebug = () => (showDebugButtons.value = !showDebugButtons.value);
 </script>
 
 <style scoped></style>
