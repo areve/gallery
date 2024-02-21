@@ -1,11 +1,8 @@
 <template>
   <RollupPanel title="Gallery" v-model:panelState="galleryPanelState">
-    <section class="gallery-panel">
-      <div>GalleryPanel</div>
-      <input v-model="artAppState.fileName" />
-      <button type="button" @click="save">Save</button>
-      <button type="button" @click="load">Load</button>
-    </section>
+    <input v-model="artAppState.fileName" />
+    <button type="button" @click="save">Save</button>
+    <button type="button" @click="load">Load</button>
   </RollupPanel>
 </template>
 
