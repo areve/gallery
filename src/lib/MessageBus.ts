@@ -82,14 +82,20 @@ export function createMessageBus(getWorker: () => Worker | Window) {
 
   function publish<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
     return new Promise<T>((resolve, reject) => {
-      const callbackId = `callback:${uuid()}`;
-      const callbackWrapper = (error: any, result: any) => {
-        unsubscribe(callbackId, callbackWrapper);
-        if (error) return reject(error);
-        resolve(result);
-      };
-      subscribe(callbackId, callbackWrapper);
-      ensureWorker().postMessage({ ...message, callbackId }, structuredSerializeOptions as StructuredSerializeOptions);
+      const messageIsCallback = /^callback:/.test(message.name);
+      if (messageIsCallback) {
+        ensureWorker().postMessage(message, structuredSerializeOptions as StructuredSerializeOptions);
+        resolve(undefined as T);
+      } else {
+        const callbackId = `callback:${uuid()}`;
+        const callbackWrapper = (error: any, result: any) => {
+          unsubscribe(callbackId, callbackWrapper);
+          if (error) return reject(error);
+          resolve(result);
+        };
+        subscribe(callbackId, callbackWrapper);
+        ensureWorker().postMessage({ ...message, callbackId }, structuredSerializeOptions as StructuredSerializeOptions);
+      }
     });
   }
 
