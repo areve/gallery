@@ -1,4 +1,4 @@
-import { clamp, cloneDeep, merge as lodashMerge } from "lodash";
+import { clamp as lodashClamp, cloneDeep, merge as lodashMerge } from "lodash";
 
 export function clone<T>(value: T) {
   return cloneDeep(value);
@@ -13,5 +13,5 @@ export function merge<T>(object: T, source: T) {
 }
 
 export function clamp(number: number, lower: number, upper: number): number {
-  return clamp(number, lower, upper);
+  return lodashClamp(number, lower, upper);
 }
