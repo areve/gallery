@@ -73,6 +73,7 @@ function showRightMenu() {
 
 .left-menu2 {
   left: 0;
+  top: 50%;
   opacity: 1;
   /* position: fixed; */
   transition: all 0.2s ease-in-out;
