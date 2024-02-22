@@ -75,6 +75,8 @@ function showRightMenu() {
   left: 0;
   top: 50%;
   opacity: 1;
+  width: 13em;
+  height: 13em;
   /* position: fixed; */
   transition: all 0.2s ease-in-out;
   /* overflow: hidden; */
@@ -82,6 +84,8 @@ function showRightMenu() {
 
 .left-menu2[hidden] {
   left: -45%;
+  width: 3em;
+  height: 3em;
   opacity: 0.5;
   display: block !important;
 }

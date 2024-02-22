@@ -40,16 +40,17 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
 
 .tool-menu {
   position: fixed;
-  border-radius: 6.5em;
+  border-radius: 50%;
   z-index: 150;
-  width: 13em;
-  height: 13em;
-  box-shadow: 0em 0em 0.5em rgb(0, 0, 0, 0.8);
-  opacity: 0.6;
-  text-align: center;
+  /* width: 100%; */
+  /* height: 13em; */
+  /* box-shadow: 0em 0em 0.5em rgb(0, 0, 0, 0.8); */
+  /* opacity: 0.6; */
+  /* text-align: center; */
   /* top: v-bind(topPercentCss); */
   transform: translate(-50%, -50%);
-  background-color: lightseagreen;
+  background-color: rgb(0, 200, 200, 0.5);
+  /* opacity: 0.5; */
   /* transition: all 0.2s ease-in-out; */
 }
 /* .tool-menu[hidden] {
