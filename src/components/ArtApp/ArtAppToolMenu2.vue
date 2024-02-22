@@ -4,9 +4,7 @@
     :style="{
       top: topPercentCss,
     }"
-  >
-    
-  </section>
+  ></section>
 </template>
 
 <script lang="ts" setup>
@@ -47,6 +45,7 @@ const topPercentCss = computed(() => artAppState.value.edgeButtonStates.left2.to
   text-align: center;
   top: v-bind(topPercentCss);
   transform: translate(-50%, -50%);
+  background-color: lightseagreen;
   /* transition: all 0.2s ease-in-out; */
 }
 /* .tool-menu[hidden] {
