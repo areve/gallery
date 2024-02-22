@@ -87,6 +87,7 @@ export function createMessageBus(getWorker: () => Worker | Window) {
         ensureWorker().postMessage(message, structuredSerializeOptions as StructuredSerializeOptions);
         resolve(undefined as T);
       } else {
+        // TODO calling back always is not very efficient
         const callbackId = `callback:${uuid()}`;
         const callbackWrapper = (error: any, result: any) => {
           unsubscribe(callbackId, callbackWrapper);

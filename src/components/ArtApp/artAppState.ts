@@ -14,5 +14,13 @@ export const artAppState = ref({
     message: "saving",
     error: "something bad happened",
   },
+  edgeButtonStates: {
+    left: {
+      topPercent: 0,
+    },
+    right: {
+      topPercent: 50,
+    },
+  },
 });
 usePersistentState("artAppState", artAppState);

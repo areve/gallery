@@ -13,17 +13,27 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchSyncEffect, computed, defineEmits } from "vue";
+import { ref, watchSyncEffect, computed, defineEmits, onMounted } from "vue";
 import { gestureAnyEvent } from "@/lib/GestureEvent";
 import { clamp } from "lodash";
+import { cloneExtend } from "@/lib/utils";
 
 interface Props {
   edge: "left" | "right";
+  edgeButtonState: {
+    topPercent: number;
+  };
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
   (event: "click", param: MouseEvent): void;
+  (
+    event: "update:edgeButtonState",
+    param: {
+      topPercent: number;
+    },
+  ): void;
 }>();
 
 function snap(value: number, dist: number, points: number[]) {
@@ -38,6 +48,9 @@ const leftPercent = computed(() => (props.edge === "left" ? 0 : 100));
 let cancelNextPress = false;
 let targetPercent: number | undefined;
 
+onMounted(() => {
+  topPercent.value = 0 + props.edgeButtonState.topPercent;
+});
 watchSyncEffect(() => {
   if (!gestureAnyEvent.value) return;
   if (gestureAnyEvent.value.firstEvent.target !== edgeButton.value) return;
@@ -50,7 +63,17 @@ watchSyncEffect(() => {
     if (gestureAnyEvent.value.firstEvent.pointerType === "mouse") cancelNextPress = true;
     if (targetPercent !== undefined) topPercent.value = snap(clamp(targetPercent - (yDiffFromFirst / window.innerHeight) * 100, 0, 100), 5, [0, 50, 100]);
   }
-  if (gestureAnyEvent.value.currentEvent.type === "pointerup") targetPercent = undefined;
+  if (gestureAnyEvent.value.currentEvent.type === "pointerup") {
+    if (targetPercent !== undefined) {
+      emit(
+        "update:edgeButtonState",
+        cloneExtend(props.edgeButtonState, {
+          topPercent: snap(clamp(targetPercent - (yDiffFromFirst / window.innerHeight) * 100, 0, 100), 5, [0, 50, 100]),
+        }),
+      );
+    }
+    targetPercent = undefined;
+  }
 });
 function nothing(event: MouseEvent) {
   if (cancelNextPress) {
