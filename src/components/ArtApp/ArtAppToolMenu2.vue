@@ -74,6 +74,8 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   display: block !important;
 } */
 .budge{
+  position: fixed;
+  top: 50%;
   margin-left: 7em;
 }
 </style>
