@@ -1,9 +1,8 @@
 <template>
   <button
     class="edge-button"
-    type="button"
     @click="nothing"
-    ref="button"
+    ref="edgeButton"
     :style="{
       top: topPercent + '%',
       left: leftPercent + '%',
@@ -33,7 +32,7 @@ function snap(value: number, dist: number, points: number[]) {
   }
   return value;
 }
-const button = ref<HTMLCanvasElement>(undefined!);
+const edgeButton = ref<HTMLCanvasElement>(undefined!);
 const topPercent = ref<number>(50);
 const leftPercent = computed(() => (props.edge === "left" ? 0 : 100));
 let cancelNextPress = false;
@@ -41,7 +40,7 @@ let targetPercent: number | undefined;
 
 watchSyncEffect(() => {
   if (!gestureAnyEvent.value) return;
-  if (gestureAnyEvent.value.firstEvent.target !== button.value) return;
+  if (gestureAnyEvent.value.firstEvent.target !== edgeButton.value) return;
   if (gestureAnyEvent.value.currentEvent.type === "pointerdown") targetPercent = topPercent.value;
 
   const yDiffFromFirst = gestureAnyEvent.value.firstEvent.screen.y - gestureAnyEvent.value.currentEvent.screen.y;

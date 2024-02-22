@@ -1,6 +1,6 @@
 <template>
-  <EdgeButton edge="left" class="edge-button" @click="showLeftMenu"></EdgeButton>
-  <EdgeButton edge="right" class="edge-button" @click="showRightMenu"></EdgeButton>
+  <EdgeButton type="button" edge="left" class="edge-button" @click="showLeftMenu"></EdgeButton>
+  <EdgeButton type="button" edge="right" class="edge-button" @click="showRightMenu"></EdgeButton>
   <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
     <ArtAppToolMenu />
   </aside>
