@@ -5,9 +5,7 @@
   <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
     <ArtAppToolMenu />
   </aside>
-  <aside class="left-menu" :hidden="!artAppState.menus.appLeft2">
-    <ArtAppToolMenu2 />
-  </aside>
+  <ArtAppToolMenu2 class="left-menu2" :hidden="!artAppState.menus.appLeft2" />
   <main class="art-app">
     <ProgressPanel />
     <ArtboardPanel />
@@ -71,6 +69,20 @@ function showRightMenu() {
 .show-right-menu-button {
   border-bottom-left-radius: 3em;
   right: 0;
+}
+
+.left-menu2 {
+  left: 0;
+  opacity: 1;
+  /* position: fixed; */
+  transition: all 0.2s ease-in-out;
+  /* overflow: hidden; */
+}
+
+.left-menu2[hidden] {
+  left: -45%;
+  opacity: 0.5;
+  display: block !important;
 }
 
 .left-menu,
