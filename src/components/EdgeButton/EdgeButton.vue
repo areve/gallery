@@ -26,6 +26,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
+  // TODO I want long press to show me a more in depth menu, (too select my pencils)
   (event: "click", param: MouseEvent): void;
   (
     event: "update:edgeButtonState",
