@@ -2,7 +2,7 @@ import type { Coord } from "@/lib/Coord";
 import { ref } from "vue";
 
 export interface ScreenEvent {
-  pointerType: string;
+  pointerType: "mouse" | "pen" | "touch";
   isPrimary: boolean;
   timeStamp: number;
   pointerId: number;
@@ -89,7 +89,7 @@ function pointerEventToScreenEvent(type: string, event: PointerEvent): ScreenEve
     pointerId: event.pointerId,
     timeStamp: event.timeStamp,
     isPrimary: event.isPrimary,
-    pointerType: event.pointerType,
+    pointerType: event.pointerType as any,
     page: { x: event.pageX, y: event.pageY },
     screen: { x: event.screenX, y: event.screenY },
   };
@@ -108,7 +108,7 @@ export function stringifyEvent(event: any) {
       if (v instanceof MouseEvent) return unpack(v);
       return v;
     },
-    "  "
+    "  ",
   );
   function unpack(o: any) {
     const obj = (Array.isArray(o) ? [] : {}) as any;
