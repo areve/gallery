@@ -7,7 +7,6 @@ import { watchPostEffect } from "vue";
 import ArtboardWorker from "./ArtboardWorker?worker";
 import type { Coord } from "@/lib/Coord";
 import { blobToImage } from "@/lib/Blob";
-import { progressMessage } from "../Progress/progressState";
 
 const messageBus = createMessageBus(() => new ArtboardWorker());
 messageBus.subscribe("reportFps", (fps: number) => (artboardState.value.fps = fps));
@@ -65,7 +64,6 @@ export async function asBlob() {
 }
 
 export async function loadBlob(blob: Blob) {
-  progressMessage("loading blob", 2);
   const image = await blobToImage(blob);
   const dimensions = {
     x: image.width,
@@ -76,5 +74,4 @@ export async function loadBlob(blob: Blob) {
     name: "loadBlob",
     params: [blob],
   });
-  progressMessage("blob loaded");
 }
