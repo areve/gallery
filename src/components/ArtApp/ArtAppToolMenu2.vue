@@ -25,7 +25,7 @@ import { artAppState } from "./artAppState";
 // function eraser() {
 //   artboardState.value.selectedTool = "eraser";
 // }
-const topPercentCss = computed(() => artAppState.value.edgeButtonStates.left2.topPercent + "%");
+const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStates.left2.topPercent * 100) / 100 + "%");
 </script>
 
 <style scoped>
