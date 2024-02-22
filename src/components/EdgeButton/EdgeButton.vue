@@ -14,9 +14,8 @@
 
 <script lang="ts" setup>
 import { ref, watchSyncEffect, computed, defineEmits, onMounted } from "vue";
-import { gestureAnyEvent } from "@/lib/GestureEvent";
-import { clamp } from "lodash";
-import { cloneExtend } from "@/lib/utils";
+import { gestureAnyEvent } from "@/lib/GestureEvent"; 
+import { clamp, cloneExtend } from "@/lib/utils";
 
 interface Props {
   edge: "left" | "right";
