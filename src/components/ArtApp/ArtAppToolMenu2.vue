@@ -4,7 +4,11 @@
     :style="{
       top: topPercentCss,
     }"
-  ></section>
+  >
+    <div class="budge">
+      {{ topPercentCss }}
+    </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
@@ -43,7 +47,7 @@ const topPercentCss = computed(() => artAppState.value.edgeButtonStates.left2.to
   box-shadow: 0em 0em 0.5em rgb(0, 0, 0, 0.8);
   opacity: 0.6;
   text-align: center;
-  top: v-bind(topPercentCss);
+  /* top: v-bind(topPercentCss); */
   transform: translate(-50%, -50%);
   background-color: lightseagreen;
   /* transition: all 0.2s ease-in-out; */
@@ -69,4 +73,7 @@ const topPercentCss = computed(() => artAppState.value.edgeButtonStates.left2.to
   opacity: 0.5;
   display: block !important;
 } */
+.budge{
+  margin-left: 7em;
+}
 </style>
