@@ -22,15 +22,16 @@
         <input type="radio" name="color" value="white" v-model="brushToolState.color" />
         White
       </label>
-<label>
+      <label>
         <input type="radio" name="color" value="rgb(0,0,0,0.1)" v-model="brushToolState.color" />
         Soft Black
       </label>
 
-<label>
+      <label>
         <input type="radio" name="color" value="black" v-model="brushToolState.color" />
         Black
-      </label>    </div>
+      </label>
+    </div>
     <div>
       <strong>Radius</strong>
       <input type="number" v-model="brushToolState.radius" />

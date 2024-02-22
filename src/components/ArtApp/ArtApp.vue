@@ -1,8 +1,12 @@
 <template>
   <EdgeButton type="button" edge="left" class="edge-button" @click="showLeftMenu" v-model:edgeButtonState="artAppState.edgeButtonStates.left"></EdgeButton>
+  <EdgeButton type="button" edge="left" class="edge-button" @click="showLeftMenu2" v-model:edgeButtonState="artAppState.edgeButtonStates.left2"></EdgeButton>
   <EdgeButton type="button" edge="right" class="edge-button" @click="showRightMenu" v-model:edgeButtonState="artAppState.edgeButtonStates.right"></EdgeButton>
   <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
     <ArtAppToolMenu />
+  </aside>
+  <aside class="left-menu" :hidden="!artAppState.menus.appLeft2">
+    <ArtAppToolMenu2 />
   </aside>
   <main class="art-app">
     <ProgressPanel />
@@ -19,6 +23,7 @@ import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
 import ProgressPanel from "@/components/Progress/ProgressPanel.vue";
 import EdgeButton from "@/components/EdgeButton/EdgeButton.vue";
 import ArtAppToolMenu from "./ArtAppToolMenu.vue";
+import ArtAppToolMenu2 from "./ArtAppToolMenu2.vue";
 import ArtAppMainMenu from "./ArtAppMainMenu.vue";
 import { artAppState } from "./artAppState";
 import { artboardState } from "../Artboard/artboardState";
@@ -31,6 +36,11 @@ document.oncontextmenu = (_: UIEvent) => {
 function showLeftMenu() {
   artAppState.value.menus.appLeft = !artAppState.value.menus.appLeft;
 }
+
+function showLeftMenu2() {
+  artAppState.value.menus.appLeft2 = !artAppState.value.menus.appLeft2;
+}
+
 function showRightMenu() {
   artAppState.value.menus.appRight = !artAppState.value.menus.appRight;
 }

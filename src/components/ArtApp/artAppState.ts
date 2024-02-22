@@ -4,6 +4,7 @@ import { ref } from "vue";
 export const artAppState = ref({
   menus: {
     appLeft: false,
+    appLeft2: false,
     appRight: false,
   },
   fileName: "Hello",
@@ -16,7 +17,10 @@ export const artAppState = ref({
   },
   edgeButtonStates: {
     left: {
-      topPercent: 0,
+      topPercent: 25,
+    },
+    left2: {
+      topPercent: 75,
     },
     right: {
       topPercent: 50,

@@ -61,14 +61,15 @@ watchSyncEffect(() => {
     // TODO why is this only needed for mouse and can it go into the gestureEvent?
     // it seems that click event is naturally cancelled if a pen or finger moves, but if a mouse moves it just checks that the start and end domNode match
     if (gestureAnyEvent.value.firstEvent.pointerType === "mouse") cancelNextPress = true;
-    if (targetPercent !== undefined) topPercent.value = snap(clamp(targetPercent - (yDiffFromFirst / window.innerHeight) * 100, 0, 100), 5, [0, 50, 100]);
+    if (targetPercent !== undefined)
+      topPercent.value = snap(clamp(targetPercent - (yDiffFromFirst / window.innerHeight) * 100, 0, 100), 5, [0, 25, 50, 75, 100]);
   }
   if (gestureAnyEvent.value.currentEvent.type === "pointerup") {
     if (targetPercent !== undefined) {
       emit(
         "update:edgeButtonState",
         cloneExtend(props.edgeButtonState, {
-          topPercent: snap(clamp(targetPercent - (yDiffFromFirst / window.innerHeight) * 100, 0, 100), 5, [0, 50, 100]),
+          topPercent: snap(clamp(targetPercent - (yDiffFromFirst / window.innerHeight) * 100, 0, 100), 5, [0, 25, 50, 75, 100]),
         }),
       );
     }
