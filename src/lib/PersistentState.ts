@@ -1,5 +1,5 @@
 import { watchSyncEffect, type Ref } from "vue";
-import { cloneExtend } from "./utils";
+import { merge } from "./utils";
 
 type StateCollection = { [key: string]: Ref };
 
@@ -9,7 +9,7 @@ export function usePersistentState(key: string, state: Ref) {
   states[key] = state;
 
   const loadedValue = window.localStorage.getItem(key);
-  if (loadedValue) state.value = cloneExtend(state.value, JSON.parse(loadedValue, dateReviver));
+  if (loadedValue) state.value = merge(state.value, JSON.parse(loadedValue, dateReviver));
 
   watchSyncEffect(() => window.localStorage.setItem(key, JSON.stringify(state.value)));
 }
