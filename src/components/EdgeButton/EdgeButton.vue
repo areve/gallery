@@ -6,15 +6,26 @@
     ref="button"
     :style="{
       top: topPercent + '%',
+      left: leftPercent + '%',
     }"
-  ></button>
+  >
+    <slot></slot>
+  </button>
 </template>
 
 <script lang="ts" setup>
-import { ref, watchSyncEffect } from "vue";
-import { progressMessage } from "../Progress/progressState";
+import { ref, watchSyncEffect, computed, defineEmits } from "vue";
 import { gestureAnyEvent } from "@/lib/GestureEvent";
 import { clamp } from "lodash";
+
+interface Props {
+  edge: "left" | "right";
+}
+
+const props = defineProps<Props>();
+const emit = defineEmits<{
+  (event: "click", param: MouseEvent): void;
+}>();
 
 function snap(value: number, dist: number, points: number[]) {
   for (var i = 0; i < points.length; i++) {
@@ -24,14 +35,14 @@ function snap(value: number, dist: number, points: number[]) {
 }
 const button = ref<HTMLCanvasElement>(undefined!);
 const topPercent = ref<number>(50);
+const leftPercent = computed(() => (props.edge === "left" ? 0 : 100));
 let cancelNextPress = false;
 let targetPercent: number | undefined;
+
 watchSyncEffect(() => {
   if (!gestureAnyEvent.value) return;
   if (gestureAnyEvent.value.firstEvent.target !== button.value) return;
-  if (gestureAnyEvent.value.currentEvent.type === "pointerdown") {
-    targetPercent = topPercent.value;
-  }
+  if (gestureAnyEvent.value.currentEvent.type === "pointerdown") targetPercent = topPercent.value;
 
   const yDiffFromFirst = gestureAnyEvent.value.firstEvent.screen.y - gestureAnyEvent.value.currentEvent.screen.y;
   if (Math.abs(yDiffFromFirst) > 10) {
@@ -40,31 +51,20 @@ watchSyncEffect(() => {
     if (gestureAnyEvent.value.firstEvent.pointerType === "mouse") cancelNextPress = true;
     if (targetPercent !== undefined) topPercent.value = snap(clamp(targetPercent - (yDiffFromFirst / window.innerHeight) * 100, 0, 100), 5, [0, 50, 100]);
   }
-  if (gestureAnyEvent.value.currentEvent.type === "pointerup") {
-    targetPercent = undefined;
-  }
+  if (gestureAnyEvent.value.currentEvent.type === "pointerup") targetPercent = undefined;
 });
-function nothing() {
+function nothing(event: MouseEvent) {
   if (cancelNextPress) {
     cancelNextPress = false;
     return;
   }
-  progressMessage("button does nothing yet", 2);
-  setTimeout(() => progressMessage("done"), 2000);
+  emit("click", event);
 }
 </script>
 
 <style scoped>
 .edge-button {
-  border-radius: 3em;
   position: fixed;
-  /* left: -3em; */
-  /* top: 50%; */
-  margin: -3em;
-  z-index: 200;
-  width: 6em;
-  height: 6em;
-  box-shadow: 0em 0em 0.5em rgb(0, 0, 0, 0.8);
-  opacity: 0.6;
+  transform: translate(-50%, -50%);
 }
 </style>

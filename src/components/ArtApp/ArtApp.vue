@@ -1,6 +1,6 @@
 <template>
-  <div class="show-left-menu-button" @click="showLeftMenu"></div>
-  <EdgeButton />
+  <EdgeButton edge="left" class="edge-button" @click="showLeftMenu"></EdgeButton>
+  <EdgeButton edge="right" class="edge-button" @click="showRightMenu"></EdgeButton>
   <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
     <ArtAppToolMenu />
   </aside>
@@ -9,7 +9,6 @@
     <ArtboardPanel />
     <div v-if="artAppState.showFps" class="status-bar">{{ artboardState.fps }}fps {{ artboardState.dimensions }}</div>
   </main>
-  <div class="show-right-menu-button" @click="showRightMenu"></div>
   <aside class="right-menu" :hidden="!artAppState.menus.appRight">
     <ArtAppMainMenu />
   </aside>
@@ -109,5 +108,13 @@ function showRightMenu() {
   border-radius: 0.5em;
   padding: 0 0.5em;
   color: white;
+}
+.edge-button {
+  border-radius: 3em;
+  z-index: 200;
+  width: 6em;
+  height: 6em;
+  box-shadow: 0em 0em 0.5em rgb(0, 0, 0, 0.8);
+  opacity: 0.6;
 }
 </style>
