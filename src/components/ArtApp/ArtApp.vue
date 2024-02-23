@@ -71,24 +71,7 @@ function showRightMenu() {
   right: 0;
 }
 
-.left-menu2 {
-  left: 0;
-  top: 50%;
-  opacity: 1;
-  width: 13em;
-  height: 13em;
-  /* position: fixed; */
-  transition: all 0.2s ease-in-out;
-  /* overflow: hidden; */
-}
 
-.left-menu2[hidden] {
-  left: -45%;
-  width: 3em;
-  height: 3em;
-  opacity: 0.5;
-  display: block !important;
-}
 
 .left-menu,
 .right-menu {
@@ -136,6 +119,7 @@ function showRightMenu() {
   padding: 0 0.5em;
   color: white;
 }
+
 .edge-button {
   border-radius: 3em;
   z-index: 200;
@@ -143,5 +127,5 @@ function showRightMenu() {
   height: 6em;
   box-shadow: 0em 0em 0.5em rgb(0, 0, 0, 0.8);
   opacity: 0.6;
-}
+} 
 </style>
