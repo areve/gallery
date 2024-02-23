@@ -1,6 +1,12 @@
 <template>
-  <EdgeButton type="button" edge="left" class="edge-button" @click="showLeftMenu" v-model:edgeButtonState="artAppState.edgeButtonStates.left"></EdgeButton>
-  <EdgeButton type="button" edge="left" class="edge-button" @click="showLeftMenu2" v-model:edgeButtonState="artAppState.edgeButtonStates.left2"></EdgeButton>
+  <EdgeButton
+    type="button"
+    edge="left"
+    class="edge-button"
+    @click="showLeftMenu2"
+    @longpress="showLeftMenu"
+    v-model:edgeButtonState="artAppState.edgeButtonStates.left2"
+  ></EdgeButton>
   <EdgeButton type="button" edge="right" class="edge-button" @click="showRightMenu" v-model:edgeButtonState="artAppState.edgeButtonStates.right"></EdgeButton>
   <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
     <ArtAppToolMenu />
@@ -71,8 +77,6 @@ function showRightMenu() {
   right: 0;
 }
 
-
-
 .left-menu,
 .right-menu {
   position: fixed;
@@ -127,5 +131,5 @@ function showRightMenu() {
   height: 6em;
   box-shadow: 0em 0em 0.5em rgb(0, 0, 0, 0.8);
   opacity: 0.6;
-} 
+}
 </style>
