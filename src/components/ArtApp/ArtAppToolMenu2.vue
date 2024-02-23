@@ -5,13 +5,13 @@
       top: topPercentCss,
     }"
   >
-    <button type="button" class="pencil1 pencil" @click="pencil('red')">Pencil1</button>
-    <button type="button" class="pencil2 pencil" @click="pencil('orange')">Pencil2</button>
-    <button type="button" class="pencil3 pencil" @click="pencil('yellow')">Pencil3</button>
-    <button type="button" class="pencil4 pencil" @click="pencil('green')">Pencil4</button>
-    <button type="button" class="pencil5 pencil" @click="pencil('blue')">Pencil5</button>
-    <button type="button" class="pencil6 pencil" @click="pencil('black')">Pencil6</button>
-    <button type="button" class="pencil7 pencil" @click="eraser('white')">Pencil7</button>
+    <button type="button" class="pencil1 pencil" @click="pencil('red', 5)">Pencil1</button>
+    <button type="button" class="pencil2 pencil" @click="pencil('orange', 5)">Pencil2</button>
+    <button type="button" class="pencil3 pencil" @click="pencil('yellow', 5)">Pencil3</button>
+    <button type="button" class="pencil4 pencil" @click="pencil('green', 5)">Pencil4</button>
+    <button type="button" class="pencil5 pencil" @click="pencil('blue', 5)">Pencil5</button>
+    <button type="button" class="pencil6 pencil" @click="pencil('black', 5)">Pencil6</button>
+    <button type="button" class="pencil7 pencil" @click="pencil('white', 5)">Pencil7</button>
   </section>
 </template>
 
@@ -22,10 +22,10 @@ import { artboardState } from "../Artboard/artboardState";
 import { brushToolState } from "../Brush/brushToolState";
 import { eraserToolState } from "../Eraser/eraserToolState";
 
-function pencil(color: string) {
+function pencil(color: string, radius: number) {
   artboardState.value.selectedTool = "brush";
   brushToolState.value.color = color;
-  brushToolState.value.radius = 5;
+  brushToolState.value.radius = radius;
 }
 function eraser() {
   artboardState.value.selectedTool = "eraser";
@@ -53,6 +53,7 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   overflow: hidden;
   opacity: 0.8;
   color: transparent;
+  border-radius: 40% 40%;
   border-bottom-right-radius: 50% 50%;
   border-top-right-radius: 50% 50%;
 }
