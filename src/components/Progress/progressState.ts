@@ -18,6 +18,17 @@ export function progressError(error: string | undefined) {
   progressState.value.error = error;
 }
 
+export function progressToast(message: string) {
+  progressState.value.message = message;
+  // progressState.value.error = message;
+  progressState.value.totalSteps = 1;
+  progressState.value.completedSteps = 0;
+  setTimeout(() => {
+    progressState.value.completedSteps = 0;
+    progressState.value.totalSteps = 0;
+  }, 1000);
+}
+
 export function progressMessage(message: string, totalSteps?: number) {
   if (typeof totalSteps === "number") {
     progressState.value.error = undefined;
