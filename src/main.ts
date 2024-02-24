@@ -11,7 +11,6 @@ const updateSW = registerSW({
 
   onNeedRefresh() {
     console.log("onNeedRefresh");
-    // TODO see https://vite-pwa-org.netlify.app/frameworks/
     progressToast("onNeedRefresh");
     if (confirm("update now?")) {
       updateSW();
