@@ -4,7 +4,7 @@ import App from "./App.vue";
 import "./assets/main.css";
 import { registerSW } from "virtual:pwa-register";
 import { progressError, progressToast } from "./components/Progress/progressState";
-import { clone, cloneExtend } from "./lib/utils";
+import { cloneExtend } from "./lib/utils";
 
 function updateNow() {
   progressToast("updateNow try");
