@@ -29,6 +29,12 @@ export const gestureAnyEvent = ref<GestureEvent | undefined>(undefined);
 
 const pointerScreenEvents: { [k: number]: GestureEvent } = {};
 
+document.oncontextmenu = (event: MouseEvent) => {
+  const gestureEvent = mouseEventToGestureEvent("oncontextmenu", event);
+  gestureAnyEvent.value = gestureEvent;
+  return false;
+};
+
 document.onpointerdown = function (event: PointerEvent) {
   const gestureEvent = pointerEventToGestureEvent("pointerdown", event);
   gestureAnyEvent.value = gestureEvent;
@@ -50,6 +56,20 @@ document.onpointercancel = function (event: PointerEvent) {
   gestureAnyEvent.value = gestureEvent;
   delete pointerScreenEvents[event.pointerId];
 };
+
+function mouseEventToGestureEvent(type: string, event: MouseEvent) {
+  const screenEvent = mouseEventToScreenEvent(type, event);
+  const prevGestureEvent = pointerScreenEvents[screenEvent.pointerId] as GestureEvent | undefined;
+
+  const currentGestureEvent: GestureEvent = {
+    firstEvent: prevGestureEvent ? prevGestureEvent.firstEvent : screenEvent,
+    currentEvent: screenEvent,
+    previousEvent: prevGestureEvent ? prevGestureEvent.currentEvent : undefined,
+  };
+  pointerScreenEvents[screenEvent.pointerId] = currentGestureEvent;
+
+  return currentGestureEvent;
+}
 
 function pointerEventToGestureEvent(type: string, event: PointerEvent) {
   const screenEvent = pointerEventToScreenEvent(type, event);
@@ -73,6 +93,27 @@ function pointerEventToGestureEvent(type: string, event: PointerEvent) {
   pointerScreenEvents[screenEvent.pointerId] = currentGestureEvent;
 
   return currentGestureEvent;
+}
+
+function mouseEventToScreenEvent(type: string, event: MouseEvent): ScreenEvent {
+  const screenEvent: ScreenEvent = {
+    type,
+    buttons: event.buttons,
+    target: event.target,
+    width: 1,
+    height: 1,
+    pressure: 1,
+    tangentialPressure: Math.PI / 2,
+    azimuthAngle: (event as any).azimuthAngle,
+    altitudeAngle: (event as any).altitudeAngle,
+    pointerId: 1,
+    timeStamp: event.timeStamp,
+    isPrimary: true,
+    pointerType: "mouse",
+    page: { x: event.pageX, y: event.pageY },
+    screen: { x: event.screenX, y: event.screenY },
+  };
+  return screenEvent;
 }
 
 function pointerEventToScreenEvent(type: string, event: PointerEvent): ScreenEvent {

@@ -100,6 +100,7 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
 } */
 
 .tool-menu {
+  user-select: none;
   position: fixed;
   border-radius: 50%;
   z-index: 150;

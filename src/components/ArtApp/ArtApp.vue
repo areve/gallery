@@ -32,11 +32,6 @@ import ArtAppMainMenu from "./ArtAppMainMenu.vue";
 import { artAppState } from "./artAppState";
 import { artboardState } from "../Artboard/artboardState";
 
-document.oncontextmenu = (_: UIEvent) => {
-  console.warn("oncontextmenu disabled");
-  return false;
-};
-
 function showLeftMenu() {
   artAppState.value.menus.appLeft = !artAppState.value.menus.appLeft;
 }

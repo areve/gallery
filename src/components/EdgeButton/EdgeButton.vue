@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, defineEmits, onMounted, watch } from "vue";
+import { ref, computed, defineEmits, watch } from "vue";
 import { gestureAnyEvent, type GestureEvent } from "@/lib/GestureEvent";
 import { clamp, cloneExtend } from "@/lib/utils";
 
@@ -52,12 +52,13 @@ watch(gestureAnyEvent, () => {
   if (!gestureAnyEvent.value) return;
   if (gestureAnyEvent.value.firstEvent.target !== edgeButton.value) return;
 
+  if (gestureAnyEvent.value.currentEvent.type === "oncontextmenu") emit("longpress", gestureAnyEvent.value);
   if (gestureAnyEvent.value.currentEvent.type === "pointerdown") targetPercent = props.edgeButtonState.topPercent;
 
   const yDiffFromFirst = gestureAnyEvent.value.firstEvent.screen.y - gestureAnyEvent.value.currentEvent.screen.y;
   if (gestureAnyEvent.value.currentEvent.type === "pointerup" && Math.abs(yDiffFromFirst) < 10) {
-    const timeDiffFromFirst = gestureAnyEvent.value.currentEvent.timeStamp - gestureAnyEvent.value.firstEvent.timeStamp;
-    if (timeDiffFromFirst > 400) emit("longpress", gestureAnyEvent.value);
+    // const timeDiffFromFirst = gestureAnyEvent.value.currentEvent.timeStamp - gestureAnyEvent.value.firstEvent.timeStamp;
+    // if (timeDiffFromFirst > 400) emit("longpress", gestureAnyEvent.value);
   }
 
   if (Math.abs(yDiffFromFirst) > 10) {
