@@ -1,12 +1,10 @@
 import { pwaState } from "./pwaState";
-import { createApp, watchPostEffect } from "vue";
+import { createApp, watch } from "vue";
 import App from "./App.vue";
 import "./assets/main.css";
 import { registerSW } from "virtual:pwa-register";
 import { progressError, progressToast } from "./components/Progress/progressState";
-import { clone, cloneExtend } from "./lib/utils";
-
-const intervalMS = 5 * 1000;
+import { cloneExtend } from "./lib/utils";
 
 function updateNow() {
   if (!pwaState.value.updateApproved) return;
@@ -17,16 +15,13 @@ function updateNow() {
   updateSW();
 }
 
-watchPostEffect(() => {
-  console.log(clone(pwaState.value));
-});
+watch(pwaState, updateNow);
 
 const updateSW = registerSW({
   immediate: true,
-
   onNeedRefresh() {
-    console.log("onNeedRefresh");
-    progressToast("onNeedRefresh");
+    console.log("update available");
+    progressToast("update available");
     pwaState.value.updateAvailable = true;
   },
   onOfflineReady() {
@@ -37,12 +32,8 @@ const updateSW = registerSW({
     registration &&
       setInterval(() => {
         pwaState.value.checkCount++;
-
-        console.log("checking for update v" + pwaState.value.appVersion);
-        progressToast("checking for update v" + pwaState.value.appVersion);
-        updateNow();
         registration.update();
-      }, intervalMS);
+      }, 15000);
     console.log("onRegisteredSW", swScriptUrl, registration);
     progressToast("onRegisteredSW " + JSON.stringify({ swScriptUrl, registration }));
   },

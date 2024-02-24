@@ -4,5 +4,5 @@ export const pwaState = ref({
   updateAvailable: false,
   updateApproved: false,
   checkCount: 0,
-  appVersion: "0.0.4",
+  appVersion: "0.0.5",
 });

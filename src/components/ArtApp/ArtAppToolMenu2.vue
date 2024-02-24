@@ -50,16 +50,19 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   /* margin-left: 1em; */
   transform-origin: -3.2em 50%;
   transition: 0.4s ease-out;
-  transition-property: width;
+  transition-property: width, opacity;
   overflow: hidden;
   opacity: 0.8;
   color: transparent;
   border-radius: 40% 40%;
   border-bottom-right-radius: 50% 50%;
   border-top-right-radius: 50% 50%;
+  display: block;
+  padding: 0;
 }
 .tool-menu[hidden] .brush {
-  width: 0em;
+  width: 1em;
+  opacity: 0;
 }
 
 .brush1 {
@@ -124,7 +127,7 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   height: 13em;
   /* overflow: hidden; */
   /* position: fixed; */
-  transition: 0.4s ease-out;
+  /* transition: 0.4s ease-out; */
   transition-property: opacity;
   
   /* overflow: hidden; */
@@ -133,7 +136,7 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
 .tool-menu[hidden] {
   /* width: 3em;
   height: 3em; */
-  opacity: 0;
+  /* opacity: 0; */
   display: block !important;
 }
 /* .tool-menu[hidden] {
