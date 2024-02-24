@@ -37,8 +37,8 @@ const updateSW = registerSW({
       setInterval(() => {
         pwaState.value.checkCount++;
 
-        console.log("checking for update v1");
-        progressToast("checking for update v1");
+        console.log("checking for update v0.1");
+        progressToast("checking for update v0.1");
         updateNow();
         registration.update();
       }, intervalMS);
