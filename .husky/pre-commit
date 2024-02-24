@@ -1,2 +1,2 @@
 
-echo npm version  --no-commit-hooks patch 
+ npm version  --no-commit-hooks patch 
