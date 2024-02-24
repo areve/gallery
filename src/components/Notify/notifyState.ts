@@ -19,6 +19,7 @@ export function notifyError(error: string | undefined) {
   notifyState.value.error = error;
 }
 
+// TODO needs to show, not with partial progress bar though
 export function notifyToast(message: string) {
   console.log("toast:", message);
   notifyState.value.message = message;
@@ -30,6 +31,8 @@ export function notifyToast(message: string) {
   }, 5000);
 }
 
+// TODO we need to do this different and add a notifyComplete
+// TODO progress bar needs to shimmer
 export function notifyProgress(message: string, totalSteps?: number) {
   console.log("progress:", message, totalSteps);
   if (typeof totalSteps === "number") {
