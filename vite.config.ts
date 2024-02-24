@@ -65,6 +65,9 @@ export default defineConfig(({ command }) => {
   }
   return {
     plugins,
+    define: {
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    },
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
