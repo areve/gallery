@@ -1,1 +1,2 @@
-yarn version --patch
+
+npm version patch
