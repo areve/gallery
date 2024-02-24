@@ -7,7 +7,7 @@ import type { Artwork, ArtworkWithBlob } from "./Artwork";
 import { googleAuthState } from "@/lib/Google/googleAuthState";
 
 const messageBus = createMessageBus(() => new GalleryWorker());
-messageBus.subscribe("updateProgress", onUpdateProgress);
+messageBus.subscribe("updateNotify", onupdateNotify);
 
 export async function load(artwork: Artwork) {
   const blob = await messageBus.publish2<Blob | undefined>("loadBlob", [artwork]);
@@ -25,6 +25,7 @@ export async function save(artwork: ArtworkWithBlob) {
   await messageBus.publish2("saveBlob", [artwork]);
 }
 
-function onUpdateProgress(update: NotifyState) {
+function onupdateNotify(update: NotifyState) {
+  console.log("onupdateNotify", update);
   notifyState.value = update;
 }

@@ -91,6 +91,7 @@ const widthPercent = computed(() => {
   line-height: 1.1;
   text-align: left;
   padding-left: 4px;
+  white-space: nowrap;
 }
 
 .progress.error > .progress-bar {
@@ -106,4 +107,3 @@ const widthPercent = computed(() => {
   }
 }
 </style>
-./notifyState

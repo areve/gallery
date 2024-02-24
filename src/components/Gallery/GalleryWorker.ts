@@ -1,8 +1,7 @@
 import { googleFileUpdate, googleFileCreate, googleFileBlob, googlePathGetOrCreate, googleFileGet, googlePathGet } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
 import { notifyError, notifyProgress, notifyState } from "../Notify/notifyState";
-import { watchPostEffect } from "vue";
-import { clone } from "@/lib/utils";
+import { watch } from "vue";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
 
 export const messageBus = createMessageBus(() => self);
@@ -20,12 +19,13 @@ async function onSetAccessToken(newAccessToken: string) {
   accessToken = newAccessToken;
 }
 
-watchPostEffect(() =>
+watch(notifyState, () => {
+  console.log("notifyState", new Date());
   messageBus.publish({
-    name: "updateProgress",
-    params: [clone(notifyState.value)],
-  }),
-);
+    name: "updateNotify",
+    params: [notifyState.value],
+  });
+});
 
 async function onLoadBlob(artwork: Artwork) {
   if (!accessToken) throw "accessToken not set";

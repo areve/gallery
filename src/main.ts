@@ -22,12 +22,10 @@ watch(() => appState.value.updateApproved, updateNow);
 const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
-    console.log("update available");
     notifyToast("update available");
     appState.value.updateAvailable = true;
   },
   onOfflineReady() {
-    console.log("onOfflineReady");
     notifyToast("onOfflineReady");
   },
   onRegisteredSW(swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {
@@ -36,11 +34,9 @@ const updateSW = registerSW({
         appState.value.checkCount++;
         registration.update();
       }, 15000);
-    console.log("onRegisteredSW", swScriptUrl, registration);
     notifyToast("onRegisteredSW " + JSON.stringify({ swScriptUrl, registration }));
   },
   onRegisterError(error: any) {
-    console.error("onRegisterError", error);
     notifyError("onRegisterError " + JSON.stringify(error));
   },
 });
