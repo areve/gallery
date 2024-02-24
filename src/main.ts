@@ -1,4 +1,4 @@
-import { pwaState } from "./pwaState";
+import { appState } from "./appState";
 import { createApp, watch } from "vue";
 import App from "./App.vue";
 import "./assets/main.css";
@@ -7,22 +7,22 @@ import { progressError, progressToast } from "./components/Progress/progressStat
 import { cloneExtend } from "./lib/utils";
 
 function updateNow() {
-  if (!pwaState.value.updateApproved) return;
-  pwaState.value = cloneExtend(pwaState.value, {
+  if (!appState.value.updateApproved) return;
+  appState.value = cloneExtend(appState.value, {
     updateApproved: false,
     updateAvailable: false,
   });
   updateSW();
 }
 
-watch(pwaState, updateNow);
+watch(appState, updateNow);
 
 const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
     console.log("update available");
     progressToast("update available");
-    pwaState.value.updateAvailable = true;
+    appState.value.updateAvailable = true;
   },
   onOfflineReady() {
     console.log("onOfflineReady");
@@ -31,7 +31,7 @@ const updateSW = registerSW({
   onRegisteredSW(swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {
     registration &&
       setInterval(() => {
-        pwaState.value.checkCount++;
+        appState.value.checkCount++;
         registration.update();
       }, 15000);
     console.log("onRegisteredSW", swScriptUrl, registration);

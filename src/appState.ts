@@ -1,6 +1,6 @@
 import { ref } from "vue";
 
-export const pwaState = ref({
+export const appState = ref({
   updateAvailable: false,
   updateApproved: false,
   checkCount: 0,

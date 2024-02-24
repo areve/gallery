@@ -3,8 +3,8 @@
     <button type="button" @click="signOut">Sign out</button>
     <button type="button" @click="refreshTokens">Refresh tokens</button>
     <button type="button" @click="toggleFps">Toggle FPS</button>
-    <button type="button" @click="update" :disabled="!pwaState.updateAvailable">Update</button>
-    <div class="version">v{{ pwaState.appVersion }}</div>
+    <button type="button" @click="update" :disabled="!appState.updateAvailable">Update</button>
+    <div class="version">v{{ appState.appVersion }}</div>
   </RollupPanel>
 </template>
 
@@ -15,7 +15,7 @@ import { signOut, refreshTokens } from "@/lib/Google/GoogleAuth";
 import type { PanelState } from "../RollupPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
 import RollupPanel from "@/components/RollupPanel/RollupPanel.vue";
-import { pwaState } from "@/pwaState";
+import { appState } from "@/appState";
 
 const artAppDebugButtonsPanelState = ref<PanelState>({
   rolled: true,
@@ -24,7 +24,7 @@ usePersistentState("artAppDebugButtonsPanelState", artAppDebugButtonsPanelState)
 
 const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
 function update() {
-  pwaState.value.updateApproved = true;
+  appState.value.updateApproved = true;
 }
 </script>
 
