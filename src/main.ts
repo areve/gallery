@@ -4,16 +4,16 @@ import App from "./App.vue";
 import "./assets/main.css";
 import { registerSW } from "virtual:pwa-register";
 import { progressError, progressToast } from "./components/Progress/progressState";
+import { cloneExtend } from "./lib/utils";
 
 const intervalMS = 5 * 1000;
 
 function updateNow() {
   if (!pwaState.value.updateApproved) return;
-  pwaState.value = {
-    checkCount: 0,
+  pwaState.value = cloneExtend(pwaState.value, {
     updateApproved: false,
     updateAvailable: false,
-  };
+  });
   updateSW();
 }
 
@@ -23,10 +23,7 @@ const updateSW = registerSW({
   onNeedRefresh() {
     console.log("onNeedRefresh");
     progressToast("onNeedRefresh");
-    if (confirm("update now?")) {
-      pwaState.value.updateAvailable = true;
-      updateSW();
-    }
+    pwaState.value.updateAvailable = true;
   },
   onOfflineReady() {
     console.log("onOfflineReady");
@@ -37,8 +34,8 @@ const updateSW = registerSW({
       setInterval(() => {
         pwaState.value.checkCount++;
 
-        console.log("checking for update v0.1");
-        progressToast("checking for update v0.1");
+        console.log("checking for update v" + pwaState.value.appVersion);
+        progressToast("checking for update v" + pwaState.value.appVersion);
         updateNow();
         registration.update();
       }, intervalMS);
