@@ -28,7 +28,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<{
   // TODO I want long press to show me a more in depth menu, (too select my pencils)
   (event: "click", param: MouseEvent): void;
-  (event: "longpress", param: GestureEvent): void;
+  (event: "contextmenu", param: GestureEvent): void;
   (
     event: "update:edgeButtonState",
     param: {
@@ -52,13 +52,13 @@ watch(gestureAnyEvent, () => {
   if (!gestureAnyEvent.value) return;
   if (gestureAnyEvent.value.firstEvent.target !== edgeButton.value) return;
 
-  if (gestureAnyEvent.value.currentEvent.type === "oncontextmenu") emit("longpress", gestureAnyEvent.value);
+  if (gestureAnyEvent.value.currentEvent.type === "oncontextmenu") emit("contextmenu", gestureAnyEvent.value);
   if (gestureAnyEvent.value.currentEvent.type === "pointerdown") targetPercent = props.edgeButtonState.topPercent;
 
   const yDiffFromFirst = gestureAnyEvent.value.firstEvent.screen.y - gestureAnyEvent.value.currentEvent.screen.y;
   if (gestureAnyEvent.value.currentEvent.type === "pointerup" && Math.abs(yDiffFromFirst) < 10) {
     // const timeDiffFromFirst = gestureAnyEvent.value.currentEvent.timeStamp - gestureAnyEvent.value.firstEvent.timeStamp;
-    // if (timeDiffFromFirst > 400) emit("longpress", gestureAnyEvent.value);
+    // if (timeDiffFromFirst > 400) emit("contextmenu", gestureAnyEvent.value);
   }
 
   if (Math.abs(yDiffFromFirst) > 10) {
