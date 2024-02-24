@@ -1,10 +1,21 @@
+import { pwaState } from "./pwaState";
 import { createApp } from "vue";
 import App from "./App.vue";
 import "./assets/main.css";
 import { registerSW } from "virtual:pwa-register";
-import { progressError, progressMessage, progressToast } from "./components/Progress/progressState";
+import { progressError, progressToast } from "./components/Progress/progressState";
 
-const intervalMS = 10 * 1000;
+const intervalMS = 5 * 1000;
+
+function updateNow() {
+  if (!pwaState.value.updateApproved) return;
+  pwaState.value = {
+    checkCount: 0,
+    updateApproved: false,
+    updateAvailable: false,
+  };
+  updateSW();
+}
 
 const updateSW = registerSW({
   immediate: true,
@@ -13,6 +24,7 @@ const updateSW = registerSW({
     console.log("onNeedRefresh");
     progressToast("onNeedRefresh");
     if (confirm("update now?")) {
+      pwaState.value.updateAvailable = true;
       updateSW();
     }
   },
@@ -23,8 +35,11 @@ const updateSW = registerSW({
   onRegisteredSW(swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {
     registration &&
       setInterval(() => {
-        console.log("checking for update");
-        progressToast("checking for update");
+        pwaState.value.checkCount++;
+
+        console.log("checking for update v1");
+        progressToast("checking for update v1");
+        updateNow();
         registration.update();
       }, intervalMS);
     console.log("onRegisteredSW", swScriptUrl, registration);
