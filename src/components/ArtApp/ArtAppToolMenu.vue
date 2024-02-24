@@ -1,5 +1,5 @@
 <template>
-  <button type="button" @click="pencil">Pencil</button>
+  <button type="button" @click="brush">brush</button>
   <BrushPanel />
   <button type="button" @click="eraser">Eraser</button>
   <EraserPanel />
@@ -10,7 +10,7 @@ import { artboardState } from "@/components/Artboard/artboardState";
 import BrushPanel from "@/components/Brush/BrushPanel.vue";
 import EraserPanel from "@/components/Eraser/EraserPanel.vue";
 
-function pencil() {
+function brush() {
   artboardState.value.selectedTool = "brush";
 }
 function eraser() {

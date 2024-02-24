@@ -26,7 +26,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
-  // TODO I want long press to show me a more in depth menu, (too select my pencils)
+  // TODO I want long press to show me a more in depth menu, (too select my brushes)
   (event: "click", param: MouseEvent): void;
   (event: "contextmenu", param: GestureEvent): void;
   (

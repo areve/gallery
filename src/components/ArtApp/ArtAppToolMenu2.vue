@@ -5,13 +5,13 @@
       top: topPercentCss,
     }"
   >
-    <button type="button" class="pencil1 pencil" @click="pencil('red', 5)">Pencil1</button>
-    <button type="button" class="pencil2 pencil" @click="pencil('orange', 5)">Pencil2</button>
-    <button type="button" class="pencil3 pencil" @click="pencil('yellow', 5)">Pencil3</button>
-    <button type="button" class="pencil4 pencil" @click="pencil('green', 5)">Pencil4</button>
-    <button type="button" class="pencil5 pencil" @click="pencil('blue', 5)">Pencil5</button>
-    <button type="button" class="pencil6 pencil" @click="pencil('black', 5)">Pencil6</button>
-    <button type="button" class="pencil7 pencil" @click="pencil('white', 5)">Pencil7</button>
+    <button type="button" class="brush1 brush" @click="brush('red', 5)">brush1</button>
+    <button type="button" class="brush2 brush" @click="brush('orange', 5)">brush2</button>
+    <button type="button" class="brush3 brush" @click="brush('yellow', 5)">brush3</button>
+    <button type="button" class="brush4 brush" @click="brush('green', 5)">brush4</button>
+    <button type="button" class="brush5 brush" @click="brush('blue', 5)">brush5</button>
+    <button type="button" class="brush6 brush" @click="brush('black', 5)">brush6</button>
+    <button type="button" class="brush7 brush" @click="brush('white', 5)">brush7</button>
   </section>
 </template>
 
@@ -22,7 +22,7 @@ import { artboardState } from "../Artboard/artboardState";
 import { brushToolState } from "../Brush/brushToolState";
 import { eraserToolState } from "../Eraser/eraserToolState";
 
-function pencil(color: string, radius: number) {
+function brush(color: string, radius: number) {
   artboardState.value.selectedTool = "brush";
   brushToolState.value.color = color;
   brushToolState.value.radius = radius;
@@ -36,16 +36,16 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
 
 <style scoped>
 * {
-  --pencil-length: 3.5em;
-  --pencil-left: 2.6em;
+  --brush-length: 3.5em;
+  --brush-left: 2.6em;
 }
 
-.pencil {
+.brush {
   position: fixed;
   margin-left: 7em;
   margin-top: 7em;
   /* transform: ; */
-  width: var(--pencil-length);
+  width: var(--brush-length);
   height: 1em;
   /* margin-left: 1em; */
   transform-origin: -3.2em 50%;
@@ -58,36 +58,36 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   border-bottom-right-radius: 50% 50%;
   border-top-right-radius: 50% 50%;
 }
-.tool-menu[hidden] .pencil {
+.tool-menu[hidden] .brush {
   width: 0em;
 }
 
-.pencil1 {
-  transform: translate(var(--pencil-left), -1.3em) rotate(-80deg);
+.brush1 {
+  transform: translate(var(--brush-left), -1.3em) rotate(-80deg);
   background-color: red;
 }
-.pencil2 {
-  transform: translate(var(--pencil-left), -1.3em) rotate(-53.4deg);
+.brush2 {
+  transform: translate(var(--brush-left), -1.3em) rotate(-53.4deg);
   background-color: orange;
 }
-.pencil3 {
-  transform: translate(var(--pencil-left), -1.3em) rotate(-26.6deg);
+.brush3 {
+  transform: translate(var(--brush-left), -1.3em) rotate(-26.6deg);
   background-color: yellow;
 }
-.pencil4 {
-  transform: translate(var(--pencil-left), -1.3em) rotate(-0deg);
+.brush4 {
+  transform: translate(var(--brush-left), -1.3em) rotate(-0deg);
   background-color: green;
 }
-.pencil5 {
-  transform: translate(var(--pencil-left), -1.3em) rotate(26.6deg);
+.brush5 {
+  transform: translate(var(--brush-left), -1.3em) rotate(26.6deg);
   background-color: blue;
 }
-.pencil6 {
-  transform: translate(var(--pencil-left), -1.3em) rotate(53.4deg);
+.brush6 {
+  transform: translate(var(--brush-left), -1.3em) rotate(53.4deg);
   background-color: black;
 }
-.pencil7 {
-  transform: translate(var(--pencil-left), -1.3em) rotate(80deg);
+.brush7 {
+  transform: translate(var(--brush-left), -1.3em) rotate(80deg);
   background-color: white;
 }
 /* button {
