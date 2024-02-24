@@ -3,7 +3,8 @@
     <button type="button" @click="signOut">Sign out</button>
     <button type="button" @click="refreshTokens">Refresh tokens</button>
     <button type="button" @click="toggleFps">Toggle FPS</button>
-    <button type="button" @click="update">Update {{ pwaState }}</button>
+    <button type="button" @click="update" :disabled="!pwaState.updateAvailable">Update</button>
+    <div class="version">v{{ pwaState.appVersion }}</div>
   </RollupPanel>
 </template>
 
@@ -23,9 +24,12 @@ usePersistentState("artAppDebugButtonsPanelState", artAppDebugButtonsPanelState)
 
 const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
 function update() {
-  console.log("approved!");
   pwaState.value.updateApproved = true;
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.version {
+  text-align: right;
+}
+</style>
