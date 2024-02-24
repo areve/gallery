@@ -31,6 +31,7 @@ const isError = computed(() => {
 });
 
 const widthPercent = computed(() => {
+  if (!showProgress.value) return "0%";
   return (progressState.value.completedSteps / progressState.value.totalSteps) * 100 + "%";
 });
 </script>
@@ -77,7 +78,7 @@ const widthPercent = computed(() => {
 
 .progress > .progress-bar {
   width: 100%;
-  background-color: #39f;
+  background-color: #27e;
 
   /* animation-name: example; */
   animation-duration: 4s;
@@ -86,7 +87,7 @@ const widthPercent = computed(() => {
   animation-timing-function: ease;
   font-size: 0.8em;
   color: #000;
-  text-shadow: 0px 0px 5px #fff;
+  text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
   line-height: 1.1;
   text-align: left;
   padding-left: 4px;
