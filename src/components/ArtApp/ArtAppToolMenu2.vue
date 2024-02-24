@@ -49,7 +49,7 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   height: 1em;
   /* margin-left: 1em; */
   transform-origin: -3.2em 50%;
-  transition: 0.2s ease-in-out;
+  transition: 0.4s ease-out;
   transition-property: width;
   overflow: hidden;
   opacity: 0.8;
@@ -112,7 +112,7 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   transform: translate(-50%, -50%);
   /* background-color: rgb(0, 100, 200, 0.5); */
   /* opacity: 0.5; */
-  /* transition: all 0.2s ease-in-out; */
+  /* transition: all 0.2s ease-out-out; */
 }
 
 .tool-menu {
@@ -123,7 +123,7 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   height: 13em;
   /* overflow: hidden; */
   /* position: fixed; */
-  transition: 0.2s ease-in-out;
+  transition: 0.4s ease-out;
   transition-property: opacity;
   
   /* overflow: hidden; */
@@ -147,7 +147,7 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   height: 100%;
   background-color: rgb(127, 127, 127, 0.95);
   z-index: 50;
-  transition: 0.2s ease-in-out;
+  transition: 0.2s ease-out-out;
   transition-property: opacity, left;
   overflow: hidden;
 }
