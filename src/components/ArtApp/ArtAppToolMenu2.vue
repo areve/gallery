@@ -5,13 +5,13 @@
       top: topPercentCss,
     }"
   >
-    <button type="button" class="brush1 brush" @click="brush('red', 5)">brush1</button>
-    <button type="button" class="brush2 brush" @click="brush('orange', 5)">brush2</button>
-    <button type="button" class="brush3 brush" @click="brush('yellow', 5)">brush3</button>
-    <button type="button" class="brush4 brush" @click="brush('green', 5)">brush4</button>
-    <button type="button" class="brush5 brush" @click="brush('blue', 5)">brush5</button>
-    <button type="button" class="brush6 brush" @click="brush('black', 5)">brush6</button>
-    <button type="button" class="brush7 brush" @click="brush('white', 5)">brush7</button>
+    <button type="button" class="brush1 brush" @click="brush('red', 0.5, 5)">brush1</button>
+    <button type="button" class="brush2 brush" @click="brush('orange', 0.5, 5)">brush2</button>
+    <button type="button" class="brush3 brush" @click="brush('yellow', 0.5, 5)">brush3</button>
+    <button type="button" class="brush4 brush" @click="brush('green', 0.5, 5)">brush4</button>
+    <button type="button" class="brush5 brush" @click="brush('blue', 0.5, 5)">brush5</button>
+    <button type="button" class="brush6 brush" @click="brush('black', 0.5, 5)">brush6</button>
+    <button type="button" class="brush7 brush" @click="brush('white', 0.5, 5)">brush7</button>
   </section>
 </template>
 
@@ -22,9 +22,9 @@ import { artboardState } from "../Artboard/artboardState";
 import { brushToolState } from "../Brush/brushToolState";
 import { eraserToolState } from "../Eraser/eraserToolState";
 
-function brush(color: string, radius: number) {
+function brush(color: string, alpha: number, radius: number) {
   artboardState.value.selectedTool = "brush";
-  brushToolState.value.color = color;
+  brushToolState.value.color = color + ":" + alpha;
   brushToolState.value.radius = radius;
 }
 function eraser() {

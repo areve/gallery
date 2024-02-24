@@ -5,7 +5,9 @@ import { lerpSrgbColor } from "./color-srgb";
 import type { ColorSpace } from "../BitmapLayer";
 
 export function color2srgb(value: string) {
-  const color = new Color(value);
+  const split = value.split(":");
+  const color = new Color(split[0]);
+  if (split[1]) color.alpha = parseFloat(split[1]);
   return [...color.srgb, color.alpha] as ColorCoord;
 }
 
