@@ -122,7 +122,7 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   height: 13em;
   /* overflow: hidden; */
   /* position: fixed; */
-  transition: all 0.2s ease-in-out;
+  /* transition: all 0.2s ease-in-out; */
   /* overflow: hidden; */
 }
 

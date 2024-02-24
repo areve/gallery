@@ -1,17 +1,9 @@
 import { clamp as lodashClamp, cloneDeep, merge as lodashMerge } from "lodash";
 
-export function clone<T>(value: T) {
-  return cloneDeep(value);
-}
+export const merge = lodashMerge as <T>(object: T, source: T) => T;
+export const clamp = lodashClamp;
+export const clone = cloneDeep as <T>(value: T)=> T;
 
-export function cloneExtend<T>(value: T, ...extend: Partial<T>[]) {
+export function cloneExtend<T>(value: T, ...extend: Partial<T>[]): T {
   return Object.assign(cloneDeep(value) as Partial<T>, ...(extend ?? [])) as T;
-}
-
-export function merge<T>(object: T, source: T) {
-  return lodashMerge(object, source);
-}
-
-export function clamp(number: number, lower: number, upper: number): number {
-  return lodashClamp(number, lower, upper);
 }
