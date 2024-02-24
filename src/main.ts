@@ -1,10 +1,10 @@
 import { pwaState } from "./pwaState";
-import { createApp } from "vue";
+import { createApp, watchPostEffect } from "vue";
 import App from "./App.vue";
 import "./assets/main.css";
 import { registerSW } from "virtual:pwa-register";
 import { progressError, progressToast } from "./components/Progress/progressState";
-import { cloneExtend } from "./lib/utils";
+import { clone, cloneExtend } from "./lib/utils";
 
 const intervalMS = 5 * 1000;
 
@@ -16,6 +16,10 @@ function updateNow() {
   });
   updateSW();
 }
+
+watchPostEffect(() => {
+  console.log(clone(pwaState.value));
+});
 
 const updateSW = registerSW({
   immediate: true,
