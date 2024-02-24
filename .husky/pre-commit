@@ -1,2 +1,2 @@
 yarn version --no-commit-hooks --no-git-tag-version --patch
-git add .
+git add package.json
