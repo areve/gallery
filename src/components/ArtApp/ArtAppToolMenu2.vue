@@ -47,7 +47,6 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   /* transform: ; */
   width: var(--brush-length);
   height: 1em;
-  /* margin-left: 1em; */
   transform-origin: -3.2em 50%;
   transition: 0.4s ease-out;
   transition-property: width, opacity;

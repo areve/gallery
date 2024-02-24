@@ -23,7 +23,7 @@ usePersistentState("artAppDebugButtonsPanelState", artAppDebugButtonsPanelState)
 
 const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
 function update() {
-  //  alert("update");
+  console.log("approved");
   pwaState.value.updateApproved = true;
 }
 </script>
