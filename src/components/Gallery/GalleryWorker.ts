@@ -1,6 +1,6 @@
 import { googleFileUpdate, googleFileCreate, googleFileBlob, googlePathGetOrCreate, googleFileGet, googlePathGet } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
-import { progressError, progressMessage, notifyState } from "../Notify/notifyState";
+import { notifyError, notifyProgress, notifyState } from "../Notify/notifyState";
 import { watchPostEffect } from "vue";
 import { clone } from "@/lib/utils";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
@@ -30,37 +30,37 @@ watchPostEffect(() =>
 async function onLoadBlob(artwork: Artwork) {
   if (!accessToken) throw "accessToken not set";
 
-  progressMessage("finding folders", 4);
+  notifyProgress("finding folders", 4);
   const folders = await googlePathGet(rootDirName + "/" + artwork.path, accessToken);
   const folder = folders[folders.length - 1];
-  if (!folder) return progressError("folder not found");
+  if (!folder) return notifyError("folder not found");
 
-  progressMessage("finding file");
+  notifyProgress("finding file");
   const file = await googleFileGet(artwork.name, folder.id, accessToken);
-  if (!file) return progressError("file not found");
+  if (!file) return notifyError("file not found");
 
-  progressMessage("loading file");
+  notifyProgress("loading file");
   const blob = await googleFileBlob(file.id, accessToken);
 
-  progressMessage("file loaded");
+  notifyProgress("file loaded");
   return blob;
 }
 
 async function onSaveBlob(artwork: ArtworkWithBlob) {
   if (!accessToken) throw "accessToken not set";
 
-  progressMessage("finding folders", 4);
+  notifyProgress("finding folders", 4);
   const folders = await googlePathGetOrCreate(rootDirName + "/" + artwork.path, accessToken);
   const folder = folders[folders.length - 1];
-  if (!folder) return progressError("folder not found");
+  if (!folder) return notifyError("folder not found");
 
-  progressMessage("finding file");
+  notifyProgress("finding file");
   let file = await googleFileGet(artwork.name, folder.id, accessToken);
 
-  progressMessage("saving file");
+  notifyProgress("saving file");
   if (file) file = await googleFileUpdate(file.id, artwork.name, artwork.blob, accessToken);
   else file = await googleFileCreate(folder.id, artwork.name, artwork.blob, accessToken);
 
-  progressMessage("file saved");
+  notifyProgress("file saved");
   return file;
 }

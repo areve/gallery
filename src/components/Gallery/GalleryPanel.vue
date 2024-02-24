@@ -10,7 +10,7 @@
 import { ref } from "vue";
 import { artAppState } from "../ArtApp/artAppState";
 import { asBlob } from "../Artboard/artboardService";
-import { progressMessage } from "../Notify/notifyState";
+import { notifyProgress } from "../Notify/notifyState";
 import { load as galleryLoad, save as gallerySave } from "@/components/Gallery/galleryService";
 import type { PanelState } from "../RollupPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
@@ -22,7 +22,7 @@ const galleryPanelState = ref<PanelState>({
 usePersistentState("galleryPanelState", galleryPanelState);
 
 const load = async () => {
-  progressMessage("requesting load", 5);
+  notifyProgress("requesting load", 5);
   await galleryLoad({
     name: artAppState.value.fileName,
     path: "/",
@@ -32,10 +32,10 @@ const load = async () => {
 const save = async () => {
   // TODO if it exists indicate it when I choose the name
   // TODO add a way to browse images
-  progressMessage("converting canvas to blob", 6);
+  notifyProgress("converting canvas to blob", 6);
   const blob = await asBlob();
 
-  progressMessage("saving blob");
+  notifyProgress("saving blob");
   await gallerySave({
     blob,
     name: artAppState.value.fileName,

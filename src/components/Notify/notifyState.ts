@@ -14,11 +14,11 @@ export const notifyState = ref<NotifyState>({
   error: undefined,
 });
 
-export function progressError(error: string | undefined) {
+export function notifyError(error: string | undefined) {
   notifyState.value.error = error;
 }
 
-export function progressToast(message: string) {
+export function notifyToast(message: string) {
   notifyState.value.message = message;
   // progressState.value.error = message;
   notifyState.value.totalSteps = 1;
@@ -29,7 +29,7 @@ export function progressToast(message: string) {
   }, 1000);
 }
 
-export function progressMessage(message: string, totalSteps?: number) {
+export function notifyProgress(message: string, totalSteps?: number) {
   if (typeof totalSteps === "number") {
     notifyState.value.error = undefined;
     notifyState.value.completedSteps = 0;

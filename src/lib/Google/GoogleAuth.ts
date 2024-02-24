@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { googleAuthConfig } from "./googleAuthConfig";
 import { defaultAuthState, googleAuthState } from "./googleAuthState";
-import { progressError } from "@/components/Notify/notifyState";
+import { notifyError } from "@/components/Notify/notifyState";
 
 type AuthStateState = "inProgress" | "signedIn" | "signedOut";
 
@@ -119,14 +119,14 @@ export async function refreshTokens() {
 
   const iframe = createHiddenIframe();
   document.body.appendChild(iframe);
-  progressError(undefined);
+  notifyError(undefined);
 
   let silentRefreshCompleted = false;
   const silentRefreshTimeout = setTimeout(() => {
     if (!silentRefreshCompleted) {
       // TODO this fired after I opened my laptop... perhaps it would, but I feel value.expiresAt was updated!?
       console.error("completeSilentRefresh did not return within 5 seconds");
-      progressError("refreshing tokens failed");
+      notifyError("refreshing tokens failed");
     }
   }, 5000);
 

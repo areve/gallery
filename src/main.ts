@@ -3,13 +3,13 @@ import { createApp, watch } from "vue";
 import App from "./App.vue";
 import "./assets/main.css";
 import { registerSW } from "virtual:pwa-register";
-import { progressError, progressToast } from "./components/Notify/notifyState";
+import { notifyError, notifyToast } from "./components/Notify/notifyState";
 import { cloneExtend } from "./lib/utils";
 
 function updateNow() {
-  progressToast("updateNow try");
+  notifyToast("updateNow try");
   if (!appState.value.updateApproved) return;
-  progressToast("updateNow ok");
+  notifyToast("updateNow ok");
   appState.value = cloneExtend(appState.value, {
     updateApproved: false,
     updateAvailable: false,
@@ -23,12 +23,12 @@ const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
     console.log("update available");
-    progressToast("update available");
+    notifyToast("update available");
     appState.value.updateAvailable = true;
   },
   onOfflineReady() {
     console.log("onOfflineReady");
-    progressToast("onOfflineReady");
+    notifyToast("onOfflineReady");
   },
   onRegisteredSW(swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {
     registration &&
@@ -37,11 +37,11 @@ const updateSW = registerSW({
         registration.update();
       }, 15000);
     console.log("onRegisteredSW", swScriptUrl, registration);
-    progressToast("onRegisteredSW " + JSON.stringify({ swScriptUrl, registration }));
+    notifyToast("onRegisteredSW " + JSON.stringify({ swScriptUrl, registration }));
   },
   onRegisterError(error: any) {
     console.error("onRegisterError", error);
-    progressError("onRegisterError " + JSON.stringify(error));
+    notifyError("onRegisterError " + JSON.stringify(error));
   },
 });
 

@@ -1,7 +1,7 @@
 import { createMessageBus } from "@/lib/MessageBus";
 import GalleryWorker from "./GalleryWorker?worker";
 import { watchPostEffect } from "vue";
-import { progressMessage, notifyState, type NotifyState } from "../Notify/notifyState";
+import { notifyProgress, notifyState, type NotifyState } from "../Notify/notifyState";
 import { loadBlob } from "../Artboard/artboardService";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
 import { googleAuthState } from "@/lib/Google/googleAuthState";
@@ -12,9 +12,9 @@ messageBus.subscribe("updateProgress", onUpdateProgress);
 export async function load(artwork: Artwork) {
   const blob = await messageBus.publish2<Blob | undefined>("loadBlob", [artwork]);
   // TODO the progress goes backwards
-  progressMessage("load blob", 2);
+  notifyProgress("load blob", 2);
   if (blob) await loadBlob(blob);
-  progressMessage("blob loaded");
+  notifyProgress("blob loaded");
 }
 
 watchPostEffect(() => {
