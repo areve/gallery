@@ -49,7 +49,8 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   height: 1em;
   /* margin-left: 1em; */
   transform-origin: -3.2em 50%;
-  transition: all 0.2s ease-in-out;
+  transition: 0.2s ease-in-out;
+  transition-property: width;
   overflow: hidden;
   opacity: 0.8;
   color: transparent;
@@ -122,7 +123,9 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   height: 13em;
   /* overflow: hidden; */
   /* position: fixed; */
-  /* transition: all 0.2s ease-in-out; */
+  transition: 0.2s ease-in-out;
+  transition-property: opacity;
+  
   /* overflow: hidden; */
 }
 
@@ -144,7 +147,8 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   height: 100%;
   background-color: rgb(127, 127, 127, 0.95);
   z-index: 50;
-  transition: all 0.2s ease-in-out;
+  transition: 0.2s ease-in-out;
+  transition-property: opacity, left;
   overflow: hidden;
 }
 
