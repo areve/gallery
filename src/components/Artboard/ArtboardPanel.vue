@@ -42,6 +42,8 @@ watchSyncEffect(() => {
   if (!gestureAnyEvent.value) return;
   if (!canvas.value) return;
   if (gestureAnyEvent.value.firstEvent.target !== canvas.value) return;
+  if (gestureAnyEvent.value.currentEvent.type === "oncontextmenu") return;
+  if (gestureAnyEvent.value.currentEvent.buttons === 2) return;
   const gestureEvent = gestureEventToArtboardGestureEvent(canvas.value, gestureAnyEvent.value);
   selectedTool().gesture(gestureEvent);
 });
