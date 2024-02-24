@@ -10,7 +10,7 @@
 import { ref } from "vue";
 import { artAppState } from "../ArtApp/artAppState";
 import { asBlob } from "../Artboard/artboardService";
-import { progressMessage } from "../Progress/progressState";
+import { progressMessage } from "../Notify/notifyState";
 import { load as galleryLoad, save as gallerySave } from "@/components/Gallery/galleryService";
 import type { PanelState } from "../RollupPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
@@ -45,3 +45,4 @@ const save = async () => {
 </script>
 
 <style scoped></style>
+../Notify/progressState

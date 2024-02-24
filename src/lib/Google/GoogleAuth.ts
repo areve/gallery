@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { googleAuthConfig } from "./googleAuthConfig";
 import { defaultAuthState, googleAuthState } from "./googleAuthState";
-import { progressError } from "@/components/Progress/progressState";
+import { progressError } from "@/components/Notify/notifyState";
 
 type AuthStateState = "inProgress" | "signedIn" | "signedOut";
 

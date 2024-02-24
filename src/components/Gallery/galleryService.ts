@@ -1,7 +1,7 @@
 import { createMessageBus } from "@/lib/MessageBus";
 import GalleryWorker from "./GalleryWorker?worker";
 import { watchPostEffect } from "vue";
-import { progressMessage, progressState, type ProgressState } from "../Progress/progressState";
+import { progressMessage, notifyState, type NotifyState } from "../Notify/notifyState";
 import { loadBlob } from "../Artboard/artboardService";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
 import { googleAuthState } from "@/lib/Google/googleAuthState";
@@ -25,6 +25,6 @@ export async function save(artwork: ArtworkWithBlob) {
   await messageBus.publish2("saveBlob", [artwork]);
 }
 
-function onUpdateProgress(update: ProgressState) {
-  progressState.value = update;
+function onUpdateProgress(update: NotifyState) {
+  notifyState.value = update;
 }

@@ -1,6 +1,6 @@
 import { googleFileUpdate, googleFileCreate, googleFileBlob, googlePathGetOrCreate, googleFileGet, googlePathGet } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
-import { progressError, progressMessage, progressState } from "../Progress/progressState";
+import { progressError, progressMessage, notifyState } from "../Notify/notifyState";
 import { watchPostEffect } from "vue";
 import { clone } from "@/lib/utils";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
@@ -23,7 +23,7 @@ async function onSetAccessToken(newAccessToken: string) {
 watchPostEffect(() =>
   messageBus.publish({
     name: "updateProgress",
-    params: [clone(progressState.value)],
+    params: [clone(notifyState.value)],
   }),
 );
 

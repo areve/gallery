@@ -13,7 +13,7 @@
   </aside>
   <ArtAppToolMenu2 class="left-menu2" :hidden="!artAppState.menus.appLeft2" />
   <main class="art-app">
-    <ProgressPanel />
+    <NotifyPanel />
     <ArtboardPanel />
     <div v-if="artAppState.showFps" class="status-bar">{{ artboardState.fps }}fps {{ artboardState.dimensions }}</div>
   </main>
@@ -24,7 +24,7 @@
 
 <script lang="ts" setup>
 import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
-import ProgressPanel from "@/components/Progress/ProgressPanel.vue";
+import NotifyPanel from "@/components/Notify/NotifyPanel.vue";
 import EdgeButton from "@/components/EdgeButton/EdgeButton.vue";
 import ArtAppToolMenu from "./ArtAppToolMenu.vue";
 import ArtAppToolMenu2 from "./ArtAppToolMenu2.vue";

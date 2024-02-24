@@ -3,7 +3,7 @@ import { createApp, watch } from "vue";
 import App from "./App.vue";
 import "./assets/main.css";
 import { registerSW } from "virtual:pwa-register";
-import { progressError, progressToast } from "./components/Progress/progressState";
+import { progressError, progressToast } from "./components/Notify/notifyState";
 import { cloneExtend } from "./lib/utils";
 
 function updateNow() {

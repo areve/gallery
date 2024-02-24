@@ -12,7 +12,7 @@
           width: widthPercent,
         }"
       >
-        {{ progressState.error || progressState.message }}
+        {{ notifyState.error || notifyState.message }}
       </div>
       <div class="progress-label"></div>
     </div>
@@ -21,18 +21,18 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
-import { progressState } from "./progressState";
+import { notifyState } from "./notifyState";
 
 const showProgress = computed(() => {
-  return !!progressState.value.error || progressState.value.totalSteps != progressState.value.completedSteps;
+  return !!notifyState.value.error || notifyState.value.totalSteps != notifyState.value.completedSteps;
 });
 const isError = computed(() => {
-  return !!progressState.value.error;
+  return !!notifyState.value.error;
 });
 
 const widthPercent = computed(() => {
   if (!showProgress.value) return "0%";
-  return (progressState.value.completedSteps / progressState.value.totalSteps) * 100 + "%";
+  return (notifyState.value.completedSteps / notifyState.value.totalSteps) * 100 + "%";
 });
 </script>
 
@@ -106,3 +106,4 @@ const widthPercent = computed(() => {
   }
 }
 </style>
+./notifyState
