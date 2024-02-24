@@ -1,1 +1,1 @@
-yarn version  --commit-hooks false --patch
+yarn version --no-commit-hooks --no-git-tag-version --patch
