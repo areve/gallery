@@ -10,7 +10,7 @@
       <div
         class="progress-bar"
         :style="{
-          width: processWidthPercent,
+          width: notifyState.process.percent,
         }"
       >
         {{ notifyState.process.message }}
@@ -32,14 +32,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from "vue";
 import { notifyState } from "./notifyState";
 
-const processWidthPercent = computed(() => {
-  if (notifyState.value.process.steps === 0) return "10%";
-  const fraction = notifyState.value.process.complete / notifyState.value.process.steps;
-  return (0.1 + fraction * 0.9) * 100 + "%";
-});
+
 </script>
 
 <style scoped>

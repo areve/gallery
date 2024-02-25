@@ -1,13 +1,14 @@
-import { clone, cloneExtend } from "@/lib/utils";
 import { ref, watch } from "vue";
 
 export interface NotifyState {
-  process: { // TODO wrong name!!!
+  process: {
+    // TODO wrong name!!!
     steps: number;
     complete: number;
     message: string;
     error: boolean;
     visible: boolean;
+    percent: string;
   };
   toast: {
     message: string;
@@ -18,6 +19,18 @@ export interface NotifyState {
 
 export const notifyState = ref<NotifyState>(defaultState());
 
+watch(
+  () => [notifyState.value.process.steps, notifyState.value.process.complete],
+  () => {
+    // TODO make the bar infinitely grow instead of this.
+    if (notifyState.value.process.steps === 0) {
+      notifyState.value.process.percent = "10%";
+    } else {
+      const fraction = notifyState.value.process.complete / notifyState.value.process.steps;
+      notifyState.value.process.percent = (0.1 + fraction * 0.9) * 100 + "%";
+    }
+  },
+);
 function defaultState() {
   return {
     process: {
@@ -26,6 +39,7 @@ function defaultState() {
       message: "",
       error: false,
       visible: false,
+      percent: "0%",
     },
     toast: {
       message: "",
