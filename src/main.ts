@@ -34,7 +34,6 @@ const updateSW = registerSW({
         appState.value.checkCount++;
         registration.update();
       }, 15000);
-    notifyToast("onRegisteredSW " + JSON.stringify({ swScriptUrl, registration }));
   },
   onRegisterError(error: any) {
     notifyError("onRegisterError " + JSON.stringify(error));
