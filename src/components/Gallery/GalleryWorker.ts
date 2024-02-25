@@ -1,7 +1,5 @@
 import { googleFileUpdate, googleFileCreate, googleFileBlob, googlePathGetOrCreate, googleFileGet, googlePathGet } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
-import { notifyError, notifyProgress, notifyState } from "../Notify/notifyState";
-import { watch } from "vue";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
 
 export const messageBus = createMessageBus(() => self);
@@ -19,18 +17,13 @@ async function onSetAccessToken(newAccessToken: string) {
   accessToken = newAccessToken;
 }
 
-watch(notifyState, () => {
-  console.log("notifyState", new Date());
-  messageBus.publish({
-    name: "updateNotify",
-    params: [notifyState.value],
-  });
-});
+const notifyError = (error: string) => messageBus.publish2("notifyError", [error]);
+const notifyProgress = (message: string, steps?: number) => messageBus.publish2("notifyProgress", [message, steps]);
 
 async function onLoadBlob(artwork: Artwork) {
   if (!accessToken) throw "accessToken not set";
 
-  notifyProgress("finding folders", 4);
+  notifyProgress("finding folders", 3);
   const folders = await googlePathGet(rootDirName + "/" + artwork.path, accessToken);
   const folder = folders[folders.length - 1];
   if (!folder) return notifyError("folder not found");
@@ -49,7 +42,7 @@ async function onLoadBlob(artwork: Artwork) {
 async function onSaveBlob(artwork: ArtworkWithBlob) {
   if (!accessToken) throw "accessToken not set";
 
-  notifyProgress("finding folders", 4);
+  notifyProgress("finding folders", 3);
   const folders = await googlePathGetOrCreate(rootDirName + "/" + artwork.path, accessToken);
   const folder = folders[folders.length - 1];
   if (!folder) return notifyError("folder not found");

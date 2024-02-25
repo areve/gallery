@@ -1,8 +1,8 @@
-import { clone } from "@/lib/utils";
-import { ref } from "vue";
+import { clone, cloneExtend } from "@/lib/utils";
+import { ref, watch } from "vue";
 
 export interface NotifyState {
-  process: {
+  process: { // TODO wrong name!!!
     steps: number;
     complete: number;
     message: string;
@@ -21,7 +21,7 @@ export const notifyState = ref<NotifyState>(defaultState());
 function defaultState() {
   return {
     process: {
-      steps: 100,
+      steps: 0,
       complete: 0,
       message: "",
       error: false,
@@ -58,18 +58,20 @@ export function notifyToast(message: string) {
 
 // TODO we need to do this different and add a notifyComplete
 // TODO progress bar needs to shimmer
-export function notifyProgress(message: string, totalSteps?: number) {
-  console.log("progress:", message, totalSteps);
+export function notifyProgress(message: string, steps?: number) {
+  console.log("progress:", message, steps);
   notifyState.value.toast = defaultState().toast;
   notifyState.value.process.visible = true;
-  if (typeof totalSteps === "number") {
+  if (typeof steps === "number") {
     notifyState.value.process.error = false;
-    notifyState.value.process.complete = 0;
-    notifyState.value.process.steps = totalSteps;
+    // notifyState.value.process.complete = 0;
+    notifyState.value.process.steps += steps;
+  } else {
+    notifyState.value.process.complete++;
   }
 
-  notifyState.value.process.complete++;
   notifyState.value.process.message = message;
+
   if (notifyState.value.process.complete === notifyState.value.process.steps) {
     setTimeout(() => {
       notifyState.value.process.visible = false;

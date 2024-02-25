@@ -1,18 +1,19 @@
 import { createMessageBus } from "@/lib/MessageBus";
 import GalleryWorker from "./GalleryWorker?worker";
 import { watchPostEffect } from "vue";
-import { notifyProgress, notifyState, type NotifyState } from "../Notify/notifyState";
+import { notifyError, notifyProgress, notifyState, type NotifyState } from "../Notify/notifyState";
 import { loadBlob } from "../Artboard/artboardService";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
 import { googleAuthState } from "@/lib/Google/googleAuthState";
 
 const messageBus = createMessageBus(() => new GalleryWorker());
-messageBus.subscribe("updateNotify", onupdateNotify);
+messageBus.subscribe("notifyError", notifyError);
+messageBus.subscribe("notifyProgress", notifyProgress);
 
 export async function load(artwork: Artwork) {
   const blob = await messageBus.publish2<Blob | undefined>("loadBlob", [artwork]);
   // TODO the progress goes backwards
-  notifyProgress("load blob", 2);
+  notifyProgress("load blob", 1);
   if (blob) await loadBlob(blob);
   notifyProgress("blob loaded");
 }
@@ -23,9 +24,4 @@ watchPostEffect(() => {
 
 export async function save(artwork: ArtworkWithBlob) {
   await messageBus.publish2("saveBlob", [artwork]);
-}
-
-function onupdateNotify(update: NotifyState) {
-  console.log("onupdateNotify", update);
-  notifyState.value = update;
 }

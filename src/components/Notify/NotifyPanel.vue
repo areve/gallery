@@ -36,7 +36,9 @@ import { computed } from "vue";
 import { notifyState } from "./notifyState";
 
 const processWidthPercent = computed(() => {
-  return (notifyState.value.process.complete / notifyState.value.process.steps) * 100 + "%";
+  if (notifyState.value.process.steps === 0) return "10%";
+  const fraction = notifyState.value.process.complete / notifyState.value.process.steps;
+  return (0.1 + fraction * 0.9) * 100 + "%";
 });
 </script>
 

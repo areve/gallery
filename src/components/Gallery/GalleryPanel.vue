@@ -22,17 +22,18 @@ const galleryPanelState = ref<PanelState>({
 usePersistentState("galleryPanelState", galleryPanelState);
 
 const load = async () => {
-  notifyProgress("requesting load", 5);
+  notifyProgress("requesting load", 1);
   await galleryLoad({
     name: artAppState.value.fileName,
     path: "/",
   });
+  notifyProgress("loaded");
 };
 
 const save = async () => {
   // TODO if it exists indicate it when I choose the name
   // TODO add a way to browse images
-  notifyProgress("converting canvas to blob", 6);
+  notifyProgress("converting canvas to blob", 2);
   const blob = await asBlob();
 
   notifyProgress("saving blob");
@@ -41,6 +42,7 @@ const save = async () => {
     name: artAppState.value.fileName,
     path: "/",
   });
+  notifyProgress("blob saved");
 };
 </script>
 
