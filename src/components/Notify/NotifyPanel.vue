@@ -1,20 +1,32 @@
 <template>
-  <div class="notify-panel" :hidden="!showProgress">
+  <div class="notify-panel">
     <div
       class="progress"
       :class="{
-        error: isError,
+        error: notifyState.process.error,
       }"
+      :hidden="!notifyState.process.visible"
     >
       <div
         class="progress-bar"
         :style="{
-          width: widthPercent,
+          width: processWidthPercent,
         }"
       >
-        {{ notifyState.error || notifyState.message }}
+        {{ notifyState.process.message }}
       </div>
-      <div class="progress-label"></div>
+    </div>
+
+    <div
+      class="toast"
+      :class="{
+        error: notifyState.toast.error,
+      }"
+      :hidden="!notifyState.toast.visible"
+    >
+      <div class="toast-bar">
+        {{ notifyState.toast.message }}
+      </div>
     </div>
   </div>
 </template>
@@ -23,16 +35,8 @@
 import { computed } from "vue";
 import { notifyState } from "./notifyState";
 
-const showProgress = computed(() => {
-  return !!notifyState.value.error || notifyState.value.totalSteps != notifyState.value.completedSteps;
-});
-const isError = computed(() => {
-  return !!notifyState.value.error;
-});
-
-const widthPercent = computed(() => {
-  if (!showProgress.value) return "0%";
-  return (notifyState.value.completedSteps / notifyState.value.totalSteps) * 100 + "%";
+const processWidthPercent = computed(() => {
+  return (notifyState.value.process.complete / notifyState.value.process.steps) * 100 + "%";
 });
 </script>
 
@@ -42,41 +46,50 @@ const widthPercent = computed(() => {
   top: 0;
   width: 100%;
   z-index: 100;
-  transition: opacity 0.5s ease-in-out;
-  transition: 0.2s ease-in-out;
-  transition-property: opacity, left, top;
-  opacity: 1;
 }
 
-.notify-panel[hidden] {
-  opacity: 0;
-  display: block !important;
-  top: -20px;
-}
-
+.toast,
 .progress {
-  position: relative;
+  position: absolute;
+  width: calc(100% - 4px);
+  top: 0;
+  height: 26px;
+  overflow: hidden;
   padding: 4px;
   background: rgba(0, 0, 0, 0.25);
   border-radius: 6px;
   box-shadow:
     inset 0 1px 2px rgba(0, 0, 0, 0.25),
     0 1px rgba(255, 255, 255, 0.08);
+  transition:
+    width 0.8s ease-in-out,
+    opacity 0.6s ease-in-out,
+    top 0.4s ease-in-out;
+  opacity: 1;
   margin: 2px;
 }
 
+.toast[hidden],
+.progress[hidden] {
+  opacity: 0.3;
+  display: block !important;
+  /* height: 0px; */
+  top: -26px;
+}
+
+.toast-bar,
 .progress-bar {
   height: 16px;
   border-radius: 4px;
   background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
-  transition: 0.8s ease-in;
-  transition-property: width, background-color;
+
+  transition:
+    background-color 0.2s ease-in,
+    width 0.8s ease-in;
   box-shadow:
     0 0 1px 1px rgba(0, 0, 0, 0.25),
     inset 0 1px rgba(255, 255, 255, 0.1);
-}
 
-.progress > .progress-bar {
   width: 100%;
   background-color: #27e;
 
@@ -94,6 +107,7 @@ const widthPercent = computed(() => {
   white-space: nowrap;
 }
 
+.toast.error > .toast-bar,
 .progress.error > .progress-bar {
   background-color: #e20;
 }

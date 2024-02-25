@@ -1,46 +1,80 @@
+import { clone } from "@/lib/utils";
 import { ref } from "vue";
 
 export interface NotifyState {
-  message?: string;
-  error?: string;
-  totalSteps: number;
-  completedSteps: number;
+  process: {
+    steps: number;
+    complete: number;
+    message: string;
+    error: boolean;
+    visible: boolean;
+  };
+  toast: {
+    message: string;
+    error: boolean;
+    visible: boolean;
+  };
 }
 
-export const notifyState = ref<NotifyState>({
-  totalSteps: 0,
-  completedSteps: 0,
-  message: "",
-  error: undefined,
-});
+export const notifyState = ref<NotifyState>(defaultState());
 
-export function notifyError(error: string | undefined) {
+function defaultState() {
+  return {
+    process: {
+      steps: 100,
+      complete: 0,
+      message: "",
+      error: false,
+      visible: false,
+    },
+    toast: {
+      message: "",
+      error: false,
+      visible: false,
+    },
+  };
+}
+
+function reset() {
+  Object.assign(notifyState.value, defaultState());
+}
+
+export function notifyError(error: string) {
   console.error("error:", error);
-  notifyState.value.error = error;
+  reset();
+  notifyState.value.toast.message = error;
+  notifyState.value.toast.error = true;
+  notifyState.value.toast.visible = true;
+  setTimeout(() => (notifyState.value.toast.visible = false), 5000);
 }
 
-// TODO needs to show, not with partial progress bar though
 export function notifyToast(message: string) {
   console.log("toast:", message);
-  notifyState.value.message = message;
-  notifyState.value.totalSteps = 1;
-  notifyState.value.completedSteps = 0;
-  setTimeout(() => {
-    notifyState.value.completedSteps = 0;
-    notifyState.value.totalSteps = 0;
-  }, 5000);
+  reset();
+  notifyState.value.toast.message = message;
+  notifyState.value.toast.visible = true;
+  setTimeout(() => (notifyState.value.toast.visible = false), 5000);
 }
 
 // TODO we need to do this different and add a notifyComplete
 // TODO progress bar needs to shimmer
 export function notifyProgress(message: string, totalSteps?: number) {
   console.log("progress:", message, totalSteps);
+  notifyState.value.toast = defaultState().toast;
+  notifyState.value.process.visible = true;
   if (typeof totalSteps === "number") {
-    notifyState.value.error = undefined;
-    notifyState.value.completedSteps = 0;
-    notifyState.value.totalSteps = totalSteps;
+    notifyState.value.process.error = false;
+    notifyState.value.process.complete = 0;
+    notifyState.value.process.steps = totalSteps;
   }
 
-  notifyState.value.completedSteps++;
-  notifyState.value.message = message;
+  notifyState.value.process.complete++;
+  notifyState.value.process.message = message;
+  if (notifyState.value.process.complete === notifyState.value.process.steps) {
+    setTimeout(() => {
+      notifyState.value.process.visible = false;
+    }, 500);
+    // TODO using timeouts is not great
+    setTimeout(reset, 1000);
+  }
 }
