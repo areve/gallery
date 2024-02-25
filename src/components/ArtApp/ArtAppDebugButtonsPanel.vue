@@ -5,6 +5,7 @@
     <button type="button" @click="toggleFps">Toggle FPS</button>
     <button type="button" @click="update" :disabled="!appState.updateAvailable">Update</button>
     <div class="version">v{{ appState.appVersion }}</div>
+    {{  googleAuthState.expiresAt }}
   </RollupPanel>
 </template>
 
@@ -16,12 +17,14 @@ import type { PanelState } from "../RollupPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
 import RollupPanel from "@/components/RollupPanel/RollupPanel.vue";
 import { appState } from "@/appState";
+import { googleAuthState } from "@/lib/Google/googleAuthState";
 
 const artAppDebugButtonsPanelState = ref<PanelState>({
   rolled: true,
 });
 usePersistentState("artAppDebugButtonsPanelState", artAppDebugButtonsPanelState);
 
+googleAuthState
 const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
 function update() {
   appState.value.updateApproved = true;
