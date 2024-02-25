@@ -121,7 +121,6 @@ export async function refreshTokens() {
 
   const iframe = createHiddenIframe();
   document.body.appendChild(iframe);
-  notifyError(undefined);
 
   let silentRefreshCompleted = false;
   const silentRefreshTimeout = setTimeout(() => {
