@@ -27,7 +27,7 @@ interface Props {
 const props = defineProps<Props>();
 const emit = defineEmits<{
   (event: "click", param: MouseEvent): void;
-  (event: "contextmenu", param: GestureEvent): void;
+  (event: "altmenu", param: GestureEvent): void;
   (
     event: "update:edgeButtonState",
     param: {
@@ -54,7 +54,7 @@ watch(gestureAnyEvent, () => {
 
   // TODO not working on android
   if (gestureAnyEvent.value.currentEvent.type === "oncontextmenu") {
-    emit("contextmenu", gestureAnyEvent.value);
+    emit("altmenu", gestureAnyEvent.value);
     alert(stringifyEvent(gestureAnyEvent.value.currentEvent));
     alert(stringifyEvent(gestureAnyEvent.value.firstEvent));
     alert(stringifyEvent(edgeButton.value));
