@@ -3,17 +3,17 @@
     <div
       class="progress"
       :class="{
-        error: notifyState.process.error,
+        error: notifyState.progress.error,
       }"
-      :hidden="!notifyState.process.visible"
+      :hidden="!notifyState.progress.visible"
     >
       <div
         class="progress-bar"
         :style="{
-          width: notifyState.process.percent,
+          width: notifyState.progress.percent,
         }"
       >
-        {{ notifyState.process.message }}
+        {{ notifyState.progress.message }}
       </div>
     </div>
 

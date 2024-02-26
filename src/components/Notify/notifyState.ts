@@ -1,8 +1,7 @@
 import { ref, watch } from "vue";
 
 export interface NotifyState {
-  process: {
-    // TODO wrong name!!!
+  progress: {
     steps: number;
     complete: number;
     message: string;
@@ -20,20 +19,20 @@ export interface NotifyState {
 export const notifyState = ref<NotifyState>(defaultState());
 
 watch(
-  () => [notifyState.value.process.steps, notifyState.value.process.complete],
+  () => [notifyState.value.progress.steps, notifyState.value.progress.complete],
   () => {
     // TODO make the bar infinitely grow instead of this.
-    if (notifyState.value.process.steps === 0) {
-      notifyState.value.process.percent = "10%";
+    if (notifyState.value.progress.steps === 0) {
+      notifyState.value.progress.percent = "10%";
     } else {
-      const fraction = notifyState.value.process.complete / notifyState.value.process.steps;
-      notifyState.value.process.percent = (0.1 + fraction * 0.9) * 100 + "%";
+      const fraction = notifyState.value.progress.complete / notifyState.value.progress.steps;
+      notifyState.value.progress.percent = (0.1 + fraction * 0.9) * 100 + "%";
     }
   },
 );
-function defaultState() {
+function defaultState(): NotifyState {
   return {
-    process: {
+    progress: {
       steps: 0,
       complete: 0,
       message: "",
@@ -75,19 +74,19 @@ export function notifyToast(message: string) {
 export function notifyProgress(message: string, steps?: number) {
   console.log("progress:", message, steps);
   notifyState.value.toast = defaultState().toast;
-  notifyState.value.process.visible = true;
+  notifyState.value.progress.visible = true;
   if (typeof steps === "number") {
-    notifyState.value.process.error = false;
-    notifyState.value.process.steps += steps;
+    notifyState.value.progress.error = false;
+    notifyState.value.progress.steps += steps;
   } else {
-    notifyState.value.process.complete++;
+    notifyState.value.progress.complete++;
   }
 
-  notifyState.value.process.message = message;
+  notifyState.value.progress.message = message;
 
-  if (notifyState.value.process.complete === notifyState.value.process.steps) {
+  if (notifyState.value.progress.complete === notifyState.value.progress.steps) {
     setTimeout(() => {
-      notifyState.value.process.visible = false;
+      notifyState.value.progress.visible = false;
     }, 500);
     // TODO using timeouts is not great
     setTimeout(reset, 1000);
