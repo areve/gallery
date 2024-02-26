@@ -3,7 +3,6 @@ import { v4 as uuid } from "uuid";
 export type Message = {
   name: string;
   params: any[];
-  callback: boolean;
   callbackId?: string;
 };
 
@@ -75,22 +74,22 @@ export function createMessageBus(getWorker: () => Worker | Window) {
   }
 
   function request<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    return publishMessage<T>({ name, params, callback: true }, structuredSerializeOptions);
+    const callbackId = `callback:${uuid()}`;
+    return publishMessage<T>({ name, params, callbackId }, structuredSerializeOptions);
   }
 
   function publish<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    publishMessage<T>({ name, params, callback: false }, structuredSerializeOptions);
+    publishMessage<T>({ name, params }, structuredSerializeOptions);
   }
 
   function publishMessage<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
     return new Promise<T>((resolve, reject) => {
       const messageIsCallback = /^callback:/.test(message.name);
-      if (messageIsCallback || message.callback === false) {
+      if (messageIsCallback || !message.callbackId) {
         ensureWorker().postMessage(message, structuredSerializeOptions as StructuredSerializeOptions);
         resolve(undefined as T);
       } else {
-        // TODO calling back always is not very efficient
-        const callbackId = `callback:${uuid()}`;
+        const callbackId = message.callbackId;
         const callbackWrapper = (error: any, result: any) => {
           unsubscribe(callbackId, callbackWrapper);
           if (error) return reject(error);
