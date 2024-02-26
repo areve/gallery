@@ -29,11 +29,18 @@ export const gestureAnyEvent = ref<GestureEvent | undefined>(undefined);
 
 const pointerScreenEvents: { [k: number]: GestureEvent } = {};
 
+
 document.oncontextmenu = (event: MouseEvent) => {
+  alert('doc oncontextmenu')
   const gestureEvent = mouseEventToGestureEvent("oncontextmenu", event);
   gestureAnyEvent.value = gestureEvent;
   return false;
 };
+
+window.oncontextmenu = (event: MouseEvent) => {
+  alert('win oncontextmenu')
+
+}
 
 document.onpointerdown = function (event: PointerEvent) {
   const gestureEvent = pointerEventToGestureEvent("pointerdown", event);

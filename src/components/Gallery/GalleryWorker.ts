@@ -12,7 +12,7 @@ let accessToken: string | undefined;
 const rootDirName = "gallery.challen.info/v2";
 async function onSetAccessToken(newAccessToken: string) {
   // TODO something may still be wrong, tokens automatically, leave this console.log here for now
-  // TODO it might be that the first token fetched after a wake up is not valid, the second one I fetched was
+  // since saying that ot may be better, still leaving it here though
   console.log("onSetAccessToken", (newAccessToken || "").substring(0, 6) + "...");
   accessToken = newAccessToken;
 }
