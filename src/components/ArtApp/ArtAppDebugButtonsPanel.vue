@@ -6,9 +6,6 @@
     <button type="button" @click="update" :disabled="!appState.updateAvailable">Update</button>
     <div class="version">v{{ appState.appVersion }}</div>
     {{ googleAuthState.expiresAt }}
-    <div class="debug">
-      {{ artAppState.debug }}
-    </div>
   </RollupPanel>
 </template>
 
@@ -37,10 +34,5 @@ function update() {
 <style scoped>
 .version {
   text-align: right;
-}
-.debug {
-  white-space: pre-wrap;
-  font-size: 0.8em;
-  line-height: 1.2em;
 }
 </style>

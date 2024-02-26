@@ -9,7 +9,6 @@ export const artAppState = ref({
   },
   fileName: "Hello",
   showFps: false,
-  debug: "",
   progress: {
     max: 100,
     value: 32,
