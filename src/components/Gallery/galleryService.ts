@@ -12,7 +12,6 @@ messageBus.subscribe("notifyProgress", notifyProgress);
 
 export async function load(artwork: Artwork) {
   const blob = await messageBus.request<Blob | undefined>("loadBlob", [artwork]);
-  // TODO the progress goes backwards
   notifyProgress("load blob", 1);
   if (blob) await loadBlob(blob);
   notifyProgress("blob loaded");
