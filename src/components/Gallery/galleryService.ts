@@ -11,7 +11,7 @@ messageBus.subscribe("notifyError", notifyError);
 messageBus.subscribe("notifyProgress", notifyProgress);
 
 export async function load(artwork: Artwork) {
-  const blob = await messageBus.publish<Blob | undefined>("loadBlob", [artwork]);
+  const blob = await messageBus.request<Blob | undefined>("loadBlob", [artwork]);
   // TODO the progress goes backwards
   notifyProgress("load blob", 1);
   if (blob) await loadBlob(blob);
@@ -23,5 +23,5 @@ watchPostEffect(() => {
 });
 
 export async function save(artwork: ArtworkWithBlob) {
-  await messageBus.publish("saveBlob", [artwork]);
+  await messageBus.request("saveBlob", [artwork]);
 }

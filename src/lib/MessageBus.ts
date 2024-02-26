@@ -3,14 +3,15 @@ import { v4 as uuid } from "uuid";
 export type Message = {
   name: string;
   params: any[];
+  callback: boolean;
   callbackId?: string;
 };
 
 export interface MessageBus {
   unsubscribe(name: string, callback: Function): void;
   subscribe(name: string, callback: Function): void;
-  publish<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
-  publishMessage<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
+  publish(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]): void;
+  request<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
   terminateWorker(): void;
 }
 
@@ -22,7 +23,7 @@ export function createMessageBus(getWorker: () => Worker | Window) {
     subscribe,
     unsubscribe,
     publish,
-    publishMessage,
+    request,
     terminateWorker,
   };
 
@@ -51,10 +52,7 @@ export function createMessageBus(getWorker: () => Worker | Window) {
         }
 
         if (event.data.callbackId) {
-          messageBus.publishMessage({
-            name: event.data.callbackId,
-            params: [error, result],
-          });
+          messageBus.publish(event.data.callbackId, [error, result]);
         }
       });
     };
@@ -76,14 +74,18 @@ export function createMessageBus(getWorker: () => Worker | Window) {
     if (index !== -1) registry[name].splice(index, 1);
   }
 
+  function request<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
+    return publishMessage<T>({ name, params, callback: true }, structuredSerializeOptions);
+  }
+
   function publish<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    return publishMessage<T>({ name, params }, structuredSerializeOptions);
+    publishMessage<T>({ name, params, callback: false }, structuredSerializeOptions);
   }
 
   function publishMessage<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
     return new Promise<T>((resolve, reject) => {
       const messageIsCallback = /^callback:/.test(message.name);
-      if (messageIsCallback) {
+      if (messageIsCallback || message.callback === false) {
         ensureWorker().postMessage(message, structuredSerializeOptions as StructuredSerializeOptions);
         resolve(undefined as T);
       } else {

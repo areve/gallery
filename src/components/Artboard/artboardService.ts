@@ -58,5 +58,5 @@ export async function loadBlob(blob: Blob) {
     y: image.height,
   };
   artboardState.value.dimensions = dimensions;
-  await messageBus.publish("loadBlob", [blob]);
+  await messageBus.request("loadBlob", [blob]);
 }
