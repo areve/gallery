@@ -32,6 +32,7 @@ const pointerScreenEvents: { [k: number]: GestureEvent } = {};
 document.oncontextmenu = (event: MouseEvent) => {
   const gestureEvent = mouseEventToGestureEvent("oncontextmenu", event);
   gestureAnyEvent.value = gestureEvent;
+  delete pointerScreenEvents[event.pointerId];
   return false;
 };
 
