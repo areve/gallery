@@ -31,11 +31,7 @@ const pointerScreenEvents: { [k: number]: GestureEvent } = {};
 
 document.oncontextmenu = (event: MouseEvent) => {
   const gestureEvent = mouseEventToGestureEvent("oncontextmenu", event);
-
-  alert(stringifyEvent(event));
-  alert(stringifyEvent(event.srcElement));
   alert(stringifyEvent(event.target));
-  alert(stringifyEvent(gestureEvent));
   gestureAnyEvent.value = gestureEvent;
   return false;
 };
@@ -64,6 +60,7 @@ document.onpointercancel = function (event: PointerEvent) {
 
 function mouseEventToGestureEvent(type: string, event: MouseEvent) {
   const screenEvent = mouseEventToScreenEvent(type, event);
+  alert(stringifyEvent(screenEvent.target));
   const prevGestureEvent = pointerScreenEvents[screenEvent.pointerId] as GestureEvent | undefined;
 
   const currentGestureEvent: GestureEvent = {
