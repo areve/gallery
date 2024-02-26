@@ -14,7 +14,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, defineEmits, watch } from "vue";
-import { gestureAnyEvent, type GestureEvent } from "@/lib/GestureEvent";
+import { gestureAnyEvent, stringifyEvent, type GestureEvent } from "@/lib/GestureEvent";
 import { clamp, cloneExtend } from "@/lib/utils";
 
 interface Props {
@@ -53,7 +53,12 @@ watch(gestureAnyEvent, () => {
   if (gestureAnyEvent.value.firstEvent.target !== edgeButton.value) return;
 
   // TODO not working on android
-  if (gestureAnyEvent.value.currentEvent.type === "oncontextmenu") emit("contextmenu", gestureAnyEvent.value);
+  if (gestureAnyEvent.value.currentEvent.type === "oncontextmenu") {
+    emit("contextmenu", gestureAnyEvent.value);
+    alert(stringifyEvent(gestureAnyEvent.value.currentEvent));
+    alert(stringifyEvent(gestureAnyEvent.value.firstEvent));
+    alert(stringifyEvent(edgeButton.value));
+  }
   if (gestureAnyEvent.value.currentEvent.type === "pointerdown") targetPercent = props.edgeButtonState.topPercent;
 
   const yDiffFromFirst = gestureAnyEvent.value.firstEvent.screen.y - gestureAnyEvent.value.currentEvent.screen.y;
