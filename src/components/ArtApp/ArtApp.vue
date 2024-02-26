@@ -33,7 +33,6 @@ import { artAppState } from "./artAppState";
 import { artboardState } from "../Artboard/artboardState";
 
 function showLeftMenu() {
-  alert("showLeftMenu");
   artAppState.value.menus.appLeft = !artAppState.value.menus.appLeft;
 }
 
