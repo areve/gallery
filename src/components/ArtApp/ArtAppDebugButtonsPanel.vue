@@ -5,7 +5,10 @@
     <button type="button" @click="toggleFps">Toggle FPS</button>
     <button type="button" @click="update" :disabled="!appState.updateAvailable">Update</button>
     <div class="version">v{{ appState.appVersion }}</div>
-    {{  googleAuthState.expiresAt }}
+    {{ googleAuthState.expiresAt }}
+    <div class="debug">
+      {{ artAppState.debug }}
+    </div>
   </RollupPanel>
 </template>
 
@@ -24,7 +27,7 @@ const artAppDebugButtonsPanelState = ref<PanelState>({
 });
 usePersistentState("artAppDebugButtonsPanelState", artAppDebugButtonsPanelState);
 
-googleAuthState
+googleAuthState;
 const toggleFps = () => (artAppState.value.showFps = !artAppState.value.showFps);
 function update() {
   appState.value.updateApproved = true;
@@ -34,5 +37,10 @@ function update() {
 <style scoped>
 .version {
   text-align: right;
+}
+.debug {
+  white-space: pre-wrap;
+  font-size: 0.8em;
+  line-height: 1.2em;
 }
 </style>

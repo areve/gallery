@@ -1,3 +1,4 @@
+import { artAppState } from "@/components/ArtApp/artAppState";
 import type { Coord } from "@/lib/Coord";
 import { ref } from "vue";
 
@@ -32,7 +33,7 @@ const pointerScreenEvents: { [k: number]: GestureEvent } = {};
 document.oncontextmenu = (event: MouseEvent) => {
   const gestureEvent = mouseEventToGestureEvent("oncontextmenu", event);
   gestureAnyEvent.value = gestureEvent;
-  alert((event as any).pointerId);
+  artAppState.value.debug = stringifyEvent(gestureAnyEvent.value)
   delete pointerScreenEvents[(event as any).pointerId];
   return false;
 };
