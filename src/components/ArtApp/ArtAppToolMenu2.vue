@@ -31,7 +31,7 @@ function eraser() {
   artboardState.value.selectedTool = "eraser";
   eraserToolState.value.radius = 30;
 }
-const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStates.left2.topPercent * 100) / 100 + "%");
+const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStates.left.topPercent * 100) / 100 + "%");
 </script>
 
 <style scoped>

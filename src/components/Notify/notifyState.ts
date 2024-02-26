@@ -78,7 +78,6 @@ export function notifyProgress(message: string, steps?: number) {
   notifyState.value.process.visible = true;
   if (typeof steps === "number") {
     notifyState.value.process.error = false;
-    // notifyState.value.process.complete = 0;
     notifyState.value.process.steps += steps;
   } else {
     notifyState.value.process.complete++;

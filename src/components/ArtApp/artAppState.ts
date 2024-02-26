@@ -19,9 +19,6 @@ export const artAppState = ref({
     left: {
       topPercent: 25,
     },
-    left2: {
-      topPercent: 75,
-    },
     right: {
       topPercent: 50,
     },

@@ -5,7 +5,7 @@
     class="edge-button"
     @click="showLeftMenu2"
     @contextmenu="showLeftMenu"
-    v-model:edgeButtonState="artAppState.edgeButtonStates.left2"
+    v-model:edgeButtonState="artAppState.edgeButtonStates.left"
   ></EdgeButton>
   <EdgeButton type="button" edge="right" class="edge-button" @click="showRightMenu" v-model:edgeButtonState="artAppState.edgeButtonStates.right"></EdgeButton>
   <aside class="left-menu" :hidden="!artAppState.menus.appLeft">

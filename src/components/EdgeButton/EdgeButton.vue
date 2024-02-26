@@ -26,7 +26,6 @@ interface Props {
 
 const props = defineProps<Props>();
 const emit = defineEmits<{
-  // TODO I want long press to show me a more in depth menu, (too select my brushes)
   (event: "click", param: MouseEvent): void;
   (event: "contextmenu", param: GestureEvent): void;
   (
@@ -43,6 +42,7 @@ function snap(value: number, dist: number, points: number[]) {
   }
   return value;
 }
+
 const edgeButton = ref<HTMLCanvasElement>(undefined!);
 const leftPercent = computed(() => (props.edge === "left" ? 0 : 100));
 let cancelNextPress = false;
@@ -57,10 +57,6 @@ watch(gestureAnyEvent, () => {
   if (gestureAnyEvent.value.currentEvent.type === "pointerdown") targetPercent = props.edgeButtonState.topPercent;
 
   const yDiffFromFirst = gestureAnyEvent.value.firstEvent.screen.y - gestureAnyEvent.value.currentEvent.screen.y;
-  if (gestureAnyEvent.value.currentEvent.type === "pointerup" && Math.abs(yDiffFromFirst) < 10) {
-    // const timeDiffFromFirst = gestureAnyEvent.value.currentEvent.timeStamp - gestureAnyEvent.value.firstEvent.timeStamp;
-    // if (timeDiffFromFirst > 400) emit("contextmenu", gestureAnyEvent.value);
-  }
 
   if (Math.abs(yDiffFromFirst) > 10) {
     if (gestureAnyEvent.value.firstEvent.pointerType === "mouse") cancelNextPress = true;
