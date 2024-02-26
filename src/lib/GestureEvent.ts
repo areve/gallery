@@ -17,6 +17,7 @@ export interface ScreenEvent {
   page: Coord;
   screen: Coord;
   target: EventTarget | null;
+  currentTarget: EventTarget | null;
 }
 
 export interface GestureEvent {
@@ -31,7 +32,7 @@ const pointerScreenEvents: { [k: number]: GestureEvent } = {};
 
 document.oncontextmenu = (event: MouseEvent) => {
   const gestureEvent = mouseEventToGestureEvent("oncontextmenu", event);
-  alert(stringifyEvent(gestureEvent))
+  alert(stringifyEvent(gestureEvent));
   gestureAnyEvent.value = gestureEvent;
   return false;
 };
@@ -101,6 +102,7 @@ function mouseEventToScreenEvent(type: string, event: MouseEvent): ScreenEvent {
     type,
     buttons: event.buttons,
     target: event.target,
+    currentTarget: event.currentTarget,
     width: 1,
     height: 1,
     pressure: 1,
@@ -122,6 +124,7 @@ function pointerEventToScreenEvent(type: string, event: PointerEvent): ScreenEve
     type,
     buttons: event.buttons,
     target: event.target,
+    currentTarget: event.currentTarget,
     width: event.width,
     height: event.height,
     pressure: event.pressure,
