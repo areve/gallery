@@ -12,9 +12,6 @@ export const useEraserTool = (messageBus: MessageBus) => {
   return tool;
 
   function gesture(gestureEvent: ArtboardGestureEvent) {
-    messageBus.publishMessage({
-      name: "clearCircle",
-      params: [gestureEvent.currentEvent.at, eraserToolState.value.radius],
-    });
+    messageBus.publish("clearCircle", [gestureEvent.currentEvent.at, eraserToolState.value.radius]);
   }
 };

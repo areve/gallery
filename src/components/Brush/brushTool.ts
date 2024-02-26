@@ -11,10 +11,7 @@ export const useBrushTool = (messageBus: MessageBus) => {
   };
 
   watchPostEffect(() => {
-    messageBus.publishMessage({
-      name: "setBrush",
-      params: [brushToolState.value.color, brushToolState.value.radius],
-    });
+    messageBus.publish("setBrush", [brushToolState.value.color, brushToolState.value.radius]);
   });
 
   return tool;
@@ -22,9 +19,6 @@ export const useBrushTool = (messageBus: MessageBus) => {
   function gesture(gestureEvent: ArtboardGestureEvent) {
     let weight = gestureEvent.currentEvent.pressure ?? 0.1;
     weight = weight * weight;
-    messageBus.publishMessage({
-      name: "applyBrush",
-      params: [gestureEvent.previousEvent?.at, gestureEvent.currentEvent.at, weight],
-    });
+    messageBus.publish("applyBrush", [gestureEvent.previousEvent?.at, gestureEvent.currentEvent.at, weight]);
   }
 };

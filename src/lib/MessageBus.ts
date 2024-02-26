@@ -9,8 +9,8 @@ export type Message = {
 export interface MessageBus {
   unsubscribe(name: string, callback: Function): void;
   subscribe(name: string, callback: Function): void;
-  publishMessage<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
   publish<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
+  publishMessage<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
   terminateWorker(): void;
 }
 
