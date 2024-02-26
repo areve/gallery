@@ -29,7 +29,7 @@ export const gestureAnyEvent = ref<GestureEvent | undefined>(undefined);
 
 const pointerScreenEvents: { [k: number]: GestureEvent } = {};
 
-document.oncontextmenu = (event: MouseEvent) => {
+document.oncontextmenu = (event: PointerEvent) => {
   const gestureEvent = mouseEventToGestureEvent("oncontextmenu", event);
   gestureAnyEvent.value = gestureEvent;
   delete pointerScreenEvents[event.pointerId];
