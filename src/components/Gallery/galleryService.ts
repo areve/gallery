@@ -11,7 +11,7 @@ messageBus.subscribe("notifyError", notifyError);
 messageBus.subscribe("notifyProgress", notifyProgress);
 
 export async function load(artwork: Artwork) {
-  const blob = await messageBus.publish2<Blob | undefined>("loadBlob", [artwork]);
+  const blob = await messageBus.publish<Blob | undefined>("loadBlob", [artwork]);
   // TODO the progress goes backwards
   notifyProgress("load blob", 1);
   if (blob) await loadBlob(blob);
@@ -19,9 +19,9 @@ export async function load(artwork: Artwork) {
 }
 
 watchPostEffect(() => {
-  messageBus.publish2("setAccessToken", [googleAuthState.value.accessToken]);
+  messageBus.publish("setAccessToken", [googleAuthState.value.accessToken]);
 });
 
 export async function save(artwork: ArtworkWithBlob) {
-  await messageBus.publish2("saveBlob", [artwork]);
+  await messageBus.publish("saveBlob", [artwork]);
 }

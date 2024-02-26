@@ -14,7 +14,7 @@ const tools = [useBrushTool(messageBus), useEraserTool(messageBus)];
 let currentCanvas: HTMLCanvasElement | undefined;
 
 watchPostEffect(() => {
-  messageBus.publish({
+  messageBus.publishMessage({
     name: "setColorSpace",
     params: [artboardState.value.colorSpace],
   });
@@ -25,7 +25,7 @@ export function resetCanvas(dimensions: Coord, colorString: string) {
   const color = colorConvert(color2srgb(colorString));
 
   artboardState.value.dimensions = dimensions;
-  messageBus.publish({
+  messageBus.publishMessage({
     name: "resetCanvas",
     params: [dimensions, color],
   });
@@ -41,7 +41,7 @@ export function attachCanvas(canvas: HTMLCanvasElement) {
   currentCanvas.width = artboardState.value.dimensions.x;
   currentCanvas.height = artboardState.value.dimensions.y;
   const offscreenCanvas = canvas.transferControlToOffscreen();
-  messageBus.publish(
+  messageBus.publishMessage(
     {
       name: "setOffscreenCanvas",
       params: [offscreenCanvas],
@@ -70,7 +70,7 @@ export async function loadBlob(blob: Blob) {
     y: image.height,
   };
   artboardState.value.dimensions = dimensions;
-  await messageBus.publish({
+  await messageBus.publishMessage({
     name: "loadBlob",
     params: [blob],
   });

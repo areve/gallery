@@ -9,8 +9,8 @@ export type Message = {
 export interface MessageBus {
   unsubscribe(name: string, callback: Function): void;
   subscribe(name: string, callback: Function): void;
-  publish<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
-  publish2<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
+  publishMessage<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
+  publish<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]): Promise<T>;
   terminateWorker(): void;
 }
 
@@ -22,7 +22,7 @@ export function createMessageBus(getWorker: () => Worker | Window) {
     subscribe,
     unsubscribe,
     publish,
-    publish2,
+    publishMessage,
     terminateWorker,
   };
 
@@ -51,7 +51,7 @@ export function createMessageBus(getWorker: () => Worker | Window) {
         }
 
         if (event.data.callbackId) {
-          messageBus.publish({
+          messageBus.publishMessage({
             name: event.data.callbackId,
             params: [error, result],
           });
@@ -76,11 +76,11 @@ export function createMessageBus(getWorker: () => Worker | Window) {
     if (index !== -1) registry[name].splice(index, 1);
   }
 
-  function publish2<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
-    return publish<T>({ name, params }, structuredSerializeOptions);
+  function publish<T>(name: string, params: any[], structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
+    return publishMessage<T>({ name, params }, structuredSerializeOptions);
   }
 
-  function publish<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
+  function publishMessage<T>(message: Message, structuredSerializeOptions?: StructuredSerializeOptions | any[]) {
     return new Promise<T>((resolve, reject) => {
       const messageIsCallback = /^callback:/.test(message.name);
       if (messageIsCallback) {

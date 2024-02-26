@@ -57,7 +57,7 @@ function frameCounter() {
     const duration = end - start;
     const fps = Math.round((calculateAfterFrames / duration) * 1000);
     // TODO only reportFps if it's wanted, otherwise it is wasting CPU
-    messageBus.publish({
+    messageBus.publishMessage({
       name: "reportFps",
       params: [fps],
     });

@@ -12,7 +12,7 @@ export const useEraserTool = (messageBus: MessageBus) => {
   return tool;
 
   function gesture(gestureEvent: ArtboardGestureEvent) {
-    messageBus.publish({
+    messageBus.publishMessage({
       name: "clearCircle",
       params: [gestureEvent.currentEvent.at, eraserToolState.value.radius],
     });

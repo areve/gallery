@@ -17,8 +17,8 @@ async function onSetAccessToken(newAccessToken: string) {
   accessToken = newAccessToken;
 }
 
-const notifyError = (error: string) => messageBus.publish2("notifyError", [error]);
-const notifyProgress = (message: string, steps?: number) => messageBus.publish2("notifyProgress", [message, steps]);
+const notifyError = (error: string) => messageBus.publish("notifyError", [error]);
+const notifyProgress = (message: string, steps?: number) => messageBus.publish("notifyProgress", [message, steps]);
 
 async function onLoadBlob(artwork: Artwork) {
   if (!accessToken) throw "accessToken not set";
