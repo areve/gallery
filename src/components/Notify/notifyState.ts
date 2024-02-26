@@ -69,8 +69,6 @@ export function notifyToast(message: string) {
   setTimeout(() => (notifyState.value.toast.visible = false), 5000);
 }
 
-// TODO we need to do this different and add a notifyComplete
-// TODO progress bar needs to shimmer
 export function notifyProgress(message: string, steps?: number) {
   console.log("progress:", message, steps);
   notifyState.value.toast = defaultState().toast;
