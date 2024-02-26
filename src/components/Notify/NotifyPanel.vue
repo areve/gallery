@@ -33,8 +33,6 @@
 
 <script lang="ts" setup>
 import { notifyState } from "./notifyState";
-
-
 </script>
 
 <style scoped>
@@ -70,7 +68,6 @@ import { notifyState } from "./notifyState";
 .progress[hidden] {
   opacity: 0.3;
   display: block !important;
-  /* height: 0px; */
   top: -26px;
 }
 
@@ -90,31 +87,34 @@ import { notifyState } from "./notifyState";
   width: 100%;
   background-color: #27e;
 
-  /* animation-name: example; */
-  animation-duration: 4s;
-  animation-iteration-count: infinite;
-  animation-direction: alternate-reverse;
-  animation-timing-function: ease;
   font-size: 0.8em;
   color: #000;
   text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
+  animation: barberpole 0.5s linear infinite;
+
   line-height: 1.1;
   text-align: left;
   padding-left: 4px;
   white-space: nowrap;
 }
 
+.progress-bar {
+  animation: progress-shimmer 3s linear infinite;
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.05) 20px, rgba(255, 255, 255, 0.05) 20px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
+  background-size: 200% 100%;
+}
 .toast.error > .toast-bar,
 .progress.error > .progress-bar {
   background-color: #e20;
 }
 
-@keyframes example {
-  0% {
-    width: 100%;
+@keyframes progress-shimmer {
+  from {
+    background-position: right;
   }
-  100% {
-    width: 0%;
+  to {
+    background-position: left;
   }
 }
 </style>
