@@ -4,8 +4,9 @@ import { ref } from "vue";
 export const artAppState = ref({
   menus: {
     appLeft: false,
-    appLeft2: false,
+    appLeftExtended: false,
     appRight: false,
+    appRightExtended: false,
   },
   fileName: "Hello",
   showFps: false,

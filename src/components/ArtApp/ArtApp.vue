@@ -3,15 +3,22 @@
     type="button"
     edge="left"
     class="edge-button"
-    @click="showLeftMenu2"
+    @click="showLeftExtendedMenu"
     @contextmenu="showLeftMenu"
     v-model:edgeButtonState="artAppState.edgeButtonStates.left"
   ></EdgeButton>
-  <EdgeButton type="button" edge="right" class="edge-button" @click="showRightMenu" v-model:edgeButtonState="artAppState.edgeButtonStates.right"></EdgeButton>
+  <EdgeButton
+    type="button"
+    edge="right"
+    class="edge-button"
+    @click="showRightExtendedMenu"
+    @contextmenu="showRightMenu"
+    v-model:edgeButtonState="artAppState.edgeButtonStates.right"
+  ></EdgeButton>
   <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
     <ArtAppToolMenu />
   </aside>
-  <ArtAppToolMenu2 class="left-menu2" :hidden="!artAppState.menus.appLeft2" />
+  <ArtAppToolMenuExtended class="left-extended-menu" :hidden="!artAppState.menus.appLeftExtended" />
   <main class="art-app">
     <NotifyPanel />
     <ArtboardPanel />
@@ -20,6 +27,9 @@
   <aside class="right-menu" :hidden="!artAppState.menus.appRight">
     <ArtAppMainMenu />
   </aside>
+  <aside class="right-extended-menu" :hidden="!artAppState.menus.appRightExtended">
+    <ArtAppMainMenuExtended />
+  </aside>
 </template>
 
 <script lang="ts" setup>
@@ -27,8 +37,9 @@ import ArtboardPanel from "@/components/Artboard/ArtboardPanel.vue";
 import NotifyPanel from "@/components/Notify/NotifyPanel.vue";
 import EdgeButton from "@/components/EdgeButton/EdgeButton.vue";
 import ArtAppToolMenu from "./ArtAppToolMenu.vue";
-import ArtAppToolMenu2 from "./ArtAppToolMenu2.vue";
+import ArtAppToolMenuExtended from "./ArtAppToolMenuExtended.vue";
 import ArtAppMainMenu from "./ArtAppMainMenu.vue";
+import ArtAppMainMenuExtended from "./ArtAppMainMenuExtended.vue";
 import { artAppState } from "./artAppState";
 import { artboardState } from "../Artboard/artboardState";
 
@@ -36,12 +47,16 @@ function showLeftMenu() {
   artAppState.value.menus.appLeft = !artAppState.value.menus.appLeft;
 }
 
-function showLeftMenu2() {
-  artAppState.value.menus.appLeft2 = !artAppState.value.menus.appLeft2;
+function showLeftExtendedMenu() {
+  artAppState.value.menus.appLeftExtended = !artAppState.value.menus.appLeftExtended;
 }
 
 function showRightMenu() {
   artAppState.value.menus.appRight = !artAppState.value.menus.appRight;
+}
+
+function showRightExtendedMenu() {
+  artAppState.value.menus.appRightExtended = !artAppState.value.menus.appRightExtended;
 }
 </script>
 
@@ -73,6 +88,7 @@ function showRightMenu() {
 }
 
 .left-menu,
+.right-extended-menu,
 .right-menu {
   position: fixed;
   width: 20%;
@@ -80,7 +96,7 @@ function showRightMenu() {
   background-color: rgb(127, 127, 127, 0.95);
   z-index: 50;
   transition: 0.2s ease-in-out;
-  transition-property: opacity, left;
+  transition-property: opacity, left, right;
   overflow: hidden;
 }
 
@@ -90,6 +106,7 @@ function showRightMenu() {
   display: block !important;
 }
 
+.right-extended-menu[hidden],
 .right-menu[hidden] {
   right: -45%;
   opacity: 0;
@@ -101,6 +118,7 @@ function showRightMenu() {
   opacity: 1;
   width: 45%;
 }
+.right-extended-menu,
 .right-menu {
   right: 0;
   opacity: 1;
