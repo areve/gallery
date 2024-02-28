@@ -1,14 +1,16 @@
 <template>
-  <div class="menu">
-    <div :hidden="googleAuthState.state == 'signedIn'">
-      <button type="button" @click="signIn">Sign In</button>
+  <aside class="right-menu">
+    <div class="menu">
+      <div :hidden="googleAuthState.state == 'signedIn'">
+        <button type="button" @click="signIn">Sign In</button>
+      </div>
+      <div :hidden="googleAuthState.state == 'signedOut'">
+        <GalleryPanel />
+        <ArtboardResetPanel />
+        <ArtAppDebugButtonsPanel />
+      </div>
     </div>
-    <div :hidden="googleAuthState.state == 'signedOut'">
-      <GalleryPanel />
-      <ArtboardResetPanel />
-      <ArtAppDebugButtonsPanel />
-    </div>
-  </div>
+  </aside>
 </template>
 
 <script lang="ts" setup>
@@ -44,5 +46,28 @@ import ArtAppDebugButtonsPanel from "./ArtAppDebugButtonsPanel.vue";
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #ccc;
+}
+
+.right-menu {
+  position: fixed;
+  width: 20%;
+  height: 100%;
+  background-color: rgb(127, 127, 127, 0.95);
+  z-index: 50;
+  transition: 0.2s ease-in-out;
+  transition-property: opacity, left, right;
+  overflow: hidden;
+}
+
+.right-menu[hidden] {
+  right: -45%;
+  opacity: 0;
+  display: block !important;
+}
+
+.right-menu {
+  right: 0;
+  opacity: 1;
+  width: 45%;
 }
 </style>

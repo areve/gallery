@@ -1,5 +1,5 @@
 <template>
-  <section
+  <aside
     class="tool-menu"
     :style="{
       top: topPercentCss,
@@ -12,7 +12,7 @@
     <button type="button" class="brush5 brush" @click="brush('blue', 0.25, 5)">brush5</button>
     <button type="button" class="brush6 brush" @click="brush('black', 0.25, 5)">brush6</button>
     <button type="button" class="brush7 brush" @click="brush('white', 0.25, 5)">brush7</button>
-  </section>
+  </aside>
 </template>
 
 <script lang="ts" setup>

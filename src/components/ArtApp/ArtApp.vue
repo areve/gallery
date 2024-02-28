@@ -15,21 +15,15 @@
     @contextmenu="showRightMenu"
     v-model:edgeButtonState="artAppState.edgeButtonStates.right"
   ></EdgeButton>
-  <aside class="left-menu" :hidden="!artAppState.menus.appLeft">
-    <ArtAppToolMenu />
-  </aside>
-  <ArtAppToolMenuExtended class="left-extended-menu" :hidden="!artAppState.menus.appLeftExtended" />
+  <ArtAppToolMenu :hidden="!artAppState.menus.appLeft" />
+  <ArtAppToolMenuExtended :hidden="!artAppState.menus.appLeftExtended" />
   <main class="art-app">
     <NotifyPanel />
     <ArtboardPanel />
     <div v-if="artAppState.showFps" class="status-bar">{{ artboardState.fps }}fps {{ artboardState.dimensions }}</div>
   </main>
-  <aside class="right-menu" :hidden="!artAppState.menus.appRight">
-    <ArtAppMainMenu />
-  </aside>
-  <aside class="right-extended-menu" :hidden="!artAppState.menus.appRightExtended">
-    <ArtAppMainMenuExtended />
-  </aside>
+  <ArtAppMainMenu :hidden="!artAppState.menus.appRight" />
+  <ArtAppMainMenuExtended :hidden="!artAppState.menus.appRightExtended" />
 </template>
 
 <script lang="ts" setup>
@@ -87,43 +81,6 @@ function showRightExtendedMenu() {
   right: 0;
 }
 
-.left-menu,
-.right-extended-menu,
-.right-menu {
-  position: fixed;
-  width: 20%;
-  height: 100%;
-  background-color: rgb(127, 127, 127, 0.95);
-  z-index: 50;
-  transition: 0.2s ease-in-out;
-  transition-property: opacity, left, right;
-  overflow: hidden;
-}
-
-.left-menu[hidden] {
-  left: -45%;
-  opacity: 0.5;
-  display: block !important;
-}
-
-.right-extended-menu[hidden],
-.right-menu[hidden] {
-  right: -45%;
-  opacity: 0;
-  display: block !important;
-}
-
-.left-menu {
-  left: 0;
-  opacity: 1;
-  width: 45%;
-}
-.right-extended-menu,
-.right-menu {
-  right: 0;
-  opacity: 1;
-  width: 45%;
-}
 
 .status-bar {
   position: fixed;
