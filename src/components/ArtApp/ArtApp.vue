@@ -3,16 +3,16 @@
     type="button"
     edge="left"
     class="edge-button"
-    @click="showLeftExtendedMenu"
-    @contextmenu="showLeftMenu"
+    @click="showLeftMenu"
+    @contextmenu="showLeftExtendedMenu"
     v-model:edgeButtonState="artAppState.edgeButtonStates.left"
   ></EdgeButton>
   <EdgeButton
     type="button"
     edge="right"
     class="edge-button"
-    @click="showRightExtendedMenu"
-    @contextmenu="showRightMenu"
+    @click="showRightMenu"
+    @contextmenu="showRightExtendedMenu"
     v-model:edgeButtonState="artAppState.edgeButtonStates.right"
   ></EdgeButton>
   <ArtAppToolMenu :hidden="!artAppState.menus.appLeft" />
@@ -80,7 +80,6 @@ function showRightExtendedMenu() {
   border-bottom-left-radius: 3em;
   right: 0;
 }
-
 
 .status-bar {
   position: fixed;
