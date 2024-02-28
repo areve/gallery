@@ -6,8 +6,6 @@
       </div>
       <div :hidden="googleAuthState.state == 'signedOut'">
         <GalleryPanel />
-        <ArtboardResetPanel />
-        <ArtAppDebugButtonsPanel />
       </div>
     </div>
   </aside>
@@ -17,8 +15,6 @@
 import { signIn } from "@/lib/Google/GoogleAuth";
 import { googleAuthState } from "@/lib/Google/googleAuthState";
 import GalleryPanel from "@/components/Gallery/GalleryPanel.vue";
-import ArtboardResetPanel from "@/components/Artboard/ArtboardResetPanel.vue";
-import ArtAppDebugButtonsPanel from "./ArtAppDebugButtonsPanel.vue";
 </script>
 
 <style scoped>
