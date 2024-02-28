@@ -19,7 +19,7 @@ export interface NotifyState {
 let progressInterval: NodeJS.Timeout | undefined;
 let currentWidth: number = 0;
 const progressExtraSteps = 2;
-const framesPerSecond = 60;
+const framesPerSecond = 30;
 
 export const notifyState = ref<NotifyState>(defaultState());
 
