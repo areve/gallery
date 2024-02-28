@@ -90,7 +90,6 @@ import { notifyState } from "./notifyState";
   font-size: 0.8em;
   color: #000;
   text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
-  animation: barberpole 0.5s linear infinite;
 
   line-height: 1.1;
   text-align: left;
@@ -99,8 +98,16 @@ import { notifyState } from "./notifyState";
 }
 
 .progress-bar {
-  animation: progress-shimmer 3s linear infinite;
-  background-image: repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.05) 20px, rgba(255, 255, 255, 0.05) 20px),
+  animation: progress-shimmer 1s linear infinite;
+  background-image: repeating-linear-gradient(
+      40deg,
+      transparent,
+      transparent 5%,
+      rgba(255, 255, 255, 0.2) 20%,
+      rgba(255, 255, 255, 0.2) 30%,
+      transparent 45%,
+      transparent 50%
+    ),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
   background-size: 200% 100%;
 }
