@@ -7,9 +7,7 @@ import { notifyError, notifyToast } from "./components/Notify/notifyState";
 import { cloneExtend } from "./lib/utils";
 
 function updateNow() {
-  notifyToast("updateNow try");
   if (!appState.value.updateApproved) return;
-  notifyToast("updateNow ok");
   appState.value = cloneExtend(appState.value, {
     updateApproved: false,
     updateAvailable: false,
@@ -26,7 +24,7 @@ const updateSW = registerSW({
     appState.value.updateAvailable = true;
   },
   onOfflineReady() {
-    notifyToast("onOfflineReady");
+    notifyToast("on offline ready");
   },
   onRegisteredSW(swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {
     registration &&
