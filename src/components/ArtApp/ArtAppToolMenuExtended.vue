@@ -44,7 +44,6 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   position: fixed;
   margin-left: 7em;
   margin-top: 7em;
-  /* transform: ; */
   width: var(--brush-length);
   height: 1em;
   transform-origin: -3.2em 50%;
@@ -92,30 +91,13 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   transform: translate(var(--brush-left), -1.3em) rotate(80deg);
   background-color: white;
 }
-/* button {
-  border-radius: 0;
-  margin: 0;
-  display: block;
-  width: 100%;
-  color: #fff;
-  background-color: #666;
-} */
 
 .tool-menu {
   user-select: none;
   position: fixed;
   border-radius: 50%;
   z-index: 150;
-  /* width: 100%; */
-  /* height: 13em; */
-  /* box-shadow: 0em 0em 0.5em rgb(0, 0, 0, 0.8); */
-  /* opacity: 0.6; */
-  /* text-align: center; */
-  /* top: v-bind(topPercentCss); */
   transform: translate(-50%, -50%);
-  /* background-color: rgb(0, 100, 200, 0.5); */
-  /* opacity: 0.5; */
-  /* transition: all 0.2s ease-out-out; */
 }
 
 .tool-menu {
@@ -124,42 +106,13 @@ const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStat
   opacity: 1;
   width: 13em;
   height: 13em;
-  /* overflow: hidden; */
-  /* position: fixed; */
-  /* transition: 0.4s ease-out; */
   transition-property: opacity;
-  
-  /* overflow: hidden; */
 }
 
 .tool-menu[hidden] {
-  /* width: 3em;
-  height: 3em; */
-  /* opacity: 0; */
   display: block !important;
-}
-/* .tool-menu[hidden] {
-  left: -45%;
-  opacity: 0.5;
-  display: block !important;
-} */
-/* .left-menu,
-.right-menu {
-  position: fixed;
-  width: 20%;
-  height: 100%;
-  background-color: rgb(127, 127, 127, 0.95);
-  z-index: 50;
-  transition: 0.2s ease-out-out;
-  transition-property: opacity, left;
-  overflow: hidden;
 }
 
-.left-menu[hidden] {
-  left: -45%;
-  opacity: 0.5;
-  display: block !important;
-} */
 .budge {
   position: fixed;
   top: 50%;
