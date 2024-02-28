@@ -32,7 +32,9 @@
 </template>
 
 <script lang="ts" setup>
-import { notifyState } from "./notifyState";
+import { computed } from "vue";
+import { notifyState, wrapUpTimeSeconds } from "./notifyState";
+const wrapUpTime = computed(() => `${wrapUpTimeSeconds}s`);
 </script>
 
 <style scoped>
@@ -57,9 +59,9 @@ import { notifyState } from "./notifyState";
     inset 0 1px 2px rgba(0, 0, 0, 0.25),
     0 1px rgba(255, 255, 255, 0.08);
   transition:
-    width 0.8s ease-in-out,
-    opacity 0.6s ease-in-out,
-    top 0.4s ease-in-out;
+    /* width 0.8s ease-in-out, */
+    opacity v-bind(wrapUpTime) ease-in-out,
+    top v-bind(wrapUpTime) ease-in-out;
   opacity: 1;
   margin: 2px;
 }
@@ -77,9 +79,9 @@ import { notifyState } from "./notifyState";
   border-radius: 4px;
   background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
 
-  transition:
+  /*  transition:
     background-color 0.2s ease-in,
-    width 0.8s ease-in;
+    width 0.8s ease-in;*/
   box-shadow:
     0 0 1px 1px rgba(0, 0, 0, 0.25),
     inset 0 1px rgba(255, 255, 255, 0.1);

@@ -1,4 +1,4 @@
-import { ref, watch } from "vue";
+import { ref } from "vue";
 
 export interface NotifyState {
   progress: {
@@ -16,20 +16,14 @@ export interface NotifyState {
   };
 }
 
+let progressInterval: NodeJS.Timeout | undefined;
+let currentWidth: number = 0;
+const progressExtraSteps = 2;
+const framesPerSecond = 60;
+
 export const notifyState = ref<NotifyState>(defaultState());
 
-watch(
-  () => [notifyState.value.progress.steps, notifyState.value.progress.complete],
-  () => {
-    // TODO make the bar infinitely grow instead of this.
-    if (notifyState.value.progress.steps === 0) {
-      notifyState.value.progress.percent = "10%";
-    } else {
-      const fraction = notifyState.value.progress.complete / notifyState.value.progress.steps;
-      notifyState.value.progress.percent = (0.1 + fraction * 0.9) * 100 + "%";
-    }
-  },
-);
+export const wrapUpTimeSeconds = 0.4;
 function defaultState(): NotifyState {
   return {
     progress: {
@@ -50,6 +44,9 @@ function defaultState(): NotifyState {
 
 function reset() {
   Object.assign(notifyState.value, defaultState());
+  currentWidth = 0;
+  clearInterval(progressInterval);
+  progressInterval = undefined;
 }
 
 export function notifyError(error: string) {
@@ -74,6 +71,7 @@ export function notifyProgress(message: string, steps?: number) {
   notifyState.value.toast = defaultState().toast;
   notifyState.value.progress.visible = true;
   if (typeof steps === "number") {
+    if (!progressInterval) progressInterval = setInterval(updatePercent, 1000 / framesPerSecond);
     notifyState.value.progress.error = false;
     notifyState.value.progress.steps += steps;
   } else {
@@ -81,12 +79,20 @@ export function notifyProgress(message: string, steps?: number) {
   }
 
   notifyState.value.progress.message = message;
+}
 
+function updatePercent() {
   if (notifyState.value.progress.complete === notifyState.value.progress.steps) {
-    setTimeout(() => {
+    currentWidth += 1 / framesPerSecond / wrapUpTimeSeconds;
+    if (currentWidth >= 1) {
+      currentWidth = 1;
       notifyState.value.progress.visible = false;
-    }, 500);
-    // TODO using timeouts is not great
-    setTimeout(reset, 1000);
+      setTimeout(reset, wrapUpTimeSeconds * 1000);
+    }
+  } else {
+    const fraction = (notifyState.value.progress.complete + progressExtraSteps) / (notifyState.value.progress.steps + progressExtraSteps);
+    const diff = fraction - currentWidth;
+    currentWidth += diff / 60;
   }
+  notifyState.value.progress.percent = currentWidth * 100 + "%";
 }
