@@ -68,6 +68,7 @@ export function notifyToast(message: string) {
 
 export function notifyProgress(message: string, steps?: number) {
   console.log("progress:", message, steps);
+
   notifyState.value.toast = defaultState().toast;
   notifyState.value.progress.visible = true;
   if (typeof steps === "number") {
@@ -75,11 +76,12 @@ export function notifyProgress(message: string, steps?: number) {
     notifyState.value.progress.error = false;
     notifyState.value.progress.steps += steps;
   } else {
+    // TODO if too many are received it goes wrong and the bar does not close
     notifyState.value.progress.complete++;
   }
 
   notifyState.value.progress.message = message;
-  console.log(notifyState.value.progress)
+  console.log(notifyState.value.progress);
 }
 
 function updatePercent() {

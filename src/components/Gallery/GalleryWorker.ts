@@ -65,6 +65,11 @@ async function onSaveBlob(artwork: ArtworkWithBlob) {
   if (file) file = await googleFileUpdate(file.id, artwork.name, artwork.blob, accessToken);
   else file = await googleFileCreate(folder.id, artwork.name, artwork.blob, accessToken);
 
+  // TODO I could use my own data instead of getting their thumbnail, the thumbnail is not generated instantly anyway
+
+  // notifyProgress("get file thumbnail");
+  // const fileWithThumnail = await googleFileGet(artwork.name, folder.id, accessToken);
+
   notifyProgress("file saved");
   return file;
 }

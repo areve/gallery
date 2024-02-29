@@ -6,6 +6,7 @@ import { loadBlob } from "../Artboard/artboardService";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
 import { googleAuthState } from "@/lib/Google/googleAuthState";
 import { galleryState } from "./galleryState";
+import { clone } from "@/lib/utils";
 
 const messageBus = createMessageBus(() => new GalleryWorker());
 messageBus.subscribe("notifyError", notifyError);
@@ -19,7 +20,7 @@ export async function loadGallery(path: string) {
 export async function deleteArtwork(artwork: Artwork) {
   const success = await messageBus.request<[]>("deleteArtwork", [artwork]);
   console.log("delete result", success);
-  const artworks = toRaw(galleryState.value.artworks);
+  const artworks = clone(toRaw(galleryState.value.artworks));
   galleryState.value.artworks = artworks.filter((x) => x.name !== artwork.name);
 }
 
@@ -35,7 +36,10 @@ watchPostEffect(() => {
 });
 
 export async function saveArtwork(artwork: ArtworkWithBlob) {
-  const savedArtwork = await messageBus.request("saveBlob", [artwork]);
+  const savedArtwork = await messageBus.request<Artwork>("saveBlob", [artwork]);
   console.log("savedArtwork", savedArtwork);
-  const artworks = toRaw(galleryState.value.artworks);
+  const artworks = clone(toRaw(galleryState.value.artworks));
+  artworks.unshift(savedArtwork);
+  galleryState.value.artworks = artworks;
+  console.log("zzzz", galleryState.value.artworks);
 }
