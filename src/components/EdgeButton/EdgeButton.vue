@@ -64,7 +64,7 @@ watch(gestureAnyEvent, () => {
       emit(
         "update:edgeButtonState",
         cloneExtend(props.edgeButtonState, {
-          topPercent: snap(clamp(targetPercent - (yDiffFromFirst / window.innerHeight) * 100, 0, 100), 2, [0, 25, 50, 75, 100]),
+          topPercent: snap(clamp(targetPercent - (yDiffFromFirst / window.innerHeight) * 100, 0, 100), 2, [0, 100]),
         }),
       );
     }
