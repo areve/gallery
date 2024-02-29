@@ -1,13 +1,15 @@
 <template>
   <DockPanel title="Gallery" v-model:panelState="galleryPanelState">
+    <button type="button" @click="load">Load</button>
+    <div class="save-buttons">
+      <input class="filename" v-model="artAppState.fileName" />
+      <button class="button" type="button" @click="save">Save</button>
+    </div>
     <div class="thumbnails">
       <div class="thumbnail" v-for="(thumbnail, index) in thumbnails" :key="index">
         <img src="/mocks/image-0-mock.png" />
       </div>
     </div>
-    <input v-model="artAppState.fileName" />
-    <button type="button" @click="save">Save</button>
-    <button type="button" @click="load">Load</button>
   </DockPanel>
 </template>
 
@@ -67,6 +69,15 @@ const save = async () => {
     /* display: inline-block; */
     /* max-width: 20vmin; */
     /* width: 100%; */
+  }
+}
+.save-buttons {
+  display: flex;
+  .filename {
+    width: 50%;
+  }
+  .button {
+    width: 50%;
   }
 }
 </style>
