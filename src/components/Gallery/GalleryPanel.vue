@@ -74,7 +74,7 @@ const save = async () => {
   flex-wrap: wrap; */
   display: grid;
   grid-template-rows: auto auto;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   grid-gap: 0em;
   .thumbnail {
     position: relative;
