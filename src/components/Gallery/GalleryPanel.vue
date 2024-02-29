@@ -2,9 +2,9 @@
   <DockPanel title="Gallery" v-model:panelState="galleryPanelState">
     <div class="save-buttons">
       <input class="filename" v-model="artAppState.fileName" />
+      <button class="button" type="button" @click="save">Save</button>
     </div>
     <div class="reset-buttons">
-      <button class="button" type="button" @click="save">Save</button>
       <button type="button" @click="load">Load</button>
       <button type="button" @click="newArtwork">New</button>
     </div>
@@ -110,9 +110,15 @@ const save = async () => {
 }
 .save-buttons {
   display: flex;
-  * {
-    flex: 1 0;
+  .button {
+    flex: 1 1;
     margin: 0.1em;
+    width: 30%;
+  }
+  .filename {
+    flex: 1 1;
+    margin: 0.1em;
+    min-width: 70%;
   }
 }
 </style>
