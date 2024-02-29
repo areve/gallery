@@ -52,6 +52,7 @@ const load = async (artwork: Artwork) => {
     name: artwork.name,
     path: "/",
   });
+  artAppState.value.fileName = artwork.name;
   notifyProgress("loaded");
 };
 const newArtwork = async () => {
@@ -62,6 +63,7 @@ const newArtwork = async () => {
   // });
   // notifyProgress("loaded");
   resetCanvas(getAvailableSize(), "#ffffff");
+  artAppState.value.fileName = new Date().toISOString().replace(/\.\d*/, "").replace(/Z/g, "").replace(/T/g, " ");
 };
 
 const save = async () => {

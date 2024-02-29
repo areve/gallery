@@ -2,12 +2,13 @@ export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 
-export const fileInfoKeys = ["id", "name", "modifiedTime", "thumbnailLink"];
+export const fileInfoKeys = ["id", "name", "modifiedTime"];
+export const fileInfoKeysWithThumbnail = [...fileInfoKeys, "thumbnailLink"];
 export interface FileInfo {
   id: string;
   name: string;
   modifiedTime: string;
-  thumbnailLink: string;
+  thumbnailLink?: string;
 }
 
 function googleDriveFilesUrl(id: string): string;
@@ -46,7 +47,7 @@ export async function googleFileGet(name: string, folderId: string, accessToken:
     await googleFilesGetInternal(
       {
         q: `trashed=false and '${escapeQuery(folderId)}' in parents and name='${escapeQuery(name)}'`,
-        fields: `nextPageToken, files(${fileInfoKeys.join(",")})`,
+        fields: `nextPageToken, files(${fileInfoKeysWithThumbnail.join(",")})`,
       },
       accessToken,
     )
@@ -58,7 +59,7 @@ export async function googleFilesGet(folderId: string, accessToken: string) {
   return await googleFilesGetInternal(
     {
       q: `trashed=false and '${escapeQuery(folderId)}' in parents`,
-      fields: `nextPageToken, files(${fileInfoKeys.join(",")})`,
+      fields: `nextPageToken, files(${fileInfoKeysWithThumbnail.join(",")})`,
     },
     accessToken,
   );
