@@ -46,10 +46,12 @@ function showLeftExtendedMenu() {
 }
 
 function showRightMenu() {
+  artAppState.value.menus.appRightExtended = false;
   artAppState.value.menus.appRight = !artAppState.value.menus.appRight;
 }
 
 function showRightExtendedMenu() {
+  artAppState.value.menus.appRight = false;
   artAppState.value.menus.appRightExtended = !artAppState.value.menus.appRightExtended;
 }
 </script>
