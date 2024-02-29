@@ -10,7 +10,7 @@
     </div>
     <div class="thumbnails">
       <div class="thumbnail" v-for="(artwork, index) in galleryState.artworks" :key="index">
-        <img @click="load" class="image" :src="artwork.thumnailUrl" />
+        <img @click="load" class="image" :src="artwork.thumbnailUrl" />
         <div class="name">{{ artwork.name }}</div>
       </div>
     </div>

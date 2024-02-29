@@ -42,7 +42,7 @@ function getHeaders(accessToken: string) {
 export async function googleFileGet(name: string, folderId: string, accessToken: string): Promise<FileInfo | undefined> {
   // TODO pages and nextPageToken are not supported anywhere in this file
   return (
-    await googleFilesGet(
+    await googleFilesGetInternal(
       {
         q: `trashed=false and '${escapeQuery(folderId)}' in parents and name='${escapeQuery(name)}'`,
         fields: `nextPageToken, files(${fileInfoKeys.join(",")})`,
@@ -50,6 +50,17 @@ export async function googleFileGet(name: string, folderId: string, accessToken:
       accessToken,
     )
   )[0];
+}
+
+export async function googleFilesGet(folderId: string, accessToken: string) {
+  // TODO pages and nextPageToken are not supported anywhere in this file
+  return await googleFilesGetInternal(
+    {
+      q: `trashed=false and '${escapeQuery(folderId)}' in parents`,
+      fields: `nextPageToken, files(${fileInfoKeys.join(",")})`,
+    },
+    accessToken,
+  );
 }
 
 export async function googleFileBlob(id: string, accessToken: string) {
@@ -107,13 +118,13 @@ export async function googleFileCreate(folderId: string, name: string, file: Blo
   return (await response.json()) as FileInfo;
 }
 
-export async function googleFilesGet(params: Record<string, string>, accessToken: string) {
+async function googleFilesGetInternal(params: Record<string, string>, accessToken: string) {
   const url = googleDriveFilesUrl(params);
   const response = await fetch(url, {
     method: "GET",
     headers: getHeaders(accessToken),
   });
-  if (response.status !== 200) throw `googleFilesGet unexpected status: ${response.status}`;
+  if (response.status !== 200) throw `googleFilesGetInternal unexpected status: ${response.status}`;
   const result = await response.json();
   return result.files as FileInfo[];
 }
@@ -138,7 +149,7 @@ export async function googleFolderCreate(name: string, folderId: string | undefi
 
 export async function googleFolderGet(name: string, folderId: string | undefined, accessToken: string): Promise<FileInfo | undefined> {
   const parentsClause = folderId ? ` and '${escapeQuery(folderId)}' in parents ` : "";
-  const result = await googleFilesGet(
+  const result = await googleFilesGetInternal(
     {
       q: `trashed=false and name='${escapeQuery(name)}' and mimeType='application/vnd.google-apps.folder' ${parentsClause}`,
       pageSize: "1",

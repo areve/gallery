@@ -1,4 +1,12 @@
-import { googleFileUpdate, googleFileCreate, googleFileBlob, googlePathGetOrCreate, googleFileGet, googlePathGet } from "@/lib/Google/GoogleApi";
+import {
+  googleFileUpdate,
+  googleFileCreate,
+  googleFileBlob,
+  googlePathGetOrCreate,
+  googleFileGet,
+  googlePathGet,
+  googleFilesGet,
+} from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
 
@@ -60,27 +68,21 @@ async function onSaveBlob(artwork: ArtworkWithBlob) {
 }
 
 async function onLoadGallery(path: string) {
-  console.log("TODO load gallery:", path);
-  return [
-    {
-      name: "Cat",
-      thumnailUrl: "/mocks/image-0-mock.png",
-    },
-    {
-      name: "Cat",
-      thumnailUrl: "/mocks/image-0-mock.png",
-    },
-    {
-      name: "Cat",
-      thumnailUrl: "/mocks/image-0-mock.png",
-    },
-    {
-      name: "Cat",
-      thumnailUrl: "/mocks/image-0-mock.png",
-    },
-    {
-      name: "Cat",
-      thumnailUrl: "/mocks/image-0-mock.png",
-    },
-  ];
+  if (!accessToken) throw "accessToken not set";
+
+  notifyProgress("finding folders", 2);
+  const folders = await googlePathGet(rootDirName + "/" + path, accessToken);
+  const folder = folders[folders.length - 1];
+  if (!folder) return notifyError("folder not found");
+
+  notifyProgress("finding files");
+  const files = await googleFilesGet(folder.id, accessToken);
+  console.log("files", files);
+
+  notifyProgress("files loaded");
+  return files.map((file) => ({
+    id: file.id,
+    name: file.name,
+    thumbnailUrl: "/mocks/image-0-mock.png",
+  }));
 }
