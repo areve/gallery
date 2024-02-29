@@ -39,7 +39,10 @@ export async function saveArtwork(artwork: ArtworkWithBlob) {
   const savedArtwork = await messageBus.request<Artwork>("saveBlob", [artwork]);
   console.log("savedArtwork", savedArtwork);
   const artworks = clone(toRaw(galleryState.value.artworks));
+
+  // TODO only unshift if it's a new image not an update
   artworks.unshift(savedArtwork);
+  // TODO preserve the scroll position
   galleryState.value.artworks = artworks;
   console.log("zzzz", galleryState.value.artworks);
 }

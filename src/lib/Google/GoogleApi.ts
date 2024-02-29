@@ -2,12 +2,13 @@ export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 
-export const fileInfoKeys = ["id", "name", "modifiedTime"];
+export const fileInfoKeys = ["id", "name", "modifiedTime", "createdTime"];
 export const fileInfoKeysWithThumbnail = [...fileInfoKeys, "thumbnailLink"];
 export interface FileInfo {
   id: string;
   name: string;
   modifiedTime: string;
+  createdTime: string;
   thumbnailLink?: string;
 }
 
@@ -66,13 +67,16 @@ export async function googleFileDelete(id: string, accessToken: string) {
 
 export async function googleFilesGet(folderId: string, accessToken: string) {
   // TODO pages and nextPageToken are not supported anywhere in this file
-  return await googleFilesGetInternal(
+  const files = await googleFilesGetInternal(
     {
       q: `trashed=false and '${escapeQuery(folderId)}' in parents`,
       fields: `nextPageToken, files(${fileInfoKeysWithThumbnail.join(",")})`,
     },
     accessToken,
   );
+
+  const sortedFiles = files.sort((a: FileInfo, b: FileInfo) => b.createdTime.localeCompare(a.createdTime));
+  return sortedFiles;
 }
 
 export async function googleFileBlob(id: string, accessToken: string) {
