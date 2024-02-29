@@ -6,6 +6,7 @@ import {
   googleFileGet,
   googlePathGet,
   googleFilesGet,
+  googleFileDelete,
 } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
@@ -15,6 +16,7 @@ messageBus.subscribe("saveBlob", onSaveBlob);
 messageBus.subscribe("loadBlob", onLoadBlob);
 messageBus.subscribe("setAccessToken", onSetAccessToken);
 messageBus.subscribe("loadGallery", onLoadGallery);
+messageBus.subscribe("deleteArtwork", onDeleteGallery);
 
 let accessToken: string | undefined;
 
@@ -67,6 +69,25 @@ async function onSaveBlob(artwork: ArtworkWithBlob) {
   return file;
 }
 
+async function onDeleteGallery(artwork: Artwork) {
+  if (!accessToken) throw "accessToken not set";
+  notifyProgress("finding folders", 3);
+  const folders = await googlePathGet(rootDirName + "/" + artwork.path, accessToken);
+  const folder = folders[folders.length - 1];
+  if (!folder) return notifyError("folder not found");
+
+  notifyProgress("finding file");
+  const file = await googleFileGet(artwork.name, folder.id, accessToken);
+  if (file) {
+    notifyProgress("deleting file");
+    await googleFileDelete(file.id, accessToken);
+    notifyProgress("deleted");
+  } else {
+    notifyProgress("file did not exist"); // TODO looks messy but the way progress works means I need 2 calls
+    notifyProgress("file did not exist");
+  }
+}
+
 async function onLoadGallery(path: string) {
   if (!accessToken) throw "accessToken not set";
 
@@ -87,5 +108,3 @@ async function onLoadGallery(path: string) {
     thumbnailUrl: file.thumbnailLink,
   }));
 }
-
-//https://lh3.googleusercontent.com/drive-storage/AJQWtBM0hHarQ_BZgHvrJ08bckKe4oRH-sARB9Rwamczb7TtZ2T-aeadODYvevIOrqFe6cBhE_5yQvC8XDDXky7zDb49gT0CphfAEo4DBzK4rg=s220

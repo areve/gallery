@@ -1,6 +1,6 @@
 import { createMessageBus } from "@/lib/MessageBus";
 import GalleryWorker from "./GalleryWorker?worker";
-import { watchPostEffect } from "vue";
+import { toRaw, watchPostEffect } from "vue";
 import { notifyError, notifyProgress } from "../Notify/notifyState";
 import { loadBlob } from "../Artboard/artboardService";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
@@ -16,6 +16,13 @@ export async function loadGallery(path: string) {
   galleryState.value.artworks = artworks;
 }
 
+export async function deleteArtwork(artwork: Artwork) {
+  const success = await messageBus.request<[]>("deleteArtwork", [artwork]);
+  console.log("delete result", success);
+  const artworks = toRaw(galleryState.value.artworks);
+  galleryState.value.artworks = artworks.filter((x) => x.name !== artwork.name);
+}
+
 export async function loadArtwork(artwork: Artwork) {
   const blob = await messageBus.request<Blob | undefined>("loadBlob", [artwork]);
   notifyProgress("load blob", 1);
@@ -28,5 +35,7 @@ watchPostEffect(() => {
 });
 
 export async function saveArtwork(artwork: ArtworkWithBlob) {
-  await messageBus.request("saveBlob", [artwork]);
+  const savedArtwork = await messageBus.request("saveBlob", [artwork]);
+  console.log("savedArtwork", savedArtwork);
+  const artworks = toRaw(galleryState.value.artworks);
 }

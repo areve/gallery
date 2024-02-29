@@ -54,6 +54,16 @@ export async function googleFileGet(name: string, folderId: string, accessToken:
   )[0];
 }
 
+export async function googleFileDelete(id: string, accessToken: string) {
+  const url = googleDriveFilesUrl(id);
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers: getHeaders(accessToken),
+  });
+  if (response.status !== 204) throw `googleFileDelete unexpected status: ${response.status}`;
+  return response.status === 204;
+}
+
 export async function googleFilesGet(folderId: string, accessToken: string) {
   // TODO pages and nextPageToken are not supported anywhere in this file
   return await googleFilesGetInternal(
@@ -208,7 +218,7 @@ export async function googleFolderGetOrCreate(name: string, folderId: string | u
 //   return (await response.json()) as FileInfo;
 // }
 
-// export async function googleFileDelete(id: string) {
+// async function googleFileDeleteInternal(id: string) {
 //   const url = googleUrl(id);
 //   const response = await fetch(url, {
 //     method: "DELETE",

@@ -3,6 +3,7 @@
     <input class="filename" v-model="artAppState.fileName" />
     <div class="save-buttons">
       <button class="button" type="button" @click="save">Save</button>
+      <button class="button" type="button" @click="deleteArtwork2">Delete</button>
     </div>
     <div class="reset-buttons">
       <button type="button" @click="loadGallery2">Load</button>
@@ -22,7 +23,7 @@ import { ref } from "vue";
 import { artAppState } from "../ArtApp/artAppState";
 import { asBlob, resetCanvas } from "../Artboard/artboardService";
 import { notifyError, notifyProgress } from "../Notify/notifyState";
-import { loadArtwork, loadGallery, saveArtwork } from "@/components/Gallery/galleryService";
+import { deleteArtwork, loadArtwork, loadGallery, saveArtwork } from "@/components/Gallery/galleryService";
 import type { PanelState } from "../DockPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
 import DockPanel from "@/components/DockPanel/DockPanel.vue";
@@ -54,6 +55,16 @@ const load = async (artwork: Artwork) => {
   });
   artAppState.value.fileName = artwork.name;
   notifyProgress("loaded");
+};
+const deleteArtwork2 = async () => {
+  notifyProgress("deleting artwork", 1);
+  await deleteArtwork({
+    name: artAppState.value.fileName,
+    path: "/",
+  });
+  artAppState.value.fileName = "";
+
+  notifyProgress("deleted");
 };
 const newArtwork = async () => {
   // notifyProgress("requesting load", 1);
