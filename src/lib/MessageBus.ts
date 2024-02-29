@@ -40,7 +40,13 @@ export function createMessageBus(getWorker: () => Worker | Window) {
     if (worker.onmessage) console.warn("onmessage was already bound");
     worker.onmessage = (event: MessageEvent<Message>) => {
       const subscribers: Function[] = registry[event.data.name];
-      if (!subscribers) console.warn(`subscribers not found: ${event.data.name}`);
+      if (!subscribers) {
+        const error = `subscribers not found: ${event.data.name}`;
+        console.error(error);
+        if (event.data.callbackId) {
+          messageBus.publish(event.data.callbackId, [error, null]);
+        }
+      }
       subscribers?.forEach(async (subscriber) => {
         let result: any;
         let error: any;

@@ -5,12 +5,12 @@
       <button class="button" type="button" @click="save">Save</button>
     </div>
     <div class="reset-buttons">
-      <button type="button" @click="load">Load</button>
+      <button type="button" @click="loadGallery2">Load</button>
       <button type="button" @click="newArtwork">New</button>
     </div>
     <div class="thumbnails">
       <div class="thumbnail" v-for="(artwork, index) in galleryState.artworks" :key="index">
-        <img class="image" :src="artwork.thumnailUrl" />
+        <img @click="load" class="image" :src="artwork.thumnailUrl" />
         <div class="name">{{ artwork.name }}</div>
       </div>
     </div>
@@ -21,8 +21,8 @@
 import { ref } from "vue";
 import { artAppState } from "../ArtApp/artAppState";
 import { asBlob, resetCanvas } from "../Artboard/artboardService";
-import { notifyProgress } from "../Notify/notifyState";
-import { load as galleryLoad, save as gallerySave } from "@/components/Gallery/galleryService";
+import { notifyError, notifyProgress } from "../Notify/notifyState";
+import { loadArtwork, loadGallery, saveArtwork } from "@/components/Gallery/galleryService";
 import type { PanelState } from "../DockPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
 import DockPanel from "@/components/DockPanel/DockPanel.vue";
@@ -34,9 +34,20 @@ const galleryPanelState = ref<PanelState>({
 });
 usePersistentState("galleryPanelState", galleryPanelState);
 
+const loadGallery2 = async () => {
+  notifyProgress("load gallery", 1);
+  try {
+    await loadGallery("/");
+
+    notifyProgress("loaded");
+  } catch (error: any) {
+    notifyError(error);
+  }
+};
+
 const load = async () => {
   notifyProgress("requesting load", 1);
-  await galleryLoad({
+  await loadArtwork({
     name: artAppState.value.fileName,
     path: "/",
   });
@@ -59,7 +70,7 @@ const save = async () => {
   const blob = await asBlob();
 
   notifyProgress("saving blob");
-  await gallerySave({
+  await saveArtwork({
     blob,
     name: artAppState.value.fileName,
     path: "/",
@@ -86,6 +97,7 @@ const save = async () => {
     /* width: 100%; */
     .image {
       opacity: 0.8;
+      cursor: pointer;
     }
     .name {
       position: absolute;

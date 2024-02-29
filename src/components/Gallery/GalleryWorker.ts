@@ -6,6 +6,7 @@ export const messageBus = createMessageBus(() => self);
 messageBus.subscribe("saveBlob", onSaveBlob);
 messageBus.subscribe("loadBlob", onLoadBlob);
 messageBus.subscribe("setAccessToken", onSetAccessToken);
+messageBus.subscribe("loadGallery", onLoadGallery);
 
 let accessToken: string | undefined;
 
@@ -56,4 +57,30 @@ async function onSaveBlob(artwork: ArtworkWithBlob) {
 
   notifyProgress("file saved");
   return file;
+}
+
+async function onLoadGallery(path: string) {
+  console.log("TODO load gallery:", path);
+  return [
+    {
+      name: "Cat",
+      thumnailUrl: "/mocks/image-0-mock.png",
+    },
+    {
+      name: "Cat",
+      thumnailUrl: "/mocks/image-0-mock.png",
+    },
+    {
+      name: "Cat",
+      thumnailUrl: "/mocks/image-0-mock.png",
+    },
+    {
+      name: "Cat",
+      thumnailUrl: "/mocks/image-0-mock.png",
+    },
+    {
+      name: "Cat",
+      thumnailUrl: "/mocks/image-0-mock.png",
+    },
+  ];
 }
