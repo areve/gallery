@@ -1,5 +1,4 @@
 <template>
-  <!-- <DockPanel title="Gallery" v-model:panelState="galleryPanelState"> -->
   <section title="Gallery">
     <div
       class="buttons"
@@ -10,18 +9,24 @@
       <input class="filename" type="hidden" v-model="artAppState.fileName" />
 
       <button class="button" type="button" @click="save">Save</button>
-      <button class="button" type="button" @click="deleteArtwork2">Delete</button>
-      <button type="button" @click="loadGallery2">Load</button>
+      <button class="button" type="button" @click="deleteSelected">Delete</button>
+      <button type="button" @click="loadSelected">Load</button>
       <button type="button" @click="newArtwork">New</button>
     </div>
     <div class="thumbnails">
-      <div class="thumbnail" v-for="(artwork, index) in galleryState.artworks" :key="index">
-        <img referrerPolicy="no-referrer" @click="load(artwork)" class="image" :src="artwork.thumbnailUrl" />
+      <div
+        class="thumbnail"
+        :class="{
+          selected: isSelected(artwork),
+        }"
+        v-for="(artwork, index) in galleryState.artworks"
+        :key="index"
+      >
+        <img referrerPolicy="no-referrer" @click="select(artwork)" class="image" :src="artwork.thumbnailUrl" />
         <div class="name">{{ artwork.name }}</div>
       </div>
     </div>
   </section>
-  <!-- </DockPanel> -->
 </template>
 
 <script lang="ts" setup>
@@ -32,7 +37,6 @@ import { notifyError, notifyProgress } from "../Notify/notifyState";
 import { deleteArtwork, loadArtwork, loadGallery, saveArtwork } from "@/components/Gallery/galleryService";
 import type { PanelState } from "../DockPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
-import DockPanel from "@/components/DockPanel/DockPanel.vue";
 import { getAvailableSize } from "@/lib/Window";
 import { galleryState } from "./galleryState";
 import type { Artwork } from "./Artwork";
@@ -44,17 +48,18 @@ const galleryPanelState = ref<PanelState>({
 });
 usePersistentState("galleryPanelState", galleryPanelState);
 
-const loadGallery2 = async () => {
-  notifyProgress("load gallery", 1);
-  try {
-    await loadGallery("/");
-
-    notifyProgress("loaded");
-  } catch (error: any) {
-    notifyError(error);
-  }
+const selectedArtwork = ref<string | undefined>();
+const loadSelected = async () => {
+  const selected = galleryState.value.artworks.find((x) => x.id === selectedArtwork.value);
+  console.log("selected", selected);
+  if (!selected) return;
+  load(selected);
 };
+const isSelected = (artwork: Artwork) => selectedArtwork.value === artwork.id;
 
+const select = async (artwork: Artwork) => {
+  selectedArtwork.value = artwork.id;
+};
 const load = async (artwork: Artwork) => {
   notifyProgress("requesting load", 1);
   await loadArtwork({
@@ -64,10 +69,14 @@ const load = async (artwork: Artwork) => {
   artAppState.value.fileName = artwork.name;
   notifyProgress("loaded");
 };
-const deleteArtwork2 = async () => {
+const deleteSelected = async () => {
+  const selected = galleryState.value.artworks.find((x) => x.id === selectedArtwork.value);
+  console.log("selected", selected);
+  if (!selected) return;
+
   notifyProgress("deleting artwork", 1);
   await deleteArtwork({
-    name: artAppState.value.fileName,
+    name: selected.name,
     path: "/",
   });
   artAppState.value.fileName = "";
@@ -150,5 +159,11 @@ const save = async () => {
   * {
     width: 5em;
   }
+}
+
+.selected {
+  box-shadow: 0 0 0.5em 0.5em rgb(0, 127, 255, 0.5);
+  /* border: 1px solid rgb(0, 127, 255, 0.5); */
+  z-index: 101;
 }
 </style>

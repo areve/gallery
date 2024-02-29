@@ -50,3 +50,15 @@ export async function saveArtwork(artwork: ArtworkWithBlob) {
   galleryState.value.artworks = artworks;
   console.log("zzzz", galleryState.value.artworks);
 }
+
+// TODO loadDefaultGallery should be called automatically once token is ready
+export async function loadDefaultGallery() {
+  notifyProgress("load gallery", 1);
+  try {
+    await loadGallery("/");
+
+    notifyProgress("loaded");
+  } catch (error: any) {
+    notifyError(error);
+  }
+}
