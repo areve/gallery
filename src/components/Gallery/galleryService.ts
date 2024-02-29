@@ -40,8 +40,12 @@ export async function saveArtwork(artwork: ArtworkWithBlob) {
   console.log("savedArtwork", savedArtwork);
   const artworks = clone(toRaw(galleryState.value.artworks));
 
-  // TODO only unshift if it's a new image not an update
-  artworks.unshift(savedArtwork);
+  const existingArtwork = artworks.find((x) => x.name === artwork.name);
+  if (existingArtwork) {
+    existingArtwork.thumbnailUrl = savedArtwork.thumbnailUrl;
+  } else {
+    artworks.unshift(savedArtwork);
+  }
   // TODO preserve the scroll position
   galleryState.value.artworks = artworks;
   console.log("zzzz", galleryState.value.artworks);
