@@ -53,6 +53,7 @@ import GalleryPanel from "@/components/Gallery/GalleryPanel.vue";
   transition: 0.2s ease-in-out;
   transition-property: opacity, left, right;
   overflow: hidden;
+  box-shadow: 0em 0em 0.5em rgb(0, 0, 0, 0.8);
 }
 
 .right-menu[hidden] {

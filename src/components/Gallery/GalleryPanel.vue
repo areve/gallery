@@ -118,7 +118,7 @@ const save = async () => {
     /* max-width: 20vmin; */
     /* width: 100%; */
     .image {
-      opacity: 0.8;
+      /* opacity: 0.8; */
       cursor: pointer;
     }
     .name {

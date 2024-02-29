@@ -41,6 +41,7 @@ button {
   left: 0;
   opacity: 1;
   width: 45%;
+  box-shadow: 0em 0em 0.5em rgb(0, 0, 0, 0.8);
 }
 
 .left-menu[hidden] {
