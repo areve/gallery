@@ -1,5 +1,5 @@
 <template>
-  <RollupPanel title="Artboard reset" v-model:panelState="artboardResetPanelState">
+  <DockPanel title="Artboard reset" v-model:panelState="artboardResetPanelState">
     <div class="reset-dimensions">
       <div>Color and dimensions</div>
       <input type="color" v-model="resetColor" />
@@ -22,7 +22,7 @@
         oklch
       </label>
     </div>
-  </RollupPanel>
+  </DockPanel>
 </template>
 
 <script lang="ts" setup>
@@ -32,8 +32,8 @@ import { clone } from "@/lib/utils";
 import type { Coord } from "@/lib/Coord";
 import { getAvailableSize } from "@/lib/Window";
 import { artboardState } from "./artboardState";
-import RollupPanel from "@/components/RollupPanel/RollupPanel.vue";
-import type { PanelState } from "../RollupPanel/PanelState";
+import DockPanel from "@/components/DockPanel/DockPanel.vue";
+import type { PanelState } from "../DockPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
 
 const resetColor = ref<string>("#ffffff");

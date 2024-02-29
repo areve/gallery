@@ -1,9 +1,9 @@
 <template>
-  <RollupPanel title="Gallery" v-model:panelState="galleryPanelState">
+  <DockPanel title="Gallery" v-model:panelState="galleryPanelState">
     <input v-model="artAppState.fileName" />
     <button type="button" @click="save">Save</button>
     <button type="button" @click="load">Load</button>
-  </RollupPanel>
+  </DockPanel>
 </template>
 
 <script lang="ts" setup>
@@ -12,9 +12,9 @@ import { artAppState } from "../ArtApp/artAppState";
 import { asBlob } from "../Artboard/artboardService";
 import { notifyProgress } from "../Notify/notifyState";
 import { load as galleryLoad, save as gallerySave } from "@/components/Gallery/galleryService";
-import type { PanelState } from "../RollupPanel/PanelState";
+import type { PanelState } from "../DockPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
-import RollupPanel from "@/components/RollupPanel/RollupPanel.vue";
+import DockPanel from "@/components/DockPanel/DockPanel.vue";
 
 const galleryPanelState = ref<PanelState>({
   rolled: true,
