@@ -1,7 +1,7 @@
 <template>
   <DockPanel title="Gallery" v-model:panelState="galleryPanelState">
+    <input class="filename" v-model="artAppState.fileName" />
     <div class="save-buttons">
-      <input class="filename" v-model="artAppState.fileName" />
       <button class="button" type="button" @click="save">Save</button>
     </div>
     <div class="reset-buttons">
@@ -115,10 +115,8 @@ const save = async () => {
     margin: 0.1em;
     width: 30%;
   }
-  .filename {
-    flex: 1 1;
-    margin: 0.1em;
-    min-width: 70%;
-  }
+}
+.filename {
+  width: 100%;
 }
 </style>
