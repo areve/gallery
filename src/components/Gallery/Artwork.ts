@@ -3,6 +3,7 @@ export interface Artwork {
   id?: string;
   name: string;
   path: string;
+  thumbnailUrl?: string;
 }
 
 export interface ArtworkWithBlob extends Artwork {

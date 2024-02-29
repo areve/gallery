@@ -10,7 +10,7 @@
     </div>
     <div class="thumbnails">
       <div class="thumbnail" v-for="(artwork, index) in galleryState.artworks" :key="index">
-        <img @click="load" class="image" :src="artwork.thumbnailUrl" />
+        <img referrerPolicy="no-referrer" @click="load(artwork)" class="image" :src="artwork.thumbnailUrl" />
         <div class="name">{{ artwork.name }}</div>
       </div>
     </div>
@@ -28,6 +28,7 @@ import { usePersistentState } from "@/lib/PersistentState";
 import DockPanel from "@/components/DockPanel/DockPanel.vue";
 import { getAvailableSize } from "@/lib/Window";
 import { galleryState } from "./galleryState";
+import type { Artwork } from "./Artwork";
 
 const galleryPanelState = ref<PanelState>({
   rolled: true,
@@ -45,10 +46,10 @@ const loadGallery2 = async () => {
   }
 };
 
-const load = async () => {
+const load = async (artwork: Artwork) => {
   notifyProgress("requesting load", 1);
   await loadArtwork({
-    name: artAppState.value.fileName,
+    name: artwork.name,
     path: "/",
   });
   notifyProgress("loaded");

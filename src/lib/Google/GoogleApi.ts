@@ -2,11 +2,12 @@ export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 
-export const fileInfoKeys = ["id", "name", "modifiedTime"];
+export const fileInfoKeys = ["id", "name", "modifiedTime", "thumbnailLink"];
 export interface FileInfo {
   id: string;
   name: string;
   modifiedTime: string;
+  thumbnailLink: string;
 }
 
 function googleDriveFilesUrl(id: string): string;

@@ -83,6 +83,9 @@ async function onLoadGallery(path: string) {
   return files.map((file) => ({
     id: file.id,
     name: file.name,
-    thumbnailUrl: "/mocks/image-0-mock.png",
+    // thumbnailUrl: "/mocks/image-0-mock.png",
+    thumbnailUrl: file.thumbnailLink,
   }));
 }
+
+//https://lh3.googleusercontent.com/drive-storage/AJQWtBM0hHarQ_BZgHvrJ08bckKe4oRH-sARB9Rwamczb7TtZ2T-aeadODYvevIOrqFe6cBhE_5yQvC8XDDXky7zDb49gT0CphfAEo4DBzK4rg=s220
