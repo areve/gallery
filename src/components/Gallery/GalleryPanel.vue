@@ -1,11 +1,16 @@
 <template>
-  <DockPanel title="Gallery" v-model:panelState="galleryPanelState">
-    <input class="filename" v-model="artAppState.fileName" />
-    <div class="save-buttons">
+  <!-- <DockPanel title="Gallery" v-model:panelState="galleryPanelState"> -->
+  <section title="Gallery">
+    <div
+      class="buttons"
+      :style="{
+        top: topPercentCss,
+      }"
+    >
+      <input class="filename" type="hidden" v-model="artAppState.fileName" />
+
       <button class="button" type="button" @click="save">Save</button>
       <button class="button" type="button" @click="deleteArtwork2">Delete</button>
-    </div>
-    <div class="reset-buttons">
       <button type="button" @click="loadGallery2">Load</button>
       <button type="button" @click="newArtwork">New</button>
     </div>
@@ -15,11 +20,12 @@
         <div class="name">{{ artwork.name }}</div>
       </div>
     </div>
-  </DockPanel>
+  </section>
+  <!-- </DockPanel> -->
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { artAppState } from "../ArtApp/artAppState";
 import { asBlob, resetCanvas } from "../Artboard/artboardService";
 import { notifyError, notifyProgress } from "../Notify/notifyState";
@@ -30,6 +36,8 @@ import DockPanel from "@/components/DockPanel/DockPanel.vue";
 import { getAvailableSize } from "@/lib/Window";
 import { galleryState } from "./galleryState";
 import type { Artwork } from "./Artwork";
+
+const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStates.right.topPercent * 100) / 100 + "%");
 
 const galleryPanelState = ref<PanelState>({
   rolled: true,
@@ -124,25 +132,20 @@ const save = async () => {
       margin: 0.1em;
       border-radius: 0.2em;
       line-height: 1.2em;
+      display: none;
     }
   }
 }
-.reset-buttons {
-  display: flex;
-  * {
-    flex: 1 0;
-    margin: 0.1em;
-  }
-}
-.save-buttons {
-  display: flex;
-  .button {
-    flex: 1 1;
-    margin: 0.1em;
-    width: 30%;
-  }
-}
+
 .filename {
   width: 100%;
+}
+
+.buttons {
+  position: fixed;
+  right: 0;
+  margin-top: -5em;
+  width: 20%;
+  z-index: 200;
 }
 </style>
