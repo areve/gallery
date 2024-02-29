@@ -143,7 +143,7 @@ const save = async () => {
 
 .buttons {
   position: fixed;
-  right: 5em;
+  right: 11em;
   margin-top: -5em;
   width: 20%;
   z-index: 200;
