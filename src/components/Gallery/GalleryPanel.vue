@@ -9,8 +9,9 @@
       <button type="button" @click="newArtwork">New</button>
     </div>
     <div class="thumbnails">
-      <div class="thumbnail" v-for="(thumbnail, index) in thumbnails" :key="index">
-        <img src="/mocks/image-0-mock.png" />
+      <div class="thumbnail" v-for="(artwork, index) in galleryState.artworks" :key="index">
+        <img class="image" :src="artwork.thumnailUrl" />
+        <div class="name">{{ artwork.name }}</div>
       </div>
     </div>
   </DockPanel>
@@ -26,13 +27,13 @@ import type { PanelState } from "../DockPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
 import DockPanel from "@/components/DockPanel/DockPanel.vue";
 import { getAvailableSize } from "@/lib/Window";
+import { galleryState } from "./galleryState";
 
 const galleryPanelState = ref<PanelState>({
   rolled: true,
 });
 usePersistentState("galleryPanelState", galleryPanelState);
 
-const thumbnails = [{}, {}, {}, {}, {}, {}, {}, {}, {}];
 const load = async () => {
   notifyProgress("requesting load", 1);
   await galleryLoad({
@@ -76,12 +77,28 @@ const save = async () => {
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 0em;
   .thumbnail {
+    position: relative;
     grid-column: span 1;
     margin: 0.1em;
     /* margin-bottom: 0.2em; */
     /* display: inline-block; */
     /* max-width: 20vmin; */
     /* width: 100%; */
+    .image {
+      opacity: 0.5;
+    }
+    .name {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      font-size: 0.8em;
+      color: #fff;
+      background-color: rgb(0, 0, 0, 0.8);
+      padding: 0 0.2em;
+      margin: 0.1em;
+      border-radius: 0.2em;
+      line-height: 1.2em;
+    }
   }
 }
 .reset-buttons {
