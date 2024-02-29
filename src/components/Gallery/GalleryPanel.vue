@@ -1,9 +1,12 @@
 <template>
   <DockPanel title="Gallery" v-model:panelState="galleryPanelState">
-    <button type="button" @click="load">Load</button>
     <div class="save-buttons">
       <input class="filename" v-model="artAppState.fileName" />
+    </div>
+    <div class="reset-buttons">
       <button class="button" type="button" @click="save">Save</button>
+      <button type="button" @click="load">Load</button>
+      <button type="button" @click="newArtwork">New</button>
     </div>
     <div class="thumbnails">
       <div class="thumbnail" v-for="(thumbnail, index) in thumbnails" :key="index">
@@ -16,12 +19,13 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { artAppState } from "../ArtApp/artAppState";
-import { asBlob } from "../Artboard/artboardService";
+import { asBlob, resetCanvas } from "../Artboard/artboardService";
 import { notifyProgress } from "../Notify/notifyState";
 import { load as galleryLoad, save as gallerySave } from "@/components/Gallery/galleryService";
 import type { PanelState } from "../DockPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
 import DockPanel from "@/components/DockPanel/DockPanel.vue";
+import { getAvailableSize } from "@/lib/Window";
 
 const galleryPanelState = ref<PanelState>({
   rolled: true,
@@ -36,6 +40,15 @@ const load = async () => {
     path: "/",
   });
   notifyProgress("loaded");
+};
+const newArtwork = async () => {
+  // notifyProgress("requesting load", 1);
+  // await galleryLoad({
+  //   name: artAppState.value.fileName,
+  //   path: "/",
+  // });
+  // notifyProgress("loaded");
+  resetCanvas(getAvailableSize(), "#ffffff");
 };
 
 const save = async () => {
@@ -64,20 +77,25 @@ const save = async () => {
   grid-gap: 0em;
   .thumbnail {
     grid-column: span 1;
-
+    margin: 0.1em;
     /* margin-bottom: 0.2em; */
     /* display: inline-block; */
     /* max-width: 20vmin; */
     /* width: 100%; */
   }
 }
+.reset-buttons {
+  display: flex;
+  * {
+    flex: 1 0;
+    margin: 0.1em;
+  }
+}
 .save-buttons {
   display: flex;
-  .filename {
-    width: 50%;
-  }
-  .button {
-    width: 50%;
+  * {
+    flex: 1 0;
+    margin: 0.1em;
   }
 }
 </style>
