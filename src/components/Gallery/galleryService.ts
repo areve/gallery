@@ -28,6 +28,8 @@ export async function loadArtwork(artwork: Artwork) {
   notifyProgress("load blob", 1);
   if (blob) await loadBlob(blob);
   notifyProgress("blob loaded");
+  notifyProgress("blob loaded");
+  notifyProgress("blob loaded");
 }
 
 watchPostEffect(() => {

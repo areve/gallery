@@ -76,7 +76,6 @@ export function notifyProgress(message: string, steps?: number) {
     notifyState.value.progress.error = false;
     notifyState.value.progress.steps += steps;
   } else {
-    // TODO if too many are received it goes wrong and the bar does not close
     notifyState.value.progress.complete++;
   }
 
@@ -84,7 +83,7 @@ export function notifyProgress(message: string, steps?: number) {
 }
 
 function updatePercent() {
-  if (notifyState.value.progress.complete === notifyState.value.progress.steps) {
+  if (notifyState.value.progress.complete >= notifyState.value.progress.steps) {
     currentWidth += 1 / framesPerSecond / wrapUpTimeSeconds;
     if (currentWidth >= 1) {
       currentWidth = 1;
