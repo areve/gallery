@@ -23,7 +23,7 @@ const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
     notifyToast("update available");
-    appState.value.updateAvailable = true;
+    //appState.value.updateAvailable = true;
   },
   onOfflineReady() {
     notifyToast("on offline ready");
