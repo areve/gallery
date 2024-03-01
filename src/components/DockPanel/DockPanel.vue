@@ -16,7 +16,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
 import type { PanelState } from "./PanelState";
 
 import { cloneExtend } from "@/lib/utils";

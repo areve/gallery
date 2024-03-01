@@ -42,6 +42,17 @@ function getHeaders(accessToken: string) {
   return new Headers({ Authorization: `Bearer ${accessToken}` });
 }
 
+async function googleFilesGetInternal(params: Record<string, string>, accessToken: string) {
+  const url = googleDriveFilesUrl(params);
+  const response = await fetch(url, {
+    method: "GET",
+    headers: getHeaders(accessToken),
+  });
+  if (response.status !== 200) throw `googleFilesGetInternal unexpected status: ${response.status}`;
+  const result = await response.json();
+  return result.files as FileInfo[];
+}
+
 export async function googleFileGet(name: string, folderId: string, accessToken: string): Promise<FileInfo | undefined> {
   // TODO pages and nextPageToken are not supported anywhere in this file
   return (
@@ -134,17 +145,6 @@ export async function googleFileCreate(folderId: string, name: string, file: Blo
   return (await response.json()) as FileInfo;
 }
 
-async function googleFilesGetInternal(params: Record<string, string>, accessToken: string) {
-  const url = googleDriveFilesUrl(params);
-  const response = await fetch(url, {
-    method: "GET",
-    headers: getHeaders(accessToken),
-  });
-  if (response.status !== 200) throw `googleFilesGetInternal unexpected status: ${response.status}`;
-  const result = await response.json();
-  return result.files as FileInfo[];
-}
-
 export async function googleFolderCreate(name: string, folderId: string | undefined, accessToken: string) {
   const url = googleDriveFilesUrl({
     fields: fileInfoKeys.join(","),
@@ -205,29 +205,3 @@ export async function googleFolderGetOrCreate(name: string, folderId: string | u
   if (!folder) folder = await googleFolderCreate(name, folderId, accessToken);
   return folder;
 }
-
-// export async function googleFileGet(id: string) {
-//   const url = googleUrl(id, {
-//     fields: fileInfoKeys.join(","),
-//   });
-//   const response = await fetch(
-//     url,
-//     {
-//       method: "GET",
-//       headers: getHeaders(),
-//     },
-//     // `/gallery/${id}/metadata`
-//   );
-// if (response.status !== 200) throw `googleFileGet unexpected status: ${response.status}`;
-//   return (await response.json()) as FileInfo;
-// }
-
-// async function googleFileDeleteInternal(id: string) {
-//   const url = googleUrl(id);
-//   const response = await fetch(url, {
-//     method: "DELETE",
-//     headers: getHeaders(),
-//   });
-// if (response.status !== 200) throw `googleFileDelete unexpected status: ${response.status}`;
-//   return response.status === 204;
-// }
