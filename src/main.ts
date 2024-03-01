@@ -17,6 +17,7 @@ function updateNow() {
   updateSW();
 }
 
+
 watch(() => appState.value.updateApproved, updateNow);
 
 const updateSW = registerSW({
