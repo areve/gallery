@@ -53,6 +53,44 @@ async function googleFilesGetInternal(params: Record<string, string>, accessToke
   return result.files as FileInfo[];
 }
 
+async function googleMakePath(path: string, readonly: boolean, accessToken: string) {
+  const splitPath = path.split("/").filter((p) => p !== "");
+
+  const foldersInPath = [];
+  let folderId: string | undefined;
+  for (let i = 0; i < splitPath.length; i++) {
+    let folder = await googleFolderGet(splitPath[i], folderId, accessToken);
+    if (!folder && !readonly) folder = await googleFolderGetOrCreate(splitPath[i], folderId, accessToken);
+    folderId = folder?.id;
+    foldersInPath.push(folder);
+    if (!folder) return foldersInPath;
+  }
+
+  return foldersInPath;
+}
+
+export async function googleFileCreate(folderId: string, name: string, file: Blob, accessToken: string) {
+  const url = googleDriveFilesUploadUrl({
+    uploadType: "multipart",
+    fields: fileInfoKeys.join(","),
+  });
+  const metadata = {
+    name,
+    mimeType: "image/png",
+    parents: [folderId],
+  };
+  const body = new FormData();
+  body.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+  body.append("file", file);
+  const response = await fetch(url, {
+    method: "POST",
+    headers: getHeaders(accessToken),
+    body,
+  });
+  if (response.status !== 200) throw `googleFileCreate unexpected status: ${response.status}`;
+  return (await response.json()) as FileInfo;
+}
+
 export async function googleFileGet(name: string, folderId: string, accessToken: string): Promise<FileInfo | undefined> {
   // TODO pages and nextPageToken are not supported anywhere in this file
   return (
@@ -66,31 +104,7 @@ export async function googleFileGet(name: string, folderId: string, accessToken:
   )[0];
 }
 
-export async function googleFileDelete(id: string, accessToken: string) {
-  const url = googleDriveFilesUrl(id);
-  const response = await fetch(url, {
-    method: "DELETE",
-    headers: getHeaders(accessToken),
-  });
-  if (response.status !== 204) throw `googleFileDelete unexpected status: ${response.status}`;
-  return response.status === 204;
-}
-
-export async function googleFilesGet(folderId: string, accessToken: string) {
-  // TODO pages and nextPageToken are not supported anywhere in this file
-  const files = await googleFilesGetInternal(
-    {
-      q: `trashed=false and '${escapeQuery(folderId)}' in parents`,
-      fields: `nextPageToken, files(${fileInfoKeysWithThumbnail.join(",")})`,
-    },
-    accessToken,
-  );
-
-  const sortedFiles = files.sort((a: FileInfo, b: FileInfo) => b.createdTime.localeCompare(a.createdTime));
-  return sortedFiles;
-}
-
-export async function googleFileBlob(id: string, accessToken: string) {
+export async function googleFileGetBlob(id: string, accessToken: string) {
   const url = googleDriveFilesUrl(id, {
     alt: "media",
   });
@@ -123,26 +137,28 @@ export async function googleFileUpdate(id: string, name: string, file: Blob, acc
   return (await response.json()) as FileInfo;
 }
 
-export async function googleFileCreate(folderId: string, name: string, file: Blob, accessToken: string) {
-  const url = googleDriveFilesUploadUrl({
-    uploadType: "multipart",
-    fields: fileInfoKeys.join(","),
-  });
-  const metadata = {
-    name,
-    mimeType: "image/png",
-    parents: [folderId],
-  };
-  const body = new FormData();
-  body.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
-  body.append("file", file);
+export async function googleFileDelete(id: string, accessToken: string) {
+  const url = googleDriveFilesUrl(id);
   const response = await fetch(url, {
-    method: "POST",
+    method: "DELETE",
     headers: getHeaders(accessToken),
-    body,
   });
-  if (response.status !== 200) throw `googleFileCreate unexpected status: ${response.status}`;
-  return (await response.json()) as FileInfo;
+  if (response.status !== 204) throw `googleFileDelete unexpected status: ${response.status}`;
+  return response.status === 204;
+}
+
+export async function googleFilesGet(folderId: string, accessToken: string) {
+  // TODO pages and nextPageToken are not supported anywhere in this file
+  const files = await googleFilesGetInternal(
+    {
+      q: `trashed=false and '${escapeQuery(folderId)}' in parents`,
+      fields: `nextPageToken, files(${fileInfoKeysWithThumbnail.join(",")})`,
+    },
+    accessToken,
+  );
+
+  const sortedFiles = files.sort((a: FileInfo, b: FileInfo) => b.createdTime.localeCompare(a.createdTime));
+  return sortedFiles;
 }
 
 export async function googleFolderCreate(name: string, folderId: string | undefined, accessToken: string) {
@@ -176,20 +192,10 @@ export async function googleFolderGet(name: string, folderId: string | undefined
   return result[0];
 }
 
-async function googleMakePath(path: string, readonly: boolean, accessToken: string) {
-  const splitPath = path.split("/").filter((p) => p !== "");
-
-  const foldersInPath = [];
-  let folderId: string | undefined;
-  for (let i = 0; i < splitPath.length; i++) {
-    let folder = await googleFolderGet(splitPath[i], folderId, accessToken);
-    if (!folder && !readonly) folder = await googleFolderGetOrCreate(splitPath[i], folderId, accessToken);
-    folderId = folder?.id;
-    foldersInPath.push(folder);
-    if (!folder) return foldersInPath;
-  }
-
-  return foldersInPath;
+export async function googleFolderGetOrCreate(name: string, folderId: string | undefined, accessToken: string): Promise<FileInfo> {
+  let folder = await googleFolderGet(name, folderId, accessToken);
+  if (!folder) folder = await googleFolderCreate(name, folderId, accessToken);
+  return folder;
 }
 
 export async function googlePathGetOrCreate(path: string, accessToken: string) {
@@ -198,10 +204,4 @@ export async function googlePathGetOrCreate(path: string, accessToken: string) {
 
 export async function googlePathGet(path: string, accessToken: string) {
   return googleMakePath(path, true, accessToken);
-}
-
-export async function googleFolderGetOrCreate(name: string, folderId: string | undefined, accessToken: string): Promise<FileInfo> {
-  let folder = await googleFolderGet(name, folderId, accessToken);
-  if (!folder) folder = await googleFolderCreate(name, folderId, accessToken);
-  return folder;
 }

@@ -1,7 +1,7 @@
 import {
   googleFileUpdate,
   googleFileCreate,
-  googleFileBlob,
+  googleFileGetBlob,
   googlePathGetOrCreate,
   googleFileGet,
   googlePathGet,
@@ -44,7 +44,7 @@ async function onLoadBlob(artwork: Artwork) {
   if (!file) return notifyError("file not found");
 
   notifyProgress("loading file");
-  const blob = await googleFileBlob(file.id, accessToken);
+  const blob = await googleFileGetBlob(file.id, accessToken);
 
   notifyProgress("file loaded");
   return blob;
