@@ -33,8 +33,8 @@
 import { computed, ref } from "vue";
 import { artAppState } from "../ArtApp/artAppState";
 import { asBlob, resetCanvas } from "../Artboard/artboardService";
-import { notifyError, notifyProgress } from "../Notify/notifyState";
-import { deleteArtwork, loadArtwork, loadGallery, saveArtwork } from "@/components/Gallery/galleryService";
+import { notifyProgress } from "../Notify/notifyState";
+import { deleteArtwork, loadArtwork, saveArtwork } from "@/components/Gallery/galleryService";
 import type { PanelState } from "../DockPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
 import { getAvailableSize } from "@/lib/Window";
@@ -69,6 +69,7 @@ const load = async (artwork: Artwork) => {
   artAppState.value.fileName = artwork.name;
   notifyProgress("loaded");
 };
+
 const deleteSelected = async () => {
   const selected = galleryState.value.artworks.find((x) => x.id === selectedArtwork.value);
   console.log("selected", selected);
@@ -83,20 +84,13 @@ const deleteSelected = async () => {
 
   notifyProgress("deleted");
 };
+
 const newArtwork = async () => {
-  // notifyProgress("requesting load", 1);
-  // await galleryLoad({
-  //   name: artAppState.value.fileName,
-  //   path: "/",
-  // });
-  // notifyProgress("loaded");
   resetCanvas(getAvailableSize(), "#ffffff");
   artAppState.value.fileName = new Date().toISOString().replace(/\.\d*/, "").replace(/Z/g, "").replace(/T/g, " ");
 };
 
 const save = async () => {
-  // TODO if it exists indicate it when I choose the name
-  // TODO add a way to browse images
   notifyProgress("converting canvas to blob", 2);
   const blob = await asBlob();
 
@@ -112,8 +106,6 @@ const save = async () => {
 
 <style scoped>
 .thumbnails {
-  /* display: flex;
-  flex-wrap: wrap; */
   display: grid;
   grid-template-rows: auto auto;
   grid-template-columns: repeat(1, 1fr);
@@ -122,12 +114,7 @@ const save = async () => {
     position: relative;
     grid-column: span 1;
     margin: 0.1em;
-    /* margin-bottom: 0.2em; */
-    /* display: inline-block; */
-    /* max-width: 20vmin; */
-    /* width: 100%; */
     .image {
-      /* opacity: 0.8; */
       cursor: pointer;
     }
     .name {
@@ -163,7 +150,6 @@ const save = async () => {
 
 .selected {
   box-shadow: 0 0 0.5em 0.5em rgb(0, 127, 255, 0.5);
-  /* border: 1px solid rgb(0, 127, 255, 0.5); */
-  z-index: 101;
+  z-index: 100;
 }
 </style>
