@@ -24,6 +24,7 @@ let accessToken: string | undefined;
 const rootDirName = "gallery.challen.info/v2";
 async function onSetAccessToken(newAccessToken: string) {
   notifyToast("onSetAccessToken len:" + accessToken?.length);
+  
   // TODO something may still be wrong, tokens automatically, leave this console.log here for now
   // since saying that ot may be better, still leaving it here though
   console.log("onSetAccessToken", (newAccessToken || "").substring(0, 6) + "...");
