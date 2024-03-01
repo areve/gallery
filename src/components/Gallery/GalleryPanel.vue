@@ -51,7 +51,6 @@ usePersistentState("galleryPanelState", galleryPanelState);
 const selectedArtwork = ref<string | undefined>();
 const loadSelected = async () => {
   const selected = galleryState.value.artworks.find((x) => x.id === selectedArtwork.value);
-  console.log("selected", selected);
   if (!selected) return;
   load(selected);
 };
@@ -72,7 +71,6 @@ const load = async (artwork: Artwork) => {
 
 const deleteSelected = async () => {
   const selected = galleryState.value.artworks.find((x) => x.id === selectedArtwork.value);
-  console.log("selected", selected);
   if (!selected) return;
 
   notifyProgress("deleting artwork", 1);

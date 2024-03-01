@@ -81,7 +81,6 @@ export function notifyProgress(message: string, steps?: number) {
   }
 
   notifyState.value.progress.message = message;
-  console.log(notifyState.value.progress);
 }
 
 function updatePercent() {

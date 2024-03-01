@@ -19,7 +19,6 @@ export async function loadGallery(path: string) {
 
 export async function deleteArtwork(artwork: Artwork) {
   const success = await messageBus.request<[]>("deleteArtwork", [artwork]);
-  console.log("delete result", success);
   const artworks = clone(toRaw(galleryState.value.artworks));
   galleryState.value.artworks = artworks.filter((x) => x.name !== artwork.name);
 }
@@ -37,7 +36,6 @@ watchPostEffect(() => {
 
 export async function saveArtwork(artwork: ArtworkWithBlob) {
   const savedArtwork = await messageBus.request<Artwork>("saveBlob", [artwork]);
-  console.log("savedArtwork", savedArtwork);
   const artworks = clone(toRaw(galleryState.value.artworks));
 
   const existingArtwork = artworks.find((x) => x.name === artwork.name);
@@ -48,7 +46,6 @@ export async function saveArtwork(artwork: ArtworkWithBlob) {
   }
   // TODO preserve the scroll position
   galleryState.value.artworks = artworks;
-  console.log("zzzz", galleryState.value.artworks);
 }
 
 // TODO loadDefaultGallery should be called automatically once token is ready
