@@ -22,8 +22,8 @@ watch(() => appState.value.updateApproved, updateNow);
 const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
-    notifyToast("update available #1");
-    //appState.value.updateAvailable = true;
+    notifyToast("update available");
+    appState.value.updateAvailable = true;
   },
   onOfflineReady() {
     notifyToast("on offline ready");
