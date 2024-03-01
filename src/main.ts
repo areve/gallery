@@ -9,6 +9,7 @@ import { cloneExtend } from "./lib/utils";
 function updateNow() {
   notifyToast("updateNow");
   if (!appState.value.updateApproved) return;
+  notifyToast("updateNow #2");
   appState.value = cloneExtend(appState.value, {
     updateApproved: false,
     updateAvailable: false,
@@ -31,7 +32,9 @@ const updateSW = registerSW({
     registration &&
       setInterval(() => {
         appState.value.checkCount++;
+        notifyToast("checkCount++");
         registration.update();
+        notifyToast("update()");
       }, 15000);
   },
   onRegisterError(error: any) {
