@@ -10,7 +10,6 @@ async function close() {
 </script>
 
 <template>
-  #11
   <div v-if="offlineReady || needRefresh" class="pwa-toast" role="alert">
     <div class="message">
       <span v-if="offlineReady"> App ready to work offline </span>
