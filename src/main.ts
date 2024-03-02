@@ -20,7 +20,6 @@ function updateNow() {
 watch(() => appState.value.updateApproved, updateNow);
 
 const updateSW = registerSW({
-  immediate: false,
   onNeedRefresh() {
     notifyToast("update available");
     appState.value.updateAvailable = true;
@@ -30,10 +29,6 @@ const updateSW = registerSW({
   },
   onRegisteredSW(swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {
     notifyToast(swScriptUrl);
-    // if(swScriptUrl!=="/sw.js") return;
-    appState.value.updateAvailable = false;
-    appState.value.updateApproved = false;
-
     registration &&
       setInterval(() => {
         appState.value.checkCount++;
