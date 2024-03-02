@@ -7,7 +7,7 @@ import { notifyError, notifyToast } from "./components/Notify/notifyState";
 import { cloneExtend } from "./lib/utils";
 
 const updateNow = () => {
-  notifyToast("update now");
+  notifyToast("update now #1");
   if (!appState.value.updateApproved) return;
   notifyToast("update now and approved");
   appState.value = cloneExtend(appState.value, {
