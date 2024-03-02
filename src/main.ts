@@ -43,5 +43,18 @@ import "./assets/main.css";
 //   },
 // });
 
+import { useRegisterSW } from "virtual:pwa-register/vue";
+
+const intervalMS = 15 * 1000;
+
+const updateServiceWorker = useRegisterSW({
+  onRegistered(r) {
+    r &&
+      setInterval(() => {
+        console.log("check for update #12");
+        r.update();
+      }, intervalMS);
+  },
+});
 const app = createApp(App);
 app.mount("#app");
