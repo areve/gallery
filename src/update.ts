@@ -8,7 +8,7 @@ const updateServiceWorker = useRegisterSW({
     r &&
       setInterval(() => {
         // TODO or perhaps code should not be in main.ts?
-        console.log("check for update #17");
+        console.log("check for update #18");
         r.update();
       }, intervalMS);
   },
