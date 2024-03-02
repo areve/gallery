@@ -23,7 +23,7 @@ const updateSW = registerSW({
   immediate: false,
   onNeedRefresh() {
     notifyToast("update available");
-    appState.value.updateAvailable = true;
+    // appState.value.updateAvailable = true;
   },
   onOfflineReady() {
     notifyToast("on offline ready");
@@ -33,7 +33,7 @@ const updateSW = registerSW({
     registration &&
       setInterval(() => {
         appState.value.checkCount++;
-        notifyToast("check for update #8");
+        notifyToast("check for update #9");
         registration.update();
       }, 15000);
   },
