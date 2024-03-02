@@ -4,7 +4,7 @@ import { pwaInfo } from "virtual:pwa-info";
 
 console.log(pwaInfo);
 
-const reloadSW: any = true;
+const reloadSW: any = "true";
 
 const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW({
   immediate: true,
