@@ -1,11 +1,10 @@
-//import { appState } from "./appState";
-import { createApp } from "vue";
-//import { createApp, watch } from "vue";
+import { appState } from "./appState";
+import { createApp, watch } from "vue";
 import App from "./App.vue";
 import "./assets/main.css";
-//import { registerSW } from "virtual:pwa-register";
-//import { notifyError, notifyToast } from "./components/Notify/notifyState";
-//import { cloneExtend } from "./lib/utils";
+import { registerSW } from "virtual:pwa-register";
+import { notifyError, notifyToast } from "./components/Notify/notifyState";
+import { cloneExtend } from "./lib/utils";
 
 // const updateNow = () => {
 //   notifyToast("update now");
@@ -15,7 +14,7 @@ import "./assets/main.css";
 //     updateApproved: false,
 //     updateAvailable: false,
 //   });
-//   updateSW();
+//   updateSW(true);
 // };
 
 // watch(() => appState.value.updateApproved, updateNow);
