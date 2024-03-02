@@ -29,6 +29,7 @@ const updateSW = registerSW({
     notifyToast("on offline ready");
   },
   onRegisteredSW(swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {
+notifyToast(swScriptUrl);
     registration &&
       setInterval(() => {
         appState.value.checkCount++;
