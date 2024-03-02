@@ -7,7 +7,7 @@ import { notifyError, notifyToast } from "./components/Notify/notifyState";
 import { cloneExtend } from "./lib/utils";
 
 const updateNow = () => {
-  notifyToast("update now #1");
+  notifyToast("update now #2");
   if (!appState.value.updateApproved) return;
   notifyToast("update now and approved");
   appState.value = cloneExtend(appState.value, {
@@ -15,7 +15,6 @@ const updateNow = () => {
     updateAvailable: false,
   });
   updateSW();
-  document.location = document.location.href;
 };
 
 watch(() => appState.value.updateApproved, updateNow);
