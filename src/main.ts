@@ -35,7 +35,7 @@ notifyToast(swScriptUrl);
         appState.value.checkCount++;
         notifyToast("checkCount++");
         registration.update();
-        notifyToast("update()");
+        notifyToast("check for update");
       }, 15000);
   },
   onRegisterError(error: any) {
