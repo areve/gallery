@@ -50,7 +50,7 @@ const updateServiceWorker = useRegisterSW({
   onRegistered(r) {
     r &&
       setInterval(() => {
-        console.log("check for update #12");
+        notifyToast("check for update #13");
         r.update();
       }, intervalMS);
   },
