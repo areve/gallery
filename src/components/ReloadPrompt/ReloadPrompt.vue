@@ -8,7 +8,7 @@ const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW({
     r &&
       setInterval(() => {
         // TODO or perhaps code should not be in main.ts?
-        console.log("check for update #21");
+        console.log("check for update #22");
         r.update();
       }, intervalMS);
   },
