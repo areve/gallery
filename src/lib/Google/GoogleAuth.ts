@@ -69,14 +69,14 @@ function getAuth2Url(type: "id_token token" | "id_token" | "token", hint?: strin
 }
 
 function loadTokensFromHashObject(hash: { [value: string]: string }) {
-  console.log("load tokens from hash object")
+  console.log("load tokens from hash object");
   if (hash.state) {
     if (hash.error) {
       console.error("error:", hash.error);
       googleAuthState.value = defaultAuthState();
     } else {
       if (hash.state === googleAuthState.value.oauthState) {
-        console.log("load token state uuid matched")
+        console.log("state uuid matched");
         if (hash.access_token) googleAuthState.value.accessToken = hash.access_token;
         if (hash.id_token) googleAuthState.value.idToken = hash.id_token;
         googleAuthState.value.expiresAt = new Date(new Date().getTime() + parseInt(hash.expires_in) * 1000);
