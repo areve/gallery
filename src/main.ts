@@ -30,7 +30,9 @@ const updateSW = registerSW({
   },
   onRegisteredSW(swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {
 notifyToast(swScriptUrl);
-    registration &&
+if(swScriptUrl!=="/sw.js") return;
+
+ registration &&
       setInterval(() => {
         appState.value.checkCount++;
         notifyToast("checkCount++");
