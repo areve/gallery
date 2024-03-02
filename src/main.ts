@@ -6,7 +6,7 @@ import { registerSW } from "virtual:pwa-register";
 import { notifyError, notifyToast } from "./components/Notify/notifyState";
 import { cloneExtend } from "./lib/utils";
 
-function updateNow() {
+const updateNow = () => {
   notifyToast("update now");
   if (!appState.value.updateApproved) return;
   notifyToast("update now and approved");
@@ -16,7 +16,7 @@ function updateNow() {
   });
   updateSW();
   document.location = document.location.href;
-}
+};
 
 watch(() => appState.value.updateApproved, updateNow);
 
