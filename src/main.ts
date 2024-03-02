@@ -15,6 +15,7 @@ function updateNow() {
     updateAvailable: false,
   });
   updateSW();
+  document.location = document.location.href;
 }
 
 watch(() => appState.value.updateApproved, updateNow);
