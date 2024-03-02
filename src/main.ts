@@ -20,6 +20,7 @@ function updateNow() {
 watch(() => appState.value.updateApproved, updateNow);
 
 const updateSW = registerSW({
+  immediate: false,
   onNeedRefresh() {
     notifyToast("update available");
     appState.value.updateAvailable = true;
