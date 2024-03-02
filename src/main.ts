@@ -1,10 +1,11 @@
-import { appState } from "./appState";
-import { createApp, watch } from "vue";
+// import { appState } from "./appState";
+// import { createApp, watch } from "vue";
+import { createApp } from "vue";
 import App from "./App.vue";
 import "./assets/main.css";
-import { registerSW } from "virtual:pwa-register";
-import { notifyError, notifyToast } from "./components/Notify/notifyState";
-import { cloneExtend } from "./lib/utils";
+// import { registerSW } from "virtual:pwa-register";
+// import { notifyError, notifyToast } from "./components/Notify/notifyState";
+// import { cloneExtend } from "./lib/utils";
 
 // const updateNow = () => {
 //   notifyToast("update now");
@@ -42,18 +43,5 @@ import { cloneExtend } from "./lib/utils";
 //   },
 // });
 
-import { useRegisterSW } from "virtual:pwa-register/vue";
-
-const intervalMS = 15 * 1000;
-
-const updateServiceWorker = useRegisterSW({
-  onRegistered(r) {
-    r &&
-      setInterval(() => {
-        console.log("check for update #15");
-        r.update();
-      }, intervalMS);
-  },
-});
 const app = createApp(App);
 app.mount("#app");
