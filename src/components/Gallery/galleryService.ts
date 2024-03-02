@@ -33,6 +33,7 @@ export async function loadArtwork(artwork: Artwork) {
 }
 
 watchPostEffect(() => {
+  console.log("calling setAccessToken");
   messageBus.publish("setAccessToken", [googleAuthState.value.accessToken]);
 });
 
