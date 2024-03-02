@@ -9,7 +9,7 @@ import { cloneExtend } from "./lib/utils";
 function updateNow() {
   notifyToast("update now");
   if (!appState.value.updateApproved) return;
-  notifyToast("update now, approved");
+  notifyToast("update now and approved");
   appState.value = cloneExtend(appState.value, {
     updateApproved: false,
     updateAvailable: false,
