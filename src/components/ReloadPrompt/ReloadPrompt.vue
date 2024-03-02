@@ -1,24 +1,30 @@
 <script setup lang="ts">
 import { useRegisterSW } from "virtual:pwa-register/vue";
+import { pwaInfo } from "virtual:pwa-info";
 
-const intervalMS = 15 * 1000;
+console.log(pwaInfo);
+
+const reloadSW: any = true;
 
 const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW({
   immediate: true,
   onRegisteredSW(swUrl, r) {
-    console.log("SW registered: " + swUrl);
-    r &&
-      setInterval(() => {
-        // TODO or perhaps code should not be in main.ts?
-        console.log("check for update #24");
-        r.update();
-      }, intervalMS);
+    console.log(`Service Worker at: ${swUrl}`);
+    if (reloadSW === "true") {
+      r &&
+        setInterval(async () => {
+          console.log("Checking for sw update #25");
+          await r.update();
+        }, 20000 /* 20s for testing purposes */);
+    } else {
+      console.log(`SW Registered: ${r}`);
+    }
   },
 });
 
 async function close() {
-  offlineReady.value = true;
-  needRefresh.value = true;
+  offlineReady.value = false;
+  needRefresh.value = false;
 }
 </script>
 
@@ -44,8 +50,7 @@ async function close() {
   border-radius: 4px;
   z-index: 1;
   text-align: left;
-  box-shadow: 3px 4px 5px 0 #8885;
-  background-color: white;
+  box-shadow: 3px 4px 5px 0px #8885;
 }
 .pwa-toast .message {
   margin-bottom: 8px;
