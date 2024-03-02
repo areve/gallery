@@ -10,15 +10,15 @@ const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW({
   immediate: true,
   onRegisteredSW(swUrl, r) {
     console.log(`Service Worker at: ${swUrl}`);
-    if (reloadSW === "true") {
-      r &&
-        setInterval(async () => {
-          console.log("Checking for sw update #26");
-          await r.update();
-        }, 20000 /* 20s for testing purposes */);
-    } else {
-      console.log(`SW Registered: ${r}`);
-    }
+    // if (reloadSW === "true") {
+    r &&
+      setInterval(async () => {
+        console.log("Checking for sw update #27");
+        await r.update();
+      }, 20000 /* 20s for testing purposes */);
+    // } else {
+    //   console.log(`SW Registered: ${r}`);
+    // }
   },
 });
 

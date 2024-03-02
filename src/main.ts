@@ -3,6 +3,8 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import "./assets/main.css";
+
+if (typeof window !== "undefined") import("./update");
 // import { registerSW } from "virtual:pwa-register";
 // import { notifyError, notifyToast } from "./components/Notify/notifyState";
 // import { cloneExtend } from "./lib/utils";
