@@ -7,7 +7,7 @@ import { notifyError, notifyToast } from "./components/Notify/notifyState";
 import { cloneExtend } from "./lib/utils";
 
 const updateNow = () => {
-  notifyToast("update now #2");
+  notifyToast("update now");
   if (!appState.value.updateApproved) return;
   notifyToast("update now and approved");
   appState.value = cloneExtend(appState.value, {
@@ -34,7 +34,7 @@ const updateSW = registerSW({
       setInterval(() => {
         appState.value.checkCount++;
         registration.update();
-        notifyToast("check for update");
+        notifyToast("check for update #1");
       }, 15000);
   },
   onRegisterError(error: any) {
