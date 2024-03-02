@@ -9,7 +9,7 @@ import { cloneExtend } from "./lib/utils";
 function updateNow() {
   notifyToast("maybe update now");
   if (!appState.value.updateApproved) return;
-  notifyToast("update now");
+  notifyToast("update now " + JSON.stringify(appState.value));
   appState.value = cloneExtend(appState.value, {
     updateApproved: false,
     updateAvailable: false,
@@ -31,6 +31,8 @@ const updateSW = registerSW({
   onRegisteredSW(swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {
     notifyToast(swScriptUrl);
     // if(swScriptUrl!=="/sw.js") return;
+    appState.value.updateAvailable = false;
+    appState.value.updateApproved = false;
 
     registration &&
       setInterval(() => {
