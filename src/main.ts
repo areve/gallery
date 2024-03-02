@@ -34,7 +34,7 @@ const updateSW = registerSW({
       setInterval(() => {
         appState.value.checkCount++;
         registration.update();
-        notifyToast("check for update #6");
+        notifyToast("check for update #7");
       }, 15000);
   },
   onRegisterError(error: any) {
