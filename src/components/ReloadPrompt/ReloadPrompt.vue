@@ -3,17 +3,16 @@ import { useRegisterSW } from "virtual:pwa-register/vue";
 
 const intervalMS = 15 * 1000;
 
-const updateServiceWorker2 = useRegisterSW({
+const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW({
   onRegistered(r) {
     r &&
       setInterval(() => {
         // TODO or perhaps code should not be in main.ts?
-        console.log("check for update #20");
+        console.log("check for update #21");
         r.update();
       }, intervalMS);
   },
 });
-const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW();
 
 async function close() {
   offlineReady.value = true;
