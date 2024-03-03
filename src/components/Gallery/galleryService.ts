@@ -39,10 +39,10 @@ async function initializeGalleryWorker() {
 }
 
 export async function newArtwork(artwork: Artwork) {
-  const artworks = clone(toRaw(galleryState.value.artworks));
-  artworks.unshift(artwork);
-  // TODO there is no thumbnail
-  galleryState.value.artworks = artworks;
+  // const artworks = clone(toRaw(galleryState.value.artworks));
+  // // TODO there is no thumbnail
+  // galleryState.value.artworks = artworks;
+  galleryState.value.artworks.unshift(artwork);
 }
 
 export async function saveArtwork(artwork: ArtworkWithBlob) {

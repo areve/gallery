@@ -13,20 +13,21 @@
       <button type="button" @click="loadSelected">Load</button>
       <button type="button" @click="startNew">New</button>
     </div>
-    <div class="thumbnails">
+    <TransitionGroup name="list" tag="div" class="thumbnails">
       <div
-        class="thumbnail"
+        class="thumbnail foo"
         :class="{
           selected: isSelected(artwork),
         }"
-        v-for="(artwork, index) in galleryState.artworks"
-        :key="index"
+        v-for="artwork in galleryState.artworks"
+        :key="artwork.id"
         ref="thumbnails"
+        :data-id="artwork.id"
       >
         <img referrerPolicy="no-referrer" @click="select(artwork)" class="image" :src="artwork.thumbnailUrl" />
         <div class="name">{{ artwork.name }}</div>
       </div>
-    </div>
+    </TransitionGroup>
   </section>
 </template>
 
@@ -64,10 +65,12 @@ const select = (artwork: Artwork) => {
   selectedArtwork.value = artwork.id;
 };
 const scrollSelectedIntoView = () => {
-  const index = galleryState.value.artworks.findIndex((x) => x.id === selectedArtwork.value);
-
+  // const index = galleryState.value.artworks.findIndex((x) => x.id === selectedArtwork.value);
   if (!thumbnails.value) return;
-  thumbnails.value[index].scrollIntoView({
+  // console.log("idex was", index, thumbnails.value[index]);
+  const it = thumbnails.value.find((x) => x.getAttribute("data-id") === selectedArtwork.value);
+  if (!it) return;
+  it.scrollIntoView({
     behavior: "smooth",
   });
 };
@@ -131,32 +134,34 @@ const save = async () => {
   grid-template-rows: auto auto;
   grid-template-columns: repeat(1, 1fr);
   grid-gap: 0em;
-  .thumbnail {
-    position: relative;
-    grid-column: span 1;
-    margin: 0.1em;
-    background-color: #ccc;
-    text-align: center;
-    .image {
-      cursor: pointer;
-      height: 200px;
-    }
-    .name {
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      font-size: 0.8em;
-      color: #fff;
-      background-color: rgb(0, 0, 0, 0.8);
-      padding: 0 0.2em;
-      margin: 0.1em;
-      border-radius: 0.2em;
-      line-height: 1.2em;
-      display: none;
-    }
-  }
 }
-
+.thumbnail {
+  position: relative;
+  grid-column: span 1;
+  margin: 0.1em;
+  background-color: #ccc;
+  text-align: center;
+  overflow: hidden;
+  height: 200px;
+  transition: height 0.6s ease;
+}
+.image {
+  cursor: pointer;
+  height: 200px;
+}
+.name {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 0.8em;
+  color: #fff;
+  background-color: rgb(0, 0, 0, 0.8);
+  padding: 0 0.2em;
+  margin: 0.1em;
+  border-radius: 0.2em;
+  line-height: 1.2em;
+  display: none;
+}
 .filename {
   width: 100%;
 }
@@ -175,5 +180,17 @@ const save = async () => {
 .selected {
   box-shadow: 0 0 0.5em 0.5em rgb(0, 127, 255, 0.5);
   z-index: 100;
+}
+
+.list-enter-active,
+.list-leave-active {
+  /* transition: all 0.6s; */
+}
+
+.list-enter-from,
+.list-leave-to {
+  /* transform: translateX(30px); */
+  /* transform: scaleY(0); */
+  height: 0;
 }
 </style>
