@@ -21,6 +21,7 @@
         }"
         v-for="(artwork, index) in galleryState.artworks"
         :key="index"
+        ref="thumbnails"
       >
         <img referrerPolicy="no-referrer" @click="select(artwork)" class="image" :src="artwork.thumbnailUrl" />
         <div class="name">{{ artwork.name }}</div>
@@ -44,6 +45,8 @@ import type { Artwork } from "./Artwork";
 
 const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStates.right.topPercent * 100) / 100 + "%");
 
+const thumbnails = ref<HTMLElement[]>();
+
 const galleryPanelState = ref<PanelState>({
   rolled: true,
 });
@@ -57,9 +60,18 @@ const loadSelected = async () => {
 };
 const isSelected = (artwork: Artwork) => selectedArtwork.value === artwork.id;
 
-const select = async (artwork: Artwork) => {
+const select = (artwork: Artwork) => {
   selectedArtwork.value = artwork.id;
 };
+const scrollSelectedIntoView = () => {
+  const index = galleryState.value.artworks.findIndex((x) => x.id === selectedArtwork.value);
+
+  if (!thumbnails.value) return;
+  thumbnails.value[index].scrollIntoView({
+    behavior: "smooth",
+  });
+};
+
 const load = async (artwork: Artwork) => {
   notifyProgress("requesting load", 1);
   await loadArtwork({
@@ -90,12 +102,13 @@ const startNew = async () => {
   artAppState.value.fileName = name;
   const artwork = {
     name,
-    // thumbnailUrl: "/mocks/image-0-mock.png",
+    thumbnailUrl: "/mocks/white.png",
     path: "/",
     id: uuid(),
   };
   await newArtwork(artwork);
   select(artwork);
+  scrollSelectedIntoView();
 };
 
 const save = async () => {
