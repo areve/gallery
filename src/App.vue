@@ -3,42 +3,34 @@ import { appState } from "./appState";
 import { watch } from "vue";
 import { registerSW } from "virtual:pwa-register";
 import { notifyError, notifyToast } from "./components/Notify/notifyState";
-import { cloneExtend } from "./lib/utils";
 import ArtApp from "@/components/ArtApp/ArtApp.vue";
 
-const updateNow = () => {
-  notifyToast("update now");
-  if (!appState.value.updateApproved) return;
-  notifyToast("update now and approved");
-  appState.value = cloneExtend(appState.value, {
-    updateApproved: false,
-    updateAvailable: false,
-  });
-  updateSW(true);
-};
-
-watch(() => appState.value.updateApproved, updateNow);
+watch(
+  () => appState.value.updateApproved,
+  () => {
+    if (!appState.value.updateApproved) return;
+    updateSW(true);
+  },
+);
 
 const updateSW = registerSW({
-  immediate: false,
   onNeedRefresh() {
     notifyToast("update available");
     appState.value.updateAvailable = true;
   },
   onOfflineReady() {
-    notifyToast("on offline ready");
+    notifyToast("offline ready");
   },
   onRegisteredSW(swScriptUrl: string, registration: ServiceWorkerRegistration | undefined) {
-    notifyToast(swScriptUrl);
+    console.log("register service worker", swScriptUrl);
     registration &&
       setInterval(() => {
-        appState.value.checkCount++;
-        notifyToast("check for update #32");
+        console.log("check for update");
         registration.update();
       }, 15000);
   },
   onRegisterError(error: any) {
-    notifyError("onRegisterError " + JSON.stringify(error));
+    notifyError("error " + JSON.stringify(error));
   },
 });
 </script>
@@ -47,7 +39,6 @@ const updateSW = registerSW({
   <div class="app-wrapper">
     <ArtApp />
   </div>
-  <ReloadPrompt />
 </template>
 
 <style>
