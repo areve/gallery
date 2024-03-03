@@ -13,7 +13,7 @@ const { offlineReady, needRefresh, updateServiceWorker } = useRegisterSW({
     // if (reloadSW === "true") {
     r &&
       setInterval(async () => {
-        console.log("Checking for sw update #29");
+        console.log("Checking for sw update #30");
         await r.update();
       }, 20000 /* 20s for testing purposes */);
     // } else {
