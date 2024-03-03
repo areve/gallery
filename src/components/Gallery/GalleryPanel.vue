@@ -11,7 +11,7 @@
       <button class="button" type="button" @click="save">Save</button>
       <button class="button" type="button" @click="deleteSelected">Delete</button>
       <button type="button" @click="loadSelected">Load</button>
-      <button type="button" @click="newArtwork">New</button>
+      <button type="button" @click="startNew">New</button>
     </div>
     <div class="thumbnails">
       <div
@@ -34,11 +34,12 @@ import { computed, ref } from "vue";
 import { artAppState } from "../ArtApp/artAppState";
 import { asBlob, resetCanvas } from "../Artboard/artboardService";
 import { notifyProgress } from "../Notify/notifyState";
-import { deleteArtwork, loadArtwork, saveArtwork } from "@/components/Gallery/galleryService";
+import { deleteArtwork, loadArtwork, saveArtwork, newArtwork } from "@/components/Gallery/galleryService";
 import type { PanelState } from "../DockPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
 import { getAvailableSize } from "@/lib/Window";
 import { galleryState } from "./galleryState";
+import { v4 as uuid } from "uuid";
 import type { Artwork } from "./Artwork";
 
 const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStates.right.topPercent * 100) / 100 + "%");
@@ -83,9 +84,18 @@ const deleteSelected = async () => {
   notifyProgress("deleted");
 };
 
-const newArtwork = async () => {
+const startNew = async () => {
   resetCanvas(getAvailableSize(), "#ffffff");
-  artAppState.value.fileName = new Date().toISOString().replace(/\.\d*/, "").replace(/Z/g, "").replace(/T/g, " ");
+  const name = new Date().toISOString().replace(/\.\d*/, "").replace(/Z/g, "").replace(/T/g, " ");
+  artAppState.value.fileName = name;
+  const artwork = {
+    name,
+    // thumbnailUrl: "/mocks/image-0-mock.png",
+    path: "/",
+    id: uuid(),
+  };
+  await newArtwork(artwork);
+  select(artwork);
 };
 
 const save = async () => {
@@ -112,6 +122,10 @@ const save = async () => {
     position: relative;
     grid-column: span 1;
     margin: 0.1em;
+    width: 220px;
+    height: 220px;
+    background-color: #fff;
+    text-align: center;
     .image {
       cursor: pointer;
     }

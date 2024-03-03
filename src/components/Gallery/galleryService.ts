@@ -38,15 +38,23 @@ async function initializeGalleryWorker() {
   if (googleAuthState.value.accessToken) await loadDefaultGallery();
 }
 
+export async function newArtwork(artwork: Artwork) {
+  const artworks = clone(toRaw(galleryState.value.artworks));
+  artworks.unshift(artwork);
+  // TODO there is no thumbnail
+  galleryState.value.artworks = artworks;
+}
+
 export async function saveArtwork(artwork: ArtworkWithBlob) {
   const savedArtwork = await messageBus.request<Artwork>("saveBlob", [artwork]);
   const artworks = clone(toRaw(galleryState.value.artworks));
 
   const existingArtwork = artworks.find((x) => x.name === artwork.name);
+  console.log("savedArtwork", savedArtwork);
   if (existingArtwork) {
-    existingArtwork.thumbnailUrl = savedArtwork.thumbnailUrl;
-  } else {
-    artworks.unshift(savedArtwork);
+    existingArtwork.thumbnailUrl = (savedArtwork as any).thumbnailLink; //TODO wrong type?
+    // } else {
+    // artworks.unshift(savedArtwork);
   }
   // TODO preserve the scroll position
   galleryState.value.artworks = artworks;

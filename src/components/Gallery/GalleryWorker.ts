@@ -56,7 +56,7 @@ async function onLoadBlob(artwork: Artwork) {
 async function onSaveBlob(artwork: ArtworkWithBlob) {
   if (!accessToken) throw "accessToken not set";
 
-  notifyProgress("finding folders", 3);
+  notifyProgress("finding folders", 4);
   const folders = await googlePathGetOrCreate(rootDirName + "/" + artwork.path, accessToken);
   const folder = folders[folders.length - 1];
   if (!folder) return notifyError("folder not found");
@@ -69,8 +69,11 @@ async function onSaveBlob(artwork: ArtworkWithBlob) {
   else file = await googleFileCreate(folder.id, artwork.name, artwork.blob, accessToken);
 
   // TODO I could use my own data instead of getting their thumbnail, the thumbnail is not generated instantly anyway
-  notifyProgress("file saved");
-  return file;
+  notifyProgress("get file");
+  const savedFile = await googleFileGet(file.name, folder.id, accessToken);
+  console.log(savedFile)
+  notifyProgress("file saved" );
+  return savedFile;
 }
 
 async function onDeleteGallery(artwork: Artwork) {
