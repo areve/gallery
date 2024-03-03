@@ -1,6 +1,6 @@
 {
   "name": "gallery",
-  "version": "0.0.214",
+  "version": "0.0.215",
   "private": true,
   "scripts": {
     "dev": "vite",

@@ -1,6 +1,6 @@
 import { createMessageBus } from "@/lib/MessageBus";
 import GalleryWorker from "./GalleryWorker?worker";
-import { toRaw, watchPostEffect } from "vue";
+import { toRaw, watch, watchPostEffect } from "vue";
 import { notifyError, notifyProgress } from "../Notify/notifyState";
 import { loadBlob } from "../Artboard/artboardService";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
@@ -32,10 +32,14 @@ export async function loadArtwork(artwork: Artwork) {
   notifyProgress("blob loaded");
 }
 
-watchPostEffect(() => {
-  console.log("calling setAccessToken");
-  messageBus.publish("setAccessToken", [googleAuthState.value.accessToken]);
-});
+watch(
+  () => googleAuthState.value.accessToken,
+  async (_: string | null, oldValue: string | null) => {
+    console.log(`calling accessToken changed from (${typeof oldValue})`);
+    await messageBus.request("setAccessToken", [googleAuthState.value.accessToken]);
+    if (oldValue === null) await loadDefaultGallery();
+  },
+);
 
 export async function saveArtwork(artwork: ArtworkWithBlob) {
   const savedArtwork = await messageBus.request<Artwork>("saveBlob", [artwork]);
