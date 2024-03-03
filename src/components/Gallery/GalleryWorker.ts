@@ -87,8 +87,7 @@ async function onDeleteGallery(artwork: Artwork) {
     await googleFileDelete(file.id, accessToken);
     notifyProgress("deleted");
   } else {
-    notifyProgress("file did not exist"); // TODO looks messy but the way progress works means I need 2 calls
-    notifyProgress("file did not exist");
+    notifyProgress("file did not exist", -2);
   }
 }
 

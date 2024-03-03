@@ -71,12 +71,13 @@ export function notifyProgress(message: string, steps?: number) {
 
   notifyState.value.toast = defaultState().toast;
   notifyState.value.progress.visible = true;
-  if (typeof steps === "number") {
+  const stepsToAdd = typeof steps === "number" ? steps : -1;
+  if (stepsToAdd > 0) {
     if (!progressInterval) progressInterval = setInterval(updatePercent, 1000 / framesPerSecond);
     notifyState.value.progress.error = false;
-    notifyState.value.progress.steps += steps;
+    notifyState.value.progress.steps += stepsToAdd;
   } else {
-    notifyState.value.progress.complete++;
+    notifyState.value.progress.complete -= stepsToAdd;
   }
 
   notifyState.value.progress.message = message;
