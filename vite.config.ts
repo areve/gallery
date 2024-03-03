@@ -2,10 +2,9 @@ import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-// import mix from "vite-plugin-mix";
 import { VitePWA } from "vite-plugin-pwa";
 
-export default defineConfig(({ command }) => {
+export default defineConfig(({ _ }) => {
   const plugins = [
     vue({
       template: {
@@ -16,7 +15,6 @@ export default defineConfig(({ command }) => {
     }),
     VitePWA({
       registerType: "prompt",
-      // workbox: {},
       includeAssets: ["/icons/favicon.ico", "/icons/apple-touch-icon.png"],
       devOptions: {
         enabled: true,
@@ -53,17 +51,6 @@ export default defineConfig(({ command }) => {
       },
     }),
   ];
-  if (command !== "build") {
-    plugins
-      .push
-      // mix({
-      //   handler: "./gallery-api/src/handler.ts",
-      // }),
-      // mix({
-      //   handler: "./api/api.ts",
-      // })
-      ();
-  }
   return {
     plugins,
     build: {
