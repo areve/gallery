@@ -18,9 +18,9 @@ export default defineConfig(({ command }) => {
       registerType: "prompt",
       // workbox: {},
       includeAssets: ["/icons/favicon.ico", "/icons/apple-touch-icon.png"],
-      // devOptions: {
-      //   enabled: true,
-      // },
+      devOptions: {
+        enabled: true,
+      },
       manifest: {
         name: "Gallery",
         short_name: "Gallery",
