@@ -122,12 +122,11 @@ const save = async () => {
     position: relative;
     grid-column: span 1;
     margin: 0.1em;
-    width: 220px;
-    height: 220px;
-    background-color: #fff;
+    background-color: #ccc;
     text-align: center;
     .image {
       cursor: pointer;
+      height: 200px;
     }
     .name {
       position: absolute;
