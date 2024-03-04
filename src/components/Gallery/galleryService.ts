@@ -13,8 +13,14 @@ messageBus.subscribe("notifyError", notifyError);
 messageBus.subscribe("notifyProgress", notifyProgress);
 
 export async function loadGallery(path: string) {
-  const artworks = await messageBus.request<[]>("loadGallery", [path]);
-  galleryState.value.artworks = artworks;
+  const artworks = await messageBus.request<Artwork[]>("loadGallery", [path]);
+  const sortedArtworks = artworks.sort((a: Artwork, b: Artwork) => {
+    const aTime = a.createdTime || new Date(0);
+    const bTime = b.createdTime || new Date(0);
+    return aTime === bTime ? 0 : bTime > aTime ? -1 : 1;
+  });
+
+  galleryState.value.artworks = sortedArtworks;
 }
 
 export async function deleteArtwork(artwork: Artwork) {
@@ -42,7 +48,7 @@ export async function newArtwork(artwork: Artwork) {
   // const artworks = clone(toRaw(galleryState.value.artworks));
   // // TODO there is no thumbnail
   // galleryState.value.artworks = artworks;
-  galleryState.value.artworks.unshift(artwork);
+  galleryState.value.artworks.push(artwork);
 }
 
 export async function saveArtwork(artwork: ArtworkWithBlob) {

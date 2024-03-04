@@ -112,6 +112,8 @@ const startNew = async () => {
   await newArtwork(artwork);
   select(artwork);
   scrollSelectedIntoView();
+  // TODO this scroll is jumpy
+  setTimeout(scrollSelectedIntoView, 500);
 };
 
 const save = async () => {

@@ -71,8 +71,8 @@ async function onSaveBlob(artwork: ArtworkWithBlob) {
   // TODO I could use my own data instead of getting their thumbnail, the thumbnail is not generated instantly anyway
   notifyProgress("get file");
   const savedFile = await googleFileGet(file.name, folder.id, accessToken);
-  console.log(savedFile)
-  notifyProgress("file saved" );
+  console.log(savedFile);
+  notifyProgress("file saved");
   return savedFile;
 }
 
@@ -94,7 +94,7 @@ async function onDeleteGallery(artwork: Artwork) {
   }
 }
 
-async function onLoadGallery(path: string) {
+async function onLoadGallery(path: string): Promise<Artwork[] | void> {
   if (!accessToken) throw "accessToken not set";
 
   notifyProgress("finding folders", 2);
@@ -106,9 +106,14 @@ async function onLoadGallery(path: string) {
   const files = await googleFilesGet(folder.id, accessToken);
 
   notifyProgress("files loaded");
-  return files.map((file) => ({
-    id: file.id,
-    name: file.name,
-    thumbnailUrl: file.thumbnailLink,
-  }));
+  return files.map(
+    (file) =>
+      ({
+        id: file.id,
+        name: file.name,
+        createdTime: new Date(file.createdTime),
+        modifiedTime: new Date(file.modifiedTime),
+        thumbnailUrl: file.thumbnailLink,
+      }) as Artwork,
+  );
 }

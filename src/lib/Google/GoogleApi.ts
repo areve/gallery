@@ -157,8 +157,7 @@ export async function googleFilesGet(folderId: string, accessToken: string) {
     accessToken,
   );
 
-  const sortedFiles = files.sort((a: FileInfo, b: FileInfo) => b.createdTime.localeCompare(a.createdTime));
-  return sortedFiles;
+  return files;
 }
 
 export async function googleFolderCreate(name: string, folderId: string | undefined, accessToken: string) {
