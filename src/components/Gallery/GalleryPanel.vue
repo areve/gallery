@@ -90,13 +90,16 @@ const deleteSelected = async () => {
   if (!selected) return;
 
   notifyProgress("deleting artwork", 1);
-  await deleteArtwork({
-    name: selected.name,
-    path: "/",
-  });
-  artAppState.value.fileName = "";
+  selectedArtwork.value = undefined;
+  setTimeout(async () => {
+    await deleteArtwork({
+      name: selected.name,
+      path: "/",
+    });
+    artAppState.value.fileName = "";
 
-  notifyProgress("deleted");
+    notifyProgress("deleted");
+  });
 };
 
 const startNew = async () => {
@@ -113,7 +116,7 @@ const startNew = async () => {
   select(artwork);
   scrollSelectedIntoView();
   // TODO this scroll is jumpy
-  setTimeout(scrollSelectedIntoView, 500);
+  setTimeout(scrollSelectedIntoView, 600);
 };
 
 const save = async () => {

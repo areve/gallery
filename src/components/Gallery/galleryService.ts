@@ -24,9 +24,11 @@ export async function loadGallery(path: string) {
 }
 
 export async function deleteArtwork(artwork: Artwork) {
-  const _success = await messageBus.request<[]>("deleteArtwork", [artwork]);
   const artworks = clone(toRaw(galleryState.value.artworks));
-  galleryState.value.artworks = artworks.filter((x) => x.name !== artwork.name);
+  const index = artworks.findIndex((x) => x.name === artwork.name);
+  artworks.splice(index, 1);
+  galleryState.value.artworks = artworks;
+  const _success = await messageBus.request<[]>("deleteArtwork", [artwork]);
 }
 
 export async function loadArtwork(artwork: Artwork) {
