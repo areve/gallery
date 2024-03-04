@@ -53,7 +53,7 @@ async function onLoadBlob(artwork: Artwork) {
   return blob;
 }
 
-async function onSaveBlob(artwork: ArtworkWithBlob) {
+async function onSaveBlob(artwork: ArtworkWithBlob): Promise<Artwork | void> {
   if (!accessToken) throw "accessToken not set";
 
   notifyProgress("finding folders", 4);
@@ -73,7 +73,14 @@ async function onSaveBlob(artwork: ArtworkWithBlob) {
   const savedFile = await googleFileGet(file.name, folder.id, accessToken);
   console.log(savedFile);
   notifyProgress("file saved");
-  return savedFile;
+  if (!savedFile) return;
+  return {
+    id: savedFile.id,
+    name: savedFile.name,
+    createdTime: new Date(savedFile.createdTime),
+    modifiedTime: new Date(savedFile.modifiedTime),
+    thumbnailUrl: savedFile.thumbnailLink,
+  };
 }
 
 async function onDeleteGallery(artwork: Artwork) {

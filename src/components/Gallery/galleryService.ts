@@ -57,12 +57,7 @@ export async function saveArtwork(artwork: ArtworkWithBlob) {
 
   const existingArtwork = artworks.find((x) => x.name === artwork.name);
   console.log("savedArtwork", savedArtwork);
-  if (existingArtwork) {
-    existingArtwork.thumbnailUrl = (savedArtwork as any).thumbnailLink; //TODO wrong type?
-    // } else {
-    // artworks.unshift(savedArtwork);
-  }
-  // TODO preserve the scroll position
+  if (existingArtwork) existingArtwork.thumbnailUrl = savedArtwork.thumbnailUrl;
   galleryState.value.artworks = artworks;
 }
 
