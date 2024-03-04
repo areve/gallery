@@ -11,7 +11,6 @@
       <button class="button" type="button" @click="save">Save</button>
       <button class="button" type="button" @click="deleteSelected">Delete</button>
       <button type="button" @click="loadSelected">Load</button>
-      <button type="button" @click="startNew">New</button>
     </div>
     <TransitionGroup name="list" tag="div" class="thumbnails">
       <div
@@ -28,6 +27,7 @@
         <div class="name">{{ artwork.name }}</div>
       </div>
     </TransitionGroup>
+    <button type="button" ref="newButton" @click="startNew">New</button>
   </section>
 </template>
 
@@ -47,6 +47,7 @@ import type { Artwork } from "./Artwork";
 const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStates.right.topPercent * 100) / 100 + "%");
 
 const thumbnails = ref<HTMLElement[]>();
+const newButton = ref<HTMLButtonElement>();
 
 const galleryPanelState = ref<PanelState>({
   rolled: true,
@@ -68,9 +69,9 @@ const scrollSelectedIntoView = () => {
   // const index = galleryState.value.artworks.findIndex((x) => x.id === selectedArtwork.value);
   if (!thumbnails.value) return;
   // console.log("idex was", index, thumbnails.value[index]);
-  const it = thumbnails.value.find((x) => x.getAttribute("data-id") === selectedArtwork.value);
-  if (!it) return;
-  it.scrollIntoView({
+  // const it = thumbnails.value.find((x) => x.getAttribute("data-id") === selectedArtwork.value);
+  // if (!it) return;
+  newButton.value?.scrollIntoView({
     behavior: "smooth",
   });
 };
@@ -135,10 +136,11 @@ const save = async () => {
 
 <style scoped>
 .thumbnails {
-  display: grid;
-  grid-template-rows: auto auto;
+  display: flex;
+  flex-direction: column;
+  /* grid-template-rows: auto auto;
   grid-template-columns: repeat(1, 1fr);
-  grid-gap: 0em;
+  grid-gap: 0em;*/
 }
 .thumbnail {
   position: relative;
