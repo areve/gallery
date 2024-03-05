@@ -1,52 +1,37 @@
 <template>
   <section title="Gallery">
-    <div
-      class="buttons"
-      :style="{
-        top: topPercentCss,
-      }"
-    >
-      <input class="filename" type="hidden" v-model="artAppState.fileName" />
-
-      <button class="button" type="button" @click="save">Save</button>
-      <button class="button" type="button" @click="deleteSelected">Delete</button>
-      <button type="button" @click="loadSelected">Load</button>
-    </div>
     <TransitionGroup name="list" tag="div" class="thumbnails">
-      <div
-        class="thumbnail foo"
-        :class="{
-          selected: isSelected(artwork),
-        }"
+      <GalleryThumbnail
         v-for="artwork in galleryState.artworks"
         :key="artwork.id"
-        ref="thumbnails"
+        :artwork="artwork"
         :data-id="artwork.id"
-      >
-        <img referrerPolicy="no-referrer" @click="select(artwork)" class="image" :src="artwork.thumbnailUrl" />
-        <div class="name">{{ artwork.name }}</div>
-      </div>
+        :selected="artwork.id === selectedArtwork"
+        ref="thumbnails"
+        @selected="select"
+        @deleted="deleted"
+      />
     </TransitionGroup>
-    <button type="button" ref="newButton" @click="startNew">New</button>
+    <div class="buttons">
+      <button type="button" ref="newButton" @click="startNew">New</button>
+    </div>
   </section>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { artAppState } from "../ArtApp/artAppState";
-import { asBlob, resetCanvas } from "../Artboard/artboardService";
-import { notifyProgress } from "../Notify/notifyState";
-import { deleteArtwork, loadArtwork, saveArtwork, newArtwork } from "@/components/Gallery/galleryService";
+import { resetCanvas } from "../Artboard/artboardService";
+import { newArtwork } from "@/components/Gallery/galleryService";
 import type { PanelState } from "../DockPanel/PanelState";
 import { usePersistentState } from "@/lib/PersistentState";
 import { getAvailableSize } from "@/lib/Window";
 import { galleryState } from "./galleryState";
 import { v4 as uuid } from "uuid";
 import type { Artwork } from "./Artwork";
+import GalleryThumbnail from "./GalleryThumbnail.vue";
 
-const topPercentCss = computed(() => Math.round(artAppState.value.edgeButtonStates.right.topPercent * 100) / 100 + "%");
-
-const thumbnails = ref<HTMLElement[]>();
+const thumbnails = ref<any | undefined>();
 const newButton = ref<HTMLButtonElement>();
 
 const galleryPanelState = ref<PanelState>({
@@ -55,51 +40,20 @@ const galleryPanelState = ref<PanelState>({
 usePersistentState("galleryPanelState", galleryPanelState);
 
 const selectedArtwork = ref<string | undefined>();
-const loadSelected = async () => {
-  const selected = galleryState.value.artworks.find((x) => x.id === selectedArtwork.value);
-  if (!selected) return;
-  load(selected);
-};
-const isSelected = (artwork: Artwork) => selectedArtwork.value === artwork.id;
 
 const select = (artwork: Artwork) => {
   selectedArtwork.value = artwork.id;
 };
-const scrollSelectedIntoView = () => {
-  // const index = galleryState.value.artworks.findIndex((x) => x.id === selectedArtwork.value);
-  if (!thumbnails.value) return;
-  // console.log("idex was", index, thumbnails.value[index]);
-  // const it = thumbnails.value.find((x) => x.getAttribute("data-id") === selectedArtwork.value);
-  // if (!it) return;
-  newButton.value?.scrollIntoView({
-    behavior: "smooth",
-  });
-};
-
-const load = async (artwork: Artwork) => {
-  notifyProgress("requesting load", 1);
-  await loadArtwork({
-    name: artwork.name,
-    path: "/",
-  });
-  artAppState.value.fileName = artwork.name;
-  notifyProgress("loaded");
-};
-
-const deleteSelected = async () => {
-  const selected = galleryState.value.artworks.find((x) => x.id === selectedArtwork.value);
-  if (!selected) return;
-
-  notifyProgress("deleting artwork", 1);
+const deleted = (_artwork: Artwork) => {
   selectedArtwork.value = undefined;
-  setTimeout(async () => {
-    await deleteArtwork({
-      name: selected.name,
-      path: "/",
-    });
-    artAppState.value.fileName = "";
+};
 
-    notifyProgress("deleted");
+const scrollSelectedIntoView = () => {
+  if (!thumbnails.value) return;
+  const it = thumbnails.value[thumbnails.value.length - 1].$el;
+  if (!it) return;
+  it.scrollIntoView({
+    behavior: "smooth",
   });
 };
 
@@ -119,69 +73,24 @@ const startNew = async () => {
   // TODO this scroll is jumpy
   setTimeout(scrollSelectedIntoView, 600);
 };
-
-const save = async () => {
-  notifyProgress("converting canvas to blob", 2);
-  const blob = await asBlob();
-
-  notifyProgress("saving blob");
-  await saveArtwork({
-    blob,
-    name: artAppState.value.fileName,
-    path: "/",
-  });
-  notifyProgress("blob saved");
-};
 </script>
 
 <style scoped>
 .thumbnails {
   display: flex;
   flex-direction: column;
-  /* grid-template-rows: auto auto;
-  grid-template-columns: repeat(1, 1fr);
-  grid-gap: 0em;*/
-}
-.thumbnail {
-  position: relative;
-  grid-column: span 1;
-  margin: 0.1em;
-  background-color: #ccc;
-  text-align: center;
-  overflow: hidden;
-  height: 200px;
-  transition: height 0.6s ease;
-}
-.image {
-  cursor: pointer;
-  height: 200px;
-}
-.name {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  font-size: 0.8em;
-  color: #fff;
-  background-color: rgb(0, 0, 0, 0.8);
-  padding: 0 0.2em;
-  margin: 0.1em;
-  border-radius: 0.2em;
-  line-height: 1.2em;
-  display: none;
-}
-.filename {
-  width: 100%;
 }
 
 .buttons {
-  position: fixed;
-  right: 11em;
-  margin-top: -5em;
-  width: 20%;
-  z-index: 200;
-  * {
-    width: 5em;
-  }
+  position: absolute;
+  width: 100%;
+  display: flex;
+  bottom: 0;
+}
+
+.buttons * {
+  flex: 1 1;
+  margin: 0.1em;
 }
 
 .selected {
@@ -189,15 +98,8 @@ const save = async () => {
   z-index: 100;
 }
 
-.list-enter-active,
-.list-leave-active {
-  /* transition: all 0.6s; */
-}
-
 .list-enter-from,
 .list-leave-to {
-  /* transform: translateX(30px); */
-  /* transform: scaleY(0); */
   height: 0;
 }
 </style>
