@@ -20,7 +20,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
 import type { Artwork } from "./Artwork";
 import { notifyProgress } from "../Notify/notifyState";
 import { deleteArtwork, loadArtwork, saveArtwork } from "./galleryService";
