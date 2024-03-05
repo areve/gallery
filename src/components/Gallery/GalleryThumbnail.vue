@@ -120,5 +120,9 @@ const onload = async () => {
 .buttons * {
   flex: 1 1;
   margin: 0.1em;
+  /* min-width: 33%; */
+  width: 33%;
+  white-space: nowrap;
+  overflow: hidden;
 }
 </style>

@@ -1,5 +1,8 @@
 <template>
-  <section title="Gallery">
+  <section title="Gallery" class="gallery">
+    <div class="buttons">
+      <button type="button" ref="newButton" @click="startNew">New</button>
+    </div>
     <TransitionGroup name="list" tag="div" class="thumbnails">
       <GalleryThumbnail
         v-for="artwork in galleryState.artworks"
@@ -12,9 +15,6 @@
         @deleted="deleted"
       />
     </TransitionGroup>
-    <div class="buttons">
-      <button type="button" ref="newButton" @click="startNew">New</button>
-    </div>
   </section>
 </template>
 
@@ -48,15 +48,6 @@ const deleted = (_artwork: Artwork) => {
   selectedArtwork.value = undefined;
 };
 
-const scrollSelectedIntoView = () => {
-  if (!thumbnails.value) return;
-  const it = thumbnails.value[thumbnails.value.length - 1].$el;
-  if (!it) return;
-  it.scrollIntoView({
-    behavior: "smooth",
-  });
-};
-
 const startNew = async () => {
   resetCanvas(getAvailableSize(), "#ffffff");
   const name = new Date().toISOString().replace(/\.\d*/, "").replace(/Z/g, "").replace(/T/g, " ");
@@ -69,20 +60,22 @@ const startNew = async () => {
   };
   await newArtwork(artwork);
   select(artwork);
-  scrollSelectedIntoView();
-  // TODO this scroll is jumpy
-  setTimeout(scrollSelectedIntoView, 600);
 };
 </script>
 
 <style scoped>
 .thumbnails {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
+}
+.gallery {
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+  bottom: 0;
 }
 
 .buttons {
-  position: absolute;
   width: 100%;
   display: flex;
   bottom: 0;
