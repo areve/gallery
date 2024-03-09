@@ -196,11 +196,3 @@ export async function googleFolderGetOrCreate(name: string, folderId: string | u
   if (!folder) folder = await googleFolderCreate(name, folderId, accessToken);
   return folder;
 }
-
-export async function googlePathGetOrCreate(path: string, accessToken: string) {
-  return googleMakePath(path, false, accessToken);
-}
-
-export async function googlePathGet(path: string, accessToken: string) {
-  return googleMakePath(path, true, accessToken);
-}

@@ -2,15 +2,16 @@ import {
   googleFileUpdate,
   googleFileCreate,
   googleFileGetBlob,
-  googlePathGetOrCreate,
   googleFileGet,
-  googlePathGet,
   googleFilesGet,
   googleFileDelete,
+  googleFolderGet,
+  googleFolderGetOrCreate,
 } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
 import { notifyToast } from "../Notify/notifyState";
+import { cacheDelete, cacheGet, cachePut } from "./cacheService";
 
 export const messageBus = createMessageBus(() => self);
 messageBus.subscribe("saveBlob", onSaveBlob);
@@ -37,6 +38,9 @@ const notifyProgress = (message: string, steps?: number) => messageBus.publish("
 async function onLoadBlob(artwork: Artwork) {
   if (!accessToken) throw "accessToken not set";
 
+  const cacheBlob = await cacheGet(artwork.path, artwork.name);
+  if (cacheBlob) return cacheBlob;
+
   notifyProgress("finding folders", 3);
   const folders = await googlePathGet(rootDirName + "/" + artwork.path, accessToken);
   const folder = folders[folders.length - 1];
@@ -56,8 +60,9 @@ async function onLoadBlob(artwork: Artwork) {
 async function onSaveBlob(artwork: ArtworkWithBlob): Promise<Artwork | void> {
   if (!accessToken) throw "accessToken not set";
 
+  cachePut(artwork.path, artwork.name, artwork.blob);
   notifyProgress("finding folders", 4);
-  const folders = await googlePathGetOrCreate(rootDirName + "/" + artwork.path, accessToken);
+  const folders = await pathGetOrCreate(rootDirName + "/" + artwork.path, false);
   const folder = folders[folders.length - 1];
   if (!folder) return notifyError("folder not found");
 
@@ -71,7 +76,7 @@ async function onSaveBlob(artwork: ArtworkWithBlob): Promise<Artwork | void> {
   // TODO I could use my own data instead of getting their thumbnail, the thumbnail is not generated instantly anyway
   notifyProgress("get file");
   const savedFile = await googleFileGet(file.name, folder.id, accessToken);
-  console.log(savedFile);
+  // console.log(savedFile);
   notifyProgress("file saved");
   if (!savedFile) return;
   return {
@@ -85,8 +90,11 @@ async function onSaveBlob(artwork: ArtworkWithBlob): Promise<Artwork | void> {
 
 async function onDeleteGallery(artwork: Artwork) {
   if (!accessToken) throw "accessToken not set";
+
+  await cacheDelete(artwork.path, artwork.name);
+
   notifyProgress("finding folders", 3);
-  const folders = await googlePathGet(rootDirName + "/" + artwork.path, accessToken);
+  const folders = await pathGetOrCreate(rootDirName + "/" + artwork.path, true);
   const folder = folders[folders.length - 1];
   if (!folder) return notifyError("folder not found");
 
@@ -105,7 +113,10 @@ async function onLoadGallery(path: string): Promise<Artwork[] | void> {
   if (!accessToken) throw "accessToken not set";
 
   notifyProgress("finding folders", 2);
-  const folders = await googlePathGet(rootDirName + "/" + path, accessToken);
+  const folders = await pathGetOrCreate(rootDirName + "/" + path, true);
+  // const folders = await googlePathGet(rootDirName + "/" + path, accessToken);
+  //const folders = await googlePathGet(rootDirName + "/" + path, accessToken);
+  // console.log(folders);
   const folder = folders[folders.length - 1];
   if (!folder) return notifyError("folder not found");
 
@@ -123,4 +134,20 @@ async function onLoadGallery(path: string): Promise<Artwork[] | void> {
         thumbnailUrl: file.thumbnailLink,
       }) as Artwork,
   );
+}
+
+async function pathGetOrCreate(path: string, readonly: boolean) {
+  if (!accessToken) throw "accessToken not set";
+  const splitPath = path.split("/").filter((p) => p !== "");
+
+  const foldersInPath = [];
+  let folderId: string | undefined;
+  for (let i = 0; i < splitPath.length; i++) {
+    const folder = readonly ? await googleFolderGet(splitPath[i], folderId, accessToken) : await googleFolderGetOrCreate(splitPath[i], folderId, accessToken);
+    folderId = folder?.id;
+    foldersInPath.push(folder);
+    if (!folder) return foldersInPath;
+  }
+
+  return foldersInPath;
 }
