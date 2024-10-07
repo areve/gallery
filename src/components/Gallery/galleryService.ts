@@ -11,6 +11,7 @@ import { clone } from "@/lib/utils";
 const messageBus = createMessageBus(() => new GalleryWorker());
 messageBus.subscribe("notifyError", notifyError);
 messageBus.subscribe("notifyProgress", notifyProgress);
+messageBus.subscribe("galleryWorkerReady", onGalleryWorkerReady);
 
 export async function loadGallery(path: string) {
   const artworks = await messageBus.request<Artwork[]>("loadGallery", [path]);
@@ -41,7 +42,11 @@ export async function loadArtwork(artwork: Artwork) {
 watch(() => googleAuthState.value.accessToken, initializeGalleryWorker);
 initializeGalleryWorker();
 
+function onGalleryWorkerReady() {
+  initializeGalleryWorker();
+}
 async function initializeGalleryWorker() {
+  console.log("initializeGalleryWorker")// TODO it wasn't ready yet
   await messageBus.request("setAccessToken", [googleAuthState.value.accessToken]);
   if (googleAuthState.value.accessToken) await loadDefaultGallery();
 }

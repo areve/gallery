@@ -2,13 +2,14 @@ export function escapeQuery(value: string) {
   return value.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
 }
 
-export const fileInfoKeys = ["id", "name", "modifiedTime", "createdTime"];
+export const fileInfoKeys = ["id", "name", "modifiedTime", "createdTime", "parents"];
 export const fileInfoKeysWithThumbnail = [...fileInfoKeys, "thumbnailLink"];
 export interface FileInfo {
   id: string;
   name: string;
   modifiedTime: string;
   createdTime: string;
+  parents: string[];
   thumbnailLink?: string;
 }
 
@@ -179,6 +180,7 @@ export async function googleFolderCreate(name: string, folderId: string | undefi
 }
 
 export async function googleFolderGet(name: string, folderId: string | undefined, accessToken: string): Promise<FileInfo | undefined> {
+  // TODO if folderId is undefined this gets any folder with the name from anywhere, and not just root?
   const parentsClause = folderId ? ` and '${escapeQuery(folderId)}' in parents ` : "";
   const result = await googleFilesGetInternal(
     {

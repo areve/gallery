@@ -3,16 +3,19 @@ import {
   googleFileCreate,
   googleFileGetBlob,
   googleFileGet,
-  googleFilesGet,
   googleFileDelete,
   googleFolderGet,
   googleFolderGetOrCreate,
+  type FileInfo,
+  googleFilesGet,
 } from "@/lib/Google/GoogleApi";
 import { createMessageBus } from "@/lib/MessageBus";
 import type { Artwork, ArtworkWithBlob } from "./Artwork";
 import { notifyToast } from "../Notify/notifyState";
 import { cacheDelete, cacheGet, cachePut } from "./cacheService";
+import { fileStoreState } from "./fileStoreState";
 
+console.log("fileStoreState", fileStoreState.value);
 export const messageBus = createMessageBus(() => self);
 messageBus.subscribe("saveBlob", onSaveBlob);
 messageBus.subscribe("loadBlob", onLoadBlob);
@@ -24,6 +27,7 @@ let accessToken: string | undefined;
 
 const rootDirName = "gallery.challen.info/v2";
 async function onSetAccessToken(newAccessToken: string) {
+  console.log("onSetAccessToken");
   notifyToast("onSetAccessToken len:" + accessToken?.length);
 
   // TODO something may still be wrong, tokens automatically, leave this console.log here for now
@@ -42,7 +46,7 @@ async function onLoadBlob(artwork: Artwork) {
   if (cacheBlob) return cacheBlob;
 
   notifyProgress("finding folders", 3);
-  const folders = await googlePathGet(rootDirName + "/" + artwork.path, accessToken);
+  const folders = await pathGetOrCreate(rootDirName + "/" + artwork.path, true);
   const folder = folders[folders.length - 1];
   if (!folder) return notifyError("folder not found");
 
@@ -114,15 +118,16 @@ async function onLoadGallery(path: string): Promise<Artwork[] | void> {
 
   notifyProgress("finding folders", 2);
   const folders = await pathGetOrCreate(rootDirName + "/" + path, true);
-  // const folders = await googlePathGet(rootDirName + "/" + path, accessToken);
-  //const folders = await googlePathGet(rootDirName + "/" + path, accessToken);
-  // console.log(folders);
+  // // const folders = await googlePathGet(rootDirName + "/" + path, accessToken);
+  // //const folders = await googlePathGet(rootDirName + "/" + path, accessToken);
+  console.log(folders);
   const folder = folders[folders.length - 1];
   if (!folder) return notifyError("folder not found");
 
   notifyProgress("finding files");
   const files = await googleFilesGet(folder.id, accessToken);
 
+  console.log(files)
   notifyProgress("files loaded");
   return files.map(
     (file) =>
@@ -134,16 +139,27 @@ async function onLoadGallery(path: string): Promise<Artwork[] | void> {
         thumbnailUrl: file.thumbnailLink,
       }) as Artwork,
   );
+
+  // const root = fileStoreState.value || [];
+  // return root.map(
+  //   (file) =>
+  //     ({
+  //       id: file.id,
+  //       name: file.name,
+  //       createdTime: new Date(file.createdTime),
+  //       modifiedTime: new Date(file.modifiedTime),
+  //       thumbnailUrl: file.thumbnailLink,
+  //     }) as Artwork,
+  // );
 }
 
 async function pathGetOrCreate(path: string, readonly: boolean) {
-  if (!accessToken) throw "accessToken not set";
   const splitPath = path.split("/").filter((p) => p !== "");
 
   const foldersInPath = [];
   let folderId: string | undefined;
   for (let i = 0; i < splitPath.length; i++) {
-    const folder = readonly ? await googleFolderGet(splitPath[i], folderId, accessToken) : await googleFolderGetOrCreate(splitPath[i], folderId, accessToken);
+    const folder = await folderGetOrCreate(splitPath[i], folderId, readonly);
     folderId = folder?.id;
     foldersInPath.push(folder);
     if (!folder) return foldersInPath;
@@ -151,3 +167,23 @@ async function pathGetOrCreate(path: string, readonly: boolean) {
 
   return foldersInPath;
 }
+
+async function folderGetOrCreate(name: string, folderId: string | undefined, readonly: boolean) {
+  if (!accessToken) throw "accessToken not set";
+  console.log("folderGetOrCreate", name, folderId, fileStoreState.value);
+
+  let folder: FileInfo | undefined = fileStoreState.value.find((x) => x.name == name && (!folderId || x.parents.includes(folderId)));
+  if (!folder) {
+    if (readonly) {
+      folder = await googleFolderGet(name, folderId, accessToken);
+    } else {
+      folder = await googleFolderGetOrCreate(name, folderId, accessToken);
+    }
+    if (folder) fileStoreState.value.push(folder);
+  }
+
+  console.log(fileStoreState.value);
+  return folder;
+}
+
+messageBus.publish("galleryWorkerReady", []);

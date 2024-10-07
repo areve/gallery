@@ -9,12 +9,23 @@ export async function cachePut(path: string | undefined, name: string, blob: Blo
   const cache = await caches.open("cache");
   await cache.put(cacheKey(path, name), new Response(blob));
 }
+export async function cachePutText(path: string | undefined, name: string, data: string) {
+  const cache = await caches.open("cache");
+  await cache.put(cacheKey(path, name), new Response(data));
+}
 
 export async function cacheGet(path: string | undefined, name: string) {
   const cache = await caches.open("cache");
   const cacheResponse = await cache.match(cacheKey(path, name));
   if (!cacheResponse) return;
   return await cacheResponse.blob();
+}
+
+export async function cacheGetText(path: string | undefined, name: string) {
+  const cache = await caches.open("cache");
+  const cacheResponse = await cache.match(cacheKey(path, name));
+  if (!cacheResponse) return;
+  return await cacheResponse.text();
 }
 
 export async function cacheDelete(path: string | undefined, name: string) {
