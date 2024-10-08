@@ -5,7 +5,7 @@ import { ref } from "vue";
 
 export const artboardState = ref({
   selectedTool: "brush" as ToolType,
-  colorSpace: "oklch" as ColorSpace,
+  colorSpace: "srgb" as ColorSpace,
   dimensions: { x: 1024, y: 1024 } as Coord,
   fps: 0,
 });

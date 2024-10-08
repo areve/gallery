@@ -3,6 +3,6 @@ import { ref } from "vue";
 
 export const brushToolState = ref({
   color: "black",
-  radius: 5,
+  radius: 100,
 });
 // usePersistentState("brushToolState", brushToolState);

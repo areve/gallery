@@ -2,7 +2,7 @@ import { createMessageBus } from "@/lib/MessageBus";
 import type { Coord } from "@/lib/Coord";
 import type { ColorCoord } from "@/lib/Color";
 import type { Brush } from "@/lib/Brush";
-import { convertBitmapLayer, createBitmapLayer, renderBitmapLayer, type BitmapLayer, type ColorSpace } from "@/lib/BitmapLayer";
+import { convertBitmapLayer, createBitmapLayer, renderBitmapLayer, renderBitmapLayer3d, type BitmapLayer, type ColorSpace } from "@/lib/BitmapLayer";
 import { color2srgb, colorConverter } from "@/lib/color/color";
 import { ref, watch, watchPostEffect } from "vue";
 import { applyBrush, createBrush } from "@/lib/Brush";
@@ -13,6 +13,7 @@ import { clearCircle } from "@/lib/bitmap/bitmap-draw";
 
 let canvas: OffscreenCanvas;
 let context: OffscreenCanvasRenderingContext2D | null = null;
+let contextGpu: GPUCanvasContext | null = null;
 let bitmapLayer: BitmapLayer | null = null;
 let start = new Date().getTime();
 let frameCount = 0;
@@ -42,11 +43,15 @@ watchPostEffect(() => {
   brush = createBrush(brushToolState.value.radius, colorConvert(srgb), artboardState.value.colorSpace);
 });
 
-function render() {
-  if (!context) return;
+async function render() {
+  if (!context && !contextGpu) return;
   if (!bitmapLayer) return;
   frameCounter();
-  renderBitmapLayer(bitmapLayer, context);
+  if (contextGpu) {
+    await renderBitmapLayer3d(bitmapLayer, contextGpu);
+  } else if (context) {
+    renderBitmapLayer(bitmapLayer, context);
+  }
   requestAnimationFrame(render);
 }
 
@@ -77,7 +82,9 @@ function onResetCanvas(dimensions: Coord, color: ColorCoord) {
 }
 
 function setupFromCanvas(canvas: OffscreenCanvas) {
-  context = canvas.getContext("2d")!;
+  contextGpu = canvas.getContext("webgpu")!;
+
+  // context = canvas.getContext("2d")!;
   const height = canvas.height;
   const width = canvas.width;
   bitmapLayer = createBitmapLayer(width, height, colorSpace.value, 32);

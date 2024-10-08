@@ -7,6 +7,7 @@ type ColorTransform = (color: ColorCoord) => ColorCoord;
 
 export function colorAll(bitmapLayer: BitmapLayer, color: ColorCoord) {
   // TODO I made it use tiles but it's on the same thread as paint so it does not help rendering too much
+  console.log('colorAll')
   bitmapLayer.tiles.forEach((rect: Rect) => {
     pixelEffect(bitmapLayer, rect, (_) => color);
     bitmapLayer.dirty.push(rect);

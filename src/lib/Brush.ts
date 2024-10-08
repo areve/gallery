@@ -63,6 +63,7 @@ function brushPoint(bitmapLayer: BitmapLayer, to: Coord, brush: Brush, weight: n
   const x = Math.floor(to.x);
   const y = Math.floor(to.y);
 
+  // TODO more code to do in webGPU
   for (let bY = 0; bY < brushHeight; bY++) {
     for (let bX = 0; bX < brushWidth; bX++) {
       const pixelY = y + bY - brushHeight / 2;
